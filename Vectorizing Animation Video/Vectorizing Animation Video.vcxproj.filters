@@ -1,0 +1,551 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="原始程式檔">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="標頭檔">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="資源檔">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="DX11">
+      <UniqueIdentifier>{9cb073a8-bf89-4fc4-9e58-3b47f0d30441}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXUT">
+      <UniqueIdentifier>{620eb62a-4135-46ee-9024-66dd5c28a4cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{46de3c6a-9cda-4137-a1c9-c3bbf0216f8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{ec5e310a-47c1-49a3-874b-cf7000fad25c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="curve">
+      <UniqueIdentifier>{c35df927-b249-401d-b8de-64e32f9065e7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+    <None Include="res\file_view.ico">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\file_view_hc.ico">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\class_view.ico">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\class_view_hc.ico">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\fileview.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\fileview_hc.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\classview.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\classview_hc.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\explorer.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\explorer_hc.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\sort.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\sort_hc.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\menuimages.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\menuimages_hc.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\output_wnd.ico">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\output_wnd_hc.ico">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\properties_wnd.ico">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\properties_wnd_hc.ico">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\properties.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\properties_hc.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\info.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\buttons.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\filelarge.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\filesmall.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\main.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\writelarge.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\writesmall.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\ribbon.mfcribbon-ms">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\VectorizingAnimationVideo.rc2">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\Vectorizing Animation VideoDoc.ico">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\Vectorizing Animation Video.ico">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\Toolbar.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="res\Toolbar256.bmp">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="shader\picture.fx">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\triangle.fx">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\triangleline.fx">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\patch.fx">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\bigpoint.fx">
+      <Filter>shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="VAV_MainFrm.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="VAV_Doc.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="VAV_View.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="FileView.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassView.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewTree.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="OutputWnd.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertiesWnd.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="DX11\DXUTUI.h">
+      <Filter>DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="DX11\Timer.h">
+      <Filter>DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="DX11\d3dApp.h">
+      <Filter>DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\DXUTcamera.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\DXUTDevice9.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\DXUTDevice11.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\DXUTgui.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\DXUTguiIME.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\DXUTLockFreePipe.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\DXUTmisc.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\DXUTres.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\DXUTsettingsdlg.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\ImeUi.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\SDKmesh.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\SDKmisc.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\DXUT.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="VAV_App.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvStr.h">
+      <Filter>原始程式檔</Filter>
+    </ClInclude>
+    <ClInclude Include="vavImage.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="DX11\Vertex.h">
+      <Filter>DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="TriangulationBase.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="math\AxisAlignedBox.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\BasicMath.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Centroid.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Matrix3.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Matrix4.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Plane.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\PlaneBoundedVolume.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Polygon2D.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Quaternion.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Ray.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Sphere.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Vector2.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Vector3.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Vector4.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\AABB2D.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\asm_math.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="TPSInterpolate.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="SplineShape.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="CmCurveEx.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Edge.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="CvExtenstion.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Patch.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="TriangulationCgal_SeedPoint.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="TriangulationCgal_Sideline.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="TriangulationCgal_Patch.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="algSpline.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="algSpline2d.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorConstraint.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchSpline.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageSpline.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorConstraintMedian.h">
+      <Filter>原始程式檔</Filter>
+    </ClInclude>
+    <ClInclude Include="SplineFragment.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="LineFragment.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="curve\BsplineCurve.h">
+      <Filter>curve</Filter>
+    </ClInclude>
+    <ClInclude Include="curve\HSplineCurve.h">
+      <Filter>curve</Filter>
+    </ClInclude>
+    <ClInclude Include="curve\LinearLine.h">
+      <Filter>curve</Filter>
+    </ClInclude>
+    <ClInclude Include="curve\PathInterpolater.h">
+      <Filter>curve</Filter>
+    </ClInclude>
+    <ClInclude Include="curve\BezierCurve.h">
+      <Filter>curve</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="VAV_MainFrm.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="VAV_Doc.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="VAV_View.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="FileView.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassView.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewTree.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="OutputWnd.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="PropertiesWnd.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="DX11\Timer.cpp">
+      <Filter>DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="DX11\d3dApp.cpp">
+      <Filter>DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="DX11\DXUTUI.cpp">
+      <Filter>DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\DXUTDevice9.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\DXUTDevice11.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\DXUTgui.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\DXUTguiIME.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\DXUTmisc.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\DXUTres.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\DXUTsettingsdlg.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\ImeUi.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\SDKmesh.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\SDKmisc.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\DXUT.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\DXUTcamera.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="VAV_App.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvStr.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="vavImage.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="DX11\Vertex.cpp">
+      <Filter>DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Centroid.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Math.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Matrix3.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Matrix4.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Plane.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Polygon2D.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Quaternion.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Vector2.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Vector3.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Vector4.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\AABB2D.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\AxisAlignedBox.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="SplineShape.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="CmCurveEx.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="Edge.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="CvExtenstion.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="Patch.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="TriangulationCgal_SeedPoint.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="TriangulationCgal_Sideline.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="TriangulationCgal_Patch.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="algSpline.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="algSpline2d.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorConstraint.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchSpline.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageSpline.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorConstraintMedian.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="SplineFragment.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="LineFragment.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="curve\BsplineCurve.cpp">
+      <Filter>curve</Filter>
+    </ClCompile>
+    <ClCompile Include="curve\HSplineCurve.cpp">
+      <Filter>curve</Filter>
+    </ClCompile>
+    <ClCompile Include="curve\LinearLine.cpp">
+      <Filter>curve</Filter>
+    </ClCompile>
+    <ClCompile Include="curve\PathInterpolater.cpp">
+      <Filter>curve</Filter>
+    </ClCompile>
+    <ClCompile Include="curve\BezierCurve.cpp">
+      <Filter>curve</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Vectorizing Animation Video.rc">
+      <Filter>資源檔</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

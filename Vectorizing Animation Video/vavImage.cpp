@@ -1,0 +1,347 @@
+
+#include <auto_link_opencv.hpp>
+
+#include <algorithm>
+#include "vavImage.h"
+#include "TPSInterpolate.hpp"
+#include "math\Quaternion.h"
+#include "CmCurveEx.h"
+#include "CvExtenstion.h"
+
+ID3D11Device* vavImage::m_Device;
+
+vavImage::vavImage( void )
+{
+}
+
+vavImage::vavImage( const cv::Mat& im )
+{
+	m_Image = im.clone();
+}
+
+ID3D11ShaderResourceView* vavImage::GetDx11Texture()
+{
+	if ( m_Image.rows == 0 || m_Image.cols == 0 ) { return NULL; }
+
+	D3D11_TEXTURE2D_DESC texDesc;
+	D3D11_SHADER_RESOURCE_VIEW_DESC srDesc;
+	D3D11_SUBRESOURCE_DATA sSubData;
+	ZeroMemory( &texDesc, sizeof( texDesc ) );
+	texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	texDesc.MipLevels = 1;
+	texDesc.ArraySize = 1;
+	texDesc.SampleDesc.Quality = 0;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	texDesc.CPUAccessFlags = 0;
+	texDesc.MiscFlags = 0;
+	srDesc.Format = texDesc.Format;
+	srDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srDesc.Texture2D.MostDetailedMip = 0;
+	srDesc.Texture2D.MipLevels = 1;
+	float* characterImages = new float[m_Image.rows * m_Image.cols * 4];
+
+	for ( int j = 0; j < m_Image.cols; ++j )
+	{
+		for ( int i = 0; i < m_Image.rows; ++i )
+		{
+			int offset = ( j * m_Image.rows + i ) * 4;
+			cv::Vec3b intensity = m_Image.at<cv::Vec3b>( i, j );
+			characterImages[offset  ] = intensity[2] / 255.0f;
+			characterImages[offset + 1] = intensity[1] / 255.0f;
+			characterImages[offset + 2] = intensity[0] / 255.0f;
+			characterImages[offset + 3] = 1.0f;
+		}
+	}
+
+	texDesc.Width = m_Image.rows;
+	texDesc.Height = m_Image.cols;
+	sSubData.SysMemPitch = ( UINT )( m_Image.rows * 4 * 4 );
+	sSubData.SysMemSlicePitch = ( UINT )( m_Image.rows * m_Image.cols * 4 * 4 );
+	sSubData.pSysMem = characterImages;
+	ID3D11Texture2D* pTexture;
+	ID3D11ShaderResourceView* pShaderResView;
+	HRESULT d3dResult = m_Device->CreateTexture2D( &texDesc, &sSubData, &pTexture );
+	delete[] characterImages;
+
+	if ( FAILED( d3dResult ) )
+	{
+		DXTRACE_MSG( L"Freetype2: Failed to create texture2D!" );
+		return 0;
+	}
+
+	d3dResult = m_Device->CreateShaderResourceView( pTexture, &srDesc, &pShaderResView );
+
+	if ( FAILED( d3dResult ) )
+	{
+		DXTRACE_MSG( L"Freetype2: Failed to create ShaderResourceView!" );
+		return 0;
+	}
+
+	return pShaderResView;
+}
+
+vavImage::~vavImage( void )
+{
+}
+
+bool vavImage::ReadImage( std::string path )
+{
+	m_Image = cv::imread( path.c_str() );
+
+	if ( m_Image.cols > 0 && m_Image.rows > 0 )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+
+void vavImage::SetDx11Device( ID3D11Device* dev )
+{
+	m_Device = dev;
+}
+
+bool vavImage::Vaild()
+{
+	if ( m_Image.cols > 0 && m_Image.rows > 0 )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+Vector2s vavImage::GetWhitePoints()
+{
+	Vector2s out;
+
+	for ( int j = 0; j < m_Image.cols; ++j )
+	{
+		for ( int i = 0; i < m_Image.rows; ++i )
+		{
+			cv::Vec3b intensity = m_Image.at<cv::Vec3b>( i, j );
+
+			if ( intensity[0] != 0 || intensity[1] != 0 || intensity[2] != 0 )
+			{
+				out.push_back( Vector2( i, j ) );
+				//std::cout << i << " " << j << std::endl;
+			}
+		}
+	}
+
+	return out;
+}
+
+
+const cv::Vec3b& vavImage::GetColor( int x, int y ) const
+{
+	if ( y < 0 ) { x = 0; }
+
+	if ( y >= m_Image.rows ) { y = m_Image.rows - 1; }
+
+	if ( x < 0 ) { y = 0; }
+
+	if ( x >= m_Image.cols ) { x = m_Image.cols - 1; }
+
+	return m_Image.at<cv::Vec3b>( y, x );
+}
+
+void vavImage::GetFeatureEdge( Lines& lines )
+{
+	return;
+
+	for ( Lines::iterator it = lines.begin(); it != lines.end(); ++it )
+	{
+		Line& li = *it;
+
+		if ( li.size() == 3 )
+		{
+			li.erase( li.begin() + 1 );
+		}
+		else if ( li.size() > 3 )
+		{
+			Vector2 lastmove = li[1] - li[0];
+
+			for ( int i = 2; i < li.size() - 1; ++i )
+			{
+				Vector2 move = li[i + 1] - li[i];
+
+				if ( move == lastmove )
+				{
+					li[i - 1].x = -999;
+				}
+
+				lastmove = move;
+			}
+
+			for ( int i = 1; i < li.size(); ++i )
+			{
+				if ( li[i].x == -999 )
+				{
+					li.erase( li.begin() + i );
+					i--;
+				}
+			}
+		}
+	}
+}
+typedef std::array<double, 2> double2;
+typedef std::array<double, 3> double3;
+void vavImage::TPSFromFeatureEdge( const Lines& lines )
+{
+	std::vector< double2 >	para_color;
+	std::vector< double3 >	values_color;
+
+	for ( Lines::const_iterator it = lines.begin(); it != lines.end(); ++it )
+	{
+		for ( Line::const_iterator it2 = it->begin(); it2 != it->end(); ++it2 )
+		{
+			double2 v2;
+			v2[0] = it2->x;
+			v2[1] = it2->y;
+			para_color.push_back( v2 );
+			const cv::Vec3b color = GetColor( it2->x, it2->y );
+			double3 v3;
+			v3[0] = color[0];
+			v3[1] = color[1];
+			v3[2] = color[2];
+			values_color.push_back( v3 );
+		}
+	}
+
+	std::cout << "para_color: " << para_color.size()  << "values_color: " << values_color.size() << std::endl;
+	ThinPlateSpline<2, 3> TPS_color( para_color, values_color );
+	std::array<double, 2> curPos;
+	std::array<double, 3> cp;
+
+	for ( int j = 0; j < m_Image.cols; ++j )
+	{
+		for ( int i = 0; i < m_Image.rows; ++i )
+		{
+			cv::Vec3b& intensity = m_Image.at<cv::Vec3b>( i, j );
+			curPos[0] = j;
+			curPos[1] = i;
+			cp = TPS_color.interpolate( curPos );
+			intensity[0] = cp[0];
+			intensity[1] = cp[1];
+			intensity[2] = cp[2];
+		}
+	}
+}
+
+void vavImage::Threshold( int v )
+{
+	v *= 3;
+
+	for ( int j = 1; j < m_Image.cols - 1; ++j )
+	{
+		for ( int i = 1; i < m_Image.rows - 1; ++i )
+		{
+			cv::Vec3b& intensity = m_Image.at<cv::Vec3b>( i, j );
+
+			if ( ( intensity[0] + intensity[1] + intensity[2] ) >= v )
+			{
+				intensity[0] = 255;
+				intensity[1] = 255;
+				intensity[2] = 255;
+			}
+			else
+			{
+				intensity[0] = 0;
+				intensity[1] = 0;
+				intensity[2] = 0;
+			}
+		}
+	}
+}
+
+
+
+
+void vavImage::ShowEdgeLine( const Lines& li )
+{
+	Lines lines = ComputeTrappedBallEdge( m_Image, li, 5 );
+	m_Image = cv::Mat( m_Image.size(), m_Image.type(), cv::Scalar( 0 ) );
+
+	for ( Lines::iterator it = lines.begin(); it != lines.end(); ++it )
+	{
+		int R = 255, B = 255, G = 255;
+
+		for ( Line::iterator it2 = it->begin(); it2 != it->end(); ++it2 )
+		{
+			cv::Vec3b& intensity = m_Image.at<cv::Vec3b>( it2->y, it2->x );
+			intensity[0] = R;
+			intensity[1] = G;
+			intensity[2] = B;
+		}
+	}
+}
+
+void vavImage::Resize( int x, int y, int method )
+{
+	cv::Mat tmp = m_Image;
+	resize( tmp, m_Image, cv::Size( x, y ), 0, 0, method );
+}
+
+bool vavImage::CorrectPosition( int x, int y )
+{
+	if ( x >= 0 && y >= 0 && x < m_Image.cols && y < m_Image.rows )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+Lines vavImage::AnimaEdge( int kSize, float linkEndBound, float linkStartBound )
+{
+	cv::Mat srcImg1f, srcImg2f, show3u = cv::Mat::zeros( m_Image.size(), CV_8UC3 );
+	cvtColor( m_Image, srcImg1f, CV_BGR2HSV );
+
+	for ( int x = 0; x < srcImg1f.cols; ++x )
+	{
+		for ( int y = 0; y < srcImg1f.rows; ++y )
+		{
+			cv::Vec3b& c = srcImg1f.at<cv::Vec3b>( y, x );
+			c[0] = c[2];
+			c[1] = c[2];
+		}
+	}
+
+	cvtColor( srcImg1f, srcImg1f, CV_BGR2GRAY );
+	srcImg1f.convertTo( srcImg2f, CV_32FC1, 1.0 / 255 );
+	CmCurveEx dEdge( srcImg2f );
+	dEdge.CalSecDer( kSize, linkEndBound, linkStartBound );
+	dEdge.Link();
+	return GetLines( dEdge.GetEdges() );
+}
+
+Lines vavImage::SobelEdge( int kSize, float linkEndBound, float linkStartBound )
+{
+	cv::Mat srcImg1f, srcImg2f, show3u = cv::Mat::zeros( m_Image.size(), CV_8UC3 );
+	cvtColor( m_Image, srcImg1f, CV_BGR2HSV );
+
+	for ( int x = 0; x < srcImg1f.cols; ++x )
+	{
+		for ( int y = 0; y < srcImg1f.rows; ++y )
+		{
+			cv::Vec3b& c = srcImg1f.at<cv::Vec3b>( y, x );
+			c[0] = c[2];
+			c[1] = c[2];
+		}
+	}
+
+	cvtColor( srcImg1f, srcImg1f, CV_BGR2GRAY );
+	srcImg1f.convertTo( srcImg2f, CV_32FC1, 1.0 / 255 );
+	CmCurveEx dEdge( srcImg2f );
+	dEdge.CalFirDer( kSize, linkEndBound, linkStartBound );
+	dEdge.Link();
+	return GetLines( dEdge.GetEdges() );
+}

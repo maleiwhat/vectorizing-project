@@ -1,0 +1,531 @@
+﻿已經開始建置於 2013/2/22 上午 08:42:40。
+     1>節點 2 (build 目標) 上的專案 "C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Vectorizing Animation Video\Vectorizing Animation Video.vcxproj"。
+     1>InitializeBuildStatus:
+         由於指定了 "AlwaysCreate"，因此正在建立 "Release\Vectorizing Animation Video.unsuccessfulbuild"。
+       ClCompile:
+         所有輸出都是最新的。
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I. /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D CGAL_NO_AUTOLINK /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt CvExtenstion.cpp Patch.cpp vavImage.cpp
+         CvExtenstion.cpp
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>CvExtenstion.cpp(78): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(78): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(154): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(176): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(178): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(179): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(193): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(193): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(204): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(206): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(207): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(221): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(221): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(245): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(267): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(269): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(270): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(284): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(284): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(295): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(297): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(298): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(312): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(312): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(151): warning C4101: 'y' : 未參考的區域變數
+     1>CvExtenstion.cpp(151): warning C4101: 'x' : 未參考的區域變數
+     1>CvExtenstion.cpp(242): warning C4101: 'y' : 未參考的區域變數
+     1>CvExtenstion.cpp(242): warning C4101: 'x' : 未參考的區域變數
+     1>CvExtenstion.cpp(338): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(360): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(362): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(363): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(375): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(375): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(380): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(380): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(398): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(400): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(401): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(417): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(417): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(425): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(427): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(428): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(438): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(438): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(440): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(440): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(467): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(489): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(491): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(492): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(504): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(504): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(509): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(509): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(529): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(530): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(546): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(546): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(554): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(556): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(557): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(567): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(567): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(569): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(569): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(335): warning C4101: 'y' : 未參考的區域變數
+     1>CvExtenstion.cpp(335): warning C4101: 'x' : 未參考的區域變數
+     1>CvExtenstion.cpp(464): warning C4101: 'y' : 未參考的區域變數
+     1>CvExtenstion.cpp(464): warning C4101: 'x' : 未參考的區域變數
+     1>CvExtenstion.cpp(615): warning C4244: '引數' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(615): warning C4244: '引數' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(639): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(646): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(677): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(684): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(700): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(702): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(702): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(717): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(723): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(723): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(741): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(747): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(747): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(807): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(807): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(832): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(854): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(856): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(857): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(871): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(871): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(880): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(882): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(883): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(897): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(897): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(919): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(941): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(943): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(944): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(958): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(958): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(967): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(969): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(970): warning C4244: '正在初始化' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(984): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(984): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(829): warning C4101: 'y' : 未參考的區域變數
+     1>CvExtenstion.cpp(829): warning C4101: 'x' : 未參考的區域變數
+     1>CvExtenstion.cpp(916): warning C4101: 'y' : 未參考的區域變數
+     1>CvExtenstion.cpp(916): warning C4101: 'x' : 未參考的區域變數
+     1>CvExtenstion.cpp(1036): warning C4309: '=' : 轉換導致常數值遭截斷; 可能需要使用較大的型別
+     1>CvExtenstion.cpp(1165): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1165): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1189): warning C4244: '引數' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1189): warning C4244: '引數' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1205): warning C4244: '=' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1207): warning C4244: '=' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1209): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1209): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1360): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1360): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1369): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1369): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1383): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1383): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1395): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1395): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1467): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(1498): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(1841): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1841): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1845): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1845): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1911): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1911): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1917): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1917): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1928): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(1941): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1941): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1947): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1947): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1958): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2322): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2334): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2438): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2438): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2711): warning C4244: 'return' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2716): warning C4244: 'return' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2789): warning C4305: '=' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
+     1>CvExtenstion.cpp(2858): warning C4244: '正在初始化' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2892): warning C4305: '=' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
+     1>CvExtenstion.cpp(2910): warning C4305: '*=' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
+     1>CvExtenstion.cpp(2947): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2954): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2956): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2956): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2980): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2989): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2991): warning C4244: '=' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2996): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(3000): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(3000): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(3001): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(3001): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(3002): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(3031): warning C4018: '<' : signed/unsigned 不相符
+         Patch.cpp
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>Patch.cpp(9): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(9): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(46): warning C4244: '正在初始化' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(69): warning C4244: '正在初始化' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(100): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(107): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(110): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(113): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(124): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(131): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(134): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(137): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(147): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(152): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(154): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(165): warning C4244: '引數' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(165): warning C4244: '引數' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(263): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(263): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(265): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(267): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(267): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(285): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(285): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(299): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(299): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(326): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(326): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(331): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(331): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(331): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(340): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(340): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(352): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(352): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(352): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+         vavImage.cpp
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>vavImage.cpp(132): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(132): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(171): warning C4018: '<' : signed/unsigned 不相符
+     1>vavImage.cpp(183): warning C4018: '<' : signed/unsigned 不相符
+     1>vavImage.cpp(209): warning C4244: '引數' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(209): warning C4244: '引數' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(231): warning C4244: '=' : 將 'double' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(232): warning C4244: '=' : 將 'double' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(233): warning C4244: '=' : 將 'double' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(278): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(278): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>c:\users\damody\desktop\video_vectorization\vectorizing animation video\vectorizing animation video\TPSInterpolate.hpp(114): warning C4390: ';' : 找到空白的控制陳述式，是正確的嗎?
+                 c:\users\damody\desktop\video_vectorization\vectorizing animation video\vectorizing animation video\TPSInterpolate.hpp(68) : 編譯類別 樣板 成員函式 'ThinPlateSpline<PosDim,ValDim>::ThinPlateSpline(std::vector<_Ty>,std::vector<double3>)' 時
+                 with
+                 [
+                     PosDim=2,
+                     ValDim=3,
+                     _Ty=double2
+                 ]
+                 vavImage.cpp(219) : 請參閱所要編譯的類別 樣板 具現化 'ThinPlateSpline<PosDim,ValDim>' 的參考
+                 with
+                 [
+                     PosDim=2,
+                     ValDim=3
+                 ]
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I. /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D CGAL_NO_AUTOLINK /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Release\Vectorizing Animation Video.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt VAV_MainFrm.cpp
+         VAV_MainFrm.cpp
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\clibrary\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdint.h(72): warning C4005: 'INT8_MIN' : 巨集重複定義
+                 C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\intsafe.h(144) : 請參閱 'INT8_MIN' 之前的定義
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdint.h(73): warning C4005: 'INT16_MIN' : 巨集重複定義
+                 C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\intsafe.h(146) : 請參閱 'INT16_MIN' 之前的定義
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdint.h(74): warning C4005: 'INT32_MIN' : 巨集重複定義
+                 C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\intsafe.h(148) : 請參閱 'INT32_MIN' 之前的定義
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdint.h(76): warning C4005: 'INT8_MAX' : 巨集重複定義
+                 C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\intsafe.h(167) : 請參閱 'INT8_MAX' 之前的定義
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdint.h(77): warning C4005: 'INT16_MAX' : 巨集重複定義
+                 C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\intsafe.h(171) : 請參閱 'INT16_MAX' 之前的定義
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdint.h(78): warning C4005: 'INT32_MAX' : 巨集重複定義
+                 C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\intsafe.h(176) : 請參閱 'INT32_MAX' 之前的定義
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdint.h(79): warning C4005: 'UINT8_MAX' : 巨集重複定義
+                 C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\intsafe.h(168) : 請參閱 'UINT8_MAX' 之前的定義
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdint.h(80): warning C4005: 'UINT16_MAX' : 巨集重複定義
+                 C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\intsafe.h(173) : 請參閱 'UINT16_MAX' 之前的定義
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdint.h(81): warning C4005: 'UINT32_MAX' : 巨集重複定義
+                 C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\intsafe.h(178) : 請參閱 'UINT32_MAX' 之前的定義
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdint.h(149): warning C4005: 'INT64_MIN' : 巨集重複定義
+                 C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\intsafe.h(152) : 請參閱 'INT64_MIN' 之前的定義
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdint.h(150): warning C4005: 'INT64_MAX' : 巨集重複定義
+                 C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\intsafe.h(184) : 請參閱 'INT64_MAX' 之前的定義
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdint.h(151): warning C4005: 'UINT64_MAX' : 巨集重複定義
+                 C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\intsafe.h(189) : 請參閱 'UINT64_MAX' 之前的定義
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\boost_1_50_0\boost/format/alt_sstream_impl.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>VAV_MainFrm.cpp(446): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(455): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(464): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(473): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(513): warning C4305: '引數' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
+     1>VAV_MainFrm.cpp(513): warning C4305: '引數' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
+     1>VAV_MainFrm.cpp(558): warning C4018: '<' : signed/unsigned 不相符
+     1>VAV_MainFrm.cpp(571): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(573): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(574): warning C4018: '<' : signed/unsigned 不相符
+     1>VAV_MainFrm.cpp(581): warning C4018: '<' : signed/unsigned 不相符
+     1>VAV_MainFrm.cpp(584): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(584): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(584): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(625): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(640): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(647): warning C4018: '<' : signed/unsigned 不相符
+     1>VAV_MainFrm.cpp(675): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(690): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(705): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(719): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(734): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(749): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+       ResourceCompile:
+         所有輸出都是最新的。
+       Link:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Release\Vectorizing Animation Video.exe" /INCREMENTAL:NO /NOLOGO uafxcw.lib D3DX11Effects2010.lib d3d11.lib d3dx11.lib d3d9.lib d3dx9.lib DxErr.lib dinput8.lib d3dcompiler.lib dxguid.lib d3dxof.lib winmm.lib odbc32.lib odbccp32.lib dwrite.lib D2d1.lib imm32.lib Version.lib comctl32.lib dsound.lib /NODEFAULTLIB:"libCGAL-vc100-mt-s-4.0.lib" /MANIFEST /ManifestFile:"Release\Vectorizing Animation Video.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Release\Vectorizing Animation Video.pdb" /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Release\Vectorizing Animation Video.lib" /MACHINE:X86 "Release\Vectorizing Animation Video.res"
+         Release\algSpline.obj
+         Release\algSpline2d.obj
+         Release\ClassView.obj
+         Release\CmCurveEx.obj
+         Release\ColorConstraint.obj
+         Release\ColorConstraintMedian.obj
+         Release\ConvStr.obj
+         Release\BezierCurve.obj
+         Release\BsplineCurve.obj
+         Release\HSplineCurve.obj
+         Release\LinearLine.obj
+         Release\PathInterpolater.obj
+         Release\CvExtenstion.obj
+         Release\d3dApp.obj
+         Release\DXUTUI.obj
+         Release\Timer.obj
+         Release\Vertex.obj
+         Release\DXUT.obj
+         Release\DXUTcamera.obj
+         Release\DXUTDevice11.obj
+         Release\DXUTDevice9.obj
+         Release\DXUTgui.obj
+         Release\DXUTguiIME.obj
+         Release\DXUTmisc.obj
+         Release\DXUTres.obj
+         Release\DXUTsettingsdlg.obj
+         Release\ImeUi.obj
+         Release\SDKmesh.obj
+         Release\SDKmisc.obj
+         Release\Edge.obj
+         Release\FileView.obj
+         Release\ImageSpline.obj
+         Release\LineFragment.obj
+         Release\AABB2D.obj
+         Release\AxisAlignedBox.obj
+         Release\Centroid.obj
+         Release\Math.obj
+         Release\Matrix3.obj
+         Release\Matrix4.obj
+         Release\Plane.obj
+         Release\Polygon2D.obj
+         Release\Quaternion.obj
+         Release\Vector2.obj
+         Release\Vector3.obj
+         Release\Vector4.obj
+         Release\OutputWnd.obj
+         Release\Patch.obj
+         Release\PatchSpline.obj
+         Release\PropertiesWnd.obj
+         Release\SplineFragment.obj
+         Release\SplineShape.obj
+         Release\stdafx.obj
+         Release\TriangulationCgal_Patch.obj
+         Release\TriangulationCgal_SeedPoint.obj
+         Release\TriangulationCgal_Sideline.obj
+         Release\vavImage.obj
+         Release\VAV_Doc.obj
+         Release\VAV_MainFrm.obj
+         Release\VAV_View.obj
+         Release\VAV_App.obj
+         Release\ViewTree.obj
+         正在產生程式碼
+         已完成程式碼產生
+     1>D3DX11Effects2010.lib(EffectAPI.obj) : warning LNK4099: 找不到 PDB 'vc100.pdb' (有 'D3DX11Effects2010.lib(EffectAPI.obj)' 或位於 'C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Release\vc100.pdb')，當做沒有偵錯資訊，連結物件
+     1>D3DX11Effects2010.lib(EffectNonRuntime.obj) : warning LNK4099: 找不到 PDB 'vc100.pdb' (有 'D3DX11Effects2010.lib(EffectNonRuntime.obj)' 或位於 'C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Release\vc100.pdb')，當做沒有偵錯資訊，連結物件
+     1>D3DX11Effects2010.lib(EffectLoad.obj) : warning LNK4099: 找不到 PDB 'vc100.pdb' (有 'D3DX11Effects2010.lib(EffectLoad.obj)' 或位於 'C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Release\vc100.pdb')，當做沒有偵錯資訊，連結物件
+     1>D3DX11Effects2010.lib(d3dxGlobal.obj) : warning LNK4099: 找不到 PDB 'vc100.pdb' (有 'D3DX11Effects2010.lib(d3dxGlobal.obj)' 或位於 'C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Release\vc100.pdb')，當做沒有偵錯資訊，連結物件
+     1>D3DX11Effects2010.lib(EffectReflection.obj) : warning LNK4099: 找不到 PDB 'vc100.pdb' (有 'D3DX11Effects2010.lib(EffectReflection.obj)' 或位於 'C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Release\vc100.pdb')，當做沒有偵錯資訊，連結物件
+     1>D3DX11Effects2010.lib(EffectRuntime.obj) : warning LNK4099: 找不到 PDB 'vc100.pdb' (有 'D3DX11Effects2010.lib(EffectRuntime.obj)' 或位於 'C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Release\vc100.pdb')，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(alloc.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(arithm.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(array.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(convert.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(copy.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(datastructs.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(drawing.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(dxt.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(gpumat.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(lapack.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(mathfuncs.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(matmul.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(matop.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(matrix.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(opengl_interop.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(persistence.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(rand.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(stat.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(system.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_core-s-x86.lib(tables.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\core\opencv_core.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(loadsave.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(utils.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(window.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(window_w32.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(grfmt_base.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(grfmt_bmp.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(grfmt_jpeg.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(grfmt_jpeg2000.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(grfmt_png.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(grfmt_pxm.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(grfmt_sunras.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(grfmt_tiff.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_highgui-s-x86.lib(bitstrm.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\highgui\opencv_highgui.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(approx.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(canny.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(color.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(contours.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(convhull.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(deriv.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(filter.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(floodfill.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(geometry.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(imgwarp.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(linefit.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(matchcontours.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(moments.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(morph.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(rotcalipers.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(shapedescr.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(smooth.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(sumpixels.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(tables.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(templmatch.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(thresh.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+     1>libopencv_imgproc-s-x86.lib(utils.obj) : warning LNK4206: 找不到先行編譯型別資訊，未連結或覆寫 'c:\clibrary\opencv2.4.2\opencv\build.vc10\modules\imgproc\opencv_imgproc.dir\release\precomp.obj'，當做沒有偵錯資訊，連結物件
+         Vectorizing Animation Video.vcxproj -> C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Release\Vectorizing Animation Video.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Release\Vectorizing Animation Video.exe;#1" /manifest "Release\Vectorizing Animation Video.exe.intermediate.manifest" "c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\Include\Manifest\dpiaware.manifest"
+       FinalizeBuildStatus:
+         正在刪除檔案 "Release\Vectorizing Animation Video.unsuccessfulbuild"。
+         正在變更時間戳記 "Release\Vectorizing Animation Video.lastbuildstate"。
+     1>專案 "C:\Users\damody\Desktop\Video_vectorization\Vectorizing Animation Video\Vectorizing Animation Video\Vectorizing Animation Video.vcxproj" (build 目標) 建置完成。
+
+建置成功。
+
+經過時間 00:00:55.23
