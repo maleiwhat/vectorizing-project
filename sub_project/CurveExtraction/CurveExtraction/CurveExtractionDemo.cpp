@@ -10,14 +10,9 @@
 
 #include "stdafx.h"
 #include "CmCurveEx.h"
-#include "Saliency/FT/HKSaliency_FT.h"
-#include "Saliency/HC/HKSaliency_HC.h"
-#include "Saliency/LC/HKSaliency_LC.h"
-#include "Saliency/SR/HKSaliency_SR.h"
 #include <cmath>
 #include "math/Vector2.h"
 #include "math/Quaternion.h"
-using namespace HKCV;
 
 struct ColorPtr
 {
@@ -646,7 +641,7 @@ void SmoothThreshold(cv::Mat src, cv::Mat& dst)
 			float s = dst.at<float>(r, c);
 			float& v = dst.at<float>(r, c);
 
-			if (s < 0.4)
+			if (s < 0.65)
 			{
 				v = 0;
 			}
@@ -692,11 +687,21 @@ void SmoothThreshold(cv::Mat src, cv::Mat& dst)
 			drawContours( drawing, contours, i, color, -1 );
 		//}
 	}
-	imshow( "Contours", drawing );
+	imshow( "FillContours", drawing );
+	drawing = cv::Scalar(0);
+	for( int i = 0; i< contours.size(); i++ )
+	{
+		cv::Scalar color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+		//drawContours( drawing, contours, i, color, 1, 8, hierarchy, 0, cv::Point() );
+		//if ( hierarchy[i][3] != -1 ) {
+		drawContours( drawing, contours, i, color, 1 );
+		//}
+	}
+	imshow( "Contours",  drawing );
 	cv::waitKey();
 }
 
-void Flood_LowLying(cv::Mat src, cv::Mat& dst, int rectw, int recth)
+void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 {
 	cv::Mat MaxCapacity, MaxCapacity2, WaterMap, RealMap, ThresholdMap, tmp;
 	Vec3fptrs ary(rectw * recth);
@@ -735,7 +740,7 @@ void Flood_LowLying(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 	floatptrs aryf(rectw * recth);
 	floatptrs aryr(rectw * recth);
 
-	for (int count = 0; count < 10000; ++count)
+	for (int count = 0; count < 5; ++count)
 	{
 // 		if (count % 3 == 0)
 // 		{
@@ -1051,11 +1056,11 @@ void Demo(const Mat& img1u)
 
 int main(int argc, char* argv[])
 {
-	cv::Mat cImg = cv::imread("data\\girl7.png"), cImg2;
+	cv::Mat cImg = cv::imread("data\\seed.png"), cImg2;
 	//CmCurveEx::Demo( cImg, 1 );
 	//cv::namedWindow("cImg", 0);
 	cImg.convertTo(cImg, CV_32FC3, 1.0 / 255);
-	Flood_LowLying(cImg, cImg2, 5, 5);
+	Flood_CollectWater(cImg, cImg2, 5, 5);
 	cvtColor(cImg, cImg, CV_BGR2GRAY);
 //	cv::waitKey();
 	Demo(cImg);
