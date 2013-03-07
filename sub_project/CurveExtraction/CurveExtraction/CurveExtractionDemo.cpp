@@ -681,7 +681,7 @@ void SmoothThreshold(cv::Mat src, cv::Mat& dst)
 	cv::RNG rng(12345);
 	for( int i = 0; i< contours.size(); i++ )
 	{
-		cv::Scalar color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+		cv::Scalar color = cv::Scalar( rng.uniform(50, 255), rng.uniform(50,255), rng.uniform(50,255) );
 		//drawContours( drawing, contours, i, color, 1, 8, hierarchy, 0, cv::Point() );
 		//if ( hierarchy[i][3] != -1 ) {
 			drawContours( drawing, contours, i, color, -1 );
@@ -691,13 +691,14 @@ void SmoothThreshold(cv::Mat src, cv::Mat& dst)
 	drawing = cv::Scalar(0);
 	for( int i = 0; i< contours.size(); i++ )
 	{
-		cv::Scalar color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+		cv::Scalar color = cv::Scalar( rng.uniform(50, 255), rng.uniform(50,255), rng.uniform(50,255) );
 		//drawContours( drawing, contours, i, color, 1, 8, hierarchy, 0, cv::Point() );
 		//if ( hierarchy[i][3] != -1 ) {
 		drawContours( drawing, contours, i, color, 1 );
 		//}
 	}
 	imshow( "Contours",  drawing );
+	imwrite("Contours.png", drawing);
 	cv::waitKey();
 }
 
@@ -740,7 +741,7 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 	floatptrs aryf(rectw * recth);
 	floatptrs aryr(rectw * recth);
 
-	for (int count = 0; count < 5; ++count)
+	for (int count = 0; count < 1; ++count)
 	{
 // 		if (count % 3 == 0)
 // 		{

@@ -13,31 +13,62 @@ D3DApp::D3DApp()
 	m_RenderTargetView = NULL;
 	m_DepthStencilView = NULL;
 	m_DeviceContext = NULL;
-	m_Buffer_Points = NULL;
-	m_Effect_Points = NULL;
-	m_PTech_Points = NULL;
-	m_PLayout_Points = NULL;
-	m_Points_Width = NULL;
-	m_Points_Height = NULL;
-	m_Effect_Pics = NULL;
-	m_PTech_Pics = NULL;
-	m_PLayout_Pics = NULL;
+
+	m_Pics_Buffer = NULL;
+	m_Pics_Effect = NULL;
+	m_Pics_PTech = NULL;
+	m_Pics_PLayout = NULL;
 	m_Pics_Width = NULL;
 	m_Pics_Height = NULL;
+	m_Pics_Scale = NULL;
 	m_Pics_CenterX = NULL;
 	m_Pics_CenterY = NULL;
-	m_Pics_Texture = NULL;
-	m_Buffer_Pics = NULL;
-	m_Effect_Triangle = NULL;
-	m_PTech_Triangle = NULL;
-	m_PLayout_Triangle = NULL;
+	m_Pics_Transparency = NULL;
+
+	m_Triangle_Buffer = NULL;
+	m_Triangle_Effect = NULL;
+	m_Triangle_PTech = NULL;
+	m_Triangle_PLayout = NULL;
 	m_Triangle_Width = NULL;
 	m_Triangle_Height = NULL;
+	m_Triangle_Scale = NULL;
 	m_Triangle_CenterX = NULL;
 	m_Triangle_CenterY = NULL;
-	m_Buffer_Triangle = NULL;
-	m_Buffer_TriangleLine = NULL;
-	m_Buffer_Patch = NULL;
+	m_Triangle_Transparency = NULL;
+
+	m_Patch_Buffer = NULL;
+	m_Patch_Effect = NULL;
+	m_Patch_PTech = NULL;
+	m_Patch_PLayout = NULL;
+	m_Patch_Width = NULL;
+	m_Patch_Height = NULL;
+	m_Patch_Scale = NULL;
+	m_Patch_CenterX = NULL;
+	m_Patch_CenterY = NULL;
+	m_Patch_Transparency = NULL;
+
+	m_Points_Buffer = NULL;
+	m_Points_Effect = NULL;
+	m_Points_PTech = NULL;
+	m_Points_PLayout = NULL;
+	m_Points_Width = NULL;
+	m_Points_Height = NULL;
+	m_Points_Scale = NULL;
+	m_Points_CenterX = NULL;
+	m_Points_CenterY = NULL;
+	m_Points_Transparency = NULL;
+	
+	m_Lines_Buffer = NULL;
+	m_Lines_Effect = NULL;
+	m_Lines_PTech = NULL;
+	m_Lines_PLayout = NULL;
+	m_Lines_Width = NULL;
+	m_Lines_Height = NULL;
+	m_Lines_Scale = NULL;
+	m_Lines_CenterX = NULL;
+	m_Lines_CenterY = NULL;
+	m_Lines_Transparency = NULL;
+
 	m_PicW = 0;
 	m_PicH = 0;
 	m_hAppInst   = GetModuleHandle(NULL);
@@ -65,8 +96,8 @@ D3DApp::~D3DApp()
 	ReleaseCOM(m_RenderTargetView);
 	ReleaseCOM(m_DepthStencilView);
 	ReleaseCOM(m_DeviceContext);
-	ReleaseCOM(m_Effect_Pics);
-	ReleaseCOM(m_PLayout_Pics);
+	ReleaseCOM(m_Pics_Effect);
+	ReleaseCOM(m_Pics_PLayout);
 
 	if (m_DXUT_UI)
 	{
@@ -185,15 +216,15 @@ void D3DApp::DrawScene()
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	//Draw Picture
-	if (m_PictureVertices.size() > 0)
+	if (m_PicsVertices.size() > 0)
 	{
 		UINT offset = 0;
 		UINT stride2 = sizeof(PictureVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-		m_DeviceContext->IASetInputLayout(m_PLayout_Pics);
-		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Buffer_Pics, &stride2, &offset);
-		m_PTech_Pics->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-		m_DeviceContext->Draw((UINT)m_PictureVertices.size(), 0);
+		m_DeviceContext->IASetInputLayout(m_Pics_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Pics_Buffer, &stride2, &offset);
+		m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
 	}
 
 	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
@@ -204,9 +235,9 @@ void D3DApp::DrawScene()
 		UINT offset = 0;
 		UINT stride2 = sizeof(TriangleVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-		m_DeviceContext->IASetInputLayout(m_PLayout_Triangle);
-		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Buffer_Triangle, &stride2, &offset);
-		m_PTech_Triangle->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->IASetInputLayout(m_Triangle_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Triangle_Buffer, &stride2, &offset);
+		m_Triangle_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
 		m_DeviceContext->Draw((UINT)m_TriangleVertices.size(), 0);
 	}
 
@@ -215,9 +246,9 @@ void D3DApp::DrawScene()
 		UINT offset = 0;
 		UINT stride2 = sizeof(TriangleVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-		m_DeviceContext->IASetInputLayout(m_PLayout_TriangleLine);
-		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Buffer_TriangleLine, &stride2, &offset);
-		m_PTech_TriangleLine->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->IASetInputLayout(m_TriangleLine_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_TriangleLine_Buffer, &stride2, &offset);
+		m_TriangleLine_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
 		m_DeviceContext->Draw((UINT)m_TriangleLineVertices.size(), 0);
 	}
 
@@ -226,9 +257,9 @@ void D3DApp::DrawScene()
 		UINT offset = 0;
 		UINT stride2 = sizeof(TriangleVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-		m_DeviceContext->IASetInputLayout(m_PLayout_Patch);
-		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Buffer_Patch, &stride2, &offset);
-		m_PTech_Patch->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->IASetInputLayout(m_Patch_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Patch_Buffer, &stride2, &offset);
+		m_Patch_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
 		m_DeviceContext->Draw((UINT)m_PatchVertices.size(), 0);
 	}
 
@@ -238,9 +269,9 @@ void D3DApp::DrawScene()
 		UINT offset = 0;
 		UINT stride2 = sizeof(PointVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-		m_DeviceContext->IASetInputLayout(m_PLayout_Points);
-		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Buffer_Points, &stride2, &offset);
-		m_PTech_Points->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->IASetInputLayout(m_Points_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Points_Buffer, &stride2, &offset);
+		m_Points_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
 		m_DeviceContext->Draw((UINT)m_PointsVertices.size(), 0);
 	}
 
@@ -267,18 +298,18 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 
-	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Effect_Pics));
-	m_PTech_Pics = m_Effect_Pics->GetTechniqueByName("PointTech");
-	m_Pics_Width = m_Effect_Pics->GetVariableByName("width")->AsScalar();
-	m_Pics_Height = m_Effect_Pics->GetVariableByName("height")->AsScalar();
-	m_Pics_CenterX = m_Effect_Pics->GetVariableByName("centerX")->AsScalar();
-	m_Pics_CenterY = m_Effect_Pics->GetVariableByName("centerY")->AsScalar();
-	m_Pics_Scale = m_Effect_Pics->GetVariableByName("scale")->AsScalar();
-	m_PMap_Pics  = m_Effect_Pics->GetVariableByName("gMap")->AsShaderResource();
-	m_Pics_Transparency = m_Effect_Pics->GetVariableByName("transparency")->AsScalar();
+	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Pics_Effect));
+	m_Pics_PTech = m_Pics_Effect->GetTechniqueByName("PointTech");
+	m_Pics_Width = m_Pics_Effect->GetVariableByName("width")->AsScalar();
+	m_Pics_Height = m_Pics_Effect->GetVariableByName("height")->AsScalar();
+	m_Pics_CenterX = m_Pics_Effect->GetVariableByName("centerX")->AsScalar();
+	m_Pics_CenterY = m_Pics_Effect->GetVariableByName("centerY")->AsScalar();
+	m_Pics_Scale = m_Pics_Effect->GetVariableByName("scale")->AsScalar();
+	m_Pics_PMap  = m_Pics_Effect->GetVariableByName("gMap")->AsShaderResource();
+	m_Pics_Transparency = m_Pics_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDesc;
-	m_PTech_Pics->GetPassByIndex(0)->GetDesc(&PassDesc);
-	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PICVertex, 2, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_PLayout_Pics));
+	m_Pics_PTech->GetPassByIndex(0)->GetDesc(&PassDesc);
+	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PICVertex, 2, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_Pics_PLayout));
 	//Triangle
 	hr = 0;
 	hr = D3DX11CompileFromFile(_T("shader\\triangle.fx"), NULL, NULL, NULL,
@@ -295,18 +326,18 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 
-	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Effect_Triangle));
-	m_PTech_Triangle = m_Effect_Triangle->GetTechniqueByName("PointTech");
-	m_Triangle_Width = m_Effect_Triangle->GetVariableByName("width")->AsScalar();
-	m_Triangle_Height = m_Effect_Triangle->GetVariableByName("height")->AsScalar();
-	m_Triangle_CenterX = m_Effect_Triangle->GetVariableByName("centerX")->AsScalar();
-	m_Triangle_CenterY = m_Effect_Triangle->GetVariableByName("centerY")->AsScalar();
-	m_Triangle_Scale = m_Effect_Triangle->GetVariableByName("scale")->AsScalar();
-	m_Triangle_Transparency = m_Effect_Triangle->GetVariableByName("transparency")->AsScalar();
+	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Triangle_Effect));
+	m_Triangle_PTech = m_Triangle_Effect->GetTechniqueByName("PointTech");
+	m_Triangle_Width = m_Triangle_Effect->GetVariableByName("width")->AsScalar();
+	m_Triangle_Height = m_Triangle_Effect->GetVariableByName("height")->AsScalar();
+	m_Triangle_CenterX = m_Triangle_Effect->GetVariableByName("centerX")->AsScalar();
+	m_Triangle_CenterY = m_Triangle_Effect->GetVariableByName("centerY")->AsScalar();
+	m_Triangle_Scale = m_Triangle_Effect->GetVariableByName("scale")->AsScalar();
+	m_Triangle_Transparency = m_Triangle_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri;
-	m_PTech_Triangle->GetPassByIndex(0)->GetDesc(&PassDescTri);
+	m_Triangle_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6, PassDescTri.pIAInputSignature,
-	                                  PassDescTri.IAInputSignatureSize, &m_PLayout_Triangle));
+	                                  PassDescTri.IAInputSignatureSize, &m_Triangle_PLayout));
 	hr = D3DX11CompileFromFile(_T("shader\\triangleline.fx"), NULL, NULL, NULL,
 	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
 
@@ -321,18 +352,18 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 
-	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Effect_TriangleLine));
-	m_PTech_TriangleLine = m_Effect_TriangleLine->GetTechniqueByName("PointTech");
-	m_TriangleLine_Width = m_Effect_TriangleLine->GetVariableByName("width")->AsScalar();
-	m_TriangleLine_Height = m_Effect_TriangleLine->GetVariableByName("height")->AsScalar();
-	m_TriangleLine_CenterX = m_Effect_TriangleLine->GetVariableByName("centerX")->AsScalar();
-	m_TriangleLine_CenterY = m_Effect_TriangleLine->GetVariableByName("centerY")->AsScalar();
-	m_TriangleLine_Scale = m_Effect_TriangleLine->GetVariableByName("scale")->AsScalar();
-	m_TriangleLine_Transparency = m_Effect_TriangleLine->GetVariableByName("transparency")->AsScalar();
+	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_TriangleLine_Effect));
+	m_TriangleLine_PTech = m_TriangleLine_Effect->GetTechniqueByName("PointTech");
+	m_TriangleLine_Width = m_TriangleLine_Effect->GetVariableByName("width")->AsScalar();
+	m_TriangleLine_Height = m_TriangleLine_Effect->GetVariableByName("height")->AsScalar();
+	m_TriangleLine_CenterX = m_TriangleLine_Effect->GetVariableByName("centerX")->AsScalar();
+	m_TriangleLine_CenterY = m_TriangleLine_Effect->GetVariableByName("centerY")->AsScalar();
+	m_TriangleLine_Scale = m_TriangleLine_Effect->GetVariableByName("scale")->AsScalar();
+	m_TriangleLine_Transparency = m_TriangleLine_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri2;
-	m_PTech_TriangleLine->GetPassByIndex(0)->GetDesc(&PassDescTri2);
+	m_TriangleLine_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri2);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6, PassDescTri2.pIAInputSignature,
-	                                  PassDescTri2.IAInputSignatureSize, &m_PLayout_TriangleLine));
+	                                  PassDescTri2.IAInputSignatureSize, &m_TriangleLine_PLayout));
 	hr = D3DX11CompileFromFile(_T("shader\\patch.fx"), NULL, NULL, NULL,
 	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
 
@@ -347,18 +378,18 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 
-	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Effect_Patch));
-	m_PTech_Patch = m_Effect_Patch->GetTechniqueByName("PointTech");
-	m_Patch_Width = m_Effect_Patch->GetVariableByName("width")->AsScalar();
-	m_Patch_Height = m_Effect_Patch->GetVariableByName("height")->AsScalar();
-	m_Patch_CenterX = m_Effect_Patch->GetVariableByName("centerX")->AsScalar();
-	m_Patch_CenterY = m_Effect_Patch->GetVariableByName("centerY")->AsScalar();
-	m_Patch_Scale = m_Effect_Patch->GetVariableByName("scale")->AsScalar();
-	m_Patch_Transparency = m_Effect_Patch->GetVariableByName("transparency")->AsScalar();
+	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Patch_Effect));
+	m_Patch_PTech = m_Patch_Effect->GetTechniqueByName("PointTech");
+	m_Patch_Width = m_Patch_Effect->GetVariableByName("width")->AsScalar();
+	m_Patch_Height = m_Patch_Effect->GetVariableByName("height")->AsScalar();
+	m_Patch_CenterX = m_Patch_Effect->GetVariableByName("centerX")->AsScalar();
+	m_Patch_CenterY = m_Patch_Effect->GetVariableByName("centerY")->AsScalar();
+	m_Patch_Scale = m_Patch_Effect->GetVariableByName("scale")->AsScalar();
+	m_Patch_Transparency = m_Patch_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri3;
-	m_PTech_Patch->GetPassByIndex(0)->GetDesc(&PassDescTri3);
+	m_Patch_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri3);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6, PassDescTri3.pIAInputSignature,
-	                                  PassDescTri3.IAInputSignatureSize, &m_PLayout_Patch));
+	                                  PassDescTri3.IAInputSignatureSize, &m_Patch_PLayout));
 	hr = D3DX11CompileFromFile(_T("shader\\bigpoint.fx"), NULL, NULL, NULL,
 	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
 
@@ -373,18 +404,18 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 
-	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Effect_Points));
-	m_PTech_Points = m_Effect_Points->GetTechniqueByName("PointTech");
-	m_Points_Width = m_Effect_Points->GetVariableByName("width")->AsScalar();
-	m_Points_Height = m_Effect_Points->GetVariableByName("height")->AsScalar();
-	m_Points_CenterX = m_Effect_Points->GetVariableByName("centerX")->AsScalar();
-	m_Points_CenterY = m_Effect_Points->GetVariableByName("centerY")->AsScalar();
-	m_Points_Scale = m_Effect_Points->GetVariableByName("scale")->AsScalar();
-	m_Points_Transparency = m_Effect_Points->GetVariableByName("transparency")->AsScalar();
+	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Points_Effect));
+	m_Points_PTech = m_Points_Effect->GetTechniqueByName("PointTech");
+	m_Points_Width = m_Points_Effect->GetVariableByName("width")->AsScalar();
+	m_Points_Height = m_Points_Effect->GetVariableByName("height")->AsScalar();
+	m_Points_CenterX = m_Points_Effect->GetVariableByName("centerX")->AsScalar();
+	m_Points_CenterY = m_Points_Effect->GetVariableByName("centerY")->AsScalar();
+	m_Points_Scale = m_Points_Effect->GetVariableByName("scale")->AsScalar();
+	m_Points_Transparency = m_Points_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri4;
-	m_PTech_Points->GetPassByIndex(0)->GetDesc(&PassDescTri4);
+	m_Points_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri4);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PointVertex, 3, PassDescTri4.pIAInputSignature,
-	                                  PassDescTri4.IAInputSignatureSize, &m_PLayout_Points));
+	                                  PassDescTri4.IAInputSignatureSize, &m_Points_PLayout));
 	m_Pics_Width->SetFloat(mClientWidth);
 	m_Pics_Height->SetFloat(mClientHeight);
 	m_Triangle_Width->SetFloat(mClientWidth);
@@ -402,7 +433,7 @@ void D3DApp::SetTexture(ID3D11ShaderResourceView* tex)
 	if (!tex) { return; }
 
 	ReleaseCOM(m_Pics_Texture);
-	m_PMap_Pics->SetResource(tex);
+	m_Pics_PMap->SetResource(tex);
 	m_Pics_Width->SetFloat(mClientWidth);
 	m_Pics_Height->SetFloat(mClientHeight);
 	m_Triangle_Width->SetFloat(mClientWidth);
@@ -418,24 +449,24 @@ void D3DApp::SetTexture(ID3D11ShaderResourceView* tex)
 
 void D3DApp::ClearTriangles()
 {
-	ReleaseCOM(m_Buffer_Triangle);
+	ReleaseCOM(m_Triangle_Buffer);
 	m_TriangleVertices.clear();
-	ReleaseCOM(m_Buffer_TriangleLine);
+	ReleaseCOM(m_TriangleLine_Buffer);
 	m_TriangleLineVertices.clear();
-	ReleaseCOM(m_Buffer_Patch);
+	ReleaseCOM(m_Patch_Buffer);
 	m_PatchVertices.clear();
-	ReleaseCOM(m_Buffer_Points);
+	ReleaseCOM(m_Points_Buffer);
 	m_PointsVertices.clear();
 }
 
 void D3DApp::BuildPoint()
 {
-	ReleaseCOM(m_Buffer_Pics);
-	ReleaseCOM(m_Buffer_Triangle);
-	ReleaseCOM(m_Buffer_TriangleLine);
-	ReleaseCOM(m_Buffer_Patch);
-	ReleaseCOM(m_Buffer_Points);
-	m_PictureVertices.clear();
+	ReleaseCOM(m_Pics_Buffer);
+	ReleaseCOM(m_Triangle_Buffer);
+	ReleaseCOM(m_TriangleLine_Buffer);
+	ReleaseCOM(m_Patch_Buffer);
+	ReleaseCOM(m_Points_Buffer);
+	m_PicsVertices.clear();
 
 	if (m_Pics_Texture)
 	{
@@ -445,16 +476,16 @@ void D3DApp::BuildPoint()
 		pv.position.z = 0;
 		pv.size.x = m_PicW;
 		pv.size.y = m_PicH;
-		m_PictureVertices.push_back(pv);
+		m_PicsVertices.push_back(pv);
 	}
 
-	if (!m_PictureVertices.empty())
+	if (!m_PicsVertices.empty())
 	{
-		m_vbd.ByteWidth = (UINT)(sizeof(PictureVertex) * m_PictureVertices.size());
+		m_vbd.ByteWidth = (UINT)(sizeof(PictureVertex) * m_PicsVertices.size());
 		m_vbd.StructureByteStride = sizeof(PictureVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
-		vinitData.pSysMem = &m_PictureVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Buffer_Pics));
+		vinitData.pSysMem = &m_PicsVertices[0];
+		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Pics_Buffer));
 	}
 
 	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
@@ -465,7 +496,7 @@ void D3DApp::BuildPoint()
 		m_vbd.StructureByteStride = sizeof(TriangleVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_TriangleVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Buffer_Triangle));
+		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Triangle_Buffer));
 	}
 
 	if (!m_TriangleLineVertices.empty())
@@ -474,7 +505,7 @@ void D3DApp::BuildPoint()
 		m_vbd.StructureByteStride = sizeof(TriangleVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_TriangleLineVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Buffer_TriangleLine));
+		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_TriangleLine_Buffer));
 	}
 
 	if (!m_PatchVertices.empty())
@@ -483,7 +514,7 @@ void D3DApp::BuildPoint()
 		m_vbd.StructureByteStride = sizeof(TriangleVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_PatchVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Buffer_Patch));
+		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Patch_Buffer));
 	}
 
 	if (!m_PointsVertices.empty())
@@ -492,7 +523,7 @@ void D3DApp::BuildPoint()
 		m_vbd.StructureByteStride = sizeof(PointVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_PointsVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Buffer_Points));
+		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Points_Buffer));
 	}
 }
 

@@ -453,9 +453,9 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.1, double kappa = 2.0)
 		{
 			for (int i = 0; i < Im.rows; ++i)
 			{
-				if (Pos2Sum(i, j) < lb)
+				if (Pos2Sum(i, j) > lb)
 				{
-					hR(i, j) = 0;
+					hR(i, j) *= 1.1;
 					vR(i, j) = 0;
 					hG(i, j) = 0;
 					vG(i, j) = 0;
