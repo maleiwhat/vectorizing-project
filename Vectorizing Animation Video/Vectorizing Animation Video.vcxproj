@@ -74,6 +74,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -229,6 +230,7 @@
     <None Include="res\writelarge.bmp" />
     <None Include="res\writesmall.bmp" />
     <None Include="shader\bigpoint.fx" />
+    <None Include="shader\Line.fx" />
     <None Include="shader\patch.fx" />
     <None Include="shader\picture.fx" />
     <None Include="shader\triangle.fx" />

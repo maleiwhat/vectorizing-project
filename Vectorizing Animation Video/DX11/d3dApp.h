@@ -32,6 +32,7 @@ public:
 	void AddTrianglesLine( Triangles& tris, float h);
 	void AddPatchTriangles( Triangles& tris, float h );
 	void AddBigPoint(float x, float y, float h, D3DXVECTOR3 color);
+	void AddLines(Lines& lines, float_vector2d& linewidths, float h);
 	void ClearPatchs();
 	void SetPatchTransparency(float t);
 	void SetSelectPatchTransparency(float t);
@@ -144,7 +145,7 @@ protected:
 	ID3DX11EffectScalarVariable*	m_Lines_CenterX;
 	ID3DX11EffectScalarVariable*	m_Lines_CenterY;
 	ID3DX11EffectScalarVariable*	m_Lines_Transparency;
-	PointVertices			m_LinesVertices;
+	LineVertices			m_LinesVertices;
 
 	D3D11_BUFFER_DESC		m_vbd;
 	DXUTUI*				m_DXUT_UI;

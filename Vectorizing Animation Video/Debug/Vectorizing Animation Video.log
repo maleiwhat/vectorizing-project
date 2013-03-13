@@ -1,424 +1,10 @@
-﻿已經開始建置於 2013/3/7 下午 07:29:09。
+﻿已經開始建置於 2013/3/8 下午 01:12:08。
      1>節點 2 (build 目標) 上的專案 "C:\Users\damody\Desktop\畢業相關\vectorizing-project\Vectorizing Animation Video\Vectorizing Animation Video.vcxproj"。
-     1>PrepareForBuild:
-         正在建立目錄 "C:\Users\damody\Desktop\畢業相關\vectorizing-project\Debug\"。
-       InitializeBuildStatus:
+     1>InitializeBuildStatus:
          由於指定了 "AlwaysCreate"，因此正在建立 "Debug\Vectorizing Animation Video.unsuccessfulbuild"。
        ClCompile:
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I. /Zi /nologo /W3 /WX- /Od /Oy- /D CGAL_NO_AUTOLINK /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"StdAfx.h" /Fp"Debug\Vectorizing Animation Video.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
-         stdafx.cpp
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I. /Zi /nologo /W3 /WX- /Od /Oy- /D CGAL_NO_AUTOLINK /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt algSpline.cpp algSpline2d.cpp CmCurveEx.cpp ColorConstraint.cpp ColorConstraintMedian.cpp ConvStr.cpp curve\BezierCurve.cpp curve\BsplineCurve.cpp curve\HSplineCurve.cpp curve\LinearLine.cpp curve\PathInterpolater.cpp CvExtenstion.cpp DX11\d3dApp.cpp DX11\DXUTUI.cpp DX11\Timer.cpp DX11\Vertex.cpp DXUT\DXUT.cpp DXUT\DXUTcamera.cpp DXUT\DXUTDevice11.cpp DXUT\DXUTDevice9.cpp DXUT\DXUTgui.cpp DXUT\DXUTguiIME.cpp DXUT\DXUTmisc.cpp DXUT\DXUTres.cpp DXUT\DXUTsettingsdlg.cpp DXUT\ImeUi.cpp DXUT\SDKmesh.cpp DXUT\SDKmisc.cpp Edge.cpp ImageSpline.cpp LineFragment.cpp math\AABB2D.cpp math\AxisAlignedBox.cpp math\Centroid.cpp math\Math.cpp math\Matrix3.cpp math\Matrix4.cpp math\Plane.cpp math\Polygon2D.cpp math\Quaternion.cpp math\Vector2.cpp math\Vector3.cpp math\Vector4.cpp Patch.cpp PatchSpline.cpp SplineFragment.cpp SplineShape.cpp TriangulationCgal_Patch.cpp TriangulationCgal_SeedPoint.cpp TriangulationCgal_Sideline.cpp vavImage.cpp
-         vavImage.cpp
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>vavImage.cpp(132): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>vavImage.cpp(132): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>vavImage.cpp(171): warning C4018: '<' : signed/unsigned 不相符
-     1>vavImage.cpp(183): warning C4018: '<' : signed/unsigned 不相符
-     1>vavImage.cpp(209): warning C4244: '引數' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>vavImage.cpp(209): warning C4244: '引數' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>vavImage.cpp(231): warning C4244: '=' : 將 'double' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-     1>vavImage.cpp(232): warning C4244: '=' : 將 'double' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-     1>vavImage.cpp(233): warning C4244: '=' : 將 'double' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-     1>vavImage.cpp(278): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>vavImage.cpp(278): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>c:\users\damody\desktop\畢業相關\vectorizing-project\vectorizing animation video\TPSInterpolate.hpp(114): warning C4390: ';' : 找到空白的控制陳述式，是正確的嗎?
-                 c:\users\damody\desktop\畢業相關\vectorizing-project\vectorizing animation video\TPSInterpolate.hpp(68) : 編譯類別 樣板 成員函式 'ThinPlateSpline<PosDim,ValDim>::ThinPlateSpline(std::vector<_Ty>,std::vector<double3>)' 時
-                 with
-                 [
-                     PosDim=2,
-                     ValDim=3,
-                     _Ty=double2
-                 ]
-                 vavImage.cpp(219) : 請參閱所要編譯的類別 樣板 具現化 'ThinPlateSpline<PosDim,ValDim>' 的參考
-                 with
-                 [
-                     PosDim=2,
-                     ValDim=3
-                 ]
-     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\memory(348): warning C4996: 'std::_Uninitialized_copy0': Function call with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
-                 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\memory(333) : 請參閱 'std::_Uninitialized_copy0' 的宣告
-                 C:\clibrary\vc10\boost_1_50_0\boost/numeric/ublas/storage.hpp(94) : 請參閱所要編譯的函式 樣板 具現化 '_FwdIt std::uninitialized_copy<const double*,double*>(_InIt,_InIt,_FwdIt)' 的參考
-                 with
-                 [
-                     _FwdIt=double *,
-                     _InIt=const double *
-                 ]
-                 C:\clibrary\vc10\boost_1_50_0\boost/numeric/ublas/storage.hpp(89) : 編譯類別 樣板 成員函式 'boost::numeric::ublas::unbounded_array<T>::unbounded_array(const boost::numeric::ublas::unbounded_array<T> &)' 時
-                 with
-                 [
-                     T=double
-                 ]
-                 C:\clibrary\vc10\boost_1_50_0\boost/numeric/ublas/matrix.hpp(100) : 請參閱所要編譯的類別 樣板 具現化 'boost::numeric::ublas::unbounded_array<T>' 的參考
-                 with
-                 [
-                     T=double
-                 ]
-                 c:\users\damody\desktop\畢業相關\vectorizing-project\vectorizing animation video\TPSInterpolate.hpp(62) : 請參閱所要編譯的類別 樣板 具現化 'boost::numeric::ublas::matrix<T>' 的參考
-                 with
-                 [
-                     T=double
-                 ]
-     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xutility(2239): warning C4996: 'std::_Copy_impl': Function call with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
-                 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xutility(2224) : 請參閱 'std::_Copy_impl' 的宣告
-                 C:\clibrary\vc10\boost_1_50_0\boost/numeric/ublas/storage.hpp(204) : 請參閱所要編譯的函式 樣板 具現化 '_OutIt std::copy<double*,double*>(_InIt,_InIt,_OutIt)' 的參考
-                 with
-                 [
-                     _OutIt=double *,
-                     _InIt=double *
-                 ]
-                 C:\clibrary\vc10\boost_1_50_0\boost/numeric/ublas/storage.hpp(201) : 編譯類別 樣板 成員函式 'boost::numeric::ublas::unbounded_array<T> &boost::numeric::ublas::unbounded_array<T>::operator =(const boost::numeric::ublas::unbounded_array<T> &)' 時
-                 with
-                 [
-                     T=double
-                 ]
-         TriangulationCgal_Sideline.cpp
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/format/alt_sstream_impl.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>TriangulationCgal_Sideline.cpp(21): warning C4018: '<' : signed/unsigned 不相符
-     1>TriangulationCgal_Sideline.cpp(27): warning C4018: '<' : signed/unsigned 不相符
-     1>TriangulationCgal_Sideline.cpp(44): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_Sideline.cpp(44): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_Sideline.cpp(45): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_Sideline.cpp(45): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_Sideline.cpp(46): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_Sideline.cpp(46): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-         TriangulationCgal_SeedPoint.cpp
-     1>C:\clibrary\vc10\CGAL4.0\src\CGAL/auto_link/CGAL.h(30): warning C4005: 'CGAL_LIB_NAME' : 巨集重複定義
-                 C:\clibrary\vc10\CGAL4.0\src\auto_link_cgal4.hpp(2) : 請參閱 'CGAL_LIB_NAME' 之前的定義
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/format/alt_sstream_impl.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>TriangulationCgal_SeedPoint.cpp(22): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_SeedPoint.cpp(22): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_SeedPoint.cpp(23): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_SeedPoint.cpp(23): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_SeedPoint.cpp(24): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_SeedPoint.cpp(24): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-         TriangulationCgal_Patch.cpp
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>C:\clibrary\vc10\boost_1_50_0\boost/format/alt_sstream_impl.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>TriangulationCgal_Patch.cpp(33): warning C4018: '<' : signed/unsigned 不相符
-     1>TriangulationCgal_Patch.cpp(39): warning C4018: '<' : signed/unsigned 不相符
-     1>TriangulationCgal_Patch.cpp(51): warning C4018: '<' : signed/unsigned 不相符
-     1>TriangulationCgal_Patch.cpp(68): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_Patch.cpp(68): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_Patch.cpp(69): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_Patch.cpp(69): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_Patch.cpp(70): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_Patch.cpp(70): warning C4244: '引數' : 將 'const double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>TriangulationCgal_Patch.cpp(73): warning C4018: '>' : signed/unsigned 不相符
-         SplineShape.cpp
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>SplineShape.cpp(27): warning C4244: '=' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>SplineShape.cpp(28): warning C4244: '=' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>SplineShape.cpp(40): warning C4244: '=' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>SplineShape.cpp(41): warning C4244: '=' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>SplineShape.cpp(48): warning C4244: '=' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>SplineShape.cpp(56): warning C4244: '=' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>SplineShape.cpp(95): warning C4018: '<' : signed/unsigned 不相符
-     1>SplineShape.cpp(125): warning C4018: '<' : signed/unsigned 不相符
-     1>SplineShape.cpp(131): warning C4244: '正在初始化' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
-         SplineFragment.cpp
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>SplineFragment.cpp(20): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>SplineFragment.cpp(20): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-         PatchSpline.cpp
-         Patch.cpp
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>Patch.cpp(9): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(9): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(46): warning C4244: '正在初始化' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(69): warning C4244: '正在初始化' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(100): warning C4018: '<' : signed/unsigned 不相符
-     1>Patch.cpp(107): warning C4018: '<' : signed/unsigned 不相符
-     1>Patch.cpp(110): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(113): warning C4018: '<' : signed/unsigned 不相符
-     1>Patch.cpp(124): warning C4018: '<' : signed/unsigned 不相符
-     1>Patch.cpp(131): warning C4018: '<' : signed/unsigned 不相符
-     1>Patch.cpp(134): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(137): warning C4018: '<' : signed/unsigned 不相符
-     1>Patch.cpp(147): warning C4018: '<' : signed/unsigned 不相符
-     1>Patch.cpp(152): warning C4018: '<' : signed/unsigned 不相符
-     1>Patch.cpp(154): warning C4018: '<' : signed/unsigned 不相符
-     1>Patch.cpp(165): warning C4244: '引數' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(165): warning C4244: '引數' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(263): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(263): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(265): warning C4018: '<' : signed/unsigned 不相符
-     1>Patch.cpp(267): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(267): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(285): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(285): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(299): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(299): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(326): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(326): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(331): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(331): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(331): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(340): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(340): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(352): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(352): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-     1>Patch.cpp(352): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-         Vector4.cpp
-         Vector3.cpp
-         Vector2.cpp
-         Quaternion.cpp
-         Polygon2D.cpp
-         Plane.cpp
-         Matrix4.cpp
-         Matrix3.cpp
-         Math.cpp
-     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\utility(163): warning C4244: '正在初始化' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
-                 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\utility(247) : 請參閱所要編譯的函式 樣板 具現化 'std::_Pair_base<_Ty1,_Ty2>::_Pair_base<_Ty,int>(_Other1 &&,_Other2 &&)' 的參考
-                 with
-                 [
-                     _Ty1=bool,
-                     _Ty2=float,
-                     _Ty=bool,
-                     _Other1=bool,
-                     _Other2=int
-                 ]
-                 math\Math.cpp(337) : 請參閱所要編譯的函式 樣板 具現化 'std::pair<_Ty1,_Ty2>::pair<bool,int>(_Other1 &&,_Other2 &&)' 的參考
-                 with
-                 [
-                     _Ty1=bool,
-                     _Ty2=float,
-                     _Other1=bool,
-                     _Other2=int
-                 ]
-         Centroid.cpp
-         AxisAlignedBox.cpp
-         AABB2D.cpp
-         正在產生程式碼...
-     1>c:\users\damody\desktop\畢業相關\vectorizing-project\vectorizing animation video\math\aabb2d.cpp(59): warning C4715: 'Collision' : 不是所有控制路徑都傳回值
-     1>c:\users\damody\desktop\畢業相關\vectorizing-project\vectorizing animation video\math\aabb2d.cpp(65): warning C4715: 'AABB2D::IsCollision' : 不是所有控制路徑都傳回值
-         正在編譯...
-         LineFragment.cpp
-     1>LineFragment.cpp(6): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>LineFragment.cpp(6): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-         ImageSpline.cpp
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>ImageSpline.cpp(30): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(32): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(39): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(47): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(47): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(78): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(78): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(121): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(126): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(141): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(150): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(167): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(179): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(186): warning C4244: '正在初始化' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>ImageSpline.cpp(187): warning C4244: '正在初始化' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>ImageSpline.cpp(253): warning C4018: '<' : signed/unsigned 不相符
-     1>ImageSpline.cpp(264): warning C4018: '<' : signed/unsigned 不相符
-         Edge.cpp
-     1>Edge.cpp(9): warning C4244: '引數' : 將 'const int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>Edge.cpp(9): warning C4244: '引數' : 將 'const int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>Edge.cpp(33): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>Edge.cpp(33): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-         SDKmisc.cpp
-         SDKmesh.cpp
-         ImeUi.cpp
-         DXUTsettingsdlg.cpp
-         DXUTres.cpp
-         DXUTmisc.cpp
-         DXUTguiIME.cpp
-         DXUTgui.cpp
-         DXUTDevice9.cpp
-         DXUTDevice11.cpp
-         DXUTcamera.cpp
-         DXUT.cpp
-         Vertex.cpp
-         Timer.cpp
-         DXUTUI.cpp
-     1>DX11\DXUTUI.cpp(75): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\DXUTUI.cpp(84): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\DXUTUI.cpp(90): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\DXUTUI.cpp(102): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\DXUTUI.cpp(124): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\DXUTUI.cpp(148): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\DXUTUI.cpp(160): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\DXUTUI.cpp(170): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\DXUTUI.cpp(200): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\DXUTUI.cpp(208): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\DXUTUI.cpp(217): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\DXUTUI.cpp(257): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\DXUTUI.cpp(267): warning C4018: '<' : signed/unsigned 不相符
+         所有輸出都是最新的。
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I. /Zi /nologo /W3 /WX- /Od /Oy- /D CGAL_NO_AUTOLINK /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt CvExtenstion.cpp DX11\Vertex.cpp DX11\d3dApp.cpp Patch.cpp vavImage.cpp
          d3dApp.cpp
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
@@ -431,55 +17,64 @@
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>DX11\d3dApp.cpp(123): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(124): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(125): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(126): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(127): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(128): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(129): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(130): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(131): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(132): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(179): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(180): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(388): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(389): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(390): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(391): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(392): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(393): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(394): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(395): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(396): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(397): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(406): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(407): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(408): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(409): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(410): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(411): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(412): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(413): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(414): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(415): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(443): warning C4244: '=' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(444): warning C4244: '=' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(446): warning C4244: '=' : 將 'int' 轉換為 'FLOAT'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(447): warning C4244: '=' : 將 'int' 轉換為 'FLOAT'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(528): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\d3dApp.cpp(537): warning C4114: 相同型別的限定詞已經使用多次
-     1>DX11\d3dApp.cpp(537): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(537): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(541): warning C4114: 相同型別的限定詞已經使用多次
-     1>DX11\d3dApp.cpp(541): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(541): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(545): warning C4114: 相同型別的限定詞已經使用多次
-     1>DX11\d3dApp.cpp(545): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(545): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>DX11\d3dApp.cpp(573): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\d3dApp.cpp(601): warning C4018: '<' : signed/unsigned 不相符
-     1>DX11\d3dApp.cpp(633): warning C4018: '<' : signed/unsigned 不相符
+     1>DX11\d3dApp.cpp(166): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(167): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(168): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(169): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(170): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(171): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(172): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(173): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(174): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(175): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(176): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(177): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(224): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(225): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(473): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(474): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(475): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(476): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(477): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(478): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(479): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(480): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(481): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(482): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(483): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(484): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(493): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(494): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(495): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(496): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(497): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(498): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(499): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(500): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(501): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(502): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(503): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(504): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(535): warning C4244: '=' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(536): warning C4244: '=' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(538): warning C4244: '=' : 將 'int' 轉換為 'FLOAT'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(539): warning C4244: '=' : 將 'int' 轉換為 'FLOAT'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(629): warning C4018: '<' : signed/unsigned 不相符
+     1>DX11\d3dApp.cpp(638): warning C4114: 相同型別的限定詞已經使用多次
+     1>DX11\d3dApp.cpp(638): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(638): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(642): warning C4114: 相同型別的限定詞已經使用多次
+     1>DX11\d3dApp.cpp(642): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(642): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(646): warning C4114: 相同型別的限定詞已經使用多次
+     1>DX11\d3dApp.cpp(646): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(646): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>DX11\d3dApp.cpp(674): warning C4018: '<' : signed/unsigned 不相符
+     1>DX11\d3dApp.cpp(702): warning C4018: '<' : signed/unsigned 不相符
+     1>DX11\d3dApp.cpp(734): warning C4018: '<' : signed/unsigned 不相符
+     1>DX11\d3dApp.cpp(884): warning C4018: '<' : signed/unsigned 不相符
+     1>DX11\d3dApp.cpp(895): warning C4018: '<' : signed/unsigned 不相符
+         Vertex.cpp
          CvExtenstion.cpp
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
@@ -625,54 +220,66 @@
      1>CvExtenstion.cpp(1395): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
      1>CvExtenstion.cpp(1467): warning C4018: '<' : signed/unsigned 不相符
      1>CvExtenstion.cpp(1498): warning C4018: '<' : signed/unsigned 不相符
-     1>CvExtenstion.cpp(1841): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(1841): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(1845): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(1845): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(1911): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(1911): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(1917): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(1917): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(1928): warning C4018: '<' : signed/unsigned 不相符
-     1>CvExtenstion.cpp(1941): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(1941): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(1947): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(1947): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(1958): warning C4018: '<' : signed/unsigned 不相符
-     1>CvExtenstion.cpp(2322): warning C4018: '<' : signed/unsigned 不相符
-     1>CvExtenstion.cpp(2334): warning C4018: '<' : signed/unsigned 不相符
-     1>CvExtenstion.cpp(2438): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(2438): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(2711): warning C4244: 'return' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(2716): warning C4244: 'return' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(2789): warning C4305: '=' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
-     1>CvExtenstion.cpp(2858): warning C4244: '正在初始化' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(2892): warning C4305: '=' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
-     1>CvExtenstion.cpp(2910): warning C4305: '*=' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
+     1>CvExtenstion.cpp(1839): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1839): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1843): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1843): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1909): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1909): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1915): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1915): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1926): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(1939): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1939): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1945): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1945): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(1956): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2320): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2332): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2436): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2436): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2709): warning C4244: 'return' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2714): warning C4244: 'return' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2786): warning C4305: '=' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
+     1>CvExtenstion.cpp(2855): warning C4244: '正在初始化' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2889): warning C4305: '=' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
+     1>CvExtenstion.cpp(2909): warning C4305: '*=' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
      1>CvExtenstion.cpp(2947): warning C4018: '<' : signed/unsigned 不相符
-     1>CvExtenstion.cpp(2954): warning C4018: '<' : signed/unsigned 不相符
-     1>CvExtenstion.cpp(2956): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(2956): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(2980): warning C4018: '<' : signed/unsigned 不相符
-     1>CvExtenstion.cpp(2989): warning C4018: '<' : signed/unsigned 不相符
-     1>CvExtenstion.cpp(2991): warning C4244: '=' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(2996): warning C4018: '<' : signed/unsigned 不相符
-     1>CvExtenstion.cpp(3000): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(3000): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(3001): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(3001): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(3002): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
-     1>CvExtenstion.cpp(3031): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2978): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2985): warning C4018: '<' : signed/unsigned 不相符
+     1>CvExtenstion.cpp(2987): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>CvExtenstion.cpp(2987): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
          正在產生程式碼...
-     1>c:\users\damody\desktop\畢業相關\vectorizing-project\vectorizing animation video\dx11\dxutui.cpp(213): warning C4715: 'DXUTUI::GetCurrencyUI' : 不是所有控制路徑都傳回值
          正在編譯...
-         PathInterpolater.cpp
-         LinearLine.cpp
-         HSplineCurve.cpp
-         BsplineCurve.cpp
-         BezierCurve.cpp
-         ConvStr.cpp
-         ColorConstraintMedian.cpp
+         vavImage.cpp
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+     1>C:\clibrary\vc10\boost_1_50_0\boost/type_traits/detail/has_binary_operator.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
@@ -684,11 +291,68 @@
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>ColorConstraintMedian.cpp(5): warning C4244: 'return' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>ColorConstraintMedian.cpp(47): warning C4244: '=' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-     1>ColorConstraintMedian.cpp(48): warning C4244: '=' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-     1>ColorConstraintMedian.cpp(49): warning C4244: '=' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-         ColorConstraint.cpp
+     1>vavImage.cpp(132): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(132): warning C4244: '引數' : 將 'int' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(171): warning C4018: '<' : signed/unsigned 不相符
+     1>vavImage.cpp(183): warning C4018: '<' : signed/unsigned 不相符
+     1>vavImage.cpp(209): warning C4244: '引數' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(209): warning C4244: '引數' : 將 'const float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(231): warning C4244: '=' : 將 'double' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(232): warning C4244: '=' : 將 'double' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(233): warning C4244: '=' : 將 'double' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(278): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>vavImage.cpp(278): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>c:\users\damody\desktop\畢業相關\vectorizing-project\vectorizing animation video\TPSInterpolate.hpp(114): warning C4390: ';' : 找到空白的控制陳述式，是正確的嗎?
+                 c:\users\damody\desktop\畢業相關\vectorizing-project\vectorizing animation video\TPSInterpolate.hpp(68) : 編譯類別 樣板 成員函式 'ThinPlateSpline<PosDim,ValDim>::ThinPlateSpline(std::vector<_Ty>,std::vector<double3>)' 時
+                 with
+                 [
+                     PosDim=2,
+                     ValDim=3,
+                     _Ty=double2
+                 ]
+                 vavImage.cpp(219) : 請參閱所要編譯的類別 樣板 具現化 'ThinPlateSpline<PosDim,ValDim>' 的參考
+                 with
+                 [
+                     PosDim=2,
+                     ValDim=3
+                 ]
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\memory(348): warning C4996: 'std::_Uninitialized_copy0': Function call with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
+                 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\memory(333) : 請參閱 'std::_Uninitialized_copy0' 的宣告
+                 C:\clibrary\vc10\boost_1_50_0\boost/numeric/ublas/storage.hpp(94) : 請參閱所要編譯的函式 樣板 具現化 '_FwdIt std::uninitialized_copy<const double*,double*>(_InIt,_InIt,_FwdIt)' 的參考
+                 with
+                 [
+                     _FwdIt=double *,
+                     _InIt=const double *
+                 ]
+                 C:\clibrary\vc10\boost_1_50_0\boost/numeric/ublas/storage.hpp(89) : 編譯類別 樣板 成員函式 'boost::numeric::ublas::unbounded_array<T>::unbounded_array(const boost::numeric::ublas::unbounded_array<T> &)' 時
+                 with
+                 [
+                     T=double
+                 ]
+                 C:\clibrary\vc10\boost_1_50_0\boost/numeric/ublas/matrix.hpp(100) : 請參閱所要編譯的類別 樣板 具現化 'boost::numeric::ublas::unbounded_array<T>' 的參考
+                 with
+                 [
+                     T=double
+                 ]
+                 c:\users\damody\desktop\畢業相關\vectorizing-project\vectorizing animation video\TPSInterpolate.hpp(62) : 請參閱所要編譯的類別 樣板 具現化 'boost::numeric::ublas::matrix<T>' 的參考
+                 with
+                 [
+                     T=double
+                 ]
+     1>c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xutility(2239): warning C4996: 'std::_Copy_impl': Function call with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
+                 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xutility(2224) : 請參閱 'std::_Copy_impl' 的宣告
+                 C:\clibrary\vc10\boost_1_50_0\boost/numeric/ublas/storage.hpp(204) : 請參閱所要編譯的函式 樣板 具現化 '_OutIt std::copy<double*,double*>(_InIt,_InIt,_OutIt)' 的參考
+                 with
+                 [
+                     _OutIt=double *,
+                     _InIt=double *
+                 ]
+                 C:\clibrary\vc10\boost_1_50_0\boost/numeric/ublas/storage.hpp(201) : 編譯類別 樣板 成員函式 'boost::numeric::ublas::unbounded_array<T> &boost::numeric::ublas::unbounded_array<T>::operator =(const boost::numeric::ublas::unbounded_array<T> &)' 時
+                 with
+                 [
+                     T=double
+                 ]
+         Patch.cpp
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
@@ -700,55 +364,44 @@
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>ColorConstraint.cpp(20): warning C4244: '=' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>ColorConstraint.cpp(21): warning C4244: '=' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>ColorConstraint.cpp(22): warning C4244: '=' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>ColorConstraint.cpp(29): warning C4244: '=' : 將 'double' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-     1>ColorConstraint.cpp(30): warning C4244: '=' : 將 'double' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-     1>ColorConstraint.cpp(31): warning C4244: '=' : 將 'double' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
-         CmCurveEx.cpp
-         algSpline2d.cpp
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-         algSpline.cpp
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>algSpline.cpp(80): warning C4018: '<' : signed/unsigned 不相符
-     1>algSpline.cpp(101): warning C4018: '<' : signed/unsigned 不相符
-     1>algSpline.cpp(107): warning C4244: '正在初始化' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(9): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(9): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(46): warning C4244: '正在初始化' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(69): warning C4244: '正在初始化' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(100): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(107): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(110): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(113): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(124): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(131): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(134): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(137): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(147): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(152): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(154): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(165): warning C4244: '引數' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(165): warning C4244: '引數' : 將 'double' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(263): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(263): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(265): warning C4018: '<' : signed/unsigned 不相符
+     1>Patch.cpp(267): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(267): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(285): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(285): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(299): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(299): warning C4244: '引數' : 將 'double' 轉換為 'const float'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(326): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(326): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(331): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(331): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(331): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(340): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(340): warning C4244: '引數' : 將 'float' 轉換為 'int'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(352): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(352): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
+     1>Patch.cpp(352): warning C4244: '引數' : 將 'float' 轉換為 'uchar'，由於型別不同，可能導致資料遺失
          正在產生程式碼...
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I. /Zi /nologo /W3 /WX- /Od /Oy- /D CGAL_NO_AUTOLINK /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\Vectorizing Animation Video.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ClassView.cpp FileView.cpp OutputWnd.cpp PropertiesWnd.cpp VAV_Doc.cpp VAV_MainFrm.cpp VAV_View.cpp VAV_App.cpp ViewTree.cpp
-         ViewTree.cpp
-         VAV_App.cpp
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I. /Zi /nologo /W3 /WX- /Od /Oy- /D CGAL_NO_AUTOLINK /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\Vectorizing Animation Video.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt VAV_App.cpp VAV_MainFrm.cpp VAV_View.cpp
          VAV_View.cpp
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
@@ -834,61 +487,24 @@
      1>VAV_MainFrm.cpp(473): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
      1>VAV_MainFrm.cpp(513): warning C4305: '引數' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
      1>VAV_MainFrm.cpp(513): warning C4305: '引數' : 從 'double' 轉換為 'float'，是由較大的型別轉換為較小的型別，可能導致資料遺失
-     1>VAV_MainFrm.cpp(558): warning C4018: '<' : signed/unsigned 不相符
-     1>VAV_MainFrm.cpp(571): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>VAV_MainFrm.cpp(573): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>VAV_MainFrm.cpp(574): warning C4018: '<' : signed/unsigned 不相符
-     1>VAV_MainFrm.cpp(581): warning C4018: '<' : signed/unsigned 不相符
-     1>VAV_MainFrm.cpp(584): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>VAV_MainFrm.cpp(584): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>VAV_MainFrm.cpp(584): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>VAV_MainFrm.cpp(625): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>VAV_MainFrm.cpp(640): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>VAV_MainFrm.cpp(647): warning C4018: '<' : signed/unsigned 不相符
-     1>VAV_MainFrm.cpp(675): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>VAV_MainFrm.cpp(690): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>VAV_MainFrm.cpp(705): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>VAV_MainFrm.cpp(719): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>VAV_MainFrm.cpp(734): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-     1>VAV_MainFrm.cpp(749): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
-         VAV_Doc.cpp
-         PropertiesWnd.cpp
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-         OutputWnd.cpp
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-         FileView.cpp
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\integration.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-     1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
-         ClassView.cpp
+     1>VAV_MainFrm.cpp(561): warning C4018: '<' : signed/unsigned 不相符
+     1>VAV_MainFrm.cpp(574): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(576): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(577): warning C4018: '<' : signed/unsigned 不相符
+     1>VAV_MainFrm.cpp(584): warning C4018: '<' : signed/unsigned 不相符
+     1>VAV_MainFrm.cpp(587): warning C4244: '引數' : 將 'int' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(587): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(587): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(628): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(643): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(650): warning C4018: '<' : signed/unsigned 不相符
+     1>VAV_MainFrm.cpp(678): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(693): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(708): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(722): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(737): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+     1>VAV_MainFrm.cpp(752): warning C4244: '引數' : 將 'double' 轉換為 'float'，由於型別不同，可能導致資料遺失
+         VAV_App.cpp
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(4045): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
      1>c:\clibrary\vc10\alglib-3.6.0\src\linalg.h(2771): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
@@ -902,9 +518,9 @@
      1>c:\clibrary\vc10\alglib-3.6.0\src\specialfunctions.h(865): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
          正在產生程式碼...
        ResourceCompile:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D _DEBUG /D _UNICODE /D UNICODE /l"0x0404" /IDebug\ /nologo /fo"Debug\Vectorizing Animation Video.res" "Vectorizing Animation Video.rc" 
+         所有輸出都是最新的。
        ManifestResourceCompile:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"Debug\Vectorizing Animation Video.exe.embed.manifest.res" "Debug\Vectorizing Animation Video_manifest.rc" 
+         所有輸出都是最新的。
        Link:
          c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\damody\Desktop\畢業相關\vectorizing-project\Debug\Vectorizing Animation Video.exe" /INCREMENTAL /NOLOGO uafxcwd.lib D3DX11Effectsd2010.lib d3d11.lib d3dx11.lib d3d9.lib d3dx9.lib DxErr.lib dinput8.lib d3dcompiler.lib dxguid.lib d3dxof.lib winmm.lib odbc32.lib odbccp32.lib dwrite.lib D2d1.lib imm32.lib Version.lib comctl32.lib dsound.lib /NODEFAULTLIB:msvcrtd.lib /NODEFAULTLIB:"libCGAL-vc100-mt-sgd-4.0.lib" /MANIFEST /ManifestFile:"Debug\Vectorizing Animation Video.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\damody\Desktop\畢業相關\vectorizing-project\Debug\Vectorizing Animation Video.pdb" /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\damody\Desktop\畢業相關\vectorizing-project\Debug\Vectorizing Animation Video.lib" /MACHINE:X86 "Debug\Vectorizing Animation Video.res"
          "Debug\Vectorizing Animation Video.exe.embed.manifest.res"
@@ -1037,4 +653,4 @@
 
 建置成功。
 
-經過時間 00:02:06.96
+經過時間 00:00:42.52

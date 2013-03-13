@@ -5854,7 +5854,7 @@ HRESULT DXUTSnapDeviceSettingsToEnumDevice( DXUTDeviceSettings* pDeviceSettings,
         if (pDeviceSettings->d3d9.pp.MultiSampleQuality > pBestDeviceSettingsCombo->multiSampleQualityList.GetAt(bestMSAAIndex) - 1)
             pDeviceSettings->d3d9.pp.MultiSampleQuality = pBestDeviceSettingsCombo->multiSampleQualityList.GetAt( bestMSAAIndex )-1;
         
-        pDeviceSettings->d3d9.pp.MultiSampleType = pBestDeviceSettingsCombo->multiSampleTypeList.GetAt( bestMSAAIndex );;
+        pDeviceSettings->d3d9.pp.MultiSampleType = pBestDeviceSettingsCombo->multiSampleTypeList.GetAt( bestMSAAIndex );
         pDeviceSettings->d3d9.pp.Windowed = pBestDeviceSettingsCombo->Windowed;
         return S_OK;
     }

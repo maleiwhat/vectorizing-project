@@ -36,8 +36,21 @@ struct PointVertex
 };
 typedef std::vector<PointVertex> PointVertices;
 
+//Picture Vertex format
+struct LineVertex
+{
+	D3DXVECTOR2 p1;
+	D3DXVECTOR2 p2;
+	D3DXVECTOR2 p3;
+	D3DXVECTOR2 p4;
+	D3DXVECTOR2 width;
+	D3DXVECTOR3 color;
+};
+typedef std::vector<LineVertex> LineVertices;
+
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_PointVertex[];
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_PICVertex[];
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_TRIVertex[];
+extern D3D11_INPUT_ELEMENT_DESC VertexDesc_LineVertex[];
 
 #endif // VERTEX_H

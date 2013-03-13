@@ -13,7 +13,7 @@ D3DApp::D3DApp()
 	m_RenderTargetView = NULL;
 	m_DepthStencilView = NULL;
 	m_DeviceContext = NULL;
-
+	m_Pics_Texture = NULL;
 	m_Pics_Buffer = NULL;
 	m_Pics_Effect = NULL;
 	m_Pics_PTech = NULL;
@@ -24,7 +24,6 @@ D3DApp::D3DApp()
 	m_Pics_CenterX = NULL;
 	m_Pics_CenterY = NULL;
 	m_Pics_Transparency = NULL;
-
 	m_Triangle_Buffer = NULL;
 	m_Triangle_Effect = NULL;
 	m_Triangle_PTech = NULL;
@@ -35,7 +34,16 @@ D3DApp::D3DApp()
 	m_Triangle_CenterX = NULL;
 	m_Triangle_CenterY = NULL;
 	m_Triangle_Transparency = NULL;
-
+	m_TriangleLine_Buffer = NULL;
+	m_TriangleLine_Effect = NULL;
+	m_TriangleLine_PTech = NULL;
+	m_TriangleLine_PLayout = NULL;
+	m_TriangleLine_Width = NULL;
+	m_TriangleLine_Height = NULL;
+	m_TriangleLine_Scale = NULL;
+	m_TriangleLine_CenterX = NULL;
+	m_TriangleLine_CenterY = NULL;
+	m_TriangleLine_Transparency = NULL;
 	m_Patch_Buffer = NULL;
 	m_Patch_Effect = NULL;
 	m_Patch_PTech = NULL;
@@ -46,7 +54,6 @@ D3DApp::D3DApp()
 	m_Patch_CenterX = NULL;
 	m_Patch_CenterY = NULL;
 	m_Patch_Transparency = NULL;
-
 	m_Points_Buffer = NULL;
 	m_Points_Effect = NULL;
 	m_Points_PTech = NULL;
@@ -57,7 +64,6 @@ D3DApp::D3DApp()
 	m_Points_CenterX = NULL;
 	m_Points_CenterY = NULL;
 	m_Points_Transparency = NULL;
-	
 	m_Lines_Buffer = NULL;
 	m_Lines_Effect = NULL;
 	m_Lines_PTech = NULL;
@@ -68,7 +74,6 @@ D3DApp::D3DApp()
 	m_Lines_CenterX = NULL;
 	m_Lines_CenterY = NULL;
 	m_Lines_Transparency = NULL;
-
 	m_PicW = 0;
 	m_PicH = 0;
 	m_hAppInst   = GetModuleHandle(NULL);
@@ -161,6 +166,8 @@ void D3DApp::OnResize(int w, int h)
 		m_Patch_Height->SetFloat(mClientHeight);
 		m_Points_Width->SetFloat(mClientWidth);
 		m_Points_Height->SetFloat(mClientHeight);
+		m_Lines_Width->SetFloat(mClientWidth);
+		m_Lines_Height->SetFloat(mClientHeight);
 	}
 
 	// Release the old views, as they hold references to the buffers we
@@ -273,6 +280,18 @@ void D3DApp::DrawScene()
 		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Points_Buffer, &stride2, &offset);
 		m_Points_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
 		m_DeviceContext->Draw((UINT)m_PointsVertices.size(), 0);
+	}
+
+	if (m_LinesVertices.size() > 0)
+	{
+		m_Lines_Transparency->SetFloat(0.8);
+		UINT offset = 0;
+		UINT stride2 = sizeof(LineVertex);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		m_DeviceContext->IASetInputLayout(m_Lines_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Lines_Buffer, &stride2, &offset);
+		m_Lines_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw((UINT)m_LinesVertices.size(), 0);
 	}
 
 	m_SwapChain->Present(0, 0);
@@ -416,6 +435,32 @@ void D3DApp::BuildShaderFX()
 	m_Points_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri4);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PointVertex, 3, PassDescTri4.pIAInputSignature,
 	                                  PassDescTri4.IAInputSignatureSize, &m_Points_PLayout));
+	hr = D3DX11CompileFromFile(_T("shader\\Line.fx"), NULL, NULL, NULL,
+	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
+
+	if (FAILED(hr))
+	{
+		if (pError)
+		{
+			MessageBoxA(0, (char*)pError->GetBufferPointer(), 0, 0);
+			ReleaseCOM(pError);
+		}
+
+		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
+	}
+
+	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Lines_Effect));
+	m_Lines_PTech = m_Lines_Effect->GetTechniqueByName("PointTech");
+	m_Lines_Width = m_Lines_Effect->GetVariableByName("width")->AsScalar();
+	m_Lines_Height = m_Lines_Effect->GetVariableByName("height")->AsScalar();
+	m_Lines_CenterX = m_Lines_Effect->GetVariableByName("centerX")->AsScalar();
+	m_Lines_CenterY = m_Lines_Effect->GetVariableByName("centerY")->AsScalar();
+	m_Lines_Scale = m_Lines_Effect->GetVariableByName("scale")->AsScalar();
+	m_Lines_Transparency = m_Lines_Effect->GetVariableByName("transparency")->AsScalar();
+	D3DX11_PASS_DESC PassDescTri5;
+	m_Lines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri5);
+	HR(m_d3dDevice->CreateInputLayout(VertexDesc_LineVertex, 6, PassDescTri5.pIAInputSignature,
+	                                  PassDescTri5.IAInputSignatureSize, &m_Lines_PLayout));
 	m_Pics_Width->SetFloat(mClientWidth);
 	m_Pics_Height->SetFloat(mClientHeight);
 	m_Triangle_Width->SetFloat(mClientWidth);
@@ -426,6 +471,8 @@ void D3DApp::BuildShaderFX()
 	m_Patch_Height->SetFloat(mClientHeight);
 	m_Points_Width->SetFloat(mClientWidth);
 	m_Points_Height->SetFloat(mClientHeight);
+	m_Lines_Width->SetFloat(mClientWidth);
+	m_Lines_Height->SetFloat(mClientHeight);
 }
 
 void D3DApp::SetTexture(ID3D11ShaderResourceView* tex)
@@ -444,6 +491,8 @@ void D3DApp::SetTexture(ID3D11ShaderResourceView* tex)
 	m_Patch_Height->SetFloat(mClientHeight);
 	m_Points_Width->SetFloat(mClientWidth);
 	m_Points_Height->SetFloat(mClientHeight);
+	m_Lines_Width->SetFloat(mClientWidth);
+	m_Lines_Height->SetFloat(mClientHeight);
 	m_Pics_Texture = tex;
 }
 
@@ -457,6 +506,8 @@ void D3DApp::ClearTriangles()
 	m_PatchVertices.clear();
 	ReleaseCOM(m_Points_Buffer);
 	m_PointsVertices.clear();
+	ReleaseCOM(m_Lines_Buffer);
+	m_LinesVertices.clear();
 }
 
 void D3DApp::BuildPoint()
@@ -466,6 +517,7 @@ void D3DApp::BuildPoint()
 	ReleaseCOM(m_TriangleLine_Buffer);
 	ReleaseCOM(m_Patch_Buffer);
 	ReleaseCOM(m_Points_Buffer);
+	ReleaseCOM(m_Lines_Buffer);
 	m_PicsVertices.clear();
 
 	if (m_Pics_Texture)
@@ -524,6 +576,15 @@ void D3DApp::BuildPoint()
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_PointsVertices[0];
 		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Points_Buffer));
+	}
+
+	if (!m_LinesVertices.empty())
+	{
+		m_vbd.ByteWidth = (UINT)(sizeof(LineVertex) * m_LinesVertices.size());
+		m_vbd.StructureByteStride = sizeof(LineVertex);
+		D3D11_SUBRESOURCE_DATA vinitData;
+		vinitData.pSysMem = &m_LinesVertices[0];
+		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Lines_Buffer));
 	}
 }
 
@@ -757,6 +818,8 @@ void D3DApp::SetLookCenter(float x, float y)
 	m_Patch_CenterY->SetFloat(y);
 	m_Points_CenterX->SetFloat(x);
 	m_Points_CenterY->SetFloat(y);
+	m_Lines_CenterX->SetFloat(x);
+	m_Lines_CenterY->SetFloat(y);
 	BuildPoint();
 	DrawScene();
 }
@@ -768,6 +831,7 @@ void D3DApp::SetScale(float s)
 	m_TriangleLine_Scale->SetFloat(s);
 	m_Patch_Scale->SetFloat(s);
 	m_Points_Scale->SetFloat(s);
+	m_Lines_Scale->SetFloat(s);
 }
 
 void D3DApp::ClearPatchs()
@@ -806,4 +870,68 @@ void D3DApp::AddBigPoint(float x, float y, float h, D3DXVECTOR3 color)
 	m_PointsVertices.push_back(pv);
 }
 
+void D3DApp::AddLines(Lines& lines, float_vector2d& linewidths, float h)
+{
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		Line& now_line = lines[i];
+
+		if (now_line.size() < 3)
+		{
+			continue;
+		}
+
+		float_vector& now_linewidth = linewidths[i];
+		float r, g, b;
+		r = (rand() % 155 + 100) / 255.0f;
+		g = (rand() % 155 + 100) / 255.0f;
+		b = (rand() % 155 + 100) / 255.0f;
+		LineVertex lv;
+		lv.color.x = r;
+		lv.color.y = g;
+		lv.color.z = b;
+		lv.p1.x = now_line[0].x;
+		lv.p1.y = h - now_line[0].y;
+		lv.p2.x = now_line[0].x;
+		lv.p2.y = h - now_line[0].y;
+		lv.p3.x = now_line[1].x;
+		lv.p3.y = h - now_line[1].y;
+		lv.p4.x = now_line[2].x;
+		lv.p4.y = h - now_line[2].y;
+		lv.width.x = now_linewidth[0] + 2;
+		lv.width.y = now_linewidth[1] + 2;
+		m_LinesVertices.push_back(lv);
+
+		for (int j = 1; j < now_line.size() - 2; ++j)
+		{
+			LineVertex lv;
+			lv.color.x = r;
+			lv.color.y = g;
+			lv.color.z = b;
+			lv.p1.x = now_line[j - 1].x;
+			lv.p1.y = h - now_line[j - 1].y;
+			lv.p2.x = now_line[j].x;
+			lv.p2.y = h - now_line[j].y;
+			lv.p3.x = now_line[j + 1].x;
+			lv.p3.y = h - now_line[j + 1].y;
+			lv.p4.x = now_line[j + 2].x;
+			lv.p4.y = h - now_line[j + 2].y;
+			lv.width.x = now_linewidth[j] + 2;
+			lv.width.y = now_linewidth[j + 1] + 2;
+			m_LinesVertices.push_back(lv);
+		}
+
+		lv.p1.x = now_line[now_line.size() - 3].x;
+		lv.p1.y = h - now_line[now_line.size() - 3].y;
+		lv.p2.x = now_line[now_line.size() - 2].x;
+		lv.p2.y = h - now_line[now_line.size() - 2].y;
+		lv.p3.x = now_line[now_line.size() - 1].x;
+		lv.p3.y = h - now_line[now_line.size() - 1].y;
+		lv.p4.x = now_line[now_line.size() - 1].x;
+		lv.p4.y = h - now_line[now_line.size() - 1].y;
+		lv.width.x = now_linewidth[0] + 2;
+		lv.width.y = now_linewidth[1] + 2;
+		m_LinesVertices.push_back(lv);
+	}
+}
 

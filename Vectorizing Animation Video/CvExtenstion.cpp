@@ -1272,7 +1272,7 @@ CvPatchs S2GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
 	mask = cv::Scalar::all(0);
 	CvPatchs cvps;
-	
+
 	for (int i = 1; i < image.rows - 1; i++)
 	{
 		for (int j = 1; j < image.cols - 1; j++)
@@ -1531,14 +1531,11 @@ void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2)
 	cv::waitKey();
 }
 
-
 ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 {
 	assert(image0.type() == CV_8UC3);
-	cv::Mat img1u, cImg2;
+	cv::Mat img1u, img2u, cImg2;
 	cImg2 = image0.clone();
-	cImg2.convertTo(img1u, CV_32FC3);
-	Collect_Water(img1u, img1u, 5, 5);
 	cvtColor(image0, img1u, CV_BGR2GRAY);
 	cv::Mat srcImg1f, show3u = cv::Mat::zeros(img1u.size(), CV_8UC3);
 	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
@@ -2759,7 +2756,6 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 {
 	cv::Mat MaxCapacity, MaxCapacity2, WaterMap, RealMap, ThresholdMap;
 	Vec3fptrs ary(rectw * recth);
-	dst = src.clone();
 	MaxCapacity.create(src.rows, src.cols, CV_32F);
 	WaterMap.create(src.rows, src.cols, CV_32F);
 	RealMap.create(src.rows, src.cols, CV_32F);
@@ -2898,6 +2894,7 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 
 	normalize(MaxCapacity, MaxCapacity, 0, 1, cv::NORM_MINMAX);
 	float sum = 0;
+
 	for (int r = 0; r < MaxCapacity.rows; r++)
 	{
 		for (int c = 0; c < MaxCapacity.cols; c++)
@@ -2906,10 +2903,11 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 			sum += s;
 		}
 	}
+
 	sum = sum / MaxCapacity.rows / MaxCapacity.cols;
 	sum *= 1.2;
 	std::cout << "sum: " << sum << std::endl;
-	
+
 	for (int r = 0; r < MaxCapacity.rows; r++)
 	{
 		for (int c = 0; c < MaxCapacity.cols; c++)
@@ -2928,21 +2926,53 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 		}
 	}
 
-	cv::Mat skeleton;
 	imshow("MaxCapacity", MaxCapacity);
 	imshow("MaxCapacity2", MaxCapacity2);
 	FillSmallHole(MaxCapacity2);
-	MaxCapacity2.convertTo(skeleton, CV_8U, 1);
-	cvThin(skeleton, skeleton, 5);
+	dst = MaxCapacity2.clone();
+}
+
+void FillSmallHole(cv::Mat& patchImage)
+{
+	cv::Mat mask, image, Der2;
+	patchImage.convertTo(image, CV_8UC1);
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	Der2 = mask.clone();
+	std::vector<cv::Vec4i> hierarchy;
+	std::vector<std::vector<cv::Point>> contours;
+	findContours(image, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+
+	for (int i = 0; i < contours.size(); i++)
+	{
+		double tarea = cv::contourArea(contours[i]);
+
+		if (tarea < 15)
+		{
+			cv::Scalar color = cv::Scalar(1);
+			drawContours(patchImage, contours, i, color, -1);
+		}
+	}
+
+	imshow("Contours", patchImage);
+	cv::waitKey();
+}
+
+void GetSkeletonLine(cv::Mat bmap, Lines& lines, float_vector2d& linewidths)
+{
+	int rectw = 5, recth = 5;
+	floatptrs aryr(rectw * recth);
+	cv::Mat skeleton;
+	bmap.convertTo(skeleton, CV_8U, 1);
+	cvThin(skeleton, skeleton, 10);
 	normalize(skeleton, skeleton, 0, 255, cv::NORM_MINMAX);
 	imshow("skeleton", skeleton);
-	cv::waitKey();
-	
-	Lines lines = ComputeEdgeLine2(skeleton);
+	lines = ComputeEdgeLine2(skeleton);
 	cv::RNG rng(12345);
 	cv::Mat drawing = cv::Mat::zeros(skeleton.size(), CV_8UC3),
-	        show3u3 = cv::Mat::zeros(skeleton.size() * 2, CV_8UC3);;
-	float_vector2d linewidths(lines.size());
+	        show3u3 = cv::Mat::zeros(skeleton.size() * 2, CV_8UC3);
+	float_vector2d().swap(linewidths);
+	linewidths.resize(lines.size());
 
 	for (int i = 0; i < lines.size(); ++i)
 	{
@@ -2953,8 +2983,8 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 
 		for (int j = 0; j < now_line.size(); ++j)
 		{
-			GetMatrixf(rectw, recth, aryr, now_line[j].x, now_line[j].y, MaxCapacity2);
-			float minwidth = 5;
+			GetMatrixf(rectw, recth, aryr, now_line[j].x, now_line[j].y, bmap);
+			float minwidth = 2;
 
 			for (int k = 0; k < recth * rectw; ++k)
 			{
@@ -2976,10 +3006,55 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 			now_linewidth[j] = minwidth;
 		}
 	}
+}
 
+void ComputeLines(cv::Mat img, Lines& lines, float_vector2d& linewidths)
+{
+	cv::Mat img1u;
+	img.convertTo(img1u, CV_32FC3);
+	Collect_Water(img1u, img1u, 5, 5);
+	GetSkeletonLine(img1u, lines, linewidths);
+
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		Line& now_line = lines[i];
+
+		if (now_line.size() < 4)
+		{
+			continue;
+		}
+
+		float_vector& now_linewidth = linewidths[i];
+
+		for (int j = 1; j < now_line.size() - 1; j += 1)
+		{
+			now_linewidth.erase(now_linewidth.begin() + j);
+			now_line.erase(now_line.begin() + j);
+		}
+	}
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		Line& now_line = lines[i];
+
+		if (now_line.size() < 4)
+		{
+			continue;
+		}
+
+		float_vector& now_linewidth = linewidths[i];
+
+		for (int j = 1; j < now_line.size() - 1; j += 1)
+		{
+			now_linewidth.erase(now_linewidth.begin() + j);
+			now_line.erase(now_line.begin() + j);
+		}
+	}
+	cv::Mat drawing = cv::Mat::zeros(img.size(), CV_8UC3),
+		show3u3 = cv::Mat::zeros(img.size(), CV_8UC3);;
+	cv::RNG rng(12345);
 	for (int i = 0; i < linewidths.size(); ++i)
 	{
-		cv::Vec3b color(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+		cv::Vec3b color(rng.uniform(100, 255), rng.uniform(100, 255), rng.uniform(100, 255));
 		Line& now_line = lines[i];
 		float_vector& now_linewidth = linewidths[i];
 		if (now_linewidth.size() > 5)
@@ -2992,54 +3067,18 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 			}
 			now_linewidth = new_linewidth;	
 		}
-		
+
 		for (int j = 0; j < now_linewidth.size(); ++j)
 		{
 			if (j != 0)
 			{
 				cv::Point p1(now_line[j - 1].x, now_line[j - 1].y);
 				cv::Point p2(now_line[j].x, now_line[j].y);
-				line(show3u3, p1 * 2, p2 * 2, cv::Scalar(color), now_linewidth[j], 8, 0);
+				line(show3u3, p1, p2, cv::Scalar(color), 1, 8, 0);
 			}
 		}
 	}
 
 	imshow("drawing", show3u3);
-	cv::waitKey();
-	dst = MaxCapacity2;
-}
-
-void FillSmallHole(cv::Mat& patchImage)
-{
-	cv::Mat mask, image, Der2;
-	patchImage.convertTo(image, CV_8UC1);
-	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
-	mask = cv::Scalar::all(0);
-	Der2 = mask.clone();
-	std::vector<cv::Vec4i> hierarchy;
-	std::vector<std::vector<cv::Point>> contours;
-	findContours(image, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
-
-// 	cv::Mat drawing = cv::Mat::zeros( image.size(), CV_8UC3 );
-// 	cv::RNG rng(12345);
-// 	for( int i = 0; i< contours.size(); i++ )
-// 	{
-// 		double tarea = cv::contourArea(contours[i]);
-// 		cv::Scalar color = cv::Scalar( 128,128,128 );
-// 		drawContours( drawing, contours, i, color, -1 );
-// 	}
-	for (int i = 0; i < contours.size(); i++)
-	{
-		double tarea = cv::contourArea(contours[i]);
-
-		if (tarea < 15)
-		{
-			cv::Scalar color = cv::Scalar(1);
-			drawContours(patchImage, contours, i, color, -1);
-		}
-	}
-
-	imshow("Contours", patchImage);
-	cv::waitKey();
 }
 
