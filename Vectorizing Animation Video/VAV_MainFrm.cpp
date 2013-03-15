@@ -429,10 +429,6 @@ void VAV_MainFrame::OnFileOpenPicture()
 
 		if (filename.GetLength() > 1)
 		{
-			m_vavImage.ReadImage(ConvStr::GetStr(filename.GetString()));
-			((VAV_View*)this->GetActiveView())->m_D3DApp.ClearTriangles();
-			((VAV_View*)this->GetActiveView())->m_D3DApp.SetPictureSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-			((VAV_View*)this->GetActiveView())->SetTexture(m_vavImage.GetDx11Texture());
 			{
 				CMFCRibbonEdit* re;
 				CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencySelectPatch);
@@ -472,6 +468,10 @@ void VAV_MainFrame::OnFileOpenPicture()
 
 				((VAV_View*)this->GetActiveView())->m_D3DApp.SetPictureTransparency((100 - m_PictureTransparency) * 0.01);
 			}
+			m_vavImage.ReadImage(ConvStr::GetStr(filename.GetString()));
+			((VAV_View*)this->GetActiveView())->m_D3DApp.ClearTriangles();
+			((VAV_View*)this->GetActiveView())->m_D3DApp.SetPictureSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+			((VAV_View*)this->GetActiveView())->SetTexture(m_vavImage.GetDx11Texture());
 		}
 	}
 }

@@ -25,6 +25,9 @@
     <Filter Include="math">
       <UniqueIdentifier>{ec5e310a-47c1-49a3-874b-cf7000fad25c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="curve">
+      <UniqueIdentifier>{0a6af1e6-2c20-403c-8e1b-8fe707f88eea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -309,6 +312,42 @@
     <ClInclude Include="TriangulationCgal_Patch.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="algSpline.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageSpline.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorConstraint.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorConstraintMedian.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="curve\LinearLine.h">
+      <Filter>curve</Filter>
+    </ClInclude>
+    <ClInclude Include="curve\PathInterpolater.h">
+      <Filter>curve</Filter>
+    </ClInclude>
+    <ClInclude Include="curve\BezierCurve.h">
+      <Filter>curve</Filter>
+    </ClInclude>
+    <ClInclude Include="curve\BsplineCurve.h">
+      <Filter>curve</Filter>
+    </ClInclude>
+    <ClInclude Include="curve\HSplineCurve.h">
+      <Filter>curve</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchSpline.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="algSpline2d.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="LineFragment.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -453,6 +492,42 @@
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="TriangulationCgal_Patch.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="algSpline.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageSpline.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorConstraint.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorConstraintMedian.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="curve\BezierCurve.cpp">
+      <Filter>curve</Filter>
+    </ClCompile>
+    <ClCompile Include="curve\BsplineCurve.cpp">
+      <Filter>curve</Filter>
+    </ClCompile>
+    <ClCompile Include="curve\HSplineCurve.cpp">
+      <Filter>curve</Filter>
+    </ClCompile>
+    <ClCompile Include="curve\LinearLine.cpp">
+      <Filter>curve</Filter>
+    </ClCompile>
+    <ClCompile Include="curve\PathInterpolater.cpp">
+      <Filter>curve</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchSpline.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="algSpline2d.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="LineFragment.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>

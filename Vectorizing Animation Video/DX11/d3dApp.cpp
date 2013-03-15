@@ -2,6 +2,7 @@
 #include "d3dApp.h"
 #include "dxut/DXUT.h"
 #include "SplineShape.h"
+#include <auto_link_effect11.hpp>
 
 D3DApp::D3DApp()
 {
@@ -217,7 +218,7 @@ void D3DApp::DrawScene()
 		m_Pics_Width->SetFloat(mClientWidth);
 		m_Pics_Height->SetFloat(mClientHeight);
 	}
-
+	if (!m_DXUT_UI) return;
 	m_DXUT_UI->UpdataUI(0.1f);
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, m_ClearColor);
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -518,6 +519,7 @@ void D3DApp::BuildPoint()
 	ReleaseCOM(m_Patch_Buffer);
 	ReleaseCOM(m_Points_Buffer);
 	ReleaseCOM(m_Lines_Buffer);
+	if (!m_DeviceContext) return;
 	m_PicsVertices.clear();
 
 	if (m_Pics_Texture)

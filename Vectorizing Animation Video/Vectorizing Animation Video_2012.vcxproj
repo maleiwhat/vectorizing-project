@@ -29,12 +29,14 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -42,6 +44,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -49,6 +52,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -116,7 +120,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>D3DX11Effectsd.lib;d3d11.lib;d3dx11.lib;d3d9.lib;d3dx9.lib;DxErr.lib;dinput8.lib;d3dcompiler.lib;dxguid.lib;d3dxof.lib;winmm.lib;odbc32.lib;odbccp32.lib;dwrite.lib;D2d1.lib;imm32.lib;Version.lib;comctl32.lib;dsound.lib;</AdditionalDependencies>
+      <AdditionalDependencies>uafxcwd.lib;d3d11.lib;d3dx11.lib;d3d9.lib;d3dx9.lib;DxErr.lib;dinput8.lib;d3dcompiler.lib;dxguid.lib;d3dxof.lib;winmm.lib;odbc32.lib;odbccp32.lib;dwrite.lib;D2d1.lib;imm32.lib;Version.lib;comctl32.lib;dsound.lib;</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>msvcrtd.lib</IgnoreSpecificDefaultLibraries>
       <LargeAddressAware>true</LargeAddressAware>
       <StackCommitSize>0x400000</StackCommitSize>
@@ -177,7 +181,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>D3DX11Effects.lib;d3d11.lib;d3dx11.lib;d3d9.lib;d3dx9.lib;DxErr.lib;dinput8.lib;d3dcompiler.lib;dxguid.lib;d3dxof.lib;winmm.lib;odbc32.lib;odbccp32.lib;dwrite.lib;D2d1.lib;imm32.lib;Version.lib;comctl32.lib;dsound.lib;</AdditionalDependencies>
+      <AdditionalDependencies>uafxcw.lib;d3d11.lib;d3dx11.lib;d3d9.lib;d3dx9.lib;DxErr.lib;dinput8.lib;d3dcompiler.lib;dxguid.lib;d3dxof.lib;winmm.lib;odbc32.lib;odbccp32.lib;dwrite.lib;D2d1.lib;imm32.lib;Version.lib;comctl32.lib;dsound.lib;</AdditionalDependencies>
       <LargeAddressAware>true</LargeAddressAware>
       <StackCommitSize>0x400000</StackCommitSize>
     </Link>
@@ -231,9 +235,18 @@
     <None Include="shader\triangleline.fx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="algSpline.h" />
+    <ClInclude Include="algSpline2d.h" />
     <ClInclude Include="ClassView.h" />
     <ClInclude Include="CmCurveEx.h" />
+    <ClInclude Include="ColorConstraint.h" />
+    <ClInclude Include="ColorConstraintMedian.h" />
     <ClInclude Include="ConvStr.h" />
+    <ClInclude Include="curve\BezierCurve.h" />
+    <ClInclude Include="curve\BsplineCurve.h" />
+    <ClInclude Include="curve\HSplineCurve.h" />
+    <ClInclude Include="curve\LinearLine.h" />
+    <ClInclude Include="curve\PathInterpolater.h" />
     <ClInclude Include="CvExtenstion.h" />
     <ClInclude Include="DX11\d3dApp.h" />
     <ClInclude Include="DX11\DXUTUI.h" />
@@ -254,6 +267,8 @@
     <ClInclude Include="DXUT\SDKmisc.h" />
     <ClInclude Include="Edge.h" />
     <ClInclude Include="FileView.h" />
+    <ClInclude Include="ImageSpline.h" />
+    <ClInclude Include="LineFragment.h" />
     <ClInclude Include="math\AABB2D.h" />
     <ClInclude Include="math\asm_math.h" />
     <ClInclude Include="math\AxisAlignedBox.h" />
@@ -272,6 +287,7 @@
     <ClInclude Include="math\Vector4.h" />
     <ClInclude Include="OutputWnd.h" />
     <ClInclude Include="Patch.h" />
+    <ClInclude Include="PatchSpline.h" />
     <ClInclude Include="PropertiesWnd.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SplineShape.h" />
@@ -290,6 +306,8 @@
     <ClInclude Include="ViewTree.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="algSpline.cpp" />
+    <ClCompile Include="algSpline2d.cpp" />
     <ClCompile Include="ClassView.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
@@ -297,7 +315,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="CmCurveEx.cpp" />
+    <ClCompile Include="ColorConstraint.cpp" />
+    <ClCompile Include="ColorConstraintMedian.cpp" />
     <ClCompile Include="ConvStr.cpp" />
+    <ClCompile Include="curve\BezierCurve.cpp" />
+    <ClCompile Include="curve\BsplineCurve.cpp" />
+    <ClCompile Include="curve\HSplineCurve.cpp" />
+    <ClCompile Include="curve\LinearLine.cpp" />
+    <ClCompile Include="curve\PathInterpolater.cpp" />
     <ClCompile Include="CvExtenstion.cpp" />
     <ClCompile Include="DX11\d3dApp.cpp" />
     <ClCompile Include="DX11\DXUTUI.cpp" />
@@ -322,6 +347,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ImageSpline.cpp" />
+    <ClCompile Include="LineFragment.cpp" />
     <ClCompile Include="math\AABB2D.cpp" />
     <ClCompile Include="math\AxisAlignedBox.cpp" />
     <ClCompile Include="math\Centroid.cpp" />
@@ -341,6 +368,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Patch.cpp" />
+    <ClCompile Include="PatchSpline.cpp" />
     <ClCompile Include="PropertiesWnd.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
