@@ -75,6 +75,16 @@ D3DApp::D3DApp()
 	m_Lines_CenterX = NULL;
 	m_Lines_CenterY = NULL;
 	m_Lines_Transparency = NULL;
+	m_SkeletonLines_Buffer = NULL;
+	m_SkeletonLines_Effect = NULL;
+	m_SkeletonLines_PTech = NULL;
+	m_SkeletonLines_PLayout = NULL;
+	m_SkeletonLines_Width = NULL;
+	m_SkeletonLines_Height = NULL;
+	m_SkeletonLines_Scale = NULL;
+	m_SkeletonLines_CenterX = NULL;
+	m_SkeletonLines_CenterY = NULL;
+	m_SkeletonLines_Transparency = NULL;
 	m_PicW = 0;
 	m_PicH = 0;
 	m_hAppInst   = GetModuleHandle(NULL);
@@ -285,7 +295,7 @@ void D3DApp::DrawScene()
 
 	if (m_LinesVertices.size() > 0)
 	{
-		m_Lines_Transparency->SetFloat(0.8);
+		m_Lines_Transparency->SetFloat(0.5);
 		UINT offset = 0;
 		UINT stride2 = sizeof(LineVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
@@ -293,6 +303,18 @@ void D3DApp::DrawScene()
 		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Lines_Buffer, &stride2, &offset);
 		m_Lines_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
 		m_DeviceContext->Draw((UINT)m_LinesVertices.size(), 0);
+	}
+
+	if (m_SkeletonLinesVertices.size() > 0)
+	{
+		m_SkeletonLines_Transparency->SetFloat(0.9);
+		UINT offset = 0;
+		UINT stride2 = sizeof(LineVertex);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		m_DeviceContext->IASetInputLayout(m_SkeletonLines_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_SkeletonLines_Buffer, &stride2, &offset);
+		m_SkeletonLines_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw((UINT)m_SkeletonLinesVertices.size(), 0);
 	}
 
 	m_SwapChain->Present(0, 0);
@@ -384,6 +406,7 @@ void D3DApp::BuildShaderFX()
 	m_TriangleLine_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri2);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6, PassDescTri2.pIAInputSignature,
 	                                  PassDescTri2.IAInputSignatureSize, &m_TriangleLine_PLayout));
+
 	hr = D3DX11CompileFromFile(_T("shader\\patch.fx"), NULL, NULL, NULL,
 	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
 
@@ -410,6 +433,7 @@ void D3DApp::BuildShaderFX()
 	m_Patch_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri3);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6, PassDescTri3.pIAInputSignature,
 	                                  PassDescTri3.IAInputSignatureSize, &m_Patch_PLayout));
+
 	hr = D3DX11CompileFromFile(_T("shader\\bigpoint.fx"), NULL, NULL, NULL,
 	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
 
@@ -436,6 +460,7 @@ void D3DApp::BuildShaderFX()
 	m_Points_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri4);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PointVertex, 3, PassDescTri4.pIAInputSignature,
 	                                  PassDescTri4.IAInputSignatureSize, &m_Points_PLayout));
+
 	hr = D3DX11CompileFromFile(_T("shader\\Line.fx"), NULL, NULL, NULL,
 	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
 
@@ -462,6 +487,34 @@ void D3DApp::BuildShaderFX()
 	m_Lines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri5);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_LineVertex, 6, PassDescTri5.pIAInputSignature,
 	                                  PassDescTri5.IAInputSignatureSize, &m_Lines_PLayout));
+
+	hr = D3DX11CompileFromFile(_T("shader\\Line.fx"), NULL, NULL, NULL,
+		"fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
+
+	if (FAILED(hr))
+	{
+		if (pError)
+		{
+			MessageBoxA(0, (char*)pError->GetBufferPointer(), 0, 0);
+			ReleaseCOM(pError);
+		}
+
+		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
+	}
+
+	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_SkeletonLines_Effect));
+	m_SkeletonLines_PTech = m_SkeletonLines_Effect->GetTechniqueByName("PointTech");
+	m_SkeletonLines_Width = m_SkeletonLines_Effect->GetVariableByName("width")->AsScalar();
+	m_SkeletonLines_Height = m_SkeletonLines_Effect->GetVariableByName("height")->AsScalar();
+	m_SkeletonLines_CenterX = m_SkeletonLines_Effect->GetVariableByName("centerX")->AsScalar();
+	m_SkeletonLines_CenterY = m_SkeletonLines_Effect->GetVariableByName("centerY")->AsScalar();
+	m_SkeletonLines_Scale = m_SkeletonLines_Effect->GetVariableByName("scale")->AsScalar();
+	m_SkeletonLines_Transparency = m_SkeletonLines_Effect->GetVariableByName("transparency")->AsScalar();
+	D3DX11_PASS_DESC PassDescTri6;
+	m_SkeletonLines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri6);
+	HR(m_d3dDevice->CreateInputLayout(VertexDesc_LineVertex, 6, PassDescTri6.pIAInputSignature,
+		PassDescTri6.IAInputSignatureSize, &m_SkeletonLines_PLayout));
+
 	m_Pics_Width->SetFloat(mClientWidth);
 	m_Pics_Height->SetFloat(mClientHeight);
 	m_Triangle_Width->SetFloat(mClientWidth);
@@ -474,6 +527,8 @@ void D3DApp::BuildShaderFX()
 	m_Points_Height->SetFloat(mClientHeight);
 	m_Lines_Width->SetFloat(mClientWidth);
 	m_Lines_Height->SetFloat(mClientHeight);
+	m_SkeletonLines_Width->SetFloat(mClientWidth);
+	m_SkeletonLines_Height->SetFloat(mClientHeight);
 }
 
 void D3DApp::SetTexture(ID3D11ShaderResourceView* tex)
@@ -494,6 +549,8 @@ void D3DApp::SetTexture(ID3D11ShaderResourceView* tex)
 	m_Points_Height->SetFloat(mClientHeight);
 	m_Lines_Width->SetFloat(mClientWidth);
 	m_Lines_Height->SetFloat(mClientHeight);
+	m_SkeletonLines_Width->SetFloat(mClientWidth);
+	m_SkeletonLines_Height->SetFloat(mClientHeight);
 	m_Pics_Texture = tex;
 }
 
@@ -509,6 +566,8 @@ void D3DApp::ClearTriangles()
 	m_PointsVertices.clear();
 	ReleaseCOM(m_Lines_Buffer);
 	m_LinesVertices.clear();
+	ReleaseCOM(m_SkeletonLines_Buffer);
+	m_SkeletonLinesVertices.clear();
 }
 
 void D3DApp::BuildPoint()
@@ -519,6 +578,7 @@ void D3DApp::BuildPoint()
 	ReleaseCOM(m_Patch_Buffer);
 	ReleaseCOM(m_Points_Buffer);
 	ReleaseCOM(m_Lines_Buffer);
+	ReleaseCOM(m_SkeletonLines_Buffer);
 	if (!m_DeviceContext) return;
 	m_PicsVertices.clear();
 
@@ -587,6 +647,15 @@ void D3DApp::BuildPoint()
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_LinesVertices[0];
 		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Lines_Buffer));
+	}
+
+	if (!m_SkeletonLinesVertices.empty())
+	{
+		m_vbd.ByteWidth = (UINT)(sizeof(LineVertex) * m_SkeletonLinesVertices.size());
+		m_vbd.StructureByteStride = sizeof(LineVertex);
+		D3D11_SUBRESOURCE_DATA vinitData;
+		vinitData.pSysMem = &m_SkeletonLinesVertices[0];
+		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_SkeletonLines_Buffer));
 	}
 }
 
@@ -822,6 +891,8 @@ void D3DApp::SetLookCenter(float x, float y)
 	m_Points_CenterY->SetFloat(y);
 	m_Lines_CenterX->SetFloat(x);
 	m_Lines_CenterY->SetFloat(y);
+	m_SkeletonLines_CenterX->SetFloat(x);
+	m_SkeletonLines_CenterY->SetFloat(y);
 	BuildPoint();
 	DrawScene();
 }
@@ -834,6 +905,7 @@ void D3DApp::SetScale(float s)
 	m_Patch_Scale->SetFloat(s);
 	m_Points_Scale->SetFloat(s);
 	m_Lines_Scale->SetFloat(s);
+	m_SkeletonLines_Scale->SetFloat(s);
 }
 
 void D3DApp::ClearPatchs()
@@ -878,7 +950,7 @@ void D3DApp::AddLines(Lines& lines, float_vector2d& linewidths, float h)
 	{
 		Line& now_line = lines[i];
 
-		if (now_line.size() < 3)
+		if (now_line.size() < 2)
 		{
 			continue;
 		}
@@ -903,6 +975,9 @@ void D3DApp::AddLines(Lines& lines, float_vector2d& linewidths, float h)
 		lv.width.x = now_linewidth[0] + 2;
 		lv.width.y = now_linewidth[1] + 2;
 		m_LinesVertices.push_back(lv);
+		lv.width.x = 2;
+		lv.width.y = 2;
+		m_SkeletonLinesVertices.push_back(lv);
 
 		for (int j = 1; j < now_line.size() - 2; ++j)
 		{
@@ -921,6 +996,9 @@ void D3DApp::AddLines(Lines& lines, float_vector2d& linewidths, float h)
 			lv.width.x = now_linewidth[j] + 2;
 			lv.width.y = now_linewidth[j + 1] + 2;
 			m_LinesVertices.push_back(lv);
+			lv.width.x = 1;
+			lv.width.y = 1;
+			m_SkeletonLinesVertices.push_back(lv);
 		}
 
 		lv.p1.x = now_line[now_line.size() - 3].x;
@@ -934,6 +1012,9 @@ void D3DApp::AddLines(Lines& lines, float_vector2d& linewidths, float h)
 		lv.width.x = now_linewidth[0] + 2;
 		lv.width.y = now_linewidth[1] + 2;
 		m_LinesVertices.push_back(lv);
+		lv.width.x = 1;
+		lv.width.y = 1;
+		m_SkeletonLinesVertices.push_back(lv);
 	}
 }
 

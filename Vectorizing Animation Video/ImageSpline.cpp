@@ -134,9 +134,9 @@ void ImageSpline::ComputeToSplineFragments()
 		cps = newcps;
 	}
 
-	return;
+	//return;
 	m_SplineFragments.clear();
-
+	/*
 	// 平均各點
 	for (int i = 0; i < m_LineFragments.size(); ++i)
 	{
@@ -206,7 +206,7 @@ void ImageSpline::ComputeToSplineFragments()
 
 					corner = 0;
 				}
-				else if (/*corner > 3 &&*/smaller0 > 0)
+				else if (smaller0 > 0) 
 				{
 					if (cps.back() != cps[j])
 					{
@@ -249,75 +249,76 @@ void ImageSpline::ComputeToSplineFragments()
 		cps = newcps;
 	}
 	return ;
+	*/
 	// 內插出中間點
-	for (int i = 0; i < m_LineFragments.size(); ++i)
-	{
-		BezierCurve hc;
-		Line& cps = m_LineFragments[i].m_Points;
-		Line newcps;
-
-		if (cps.size() < 4) { continue; }
-
-		float sum = 0;
-		hc.AddPoint(0 , cps.front());
-
-		for (int j = 1; j < cps.size(); ++j)
-		{
-			Vector2 vec = cps[j] - cps[j - 1];
-			sum += vec.length();
-			hc.AddPoint(sum , cps[j]);
-		}
-
-		float step = sum / (cps.size() * 10);
-
-		for (float j = 0; j < sum-step; j += step)
-		{
-			Vector2 v = hc.GetValue(j);
-			newcps.push_back(v);
-		}
-		newcps.push_back(cps.back());
-		cps = newcps;
-	}
-	m_ControlPoints = m_LineFragments;
 // 	for (int i = 0; i < m_LineFragments.size(); ++i)
 // 	{
-// 		m_SplineFragments.push_back(SplineFragment());
-// 		SplineFragment& sf = m_SplineFragments.back();
+// 		BezierCurve hc;
 // 		Line& cps = m_LineFragments[i].m_Points;
+// 		Line newcps;
 // 
-// 		for (int j = 0; j < cps.size(); ++j)
+// 		if (cps.size() < 5) { continue; }
+// 
+// 		float sum = 0;
+// 		hc.AddPoint(0 , cps.front());
+// 
+// 		for (int j = 1; j < cps.size(); ++j)
 // 		{
-// 			sf.AddPoint(Vector2(cps[j].x, cps[j].y));
+// 			Vector2 vec = cps[j] - cps[j - 1];
+// 			sum += vec.length();
+// 			hc.AddPoint(sum , cps[j]);
 // 		}
 // 
-// 		sf.CurveFitting(0.3);
-// 		int newsize = cps.size();
+// 		float step = sum / (cps.size() * 2);
 // 
-// 		if (newsize > 15)
+// 		for (float j = 0; j < sum-step; j += step)
 // 		{
-// 			newsize *= 0.3;
+// 			Vector2 v = hc.GetValue(j);
+// 			newcps.push_back(v);
 // 		}
-// 		else if (newsize > 100)
-// 		{
-// 			newsize *= 0.2;
-// 		}
-// 		else if (newsize > 500)
-// 		{
-// 			newsize *= 0.1;
-// 		}
-// 
-// 		float step = 1.0 / (newsize);
-// 		cps.clear();
-// 
-// 		for (int j = 0; j < newsize; ++j)
-// 		{
-// 			Vector2 v = sf.GetVector2(step * j);
-// 
-// 			if (j > 0 && cps.back() != v)
-// 			{
-// 				cps.push_back(v);
-// 			}
-// 		}
+// 		newcps.push_back(cps.back());
+// 		cps = newcps;
 // 	}
+	m_ControlPoints = m_LineFragments;
+	for (int i = 0; i < m_LineFragments.size(); ++i)
+	{
+		m_SplineFragments.push_back(SplineFragment());
+		SplineFragment& sf = m_SplineFragments.back();
+		Line& cps = m_LineFragments[i].m_Points;
+
+		for (int j = 0; j < cps.size(); ++j)
+		{
+			sf.AddPoint(Vector2(cps[j].x, cps[j].y));
+		}
+
+		sf.CurveFitting(0.3);
+		int newsize = cps.size();
+
+		if (newsize > 15)
+		{
+			newsize *= 0.3;
+		}
+		else if (newsize > 100)
+		{
+			newsize *= 0.2;
+		}
+		else if (newsize > 500)
+		{
+			newsize *= 0.1;
+		}
+
+		float step = 1.0 / (newsize);
+		cps.clear();
+
+		for (int j = 0; j < newsize; ++j)
+		{
+			Vector2 v = sf.GetVector2(step * j);
+
+			if (j > 0 && cps.back() != v)
+			{
+				cps.push_back(v);
+			}
+		}
+	}
 	
 }

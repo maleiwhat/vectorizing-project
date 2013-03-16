@@ -147,6 +147,18 @@ protected:
 	ID3DX11EffectScalarVariable*	m_Lines_Transparency;
 	LineVertices			m_LinesVertices;
 
+	ID3D11Buffer*			m_SkeletonLines_Buffer;
+	ID3DX11Effect*			m_SkeletonLines_Effect;
+	ID3DX11EffectTechnique*		m_SkeletonLines_PTech;
+	ID3D11InputLayout*		m_SkeletonLines_PLayout;
+	ID3DX11EffectScalarVariable*	m_SkeletonLines_Width;
+	ID3DX11EffectScalarVariable*	m_SkeletonLines_Height;
+	ID3DX11EffectScalarVariable*	m_SkeletonLines_Scale;
+	ID3DX11EffectScalarVariable*	m_SkeletonLines_CenterX;
+	ID3DX11EffectScalarVariable*	m_SkeletonLines_CenterY;
+	ID3DX11EffectScalarVariable*	m_SkeletonLines_Transparency;
+	LineVertices			m_SkeletonLinesVertices;
+
 	D3D11_BUFFER_DESC		m_vbd;
 	DXUTUI*				m_DXUT_UI;
 	// Derived class should set these in derived constructor to customize starting values.

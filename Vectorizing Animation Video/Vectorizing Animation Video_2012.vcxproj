@@ -247,6 +247,7 @@
     <ClInclude Include="curve\HSplineCurve.h" />
     <ClInclude Include="curve\LinearLine.h" />
     <ClInclude Include="curve\PathInterpolater.h" />
+    <ClInclude Include="curve_fit.h" />
     <ClInclude Include="CvExtenstion.h" />
     <ClInclude Include="DX11\d3dApp.h" />
     <ClInclude Include="DX11\DXUTUI.h" />
@@ -290,6 +291,7 @@
     <ClInclude Include="PatchSpline.h" />
     <ClInclude Include="PropertiesWnd.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SplineFragment.h" />
     <ClInclude Include="SplineShape.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -323,6 +325,7 @@
     <ClCompile Include="curve\HSplineCurve.cpp" />
     <ClCompile Include="curve\LinearLine.cpp" />
     <ClCompile Include="curve\PathInterpolater.cpp" />
+    <ClCompile Include="curve_fit.cpp" />
     <ClCompile Include="CvExtenstion.cpp" />
     <ClCompile Include="DX11\d3dApp.cpp" />
     <ClCompile Include="DX11\DXUTUI.cpp" />
@@ -348,6 +351,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ImageSpline.cpp" />
+    <ClCompile Include="imath.cpp" />
     <ClCompile Include="LineFragment.cpp" />
     <ClCompile Include="math\AABB2D.cpp" />
     <ClCompile Include="math\AxisAlignedBox.cpp" />
@@ -375,6 +379,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SplineFragment.cpp" />
     <ClCompile Include="SplineShape.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
