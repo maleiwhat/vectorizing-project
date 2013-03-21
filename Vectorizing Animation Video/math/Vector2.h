@@ -39,24 +39,24 @@ you interpret the values.
 class Vector2
 {
 public:
-	float x, y;
+	double x, y;
 
 public:
 	inline Vector2():x(0), y(0)
 	{
 	}
 
-	inline Vector2(const float fX, const float fY )
+	inline Vector2(const double fX, const double fY )
 		: x( fX ), y( fY )
 	{
 	}
 
-	inline explicit Vector2( const float scaler )
+	inline explicit Vector2( const double scaler )
 		: x( scaler), y( scaler )
 	{
 	}
 
-	inline explicit Vector2( const float afCoordinate[2] )
+	inline explicit Vector2( const double afCoordinate[2] )
 		: x( afCoordinate[0] ),
 		y( afCoordinate[1] )
 	{
@@ -64,11 +64,11 @@ public:
 
 	inline explicit Vector2( const int afCoordinate[2] )
 	{
-		x = (float)afCoordinate[0];
-		y = (float)afCoordinate[1];
+		x = (double)afCoordinate[0];
+		y = (double)afCoordinate[1];
 	}
 
-	inline explicit Vector2( float* const r )
+	inline explicit Vector2( double* const r )
 		: x( r[0] ), y( r[1] )
 	{
 	}
@@ -81,14 +81,14 @@ public:
 		std::swap(y, other.y);
 	}
 
-	inline float operator [] ( const size_t i ) const
+	inline double operator [] ( const size_t i ) const
 	{
 		assert( i < 2 );
 
 		return *(&x+i);
 	}
 
-	inline float& operator [] ( const size_t i )
+	inline double& operator [] ( const size_t i )
 	{
 		assert( i < 2 );
 
@@ -96,12 +96,12 @@ public:
 	}
 
 	/// Pointer accessor for direct copying
-	inline float* ptr()
+	inline double* ptr()
 	{
 		return &x;
 	}
 	/// Pointer accessor for direct copying
-	inline const float* ptr() const
+	inline const double* ptr() const
 	{
 		return &x;
 	}
@@ -118,7 +118,7 @@ public:
 		return *this;
 	}
 
-	inline Vector2& operator = ( const float fScalar)
+	inline Vector2& operator = ( const double fScalar)
 	{
 		x = fScalar;
 		y = fScalar;
@@ -151,7 +151,7 @@ public:
 			y - rkVector.y);
 	}
 
-	inline Vector2 operator * ( const float fScalar ) const
+	inline Vector2 operator * ( const double fScalar ) const
 	{
 		return Vector2(
 			x * fScalar,
@@ -165,11 +165,11 @@ public:
 			y * rhs.y);
 	}
 
-	inline Vector2 operator / ( const float fScalar ) const
+	inline Vector2 operator / ( const double fScalar ) const
 	{
 		assert( fScalar != 0.0f );
 
-		float fInv = 1.0f / fScalar;
+		double fInv = 1.0f / fScalar;
 
 		return Vector2(
 			x * fInv,
@@ -194,42 +194,42 @@ public:
 	}
 
 	// overloaded operators to help Vector2
-	inline friend Vector2 operator * ( const float fScalar, const Vector2& rkVector )
+	inline friend Vector2 operator * ( const double fScalar, const Vector2& rkVector )
 	{
 		return Vector2(
 			fScalar * rkVector.x,
 			fScalar * rkVector.y);
 	}
 
-	inline friend Vector2 operator / ( const float fScalar, const Vector2& rkVector )
+	inline friend Vector2 operator / ( const double fScalar, const Vector2& rkVector )
 	{
 		return Vector2(
 			fScalar / rkVector.x,
 			fScalar / rkVector.y);
 	}
 
-	inline friend Vector2 operator + (const Vector2& lhs, const float rhs)
+	inline friend Vector2 operator + (const Vector2& lhs, const double rhs)
 	{
 		return Vector2(
 			lhs.x + rhs,
 			lhs.y + rhs);
 	}
 
-	inline friend Vector2 operator + (const float lhs, const Vector2& rhs)
+	inline friend Vector2 operator + (const double lhs, const Vector2& rhs)
 	{
 		return Vector2(
 			lhs + rhs.x,
 			lhs + rhs.y);
 	}
 
-	inline friend Vector2 operator - (const Vector2& lhs, const float rhs)
+	inline friend Vector2 operator - (const Vector2& lhs, const double rhs)
 	{
 		return Vector2(
 			lhs.x - rhs,
 			lhs.y - rhs);
 	}
 
-	inline friend Vector2 operator - (const float lhs, const Vector2& rhs)
+	inline friend Vector2 operator - (const double lhs, const Vector2& rhs)
 	{
 		return Vector2(
 			lhs - rhs.x,
@@ -244,7 +244,7 @@ public:
 		return *this;
 	}
 
-	inline Vector2& operator += ( const float fScaler )
+	inline Vector2& operator += ( const double fScaler )
 	{
 		x += fScaler;
 		y += fScaler;
@@ -260,7 +260,7 @@ public:
 		return *this;
 	}
 
-	inline Vector2& operator -= ( const float fScaler )
+	inline Vector2& operator -= ( const double fScaler )
 	{
 		x -= fScaler;
 		y -= fScaler;
@@ -268,7 +268,7 @@ public:
 		return *this;
 	}
 
-	inline Vector2& operator *= ( const float fScalar )
+	inline Vector2& operator *= ( const double fScalar )
 	{
 		x *= fScalar;
 		y *= fScalar;
@@ -284,11 +284,11 @@ public:
 		return *this;
 	}
 
-	inline Vector2& operator /= ( const float fScalar )
+	inline Vector2& operator /= ( const double fScalar )
 	{
 		assert( fScalar != 0.0f );
 
-		float fInv = 1.0f / fScalar;
+		double fInv = 1.0f / fScalar;
 
 		x *= fInv;
 		y *= fInv;
@@ -311,7 +311,7 @@ public:
 	length (e.g. for just comparing lengths) use squaredLength()
 	instead.
 	*/
-	inline float length () const
+	inline double length () const
 	{
 		return Math::Sqrt( x * x + y * y );
 	}
@@ -326,7 +326,7 @@ public:
 	want to find the longest / shortest vector without incurring
 	the square root.
 	*/
-	inline float squaredLength () const
+	inline double squaredLength () const
 	{
 		return x * x + y * y;
 	}
@@ -337,7 +337,7 @@ public:
 	distance (e.g. for just comparing distances) use squaredDistance()
 	instead.
 	*/
-	inline float distance(const Vector2& rhs) const
+	inline double distance(const Vector2& rhs) const
 	{
 		return (*this - rhs).length();
 	}
@@ -352,7 +352,7 @@ public:
 	Use this if you want to find the longest / shortest distance
 	without incurring the square root.
 	*/
-	inline float squaredDistance(const Vector2& rhs) const
+	inline double squaredDistance(const Vector2& rhs) const
 	{
 		return (*this - rhs).squaredLength();
 	}
@@ -369,9 +369,9 @@ public:
 	vec Vector with which to calculate the dot product (together
 	with this one).
 	@returns
-	A float representing the dot product value.
+	A double representing the dot product value.
 	*/
-	inline float dotProduct(const Vector2& vec) const
+	inline double dotProduct(const Vector2& vec) const
 	{
 		return x * vec.x + y * vec.y;
 	}
@@ -385,14 +385,14 @@ public:
 	will be no changes made to their components.
 	@returns The previous length of the vector.
 	*/
-	inline float normalise()
+	inline double normalise()
 	{
-		float fLength = Math::Sqrt( x * x + y * y);
+		double fLength = Math::Sqrt( x * x + y * y);
 
 		// Will also work for zero-sized vectors, but will change nothing
 		if ( fLength > 1e-08 )
 		{
-			float fInvLength = 1.0f / fLength;
+			double fInvLength = 1.0f / fLength;
 			x *= fInvLength;
 			y *= fInvLength;
 		}
@@ -470,9 +470,9 @@ public:
 		return Vector2 (-y, x);
 	}
 	/** Calculates the 2 dimensional cross-product of 2 vectors, which results
-	in a single floating point value which is 2 times the area of the triangle.
+	in a single doubleing point value which is 2 times the area of the triangle.
 	*/
-	inline float crossProduct( const Vector2& rkVector ) const
+	inline double crossProduct( const Vector2& rkVector ) const
 	{
 		return x * rkVector.y - y * rkVector.x;
 	}
@@ -496,12 +496,12 @@ public:
 	afterwards.
 	*/
 	inline Vector2 randomDeviant(
-		float angle) const
+		double angle) const
 	{
 
 		angle *=  Math::UnitRandom() * Math::TWO_PI;
-		float cosa = cos(angle);
-		float sina = sin(angle);
+		double cosa = cos(angle);
+		double sina = sin(angle);
 		return  Vector2(cosa * x - sina * y,
 			sina * x + cosa * y);
 	}
@@ -509,7 +509,7 @@ public:
 	/** Returns true if this vector is zero length. */
 	inline bool isZeroLength(void) const
 	{
-		float sqlen = (x * x) + (y * y);
+		double sqlen = (x * x) + (y * y);
 		return (sqlen < (1e-06 * 1e-06));
 
 	}

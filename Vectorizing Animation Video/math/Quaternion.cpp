@@ -39,7 +39,7 @@ THE SOFTWARE.
 #  pragma warning (push)
 #  pragma warning (disable : 4305)
 
-const float Quaternion::ms_fEpsilon = 1e-03;
+const double Quaternion::ms_fEpsilon = 1e-03;
 const Quaternion Quaternion::ZERO(0.0,0.0,0.0,0.0);
 const Quaternion Quaternion::IDENTITY(1.0f,0.0,0.0,0.0);
 
@@ -49,8 +49,8 @@ void Quaternion::FromRotationMatrix (const Matrix3& kRot)
 	// Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
 	// article "Quaternion Calculus and Fast Animation".
 
-	float fTrace = kRot[0][0]+kRot[1][1]+kRot[2][2];
-	float fRoot;
+	double fTrace = kRot[0][0]+kRot[1][1]+kRot[2][2];
+	double fRoot;
 
 	if ( fTrace > 0.0 )
 	{
@@ -75,7 +75,7 @@ void Quaternion::FromRotationMatrix (const Matrix3& kRot)
 		size_t k = s_iNext[j];
 
 		fRoot = Math::Sqrt(kRot[i][i]-kRot[j][j]-kRot[k][k] + 1.0f);
-		float* apkQuat[3] = { &x, &y, &z };
+		double* apkQuat[3] = { &x, &y, &z };
 		*apkQuat[i] = 0.5f*fRoot;
 		fRoot = 0.5f/fRoot;
 		w = (kRot[k][j]-kRot[j][k])*fRoot;
@@ -86,18 +86,18 @@ void Quaternion::FromRotationMatrix (const Matrix3& kRot)
 //-----------------------------------------------------------------------
 void Quaternion::ToRotationMatrix (Matrix3& kRot) const
 {
-	float fTx  = x+x;
-	float fTy  = y+y;
-	float fTz  = z+z;
-	float fTwx = fTx*w;
-	float fTwy = fTy*w;
-	float fTwz = fTz*w;
-	float fTxx = fTx*x;
-	float fTxy = fTy*x;
-	float fTxz = fTz*x;
-	float fTyy = fTy*y;
-	float fTyz = fTz*y;
-	float fTzz = fTz*z;
+	double fTx  = x+x;
+	double fTy  = y+y;
+	double fTz  = z+z;
+	double fTwx = fTx*w;
+	double fTwy = fTy*w;
+	double fTwz = fTz*w;
+	double fTxx = fTx*x;
+	double fTxy = fTy*x;
+	double fTxz = fTz*x;
+	double fTyy = fTy*y;
+	double fTyz = fTz*y;
+	double fTzz = fTz*z;
 
 	kRot[0][0] = 1.0f-(fTyy+fTzz);
 	kRot[0][1] = fTxy-fTwz;
@@ -119,7 +119,7 @@ void Quaternion::FromAngleAxis (const Radian& rfAngle,
 	//   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
 
 	Radian fHalfAngle ( 0.5*rfAngle );
-	float fSin = Math::Sin(fHalfAngle);
+	double fSin = Math::Sin(fHalfAngle);
 	w = Math::Cos(fHalfAngle);
 	x = fSin*rkAxis.x;
 	y = fSin*rkAxis.y;
@@ -131,11 +131,11 @@ void Quaternion::ToAngleAxis (Radian& rfAngle, Vector3& rkAxis) const
 	// The quaternion representing the rotation is
 	//   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
 
-	float fSqrLength = x*x+y*y+z*z;
+	double fSqrLength = x*x+y*y+z*z;
 	if ( fSqrLength > 0.0 )
 	{
 		rfAngle = 2.0f*Math::ACos(w);
-		float fInvLength = Math::InvSqrt(fSqrLength);
+		double fInvLength = Math::InvSqrt(fSqrLength);
 		rkAxis.x = x*fInvLength;
 		rkAxis.y = y*fInvLength;
 		rkAxis.z = z*fInvLength;
@@ -201,44 +201,44 @@ void Quaternion::ToAxes (Vector3* akAxis) const
 Vector3 Quaternion::xAxis(void) const
 {
 	//Real fTx  = 2.0f*x;
-	float fTy  = 2.0f*y;
-	float fTz  = 2.0f*z;
-	float fTwy = fTy*w;
-	float fTwz = fTz*w;
-	float fTxy = fTy*x;
-	float fTxz = fTz*x;
-	float fTyy = fTy*y;
-	float fTzz = fTz*z;
+	double fTy  = 2.0f*y;
+	double fTz  = 2.0f*z;
+	double fTwy = fTy*w;
+	double fTwz = fTz*w;
+	double fTxy = fTy*x;
+	double fTxz = fTz*x;
+	double fTyy = fTy*y;
+	double fTzz = fTz*z;
 
 	return Vector3(1.0f-(fTyy+fTzz), fTxy+fTwz, fTxz-fTwy);
 }
 //-----------------------------------------------------------------------
 Vector3 Quaternion::yAxis(void) const
 {
-	float fTx  = 2.0f*x;
-	float fTy  = 2.0f*y;
-	float fTz  = 2.0f*z;
-	float fTwx = fTx*w;
-	float fTwz = fTz*w;
-	float fTxx = fTx*x;
-	float fTxy = fTy*x;
-	float fTyz = fTz*y;
-	float fTzz = fTz*z;
+	double fTx  = 2.0f*x;
+	double fTy  = 2.0f*y;
+	double fTz  = 2.0f*z;
+	double fTwx = fTx*w;
+	double fTwz = fTz*w;
+	double fTxx = fTx*x;
+	double fTxy = fTy*x;
+	double fTyz = fTz*y;
+	double fTzz = fTz*z;
 
 	return Vector3(fTxy-fTwz, 1.0f-(fTxx+fTzz), fTyz+fTwx);
 }
 //-----------------------------------------------------------------------
 Vector3 Quaternion::zAxis(void) const
 {
-	float fTx  = 2.0f*x;
-	float fTy  = 2.0f*y;
-	float fTz  = 2.0f*z;
-	float fTwx = fTx*w;
-	float fTwy = fTy*w;
-	float fTxx = fTx*x;
-	float fTxz = fTz*x;
-	float fTyy = fTy*y;
-	float fTyz = fTz*y;
+	double fTx  = 2.0f*x;
+	double fTy  = 2.0f*y;
+	double fTz  = 2.0f*z;
+	double fTwx = fTx*w;
+	double fTwy = fTy*w;
+	double fTxx = fTx*x;
+	double fTxz = fTz*x;
+	double fTyy = fTy*y;
+	double fTyz = fTz*y;
 
 	return Vector3(fTxz+fTwy, fTyz-fTwx, 1.0f-(fTxx+fTyy));
 }
@@ -287,12 +287,12 @@ Quaternion Quaternion::operator* (const Quaternion& rkQ) const
 		);
 }
 //-----------------------------------------------------------------------
-Quaternion Quaternion::operator* (float fScalar) const
+Quaternion Quaternion::operator* (double fScalar) const
 {
 	return Quaternion(fScalar*w,fScalar*x,fScalar*y,fScalar*z);
 }
 //-----------------------------------------------------------------------
-Quaternion operator* (float fScalar, const Quaternion& rkQ)
+Quaternion operator* (double fScalar, const Quaternion& rkQ)
 {
 	return Quaternion(fScalar*rkQ.w,fScalar*rkQ.x,fScalar*rkQ.y,
 		fScalar*rkQ.z);
@@ -303,22 +303,22 @@ Quaternion Quaternion::operator- () const
 	return Quaternion(-w,-x,-y,-z);
 }
 //-----------------------------------------------------------------------
-float Quaternion::Dot (const Quaternion& rkQ) const
+double Quaternion::Dot (const Quaternion& rkQ) const
 {
 	return w*rkQ.w+x*rkQ.x+y*rkQ.y+z*rkQ.z;
 }
 //-----------------------------------------------------------------------
-float Quaternion::Norm () const
+double Quaternion::Norm () const
 {
 	return w*w+x*x+y*y+z*z;
 }
 //-----------------------------------------------------------------------
 Quaternion Quaternion::Inverse () const
 {
-	float fNorm = w*w+x*x+y*y+z*z;
+	double fNorm = w*w+x*x+y*y+z*z;
 	if ( fNorm > 0.0 )
 	{
-		float fInvNorm = 1.0f/fNorm;
+		double fInvNorm = 1.0f/fNorm;
 		return Quaternion(w*fInvNorm,-x*fInvNorm,-y*fInvNorm,-z*fInvNorm);
 	}
 	else
@@ -341,14 +341,14 @@ Quaternion Quaternion::Exp () const
 	// use exp(q) = cos(A)+A*(x*i+y*j+z*k) since A/sin(A) has limit 1.
 
 	Radian fAngle ( Math::Sqrt(x*x+y*y+z*z) );
-	float fSin = Math::Sin(fAngle);
+	double fSin = Math::Sin(fAngle);
 
 	Quaternion kResult;
 	kResult.w = Math::Cos(fAngle);
 
 	if ( Math::Abs(fSin) >= ms_fEpsilon )
 	{
-		float fCoeff = fSin/(fAngle.valueRadians());
+		double fCoeff = fSin/(fAngle.valueRadians());
 		kResult.x = fCoeff*x;
 		kResult.y = fCoeff*y;
 		kResult.z = fCoeff*z;
@@ -375,10 +375,10 @@ Quaternion Quaternion::Log () const
 	if ( Math::Abs(w) < 1.0f )
 	{
 		Radian fAngle ( Math::ACos(w) );
-		float fSin = Math::Sin(fAngle);
+		double fSin = Math::Sin(fAngle);
 		if ( Math::Abs(fSin) >= ms_fEpsilon )
 		{
-			float fCoeff = fAngle.valueRadians()/fSin;
+			double fCoeff = fAngle.valueRadians()/fSin;
 			kResult.x = fCoeff*x;
 			kResult.y = fCoeff*y;
 			kResult.z = fCoeff*z;
@@ -409,7 +409,7 @@ Vector3 Quaternion::operator* (const Vector3& v) const
 //-----------------------------------------------------------------------
 bool Quaternion::equals(const Quaternion& rhs, const Radian& tolerance) const
 {
-	float fCos = Dot(rhs);
+	double fCos = Dot(rhs);
 	Radian angle = Math::ACos(fCos);
 
 	return (Math::Abs(angle.valueRadians()) <= tolerance.valueRadians())
@@ -418,10 +418,10 @@ bool Quaternion::equals(const Quaternion& rhs, const Radian& tolerance) const
 
 }
 //-----------------------------------------------------------------------
-Quaternion Quaternion::Slerp (float fT, const Quaternion& rkP,
+Quaternion Quaternion::Slerp (double fT, const Quaternion& rkP,
 	const Quaternion& rkQ, bool shortestPath)
 {
-	float fCos = rkP.Dot(rkQ);
+	double fCos = rkP.Dot(rkQ);
 	Quaternion rkT;
 
 	// Do we need to invert rotation?
@@ -438,11 +438,11 @@ Quaternion Quaternion::Slerp (float fT, const Quaternion& rkP,
 	if (Math::Abs(fCos) < 1 - ms_fEpsilon)
 	{
 		// Standard case (slerp)
-		float fSin = Math::Sqrt(1 - Math::Sqr(fCos));
+		double fSin = Math::Sqrt(1 - Math::Sqr(fCos));
 		Radian fAngle = Math::ATan2(fSin, fCos);
-		float fInvSin = 1.0f / fSin;
-		float fCoeff0 = Math::Sin((1.0f - fT) * fAngle) * fInvSin;
-		float fCoeff1 = Math::Sin(fT * fAngle) * fInvSin;
+		double fInvSin = 1.0f / fSin;
+		double fCoeff0 = Math::Sin((1.0f - fT) * fAngle) * fInvSin;
+		double fCoeff1 = Math::Sin(fT * fAngle) * fInvSin;
 		return fCoeff0 * rkP + fCoeff1 * rkT;
 	}
 	else
@@ -460,20 +460,20 @@ Quaternion Quaternion::Slerp (float fT, const Quaternion& rkP,
 	}
 }
 //-----------------------------------------------------------------------
-Quaternion Quaternion::SlerpExtraSpins (float fT,
+Quaternion Quaternion::SlerpExtraSpins (double fT,
 	const Quaternion& rkP, const Quaternion& rkQ, int iExtraSpins)
 {
-	float fCos = rkP.Dot(rkQ);
+	double fCos = rkP.Dot(rkQ);
 	Radian fAngle ( Math::ACos(fCos) );
 
 	if ( Math::Abs(fAngle.valueRadians()) < ms_fEpsilon )
 		return rkP;
 
-	float fSin = Math::Sin(fAngle);
+	double fSin = Math::Sin(fAngle);
 	Radian fPhase ( Math::PI*iExtraSpins*fT );
-	float fInvSin = 1.0f/fSin;
-	float fCoeff0 = Math::Sin((1.0f-fT)*fAngle - fPhase)*fInvSin;
-	float fCoeff1 = Math::Sin(fT*fAngle + fPhase)*fInvSin;
+	double fInvSin = 1.0f/fSin;
+	double fCoeff0 = Math::Sin((1.0f-fT)*fAngle - fPhase)*fInvSin;
+	double fCoeff1 = Math::Sin(fT*fAngle + fPhase)*fInvSin;
 	return fCoeff0*rkP + fCoeff1*rkQ;
 }
 //-----------------------------------------------------------------------
@@ -494,20 +494,20 @@ void Quaternion::Intermediate (const Quaternion& rkQ0,
 	rkB = rkQ1*kMinusArg.Exp();
 }
 //-----------------------------------------------------------------------
-Quaternion Quaternion::Squad (float fT,
+Quaternion Quaternion::Squad (double fT,
 	const Quaternion& rkP, const Quaternion& rkA,
 	const Quaternion& rkB, const Quaternion& rkQ, bool shortestPath)
 {
-	float fSlerpT = 2.0f*fT*(1.0f-fT);
+	double fSlerpT = 2.0f*fT*(1.0f-fT);
 	Quaternion kSlerpP = Slerp(fT, rkP, rkQ, shortestPath);
 	Quaternion kSlerpQ = Slerp(fT, rkA, rkB);
 	return Slerp(fSlerpT, kSlerpP ,kSlerpQ);
 }
 //-----------------------------------------------------------------------
-float Quaternion::normalise(void)
+double Quaternion::normalise(void)
 {
-	float len = Norm();
-	float factor = 1.0f / Math::Sqrt(len);
+	double len = Norm();
+	double factor = 1.0f / Math::Sqrt(len);
 	*this = *this * factor;
 	return len;
 }
@@ -519,12 +519,12 @@ Radian Quaternion::getRoll(bool reprojectAxis) const
 		// roll = atan2(localx.y, localx.x)
 		// pick parts of xAxis() implementation that we need
 		//			Real fTx  = 2.0f*x;
-		float fTy  = 2.0f*y;
-		float fTz  = 2.0f*z;
-		float fTwz = fTz*w;
-		float fTxy = fTy*x;
-		float fTyy = fTy*y;
-		float fTzz = fTz*z;
+		double fTy  = 2.0f*y;
+		double fTz  = 2.0f*z;
+		double fTwz = fTz*w;
+		double fTxy = fTy*x;
+		double fTyy = fTy*y;
+		double fTzz = fTz*z;
 
 		// Vector3(1.0f-(fTyy+fTzz), fTxy+fTwz, fTxz-fTwy);
 
@@ -543,13 +543,13 @@ Radian Quaternion::getPitch(bool reprojectAxis) const
 	{
 		// pitch = atan2(localy.z, localy.y)
 		// pick parts of yAxis() implementation that we need
-		float fTx  = 2.0f*x;
+		double fTx  = 2.0f*x;
 		//			Real fTy  = 2.0f*y;
-		float fTz  = 2.0f*z;
-		float fTwx = fTx*w;
-		float fTxx = fTx*x;
-		float fTyz = fTz*y;
-		float fTzz = fTz*z;
+		double fTz  = 2.0f*z;
+		double fTwx = fTx*w;
+		double fTxx = fTx*x;
+		double fTyz = fTz*y;
+		double fTzz = fTz*z;
 
 		// Vector3(fTxy-fTwz, 1.0f-(fTxx+fTzz), fTyz+fTwx);
 		return Radian(Math::ATan2(fTyz+fTwx, 1.0f-(fTxx+fTzz)));
@@ -567,13 +567,13 @@ Radian Quaternion::getYaw(bool reprojectAxis) const
 	{
 		// yaw = atan2(localz.x, localz.z)
 		// pick parts of zAxis() implementation that we need
-		float fTx  = 2.0f*x;
-		float fTy  = 2.0f*y;
-		float fTz  = 2.0f*z;
-		float fTwy = fTy*w;
-		float fTxx = fTx*x;
-		float fTxz = fTz*x;
-		float fTyy = fTy*y;
+		double fTx  = 2.0f*x;
+		double fTy  = 2.0f*y;
+		double fTz  = 2.0f*z;
+		double fTwy = fTy*w;
+		double fTxx = fTx*x;
+		double fTxz = fTz*x;
+		double fTyy = fTy*y;
 
 		// Vector3(fTxz+fTwy, fTyz-fTwx, 1.0f-(fTxx+fTyy));
 
@@ -587,11 +587,11 @@ Radian Quaternion::getYaw(bool reprojectAxis) const
 	}
 }
 //-----------------------------------------------------------------------
-Quaternion Quaternion::nlerp(float fT, const Quaternion& rkP,
+Quaternion Quaternion::nlerp(double fT, const Quaternion& rkP,
 	const Quaternion& rkQ, bool shortestPath)
 {
 	Quaternion result;
-	float fCos = rkP.Dot(rkQ);
+	double fCos = rkP.Dot(rkQ);
 	if (fCos < 0.0 && shortestPath)
 	{
 		result = rkP + fT * ((-rkQ) - rkP);

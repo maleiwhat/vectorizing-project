@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <algorithm>
 #include <iterator>
 #include "CvExtenstion.h"
@@ -813,7 +815,7 @@ Lines ComputeEdgeLine2(const cv::Mat& image)
 				res.push_back(line);
 				// debug use
 // 				cv::imshow("tImage", tImage);
-// 
+//
 // 				cv::Mat drawing = cv::Mat::zeros(tImage.size(), CV_8UC3),
 // 					show3u3 = cv::Mat::zeros(tImage.size(), CV_8UC3);;
 // 				cv::RNG rng(12345);
@@ -821,7 +823,7 @@ Lines ComputeEdgeLine2(const cv::Mat& image)
 // 				{
 // 					cv::Vec3b color(rng.uniform(100, 255), rng.uniform(100, 255), rng.uniform(100, 255));
 // 					Line& now_line = res[i];
-// 
+//
 // 					for (int j = 0; j < now_line.size(); ++j)
 // 					{
 // 						if (j != 0)
@@ -832,7 +834,7 @@ Lines ComputeEdgeLine2(const cv::Mat& image)
 // 						}
 // 					}
 // 				}
-// 
+//
 // 				imshow("drawing", show3u3);
 // 				cv::waitKey();
 			}
@@ -3029,45 +3031,165 @@ void GetSkeletonLine(cv::Mat bmap, Lines& lines, float_vector2d& linewidths)
 			now_linewidth[j] = minwidth;
 		}
 	}
-	
 }
 
-void ComputeLines(cv::Mat img, Lines& lines, float_vector2d& linewidths)
+void ComputeLines(cv::Mat img, Lines& lines, float_vector2d& linewidths, Lines& lines2)
 {
 	cv::Mat img1u;
 	img.convertTo(img1u, CV_32FC3);
 	Collect_Water(img1u, img1u, 5, 5);
 	GetSkeletonLine(img1u, lines, linewidths);
+	lines2.resize(lines.size());
+	int j = 0;
 
-	for (auto it = lines.begin(); it != lines.end(); ++it)
+	// ¥­§¡¦UÂI
+// 	for (int count = 0; count < 1; count++)
+// 	{
+// 		for (int i = 0; i < lines.size(); ++i)
+// 		{
+// 			Line& cps = lines[i];
+// 			Line newcps;
+// 
+// 			if (cps.size() < 4) { continue; }
+// 
+// 			newcps.push_back(cps.front());
+// 
+// 			for (int j = 1; j < cps.size() - 1; j ++)
+// 			{
+// 				Vector2 vec = (cps[j] * 2 + cps[j + 1] * 0.5 + cps[j - 1] * 0.5) / 3.0f;
+// 				newcps.push_back(vec);
+// 			}
+// 
+// 			if (cps.back() != newcps.back())
+// 			{
+// 				newcps.push_back(cps.back());
+// 			}
+// 
+// 			cps = newcps;
+// 		}
+// 	}
+
+	for (int i = 0; i < lines.size(); ++i)
 	{
-		SplineShape ss;
-		algSpline sr, sg, sb;
+		Line& cps = lines[i];
+		Line newcps;
 
-		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
+		if (cps.size() < 5) { continue; }
+
+		newcps.push_back(cps.front());
+		Vector2 last(cps[1].x - cps[0].x , cps[1].y - cps[0].y);
+		int bigger0 = 0, smaller0 = 0;
+		int corner = 0;
+
+		for (int j = 1; j < cps.size() - 1; ++j)
 		{
-			ss.AddPoint(it2->x, it2->y);
+			Vector2 vec = cps[j + 1] - cps[j];
+			corner++;
+
+			if (last != vec)
+			{
+				double angle1 = atan2(last.x, last.y) / M_PI * 180;
+				double angle2 = atan2(vec.x, vec.y) / M_PI * 180;
+
+				if (angle2 - angle1 > 0)
+				{
+					bigger0++;
+					smaller0 = 0;
+				}
+				else if (angle2 - angle1 < 0)
+				{
+					bigger0 = 0;
+					smaller0++;
+				}
+
+				if (bigger0 > 1)
+				{
+					if (cps.back() != cps[j])
+					{
+						newcps.push_back(cps[j]);
+					}
+
+					corner = 0;
+				}
+				else if (smaller0 > 0)
+				{
+					if (cps.back() != cps[j])
+					{
+						newcps.push_back(cps[j]);
+					}
+
+					corner = 0;
+				}
+				else if (corner > 3)
+				{
+					if (cps.back() != cps[j])
+					{
+						newcps.push_back(cps[j]);
+					}
+
+					corner = 0;
+				}
+
+				last = vec;
+			}
+			else
+			{
+				if (corner > 10)
+				{
+					if (cps.back() != cps[j])
+					{
+						newcps.push_back(cps[j]);
+					}
+
+					corner = 0;
+				}
+			}
 		}
-		int	new_size = it->size() * 0.5;
 
-		if (new_size < 5) { continue;; }
-
-		float step = 1.f / (new_size);
-		it->clear();
-		ss.CurveFitting(0.4);
-		for (int i = 0; i <= new_size; ++i)
+		if (cps.back() != newcps.back())
 		{
-			float t = step * i;
-			Vector2 v = ss.GetPoint(t);
-			it->push_back(Vec2(v.x, v.y));
+			newcps.push_back(cps.back());
 		}
+
+		cps = newcps;
 	}
 
+// 	for (auto it = lines.begin(); it != lines.end(); ++it,++j)
+// 	{
+// 		SplineShape ss;
+// 		algSpline sr, sg, sb;
+//
+// 		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
+// 		{
+// 			ss.AddPoint(it2->x, it2->y);
+// 		}
+// 		int	new_size = it->size() * 0.5;
+//
+// 		if (new_size < 5) { continue;; }
+//
+// 		float step = 1.f / (new_size);
+// 		it->clear();
+// 		ss.CurveFitting(0.4);
+// 		for (int i = 0; i <= new_size; ++i)
+// 		{
+// 			float t = step * i;
+// 			Vector2 v = ss.GetPoint(t);
+// 			it->push_back(Vec2(v.x, v.y));
+// 		}
+// 		new_size = it->size() * 0.2;
+// 		step = 1.f / (new_size);
+// 		for (int i = 0; i <= new_size; ++i)
+// 		{
+// 			float t = step * i;
+// 			Vector2 v = ss.GetPoint(t);
+// 			lines2[j].push_back(Vec2(v.x, v.y));
+// 		}
+// 	}
 // 	for (int i = 0; i < linewidths.size(); ++i)
 // 	{
 // 		Line& now_line = lines[i];
 // 		float_vector& now_linewidth = linewidths[i];
-// 
+//
 // 		if (now_line.size() < 10)
 // 		{
 // 			continue;
@@ -3077,10 +3199,10 @@ void ComputeLines(cv::Mat img, Lines& lines, float_vector2d& linewidths)
 // 		now_line = Get_Values_From_C0_to_Cn(control_points, now_line.size());
 // 		std::cout << i << " " << now_line[0].x << ", " << now_line[0].y << " size: " << now_line.size() << std::endl;
 // 	}
-
 	cv::Mat drawing = cv::Mat::zeros(img.size(), CV_8UC3),
-		show3u3 = cv::Mat::zeros(img.size(), CV_8UC3);;
+	        show3u3 = cv::Mat::zeros(img.size(), CV_8UC3);;
 	cv::RNG rng(12345);
+
 	for (int i = 0; i < linewidths.size(); ++i)
 	{
 		cv::Vec3b color(rng.uniform(100, 255), rng.uniform(100, 255), rng.uniform(100, 255));

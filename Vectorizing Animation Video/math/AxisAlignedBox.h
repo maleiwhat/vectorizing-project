@@ -95,8 +95,8 @@ public:
 	}
 
 	inline AxisAlignedBox(
-		float mx, float my, float mz,
-		float Mx, float My, float Mz ) :mExtent(EXTENT_FINITE), mMinimum(Vector3::ZERO), mMaximum(Vector3::UNIT_SCALE), mpCorners(0)
+		double mx, double my, double mz,
+		double Mx, double My, double Mz ) :mExtent(EXTENT_FINITE), mMinimum(Vector3::ZERO), mMaximum(Vector3::UNIT_SCALE), mpCorners(0)
 	{
 		setExtents( mx, my, mz, Mx, My, Mz );
 	}
@@ -148,7 +148,7 @@ public:
 		mMinimum = vec;
 	}
 
-	inline void setMinimum( float x, float y, float z )
+	inline void setMinimum( double x, double y, double z )
 	{
 		mExtent = EXTENT_FINITE;
 		mMinimum.x = x;
@@ -159,17 +159,17 @@ public:
 	/** Changes one of the components of the minimum corner of the box
 	used to resize only one dimension of the box
 	*/
-	inline void setMinimumX(float x)
+	inline void setMinimumX(double x)
 	{
 		mMinimum.x = x;
 	}
 
-	inline void setMinimumY(float y)
+	inline void setMinimumY(double y)
 	{
 		mMinimum.y = y;
 	}
 
-	inline void setMinimumZ(float z)
+	inline void setMinimumZ(double z)
 	{
 		mMinimum.z = z;
 	}
@@ -182,7 +182,7 @@ public:
 		mMaximum = vec;
 	}
 
-	inline void setMaximum( float x, float y, float z )
+	inline void setMaximum( double x, double y, double z )
 	{
 		mExtent = EXTENT_FINITE;
 		mMaximum.x = x;
@@ -193,17 +193,17 @@ public:
 	/** Changes one of the components of the maximum corner of the box
 	used to resize only one dimension of the box
 	*/
-	inline void setMaximumX( float x )
+	inline void setMaximumX( double x )
 	{
 		mMaximum.x = x;
 	}
 
-	inline void setMaximumY( float y )
+	inline void setMaximumY( double y )
 	{
 		mMaximum.y = y;
 	}
 
-	inline void setMaximumZ( float z )
+	inline void setMaximumZ( double z )
 	{
 		mMaximum.z = z;
 	}
@@ -221,8 +221,8 @@ public:
 	}
 
 	inline void setExtents(
-		float mx, float my, float mz,
-		float Mx, float My, float Mz )
+		double mx, double my, double mz,
+		double Mx, double My, double Mz )
 	{
 		assert( (mx <= Mx && my <= My && mz <= Mz) &&
 			"The minimum corner of the box must be less than or equal to maximum corner" );
@@ -589,7 +589,7 @@ public:
 	}
 
 	/// Calculate the volume of this box
-	float volume(void) const
+	double volume(void) const
 	{
 		switch (mExtent)
 		{

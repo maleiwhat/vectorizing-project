@@ -42,13 +42,13 @@ THE SOFTWARE.
 		d = rhs.d;
 	}
 	//-----------------------------------------------------------------------
-	Plane::Plane (const Vector3& rkNormal, float fConstant)
+	Plane::Plane (const Vector3& rkNormal, double fConstant)
 	{
 		normal = rkNormal;
 		d = -fConstant;
 	}
 	//---------------------------------------------------------------------
-	Plane::Plane (float a, float b, float c, float _d)
+	Plane::Plane (double a, double b, double c, double _d)
 		: normal(a, b, c), d(_d)
 	{
 	}
@@ -64,14 +64,14 @@ THE SOFTWARE.
 		redefine(rkPoint0, rkPoint1, rkPoint2);
 	}
 	//-----------------------------------------------------------------------
-	float Plane::getDistance (const Vector3& rkPoint) const
+	double Plane::getDistance (const Vector3& rkPoint) const
 	{
 		return normal.dotProduct(rkPoint) + d;
 	}
 	//-----------------------------------------------------------------------
 	Plane::Side Plane::getSide (const Vector3& rkPoint) const
 	{
-		float fDistance = getDistance(rkPoint);
+		double fDistance = getDistance(rkPoint);
 
 		if ( fDistance < 0.0 )
 			return Plane::NEGATIVE_SIDE;
@@ -97,11 +97,11 @@ THE SOFTWARE.
     Plane::Side Plane::getSide (const Vector3& centre, const Vector3& halfSize) const
     {
         // Calculate the distance between box centre and the plane
-        float dist = getDistance(centre);
+        double dist = getDistance(centre);
 
         // Calculate the maximise allows absolute distance for
         // the distance between box centre and plane
-        float maxAbsDist = normal.absDotProduct(halfSize);
+        double maxAbsDist = normal.absDotProduct(halfSize);
 
         if (dist < -maxAbsDist)
             return Plane::NEGATIVE_SIDE;
@@ -145,14 +145,14 @@ THE SOFTWARE.
 
 	}
 	//-----------------------------------------------------------------------
-    float Plane::normalise(void)
+    double Plane::normalise(void)
     {
-        float fLength = normal.length();
+        double fLength = normal.length();
 
         // Will also work for zero-sized vectors, but will change nothing
         if (fLength > 1e-08f)
         {
-            float fInvLength = 1.0f / fLength;
+            double fInvLength = 1.0f / fLength;
             normal *= fInvLength;
             d *= fInvLength;
         }

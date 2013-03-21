@@ -20,17 +20,17 @@ public:
 	{
 		return m_points;
 	}
-	void AddPoint(float x, float y);
+	void AddPoint(double x, double y);
 	void AddPoint(const Vec2& p);
-	void Offset(float x, float y);
+	void Offset(double x, double y);
 	void Offset(const Vec2& v);
 	void Offset(const Vec3& v);
-	void SetAngle(float angle);
-	float GetAngle()
+	void SetAngle(double angle);
+	double GetAngle()
 	{
 		return m_angle;
 	}
-	void Rotation(float angle, const Vec2& middle = Vec2::ZERO);
+	void Rotation(double angle, const Vec2& middle = Vec2::ZERO);
 	bool IsCollision(const Polygon2D& rhs);
 	void CheckBuildEdges();
 	void Clear();
@@ -38,7 +38,7 @@ private:
 	void BuildEdges();
 	// Calculate the distance between [minA, maxA] and [minB, maxB]
 	// The distance will be negative if the intervals overlap
-	inline float IntervalDistance(float minA, float maxA, float minB, float maxB)
+	inline double IntervalDistance(double minA, double maxA, double minB, double maxB)
 	{
 		if (minA < minB) {
 			return minB - maxA;
@@ -47,9 +47,9 @@ private:
 		}
 	}
 	// Calculate the projection of a polygon on an axis and returns it as a [min, max] interval
-	void ProjectPolygon(const Vec2& axis, const Polygon2D& polygon, float* min, float* max);
+	void ProjectPolygon(const Vec2& axis, const Polygon2D& polygon, double* min, double* max);
 private:
-	float	m_angle;
+	double	m_angle;
 	Vec2s m_points, m_edges;
 	bool	m_needBuildEdges;
 	

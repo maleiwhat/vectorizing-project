@@ -179,6 +179,8 @@ void D3DApp::OnResize(int w, int h)
 		m_Points_Height->SetFloat(mClientHeight);
 		m_Lines_Width->SetFloat(mClientWidth);
 		m_Lines_Height->SetFloat(mClientHeight);
+		m_SkeletonLines_Width->SetFloat(mClientWidth);
+		m_SkeletonLines_Height->SetFloat(mClientHeight);
 	}
 
 	// Release the old views, as they hold references to the buffers we

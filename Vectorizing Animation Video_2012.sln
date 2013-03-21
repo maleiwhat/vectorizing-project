@@ -1,9 +1,12 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vectorizing Animation Video", "Vectorizing Animation Video\Vectorizing Animation Video_2012.vcxproj", "{0CED808C-DE1F-45E3-A3DD-CE8780DB1053}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vectorizing Animation Video_2012", "Vectorizing Animation Video\Vectorizing Animation Video_2012.vcxproj", "{0CED808C-DE1F-45E3-A3DD-CE8780DB1053}"
 EndProject
 Global
+	GlobalSection(CodealikeProperties) = postSolution
+		SolutionGuid = 1d4cb32d-9ae4-4618-965f-e3561f21cbaf
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64

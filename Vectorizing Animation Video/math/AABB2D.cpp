@@ -12,7 +12,7 @@ void AABB2D::AddPoint( const Vector2& p )
 		m_Min.y = p.y;
 }
 
-void AABB2D::Larger( float val )
+void AABB2D::Larger( double val )
 {
 	m_Min.x -= val;
 	m_Min.y -= val;
@@ -20,7 +20,7 @@ void AABB2D::Larger( float val )
 	m_Max.y += val;
 }
 
-void AABB2D::SetBounding( float left, float right, float top, float down )
+void AABB2D::SetBounding( double left, double right, double top, double down )
 {
 	m_Min.x = left;
 	m_Min.y = top;

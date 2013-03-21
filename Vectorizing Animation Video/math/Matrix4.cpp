@@ -50,7 +50,7 @@ const Matrix4 Matrix4::CLIPSPACE2DTOIMAGESPACE(
 	0,    0,  0,   1);
 
 //-----------------------------------------------------------------------
-inline static float
+inline static double
 	MINOR(const Matrix4& m, const size_t r0, const size_t r1, const size_t r2, 
 	const size_t c0, const size_t c1, const size_t c2)
 {
@@ -82,7 +82,7 @@ Matrix4 Matrix4::adjoint() const
 		MINOR(*this, 0, 1, 2, 0, 1, 2));
 }
 //-----------------------------------------------------------------------
-float Matrix4::determinant() const
+double Matrix4::determinant() const
 {
 	return m[0][0] * MINOR(*this, 1, 2, 3, 1, 2, 3) -
 		m[0][1] * MINOR(*this, 1, 2, 3, 0, 2, 3) +
@@ -92,34 +92,34 @@ float Matrix4::determinant() const
 //-----------------------------------------------------------------------
 Matrix4 Matrix4::inverse() const
 {
-	float m00 = m[0][0], m01 = m[0][1], m02 = m[0][2], m03 = m[0][3];
-	float m10 = m[1][0], m11 = m[1][1], m12 = m[1][2], m13 = m[1][3];
-	float m20 = m[2][0], m21 = m[2][1], m22 = m[2][2], m23 = m[2][3];
-	float m30 = m[3][0], m31 = m[3][1], m32 = m[3][2], m33 = m[3][3];
+	double m00 = m[0][0], m01 = m[0][1], m02 = m[0][2], m03 = m[0][3];
+	double m10 = m[1][0], m11 = m[1][1], m12 = m[1][2], m13 = m[1][3];
+	double m20 = m[2][0], m21 = m[2][1], m22 = m[2][2], m23 = m[2][3];
+	double m30 = m[3][0], m31 = m[3][1], m32 = m[3][2], m33 = m[3][3];
 
-	float v0 = m20 * m31 - m21 * m30;
-	float v1 = m20 * m32 - m22 * m30;
-	float v2 = m20 * m33 - m23 * m30;
-	float v3 = m21 * m32 - m22 * m31;
-	float v4 = m21 * m33 - m23 * m31;
-	float v5 = m22 * m33 - m23 * m32;
+	double v0 = m20 * m31 - m21 * m30;
+	double v1 = m20 * m32 - m22 * m30;
+	double v2 = m20 * m33 - m23 * m30;
+	double v3 = m21 * m32 - m22 * m31;
+	double v4 = m21 * m33 - m23 * m31;
+	double v5 = m22 * m33 - m23 * m32;
 
-	float t00 = + (v5 * m11 - v4 * m12 + v3 * m13);
-	float t10 = - (v5 * m10 - v2 * m12 + v1 * m13);
-	float t20 = + (v4 * m10 - v2 * m11 + v0 * m13);
-	float t30 = - (v3 * m10 - v1 * m11 + v0 * m12);
+	double t00 = + (v5 * m11 - v4 * m12 + v3 * m13);
+	double t10 = - (v5 * m10 - v2 * m12 + v1 * m13);
+	double t20 = + (v4 * m10 - v2 * m11 + v0 * m13);
+	double t30 = - (v3 * m10 - v1 * m11 + v0 * m12);
 
-	float invDet = 1 / (t00 * m00 + t10 * m01 + t20 * m02 + t30 * m03);
+	double invDet = 1 / (t00 * m00 + t10 * m01 + t20 * m02 + t30 * m03);
 
-	float d00 = t00 * invDet;
-	float d10 = t10 * invDet;
-	float d20 = t20 * invDet;
-	float d30 = t30 * invDet;
+	double d00 = t00 * invDet;
+	double d10 = t10 * invDet;
+	double d20 = t20 * invDet;
+	double d30 = t30 * invDet;
 
-	float d01 = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
-	float d11 = + (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
-	float d21 = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
-	float d31 = + (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
+	double d01 = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
+	double d11 = + (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
+	double d21 = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
+	double d31 = + (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
 
 	v0 = m10 * m31 - m11 * m30;
 	v1 = m10 * m32 - m12 * m30;
@@ -128,10 +128,10 @@ Matrix4 Matrix4::inverse() const
 	v4 = m11 * m33 - m13 * m31;
 	v5 = m12 * m33 - m13 * m32;
 
-	float d02 = + (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
-	float d12 = - (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
-	float d22 = + (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
-	float d32 = - (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
+	double d02 = + (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
+	double d12 = - (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
+	double d22 = + (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
+	double d32 = - (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
 
 	v0 = m21 * m10 - m20 * m11;
 	v1 = m22 * m10 - m20 * m12;
@@ -140,10 +140,10 @@ Matrix4 Matrix4::inverse() const
 	v4 = m23 * m11 - m21 * m13;
 	v5 = m23 * m12 - m22 * m13;
 
-	float d03 = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
-	float d13 = + (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
-	float d23 = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
-	float d33 = + (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
+	double d03 = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
+	double d13 = + (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
+	double d23 = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
+	double d33 = + (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
 
 	return Matrix4(
 		d00, d01, d02, d03,
@@ -156,38 +156,38 @@ Matrix4 Matrix4::inverseAffine(void) const
 {
 	assert(isAffine());
 
-	float m10 = m[1][0], m11 = m[1][1], m12 = m[1][2];
-	float m20 = m[2][0], m21 = m[2][1], m22 = m[2][2];
+	double m10 = m[1][0], m11 = m[1][1], m12 = m[1][2];
+	double m20 = m[2][0], m21 = m[2][1], m22 = m[2][2];
 
-	float t00 = m22 * m11 - m21 * m12;
-	float t10 = m20 * m12 - m22 * m10;
-	float t20 = m21 * m10 - m20 * m11;
+	double t00 = m22 * m11 - m21 * m12;
+	double t10 = m20 * m12 - m22 * m10;
+	double t20 = m21 * m10 - m20 * m11;
 
-	float m00 = m[0][0], m01 = m[0][1], m02 = m[0][2];
+	double m00 = m[0][0], m01 = m[0][1], m02 = m[0][2];
 
-	float invDet = 1 / (m00 * t00 + m01 * t10 + m02 * t20);
+	double invDet = 1 / (m00 * t00 + m01 * t10 + m02 * t20);
 
 	t00 *= invDet; t10 *= invDet; t20 *= invDet;
 
 	m00 *= invDet; m01 *= invDet; m02 *= invDet;
 
-	float r00 = t00;
-	float r01 = m02 * m21 - m01 * m22;
-	float r02 = m01 * m12 - m02 * m11;
+	double r00 = t00;
+	double r01 = m02 * m21 - m01 * m22;
+	double r02 = m01 * m12 - m02 * m11;
 
-	float r10 = t10;
-	float r11 = m00 * m22 - m02 * m20;
-	float r12 = m02 * m10 - m00 * m12;
+	double r10 = t10;
+	double r11 = m00 * m22 - m02 * m20;
+	double r12 = m02 * m10 - m00 * m12;
 
-	float r20 = t20;
-	float r21 = m01 * m20 - m00 * m21;
-	float r22 = m00 * m11 - m01 * m10;
+	double r20 = t20;
+	double r21 = m01 * m20 - m00 * m21;
+	double r22 = m00 * m11 - m01 * m10;
 
-	float m03 = m[0][3], m13 = m[1][3], m23 = m[2][3];
+	double m03 = m[0][3], m13 = m[1][3], m23 = m[2][3];
 
-	float r03 = - (r00 * m03 + r01 * m13 + r02 * m23);
-	float r13 = - (r10 * m03 + r11 * m13 + r12 * m23);
-	float r23 = - (r20 * m03 + r21 * m13 + r22 * m23);
+	double r03 = - (r00 * m03 + r01 * m13 + r02 * m23);
+	double r13 = - (r10 * m03 + r11 * m13 + r12 * m23);
+	double r23 = - (r20 * m03 + r21 * m13 + r22 * m23);
 
 	return Matrix4(
 		r00, r01, r02, r03,

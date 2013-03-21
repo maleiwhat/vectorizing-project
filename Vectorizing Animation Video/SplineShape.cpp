@@ -3,7 +3,7 @@
 
 using namespace alglib;
 
-SplineShape::SplineShape() : m_rho( 0.3 ), m_NeedBuildSpline( false )
+SplineShape::SplineShape() : m_rho( 1.5 ), m_NeedBuildSpline( false )
 {
 }
 

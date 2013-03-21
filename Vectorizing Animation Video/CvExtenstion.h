@@ -103,5 +103,5 @@ typedef std::vector<ColorPtrf> floatptrs;
 typedef std::vector<floatptrs> floatptrs2d;
 void GetMatrixb(int w, int h, Vec3bptrs& ary, int x, int y, cv::Mat& img);
 void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth);
-void GetSkeletonLine(cv::Mat bmap, Lines& lines, float_vector2d& linewidths);
-void ComputeLines(cv::Mat img, Lines& lines, float_vector2d& linewidths);
+void GetSkeletonLine(cv::Mat bmap, Lines& lines, double_vector2d& linewidths);
+void ComputeLines(cv::Mat img, Lines& lines, double_vector2d& linewidths, Lines& lines2);

@@ -35,7 +35,7 @@ bool Polygon2D::IsCollision( const Polygon2D& rhs )
 	CheckBuildEdges();
 	size_t edgeCountA = m_edges.size();
 	size_t edgeCountB = rhs.m_edges.size();
-	float minIntervalDistance = (float)INT_MAX;
+	double minIntervalDistance = (double)INT_MAX;
 	Vec2 edge;
 
 	// Loop through all the edges of both polygons
@@ -53,7 +53,7 @@ bool Polygon2D::IsCollision( const Polygon2D& rhs )
 		axis.normalise();
 
 		// Find the projection of the polygon on the current axis
-		float minA = 0; float minB = 0; float maxA = 0; float maxB = 0;
+		double minA = 0; double minB = 0; double maxA = 0; double maxB = 0;
 		ProjectPolygon(axis, *this, &minA, &maxA);
 		ProjectPolygon(axis, rhs, &minB, &maxB);
 
@@ -64,10 +64,10 @@ bool Polygon2D::IsCollision( const Polygon2D& rhs )
 	return true;
 }
 
-void Polygon2D::ProjectPolygon( const Vec2& axis, const Polygon2D& polygon, float* min, float* max )
+void Polygon2D::ProjectPolygon( const Vec2& axis, const Polygon2D& polygon, double* min, double* max )
 {
 	// To project a point on an axis use the dot product
-	float d = axis.dotProduct(polygon.m_points[0]);
+	double d = axis.dotProduct(polygon.m_points[0]);
 	*min = d;
 	*max = d;
 	for (size_t i = 0; i < polygon.m_points.size(); i++) {
@@ -91,7 +91,7 @@ void Polygon2D::CheckBuildEdges()
 	}
 }
 
-void Polygon2D::AddPoint( float x, float y )
+void Polygon2D::AddPoint( double x, double y )
 {
 	m_needBuildEdges = true;
 	m_points.push_back(Vec2(x, y));
@@ -103,7 +103,7 @@ void Polygon2D::AddPoint( const Vec2& p )
 	m_points.push_back(p);
 }
 
-void Polygon2D::Offset( float x, float y )
+void Polygon2D::Offset( double x, double y )
 {
 	for (Vec2s::iterator it = m_points.begin();
 		it != m_points.end();++it)
@@ -132,7 +132,7 @@ void Polygon2D::Offset( const Vec3& v )
 	}
 }
 
-void Polygon2D::SetAngle( float angle )
+void Polygon2D::SetAngle( double angle )
 {
 	for (Vec2s::iterator it = m_points.begin();
 		it != m_points.end();++it)
@@ -142,7 +142,7 @@ void Polygon2D::SetAngle( float angle )
 	m_angle = angle;
 }
 
-void Polygon2D::Rotation( float angle, const Vec2& middle /*= Vec2::ZERO*/ )
+void Polygon2D::Rotation( double angle, const Vec2& middle /*= Vec2::ZERO*/ )
 {
 	m_angle = angle;
 	for (Vec2s::iterator it = m_points.begin();

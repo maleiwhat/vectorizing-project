@@ -43,8 +43,8 @@ class Quaternion
 {
 public:
 	inline Quaternion (
-		float fW = 1.0,
-		float fX = 0.0, float fY = 0.0, float fZ = 0.0)
+		double fW = 1.0,
+		double fX = 0.0, double fY = 0.0, double fZ = 0.0)
 	{
 		w = fW;
 		x = fX;
@@ -72,9 +72,9 @@ public:
 		this->FromAxes(akAxis);
 	}
 	/// Construct a quaternion from 4 manual w/x/y/z values
-	inline Quaternion(float* valptr)
+	inline Quaternion(double* valptr)
 	{
-		memcpy(&w, valptr, sizeof(float)*4);
+		memcpy(&w, valptr, sizeof(double)*4);
 	}
 
 	/** Exchange the contents of this quaternion with another. 
@@ -88,7 +88,7 @@ public:
 	}
 
 	/// Array accessor operator
-	inline float operator [] ( const size_t i ) const
+	inline double operator [] ( const size_t i ) const
 	{
 		assert( i < 4 );
 
@@ -96,7 +96,7 @@ public:
 	}
 
 	/// Array accessor operator
-	inline float& operator [] ( const size_t i )
+	inline double& operator [] ( const size_t i )
 	{
 		assert( i < 4 );
 
@@ -104,13 +104,13 @@ public:
 	}
 
 	/// Pointer accessor for direct copying
-	inline float* ptr()
+	inline double* ptr()
 	{
 		return &w;
 	}
 
 	/// Pointer accessor for direct copying
-	inline const float* ptr() const
+	inline const double* ptr() const
 	{
 		return &w;
 	}
@@ -146,8 +146,8 @@ public:
 	Quaternion operator+ (const Quaternion& rkQ) const;
 	Quaternion operator- (const Quaternion& rkQ) const;
 	Quaternion operator* (const Quaternion& rkQ) const;
-	Quaternion operator* (float fScalar) const;
-	friend Quaternion operator* (float fScalar,
+	Quaternion operator* (double fScalar) const;
+	friend Quaternion operator* (double fScalar,
 		const Quaternion& rkQ);
 	Quaternion operator- () const;
 	inline bool operator== (const Quaternion& rhs) const
@@ -160,10 +160,10 @@ public:
 		return !operator==(rhs);
 	}
 	// functions of a quaternion
-	float Dot (const Quaternion& rkQ) const;  // dot product
-	float Norm () const;  // squared-length
+	double Dot (const Quaternion& rkQ) const;  // dot product
+	double Norm () const;  // squared-length
 	/// Normalises this quaternion, and returns the previous length
-	float normalise(void); 
+	double normalise(void); 
 	Quaternion Inverse () const;  // apply to non-zero quaternion
 	Quaternion UnitInverse () const;  // apply to unit-length quaternion
 	Quaternion Exp () const;
@@ -221,7 +221,7 @@ public:
 		v0.normalise();
 		v1.normalise();
 
-		float d = v0.dotProduct(v1);
+		double d = v0.dotProduct(v1);
 		// If dot == 1, vectors are the same
 		if (d >= 1.0)
 		{
@@ -246,8 +246,8 @@ public:
 		}
 		else
 		{
-			float s = Math::Sqrt( (1+d)*2 );
-			float invs = 1 / s;
+			double s = Math::Sqrt( (1+d)*2 );
+			double invs = 1 / s;
 
 			Vector3 c = v0.crossProduct(v1);
 
@@ -259,13 +259,13 @@ public:
 		}
 		return q;
 	}
-	static Vector3 GetRotation( const Vector3& src, float angle, const Vector3& middle_up = Vector3::NEGATIVE_UNIT_Z )
+	static Vector3 GetRotation( const Vector3& src, double angle, const Vector3& middle_up = Vector3::NEGATIVE_UNIT_Z )
 	{
 		Quaternion q;
 		q.FromAngleAxis( Degree(angle), middle_up );
 		return q * src;
 	}
-	static Vector2 GetRotation( const Vector2& src, float angle, const Vector2& middle = Vector2::ZERO )
+	static Vector2 GetRotation( const Vector2& src, double angle, const Vector2& middle = Vector2::ZERO )
 	{
 		Quaternion q;
 		Vec3 tmpsrc(src.x, src.y, 0);
@@ -275,10 +275,10 @@ public:
 		return Vec2(tmpsrc.x, tmpsrc.y);
 	}
 	// spherical linear interpolation
-	static Quaternion Slerp (float fT, const Quaternion& rkP,
+	static Quaternion Slerp (double fT, const Quaternion& rkP,
 		const Quaternion& rkQ, bool shortestPath = false);
 
-	static Quaternion SlerpExtraSpins (float fT,
+	static Quaternion SlerpExtraSpins (double fT,
 		const Quaternion& rkP, const Quaternion& rkQ,
 		int iExtraSpins);
 
@@ -288,22 +288,22 @@ public:
 		Quaternion& rka, Quaternion& rkB);
 
 	// spherical quadratic interpolation
-	static Quaternion Squad (float fT, const Quaternion& rkP,
+	static Quaternion Squad (double fT, const Quaternion& rkP,
 		const Quaternion& rkA, const Quaternion& rkB,
 		const Quaternion& rkQ, bool shortestPath = false);
 
 	// normalised linear interpolation - faster but less accurate (non-constant rotation velocity)
-	static Quaternion nlerp(float fT, const Quaternion& rkP, 
+	static Quaternion nlerp(double fT, const Quaternion& rkP, 
 		const Quaternion& rkQ, bool shortestPath = false);
 
 	// cutoff for sine near zero
-	static const float ms_fEpsilon;
+	static const double ms_fEpsilon;
 
 	// special values
 	static const Quaternion ZERO;
 	static const Quaternion IDENTITY;
 
-	float w, x, y, z;
+	double w, x, y, z;
 
 	/// Check whether this quaternion contains valid values
 	inline bool isNaN() const

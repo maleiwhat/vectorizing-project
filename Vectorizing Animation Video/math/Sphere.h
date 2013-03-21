@@ -38,7 +38,7 @@ THE SOFTWARE.
     class Sphere
     {
     protected:
-        float mRadius;
+        double mRadius;
         Vector3 mCenter;
     public:
         /** Standard constructor - creates a unit sphere around the origin.*/
@@ -47,14 +47,14 @@ THE SOFTWARE.
             @param center The center point of the sphere.
             @param radius The radius of the sphere.
         */
-        Sphere(const Vector3& center, float radius)
+        Sphere(const Vector3& center, double radius)
             : mRadius(radius), mCenter(center) {}
 
         /** Returns the radius of the sphere. */
-        float getRadius(void) const { return mRadius; }
+        double getRadius(void) const { return mRadius; }
 
         /** Sets the radius of the sphere. */
-        void setRadius(float radius) { mRadius = radius; }
+        void setRadius(double radius) { mRadius = radius; }
 
         /** Returns the center point of the sphere. */
         const Vector3& getCenter(void) const { return mCenter; }

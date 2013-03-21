@@ -16,8 +16,8 @@ public:
 	AABB2D(const Vector2& orgin)
 		:m_Min(orgin), m_Max(orgin)
 	{}
-	void Larger(float val);
-	void SetBounding( float left, float right, float top, float down );
+	void Larger(double val);
+	void SetBounding( double left, double right, double top, double down );
 	bool IsContain( const AABB2D& rhs );
 	bool IsCollision( const AABB2D& rhs );
 	Vector2 m_Min, m_Max;

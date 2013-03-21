@@ -33,10 +33,10 @@ THE SOFTWARE.
 #  pragma warning (push)
 #  pragma warning (disable : 4305)
 
-const float Matrix3::EPSILON = 1e-06;
+const double Matrix3::EPSILON = 1e-06;
 const Matrix3 Matrix3::ZERO(0,0,0,0,0,0,0,0,0);
 const Matrix3 Matrix3::IDENTITY(1,0,0,0,1,0,0,0,1);
-const float Matrix3::ms_fSvdEpsilon = 1e-04;
+const double Matrix3::ms_fSvdEpsilon = 1e-04;
 const unsigned int Matrix3::ms_iSvdMaxIterations = 32;
 
 //-----------------------------------------------------------------------
@@ -160,7 +160,7 @@ Matrix3 Matrix3::operator- () const
 	return kNeg;
 }
 //-----------------------------------------------------------------------
-Matrix3 Matrix3::operator* (float fScalar) const
+Matrix3 Matrix3::operator* (double fScalar) const
 {
 	Matrix3 kProd;
 	for (size_t iRow = 0; iRow < 3; iRow++)
@@ -171,7 +171,7 @@ Matrix3 Matrix3::operator* (float fScalar) const
 	return kProd;
 }
 //-----------------------------------------------------------------------
-Matrix3 operator* (float fScalar, const Matrix3& rkMatrix)
+Matrix3 operator* (double fScalar, const Matrix3& rkMatrix)
 {
 	Matrix3 kProd;
 	for (size_t iRow = 0; iRow < 3; iRow++)
@@ -193,7 +193,7 @@ Matrix3 Matrix3::Transpose () const
 	return kTranspose;
 }
 //-----------------------------------------------------------------------
-bool Matrix3::Inverse (Matrix3& rkInverse, float fTolerance) const
+bool Matrix3::Inverse (Matrix3& rkInverse, double fTolerance) const
 {
 	// Invert a 3x3 using cofactors.  This is about 8 times faster than
 	// the Numerical Recipes code which uses Gaussian elimination.
@@ -217,7 +217,7 @@ bool Matrix3::Inverse (Matrix3& rkInverse, float fTolerance) const
 	rkInverse[2][2] = m[0][0]*m[1][1] -
 		m[0][1]*m[1][0];
 
-	float fDet =
+	double fDet =
 		m[0][0]*rkInverse[0][0] +
 		m[0][1]*rkInverse[1][0]+
 		m[0][2]*rkInverse[2][0];
@@ -225,7 +225,7 @@ bool Matrix3::Inverse (Matrix3& rkInverse, float fTolerance) const
 	if ( Math::Abs(fDet) <= fTolerance )
 		return false;
 
-	float fInvDet = 1.0f/fDet;
+	double fInvDet = 1.0f/fDet;
 	for (size_t iRow = 0; iRow < 3; iRow++)
 	{
 		for (size_t iCol = 0; iCol < 3; iCol++)
@@ -235,23 +235,23 @@ bool Matrix3::Inverse (Matrix3& rkInverse, float fTolerance) const
 	return true;
 }
 //-----------------------------------------------------------------------
-Matrix3 Matrix3::Inverse (float fTolerance) const
+Matrix3 Matrix3::Inverse (double fTolerance) const
 {
 	Matrix3 kInverse = Matrix3::ZERO;
 	Inverse(kInverse,fTolerance);
 	return kInverse;
 }
 //-----------------------------------------------------------------------
-float Matrix3::Determinant () const
+double Matrix3::Determinant () const
 {
-	float fCofactor00 = m[1][1]*m[2][2] -
+	double fCofactor00 = m[1][1]*m[2][2] -
 		m[1][2]*m[2][1];
-	float fCofactor10 = m[1][2]*m[2][0] -
+	double fCofactor10 = m[1][2]*m[2][0] -
 		m[1][0]*m[2][2];
-	float fCofactor20 = m[1][0]*m[2][1] -
+	double fCofactor20 = m[1][0]*m[2][1] -
 		m[1][1]*m[2][0];
 
-	float fDet =
+	double fDet =
 		m[0][0]*fCofactor00 +
 		m[0][1]*fCofactor10 +
 		m[0][2]*fCofactor20;
@@ -262,8 +262,8 @@ float Matrix3::Determinant () const
 void Matrix3::Bidiagonalize (Matrix3& kA, Matrix3& kL,
 	Matrix3& kR)
 {
-	float afV[3], afW[3];
-	float fLength, fSign, fT1, fInvT1, fT2;
+	double afV[3], afW[3];
+	double fLength, fSign, fT1, fInvT1, fT2;
 	bool bIdentity;
 
 	// map first column to (*,0,0)
@@ -348,9 +348,9 @@ void Matrix3::Bidiagonalize (Matrix3& kA, Matrix3& kL,
 		kA[1][2] += afW[2];
 		kA[2][2] += afV[2]*afW[2];
 
-		float fA = 1.0f+fT2;
-		float fB = fT2*afV[2];
-		float fC = 1.0f+fB*afV[2];
+		double fA = 1.0f+fT2;
+		double fB = fT2*afV[2];
+		double fC = 1.0f+fB*afV[2];
 
 		if ( bIdentity )
 		{
@@ -365,8 +365,8 @@ void Matrix3::Bidiagonalize (Matrix3& kA, Matrix3& kL,
 		{
 			for (int iRow = 0; iRow < 3; iRow++)
 			{
-				float fTmp0 = kL[iRow][1];
-				float fTmp1 = kL[iRow][2];
+				double fTmp0 = kL[iRow][1];
+				double fTmp1 = kL[iRow][2];
 				kL[iRow][1] = fA*fTmp0+fB*fTmp1;
 				kL[iRow][2] = fB*fTmp0+fC*fTmp1;
 			}
@@ -377,25 +377,25 @@ void Matrix3::Bidiagonalize (Matrix3& kA, Matrix3& kL,
 void Matrix3::GolubKahanStep (Matrix3& kA, Matrix3& kL,
 	Matrix3& kR)
 {
-	float fT11 = kA[0][1]*kA[0][1]+kA[1][1]*kA[1][1];
-	float fT22 = kA[1][2]*kA[1][2]+kA[2][2]*kA[2][2];
-	float fT12 = kA[1][1]*kA[1][2];
-	float fTrace = fT11+fT22;
-	float fDiff = fT11-fT22;
-	float fDiscr = Math::Sqrt(fDiff*fDiff+4.0f*fT12*fT12);
-	float fRoot1 = 0.5f*(fTrace+fDiscr);
-	float fRoot2 = 0.5f*(fTrace-fDiscr);
+	double fT11 = kA[0][1]*kA[0][1]+kA[1][1]*kA[1][1];
+	double fT22 = kA[1][2]*kA[1][2]+kA[2][2]*kA[2][2];
+	double fT12 = kA[1][1]*kA[1][2];
+	double fTrace = fT11+fT22;
+	double fDiff = fT11-fT22;
+	double fDiscr = Math::Sqrt(fDiff*fDiff+4.0f*fT12*fT12);
+	double fRoot1 = 0.5f*(fTrace+fDiscr);
+	double fRoot2 = 0.5f*(fTrace-fDiscr);
 
 	// adjust right
-	float fY = kA[0][0] - (Math::Abs(fRoot1-fT22) <=
+	double fY = kA[0][0] - (Math::Abs(fRoot1-fT22) <=
 		Math::Abs(fRoot2-fT22) ? fRoot1 : fRoot2);
-	float fZ = kA[0][1];
-	float fInvLength = Math::InvSqrt(fY*fY+fZ*fZ);
-	float fSin = fZ*fInvLength;
-	float fCos = -fY*fInvLength;
+	double fZ = kA[0][1];
+	double fInvLength = Math::InvSqrt(fY*fY+fZ*fZ);
+	double fSin = fZ*fInvLength;
+	double fCos = -fY*fInvLength;
 
-	float fTmp0 = kA[0][0];
-	float fTmp1 = kA[0][1];
+	double fTmp0 = kA[0][0];
+	double fTmp1 = kA[0][1];
 	kA[0][0] = fCos*fTmp0-fSin*fTmp1;
 	kA[0][1] = fSin*fTmp0+fCos*fTmp1;
 	kA[1][0] = -fSin*kA[1][1];
@@ -491,9 +491,9 @@ void Matrix3::SingularValueDecomposition (Matrix3& kL, Vector3& kS,
 
 	for (unsigned int i = 0; i < ms_iSvdMaxIterations; i++)
 	{
-		float fTmp, fTmp0, fTmp1;
-		float fSin0, fCos0, fTan0;
-		float fSin1, fCos1, fTan1;
+		double fTmp, fTmp0, fTmp1;
+		double fSin0, fCos0, fTan0;
+		double fSin1, fCos1, fTan1;
 
 		bool bTest1 = (Math::Abs(kA[0][1]) <=
 			ms_fSvdEpsilon*(Math::Abs(kA[0][0])+Math::Abs(kA[1][1])));
@@ -640,7 +640,7 @@ void Matrix3::Orthonormalize ()
 	// product of vectors A and B.
 
 	// compute q0
-	float fInvLength = Math::InvSqrt(m[0][0]*m[0][0]
+	double fInvLength = Math::InvSqrt(m[0][0]*m[0][0]
 	+ m[1][0]*m[1][0] +
 		m[2][0]*m[2][0]);
 
@@ -649,7 +649,7 @@ void Matrix3::Orthonormalize ()
 	m[2][0] *= fInvLength;
 
 	// compute q1
-	float fDot0 =
+	double fDot0 =
 		m[0][0]*m[0][1] +
 		m[1][0]*m[1][1] +
 		m[2][0]*m[2][1];
@@ -667,7 +667,7 @@ void Matrix3::Orthonormalize ()
 	m[2][1] *= fInvLength;
 
 	// compute q2
-	float fDot1 =
+	double fDot1 =
 		m[0][1]*m[0][2] +
 		m[1][1]*m[1][2] +
 		m[2][1]*m[2][2];
@@ -721,14 +721,14 @@ void Matrix3::QDUDecomposition (Matrix3& kQ,
 	// U stores the entries U[0] = u01, U[1] = u02, U[2] = u12
 
 	// build orthogonal matrix Q
-	float fInvLength = Math::InvSqrt(m[0][0]*m[0][0]
+	double fInvLength = Math::InvSqrt(m[0][0]*m[0][0]
 	+ m[1][0]*m[1][0] +
 		m[2][0]*m[2][0]);
 	kQ[0][0] = m[0][0]*fInvLength;
 	kQ[1][0] = m[1][0]*fInvLength;
 	kQ[2][0] = m[2][0]*fInvLength;
 
-	float fDot = kQ[0][0]*m[0][1] + kQ[1][0]*m[1][1] +
+	double fDot = kQ[0][0]*m[0][1] + kQ[1][0]*m[1][1] +
 		kQ[2][0]*m[2][1];
 	kQ[0][1] = m[0][1]-fDot*kQ[0][0];
 	kQ[1][1] = m[1][1]-fDot*kQ[1][0];
@@ -756,7 +756,7 @@ void Matrix3::QDUDecomposition (Matrix3& kQ,
 	kQ[2][2] *= fInvLength;
 
 	// guarantee that orthogonal matrix has determinant 1 (no reflections)
-	float fDet = kQ[0][0]*kQ[1][1]*kQ[2][2] + kQ[0][1]*kQ[1][2]*kQ[2][0] +
+	double fDet = kQ[0][0]*kQ[1][1]*kQ[2][2] + kQ[0][1]*kQ[1][2]*kQ[2][0] +
 		kQ[0][2]*kQ[1][0]*kQ[2][1] - kQ[0][2]*kQ[1][1]*kQ[2][0] -
 		kQ[0][1]*kQ[1][0]*kQ[2][2] - kQ[0][0]*kQ[1][2]*kQ[2][1];
 
@@ -788,34 +788,34 @@ void Matrix3::QDUDecomposition (Matrix3& kQ,
 	kD[2] = kR[2][2];
 
 	// the shear component
-	float fInvD0 = 1.0f/kD[0];
+	double fInvD0 = 1.0f/kD[0];
 	kU[0] = kR[0][1]*fInvD0;
 	kU[1] = kR[0][2]*fInvD0;
 	kU[2] = kR[1][2]/kD[1];
 }
 //-----------------------------------------------------------------------
-float Matrix3::MaxCubicRoot (float afCoeff[3])
+double Matrix3::MaxCubicRoot (double afCoeff[3])
 {
 	// Spectral norm is for A^T*A, so characteristic polynomial
 	// P(x) = c[0]+c[1]*x+c[2]*x^2+x^3 has three positive real roots.
 	// This yields the assertions c[0] < 0 and c[2]*c[2] >= 3*c[1].
 
 	// quick out for uniform scale (triple root)
-	const float fOneThird = 1.0/3.0;
-	const float fEpsilon = 1e-06;
-	float fDiscr = afCoeff[2]*afCoeff[2] - 3.0f*afCoeff[1];
+	const double fOneThird = 1.0/3.0;
+	const double fEpsilon = 1e-06;
+	double fDiscr = afCoeff[2]*afCoeff[2] - 3.0f*afCoeff[1];
 	if ( fDiscr <= fEpsilon )
 		return -fOneThird*afCoeff[2];
 
 	// Compute an upper bound on roots of P(x).  This assumes that A^T*A
 	// has been scaled by its largest entry.
-	float fX = 1.0;
-	float fPoly = afCoeff[0]+fX*(afCoeff[1]+fX*(afCoeff[2]+fX));
+	double fX = 1.0;
+	double fPoly = afCoeff[0]+fX*(afCoeff[1]+fX*(afCoeff[2]+fX));
 	if ( fPoly < 0.0 )
 	{
 		// uses a matrix norm to find an upper bound on maximum root
 		fX = Math::Abs(afCoeff[0]);
-		float fTmp = 1.0f+Math::Abs(afCoeff[1]);
+		double fTmp = 1.0f+Math::Abs(afCoeff[1]);
 		if ( fTmp > fX )
 			fX = fTmp;
 		fTmp = 1.0f+Math::Abs(afCoeff[2]);
@@ -824,25 +824,25 @@ float Matrix3::MaxCubicRoot (float afCoeff[3])
 	}
 
 	// Newton's method to find root
-	float fTwoC2 = 2.0f*afCoeff[2];
+	double fTwoC2 = 2.0f*afCoeff[2];
 	for (int i = 0; i < 16; i++)
 	{
 		fPoly = afCoeff[0]+fX*(afCoeff[1]+fX*(afCoeff[2]+fX));
 		if ( Math::Abs(fPoly) <= fEpsilon )
 			return fX;
 
-		float fDeriv = afCoeff[1]+fX*(fTwoC2+3.0f*fX);
+		double fDeriv = afCoeff[1]+fX*(fTwoC2+3.0f*fX);
 		fX -= fPoly/fDeriv;
 	}
 
 	return fX;
 }
 //-----------------------------------------------------------------------
-float Matrix3::SpectralNorm () const
+double Matrix3::SpectralNorm () const
 {
 	Matrix3 kP;
 	size_t iRow, iCol;
-	float fPmax = 0.0;
+	double fPmax = 0.0;
 	for (iRow = 0; iRow < 3; iRow++)
 	{
 		for (iCol = 0; iCol < 3; iCol++)
@@ -858,14 +858,14 @@ float Matrix3::SpectralNorm () const
 		}
 	}
 
-	float fInvPmax = 1.0f/fPmax;
+	double fInvPmax = 1.0f/fPmax;
 	for (iRow = 0; iRow < 3; iRow++)
 	{
 		for (iCol = 0; iCol < 3; iCol++)
 			kP[iRow][iCol] *= fInvPmax;
 	}
 
-	float afCoeff[3];
+	double afCoeff[3];
 	afCoeff[0] = -(kP[0][0]*(kP[1][1]*kP[2][2]-kP[1][2]*kP[2][1]) +
 		kP[0][1]*(kP[2][0]*kP[1][2]-kP[1][0]*kP[2][2]) +
 		kP[0][2]*(kP[1][0]*kP[2][1]-kP[2][0]*kP[1][1]));
@@ -874,8 +874,8 @@ float Matrix3::SpectralNorm () const
 		kP[1][1]*kP[2][2]-kP[1][2]*kP[2][1];
 	afCoeff[2] = -(kP[0][0]+kP[1][1]+kP[2][2]);
 
-	float fRoot = MaxCubicRoot(afCoeff);
-	float fNorm = Math::Sqrt(fPmax*fRoot);
+	double fRoot = MaxCubicRoot(afCoeff);
+	double fNorm = Math::Sqrt(fPmax*fRoot);
 	return fNorm;
 }
 //-----------------------------------------------------------------------
@@ -903,8 +903,8 @@ void Matrix3::ToAxisAngle (Vector3& rkAxis, Radian& rfRadians) const
 	// z^2-1.  We can solve these for axis (x,y,z).  Because the angle is pi,
 	// it does not matter which sign you choose on the square roots.
 
-	float fTrace = m[0][0] + m[1][1] + m[2][2];
-	float fCos = 0.5f*(fTrace-1.0f);
+	double fTrace = m[0][0] + m[1][1] + m[2][2];
+	double fCos = 0.5f*(fTrace-1.0f);
 	rfRadians = Math::ACos(fCos);  // in [0,PI]
 
 	if ( rfRadians > Radian(0.0) )
@@ -919,7 +919,7 @@ void Matrix3::ToAxisAngle (Vector3& rkAxis, Radian& rfRadians) const
 		else
 		{
 			// angle is PI
-			float fHalfInverse;
+			double fHalfInverse;
 			if ( m[0][0] >= m[1][1] )
 			{
 				// r00 >= r11
@@ -978,18 +978,18 @@ void Matrix3::ToAxisAngle (Vector3& rkAxis, Radian& rfRadians) const
 //-----------------------------------------------------------------------
 void Matrix3::FromAxisAngle (const Vector3& rkAxis, const Radian& fRadians)
 {
-	float fCos = Math::Cos(fRadians);
-	float fSin = Math::Sin(fRadians);
-	float fOneMinusCos = 1.0f-fCos;
-	float fX2 = rkAxis.x*rkAxis.x;
-	float fY2 = rkAxis.y*rkAxis.y;
-	float fZ2 = rkAxis.z*rkAxis.z;
-	float fXYM = rkAxis.x*rkAxis.y*fOneMinusCos;
-	float fXZM = rkAxis.x*rkAxis.z*fOneMinusCos;
-	float fYZM = rkAxis.y*rkAxis.z*fOneMinusCos;
-	float fXSin = rkAxis.x*fSin;
-	float fYSin = rkAxis.y*fSin;
-	float fZSin = rkAxis.z*fSin;
+	double fCos = Math::Cos(fRadians);
+	double fSin = Math::Sin(fRadians);
+	double fOneMinusCos = 1.0f-fCos;
+	double fX2 = rkAxis.x*rkAxis.x;
+	double fY2 = rkAxis.y*rkAxis.y;
+	double fZ2 = rkAxis.z*rkAxis.z;
+	double fXYM = rkAxis.x*rkAxis.y*fOneMinusCos;
+	double fXZM = rkAxis.x*rkAxis.z*fOneMinusCos;
+	double fYZM = rkAxis.y*rkAxis.z*fOneMinusCos;
+	double fXSin = rkAxis.x*fSin;
+	double fYSin = rkAxis.y*fSin;
+	double fZSin = rkAxis.z*fSin;
 
 	m[0][0] = fX2*fOneMinusCos+fCos;
 	m[0][1] = fXYM-fZSin;
@@ -1215,7 +1215,7 @@ bool Matrix3::ToEulerAnglesZYX (Radian& rfYAngle, Radian& rfPAngle,
 void Matrix3::FromEulerAnglesXYZ (const Radian& fYAngle, const Radian& fPAngle,
 	const Radian& fRAngle)
 {
-	float fCos, fSin;
+	double fCos, fSin;
 
 	fCos = Math::Cos(fYAngle);
 	fSin = Math::Sin(fYAngle);
@@ -1235,7 +1235,7 @@ void Matrix3::FromEulerAnglesXYZ (const Radian& fYAngle, const Radian& fPAngle,
 void Matrix3::FromEulerAnglesXZY (const Radian& fYAngle, const Radian& fPAngle,
 	const Radian& fRAngle)
 {
-	float fCos, fSin;
+	double fCos, fSin;
 
 	fCos = Math::Cos(fYAngle);
 	fSin = Math::Sin(fYAngle);
@@ -1255,7 +1255,7 @@ void Matrix3::FromEulerAnglesXZY (const Radian& fYAngle, const Radian& fPAngle,
 void Matrix3::FromEulerAnglesYXZ (const Radian& fYAngle, const Radian& fPAngle,
 	const Radian& fRAngle)
 {
-	float fCos, fSin;
+	double fCos, fSin;
 
 	fCos = Math::Cos(fYAngle);
 	fSin = Math::Sin(fYAngle);
@@ -1275,7 +1275,7 @@ void Matrix3::FromEulerAnglesYXZ (const Radian& fYAngle, const Radian& fPAngle,
 void Matrix3::FromEulerAnglesYZX (const Radian& fYAngle, const Radian& fPAngle,
 	const Radian& fRAngle)
 {
-	float fCos, fSin;
+	double fCos, fSin;
 
 	fCos = Math::Cos(fYAngle);
 	fSin = Math::Sin(fYAngle);
@@ -1295,7 +1295,7 @@ void Matrix3::FromEulerAnglesYZX (const Radian& fYAngle, const Radian& fPAngle,
 void Matrix3::FromEulerAnglesZXY (const Radian& fYAngle, const Radian& fPAngle,
 	const Radian& fRAngle)
 {
-	float fCos, fSin;
+	double fCos, fSin;
 
 	fCos = Math::Cos(fYAngle);
 	fSin = Math::Sin(fYAngle);
@@ -1315,7 +1315,7 @@ void Matrix3::FromEulerAnglesZXY (const Radian& fYAngle, const Radian& fPAngle,
 void Matrix3::FromEulerAnglesZYX (const Radian& fYAngle, const Radian& fPAngle,
 	const Radian& fRAngle)
 {
-	float fCos, fSin;
+	double fCos, fSin;
 
 	fCos = Math::Cos(fYAngle);
 	fSin = Math::Sin(fYAngle);
@@ -1332,7 +1332,7 @@ void Matrix3::FromEulerAnglesZYX (const Radian& fYAngle, const Radian& fPAngle,
 	*this = kZMat*(kYMat*kXMat);
 }
 //-----------------------------------------------------------------------
-void Matrix3::Tridiagonal (float afDiag[3], float afSubDiag[3])
+void Matrix3::Tridiagonal (double afDiag[3], double afSubDiag[3])
 {
 	// Householder reduction T = Q^t M Q
 	//   Input:
@@ -1342,22 +1342,22 @@ void Matrix3::Tridiagonal (float afDiag[3], float afSubDiag[3])
 	//     diag, diagonal entries of T
 	//     subd, subdiagonal entries of T (T is symmetric)
 
-	float fA = m[0][0];
-	float fB = m[0][1];
-	float fC = m[0][2];
-	float fD = m[1][1];
-	float fE = m[1][2];
-	float fF = m[2][2];
+	double fA = m[0][0];
+	double fB = m[0][1];
+	double fC = m[0][2];
+	double fD = m[1][1];
+	double fE = m[1][2];
+	double fF = m[2][2];
 
 	afDiag[0] = fA;
 	afSubDiag[2] = 0.0;
 	if ( Math::Abs(fC) >= EPSILON )
 	{
-		float fLength = Math::Sqrt(fB*fB+fC*fC);
-		float fInvLength = 1.0f/fLength;
+		double fLength = Math::Sqrt(fB*fB+fC*fC);
+		double fInvLength = 1.0f/fLength;
 		fB *= fInvLength;
 		fC *= fInvLength;
-		float fQ = 2.0f*fB*fE+fC*(fF-fD);
+		double fQ = 2.0f*fB*fE+fC*(fF-fD);
 		afDiag[1] = fD+fC*fQ;
 		afDiag[2] = fF-fC*fQ;
 		afSubDiag[0] = fLength;
@@ -1390,7 +1390,7 @@ void Matrix3::Tridiagonal (float afDiag[3], float afSubDiag[3])
 	}
 }
 //-----------------------------------------------------------------------
-bool Matrix3::QLAlgorithm (float afDiag[3], float afSubDiag[3])
+bool Matrix3::QLAlgorithm (double afDiag[3], double afSubDiag[3])
 {
 	// QL iteration with implicit shifting to reduce matrix from tridiagonal
 	// to diagonal
@@ -1404,7 +1404,7 @@ bool Matrix3::QLAlgorithm (float afDiag[3], float afSubDiag[3])
 			int i1;
 			for (i1 = i0; i1 <= 1; i1++)
 			{
-				float fSum = Math::Abs(afDiag[i1]) +
+				double fSum = Math::Abs(afDiag[i1]) +
 					Math::Abs(afDiag[i1+1]);
 				if ( Math::Abs(afSubDiag[i1]) + fSum == fSum )
 					break;
@@ -1412,19 +1412,19 @@ bool Matrix3::QLAlgorithm (float afDiag[3], float afSubDiag[3])
 			if ( i1 == i0 )
 				break;
 
-			float fTmp0 = (afDiag[i0+1]-afDiag[i0])/(2.0f*afSubDiag[i0]);
-			float fTmp1 = Math::Sqrt(fTmp0*fTmp0+1.0f);
+			double fTmp0 = (afDiag[i0+1]-afDiag[i0])/(2.0f*afSubDiag[i0]);
+			double fTmp1 = Math::Sqrt(fTmp0*fTmp0+1.0f);
 			if ( fTmp0 < 0.0 )
 				fTmp0 = afDiag[i1]-afDiag[i0]+afSubDiag[i0]/(fTmp0-fTmp1);
 			else
 				fTmp0 = afDiag[i1]-afDiag[i0]+afSubDiag[i0]/(fTmp0+fTmp1);
-			float fSin = 1.0;
-			float fCos = 1.0;
-			float fTmp2 = 0.0;
+			double fSin = 1.0;
+			double fCos = 1.0;
+			double fTmp2 = 0.0;
 			for (int i2 = i1-1; i2 >= i0; i2--)
 			{
-				float fTmp3 = fSin*afSubDiag[i2];
-				float fTmp4 = fCos*afSubDiag[i2];
+				double fTmp3 = fSin*afSubDiag[i2];
+				double fTmp4 = fCos*afSubDiag[i2];
 				if ( Math::Abs(fTmp3) >= Math::Abs(fTmp0) )
 				{
 					fCos = fTmp0/fTmp3;
@@ -1471,11 +1471,11 @@ bool Matrix3::QLAlgorithm (float afDiag[3], float afSubDiag[3])
 	return true;
 }
 //-----------------------------------------------------------------------
-void Matrix3::EigenSolveSymmetric (float afEigenvalue[3],
+void Matrix3::EigenSolveSymmetric (double afEigenvalue[3],
 	Vector3 akEigenvector[3]) const
 {
 	Matrix3 kMatrix = *this;
-	float afSubDiag[3];
+	double afSubDiag[3];
 	kMatrix.Tridiagonal(afEigenvalue,afSubDiag);
 	kMatrix.QLAlgorithm(afEigenvalue,afSubDiag);
 
@@ -1488,7 +1488,7 @@ void Matrix3::EigenSolveSymmetric (float afEigenvalue[3],
 
 	// make eigenvectors form a right--handed system
 	Vector3 kCross = akEigenvector[1].crossProduct(akEigenvector[2]);
-	float fDet = akEigenvector[0].dotProduct(kCross);
+	double fDet = akEigenvector[0].dotProduct(kCross);
 	if ( fDet < 0.0 )
 	{
 		akEigenvector[2][0] = - akEigenvector[2][0];

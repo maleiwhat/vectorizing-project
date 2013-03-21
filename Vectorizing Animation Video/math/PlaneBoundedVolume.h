@@ -91,7 +91,7 @@ THE SOFTWARE.
                 const Plane& plane = *i;
 
                 // Test which side of the plane the sphere is
-                float d = plane.getDistance(sphere.getCenter());
+                double d = plane.getDistance(sphere.getCenter());
                 // Negate d if planes point inwards
                 if (outside == Plane::NEGATIVE_SIDE) d = -d;
 
@@ -107,7 +107,7 @@ THE SOFTWARE.
         @returns std::pair of hit (bool) and distance
         @remarks May return false positives but will never miss an intersection.
         */
-        inline std::pair<bool, float> intersects(const Ray& ray)
+        inline std::pair<bool, double> intersects(const Ray& ray)
         {
             return Math::intersects(ray, planes, outside == Plane::POSITIVE_SIDE);
         }

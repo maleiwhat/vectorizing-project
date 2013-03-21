@@ -75,8 +75,8 @@ class Matrix4
 protected:
 	/// The matrix entries, indexed by [row][col].
 	union {
-		float m[4][4];
-		float _m[16];
+		double m[4][4];
+		double _m[16];
 	};
 public:
 	/** Default constructor.
@@ -89,10 +89,10 @@ public:
 	}
 
 	inline Matrix4(
-		float m00, float m01, float m02, float m03,
-		float m10, float m11, float m12, float m13,
-		float m20, float m21, float m22, float m23,
-		float m30, float m31, float m32, float m33 )
+		double m00, double m01, double m02, double m03,
+		double m10, double m11, double m12, double m13,
+		double m20, double m21, double m22, double m23,
+		double m30, double m31, double m32, double m33 )
 	{
 		m[0][0] = m00;
 		m[0][1] = m01;
@@ -155,13 +155,13 @@ public:
 		std::swap(m[3][3], other.m[3][3]);
 	}
 
-	inline float* operator [] ( size_t iRow )
+	inline double* operator [] ( size_t iRow )
 	{
 		assert( iRow < 4 );
 		return m[iRow];
 	}
 
-	inline const float *operator [] ( size_t iRow ) const
+	inline const double *operator [] ( size_t iRow ) const
 	{
 		assert( iRow < 4 );
 		return m[iRow];
@@ -213,7 +213,7 @@ public:
 	{
 		Vector3 r;
 
-		float fInvW = 1.0f / ( m[3][0] * v.x + m[3][1] * v.y + m[3][2] * v.z + m[3][3] );
+		double fInvW = 1.0f / ( m[3][0] * v.x + m[3][1] * v.y + m[3][2] * v.z + m[3][3] );
 
 		r.x = ( m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] ) * fInvW;
 		r.y = ( m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3] ) * fInvW;
@@ -377,7 +377,7 @@ public:
 		m[3][0] = 0.0; m[3][1] = 0.0; m[3][2] = 0.0; m[3][3] = 1.0f;
 	}
 
-	inline void makeTrans( float tx, float ty, float tz )
+	inline void makeTrans( double tx, double ty, double tz )
 	{
 		m[0][0] = 1.0f; m[0][1] = 0.0; m[0][2] = 0.0; m[0][3] = tx;
 		m[1][0] = 0.0; m[1][1] = 1.0f; m[1][2] = 0.0; m[1][3] = ty;
@@ -401,7 +401,7 @@ public:
 
 	/** Gets a translation matrix - variation for not using a vector.
 	*/
-	inline static Matrix4 getTrans( float t_x, float t_y, float t_z )
+	inline static Matrix4 getTrans( double t_x, double t_y, double t_z )
 	{
 		Matrix4 r;
 
@@ -442,7 +442,7 @@ public:
 
 	/** Gets a scale matrix - variation for not using a vector.
 	*/
-	inline static Matrix4 getScale( float s_x, float s_y, float s_z )
+	inline static Matrix4 getScale( double s_x, double s_y, double s_z )
 	{
 		Matrix4 r;
 		r.m[0][0] = s_x; r.m[0][1] = 0.0; r.m[0][2] = 0.0; r.m[0][3] = 0.0;
@@ -474,14 +474,14 @@ public:
 	inline bool hasScale() const
 	{
 		// check magnitude of column vectors (==local axes)
-		float t = m[0][0] * m[0][0] + m[1][0] * m[1][0] + m[2][0] * m[2][0];
-		if (!Math::RealEqual(t, 1.0f, (float)1e-04))
+		double t = m[0][0] * m[0][0] + m[1][0] * m[1][0] + m[2][0] * m[2][0];
+		if (!Math::RealEqual(t, 1.0f, (double)1e-04))
 			return true;
 		t = m[0][1] * m[0][1] + m[1][1] * m[1][1] + m[2][1] * m[2][1];
-		if (!Math::RealEqual(t, 1.0f, (float)1e-04))
+		if (!Math::RealEqual(t, 1.0f, (double)1e-04))
 			return true;
 		t = m[0][2] * m[0][2] + m[1][2] * m[1][2] + m[2][2] * m[2][2];
-		if (!Math::RealEqual(t, 1.0f, (float)1e-04))
+		if (!Math::RealEqual(t, 1.0f, (double)1e-04))
 			return true;
 
 		return false;
@@ -508,7 +508,7 @@ public:
 	and inverts the Y. */
 	static const Matrix4 CLIPSPACE2DTOIMAGESPACE;
 
-	inline Matrix4 operator*(float scalar) const
+	inline Matrix4 operator*(double scalar) const
 	{
 		return Matrix4(
 			scalar*m[0][0], scalar*m[0][1], scalar*m[0][2], scalar*m[0][3],
@@ -537,7 +537,7 @@ public:
 	}
 
 	Matrix4 adjoint() const;
-	float determinant() const;
+	double determinant() const;
 	Matrix4 inverse() const;
 
 	/** Building a Matrix4 from orientation / scale / position.

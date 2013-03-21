@@ -12,21 +12,21 @@ namespace Ogre
 /*=============================================================================
  ASM math routines posted by davepermen et al on flipcode forums
 =============================================================================*/
-const float pi = 4.0f * atan( 1.0f );
-const float half_pi = 0.5f * pi;
+const double pi = 4.0f * atan( 1.0f );
+const double half_pi = 0.5f * pi;
 
 /*=============================================================================
 	NO EXPLICIT RETURN REQUIRED FROM THESE METHODS!! 
 =============================================================================*/
 #	pragma warning( disable: 4035 ) 
 
-float asm_arccos( float r ) {
+double asm_arccos( double r ) {
     // return half_pi + arctan( r / -sqr( 1.f - r * r ) );
 	
 #if  _M_IX86
 
-    float asm_one = 1.f;
-    float asm_half_pi = half_pi;
+    double asm_one = 1.f;
+    double asm_half_pi = half_pi;
     __asm {
         fld r // r0 = r
         fld r // r1 = r0, r0 = r
@@ -42,17 +42,17 @@ float asm_arccos( float r ) {
 
 #else
 
-	return float( acos( r ) );
+	return double( acos( r ) );
 
 #endif
 }
 
-float asm_arcsin( float r ) {
+double asm_arcsin( double r ) {
     // return arctan( r / sqr( 1.f - r * r ) );
 
 #if  _M_IX86
 
-    const float asm_one = 1.f;
+    const double asm_one = 1.f;
     __asm {
         fld r // r0 = r
         fld r // r1 = r0, r0 = r
@@ -66,13 +66,13 @@ float asm_arcsin( float r ) {
 
 #else
 
-	return float( asin( r ) );
+	return double( asin( r ) );
 
 #endif
 
 }
 
-float asm_arctan( float r ) {
+double asm_arctan( double r ) {
 
 #if  _M_IX86
 
@@ -84,13 +84,13 @@ float asm_arctan( float r ) {
 
 #else
 
-	return float( atan( r ) );
+	return double( atan( r ) );
 
 #endif
 
 }
 
-float asm_sin( float r ) {
+double asm_sin( double r ) {
 
 #if  _M_IX86
 
@@ -107,7 +107,7 @@ float asm_sin( float r ) {
 
 }
 
-float asm_cos( float r ) {
+double asm_cos( double r ) {
 
 #if  _M_IX86
 
@@ -123,7 +123,7 @@ float asm_cos( float r ) {
 #endif
 }
 
-float asm_tan( float r ) {
+double asm_tan( double r ) {
 
 #if  _M_IX86
 
@@ -144,7 +144,7 @@ float asm_tan( float r ) {
 }
 
 // returns a for a * a = r
-float asm_sqrt( float r )
+double asm_sqrt( double r )
 {
 #if  _M_IX86
 
@@ -162,7 +162,7 @@ float asm_sqrt( float r )
 
 // returns 1 / a for a * a = r
 // -- Use this for Vector normalisation!!!
-float asm_rsq( float r )
+double asm_rsq( double r )
 {
 #if  _M_IX86
 
@@ -182,12 +182,12 @@ float asm_rsq( float r )
 
 // returns 1 / a for a * a = r
 // Another version
-float apx_rsq( float r ) {
+double apx_rsq( double r ) {
 
 #if  _M_IX86
 
-    const float asm_dot5 = 0.5f;
-    const float asm_1dot5 = 1.5f;
+    const double asm_dot5 = 0.5f;
+    const double asm_1dot5 = 1.5f;
 
     __asm {
         fld r // r0 = r
@@ -216,7 +216,7 @@ float apx_rsq( float r ) {
 */
 #if  _M_IX86
 
-__declspec(naked) float __fastcall InvSqrt(float fValue)
+__declspec(naked) double __fastcall InvSqrt(double fValue)
 {
     __asm
     {
@@ -257,7 +257,7 @@ __declspec(naked) float __fastcall InvSqrt(float fValue)
 #endif
 
 // returns a random number
-__inline float asm_rand()
+__inline double asm_rand()
 {
 
 #if  _M_IX86
@@ -278,39 +278,39 @@ __inline float asm_rand()
 		emms
 	}
 
-	return float( q );
+	return double( q );
     #endif
   #else
     // VC6 does not support pshufw
-    return float( rand() );
+    return double( rand() );
   #endif
 #else
     // GCC etc
 
-	return float( rand() );
+	return double( rand() );
 
 #endif
 }
 
 // returns the maximum random number
-__inline float asm_rand_max()
+__inline double asm_rand_max()
 {
 #if  _M_IX86
-	return (std::numeric_limits< float >::max)();
+	return (std::numeric_limits< double >::max)();
 #else
-	return float( RAND_MAX );
+	return double( RAND_MAX );
 #endif
 }
 
 // returns log2( r ) / log2( e )
-float asm_ln( float r ) {    
+double asm_ln( double r ) {    
 
 #if  _M_IX86
 
-    const float asm_1_div_log2_e = .693147180559f;
-    const float asm_neg1_div_3 = -.33333333333333333333333333333f;
-    const float asm_neg2_div_3 = -.66666666666666666666666666667f;
-    const float asm_2 = 2.f;
+    const double asm_1_div_log2_e = .693147180559f;
+    const double asm_neg1_div_3 = -.33333333333333333333333333333f;
+    const double asm_neg2_div_3 = -.66666666666666666666666666667f;
+    const double asm_2 = 2.f;
 
     int log_2 = 0;
 

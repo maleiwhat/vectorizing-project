@@ -62,17 +62,17 @@ THE SOFTWARE.
                 It does <b>NOT</b> initialize the matrix for efficiency.
         */
 		inline Matrix3 () {}
-        inline explicit Matrix3 (const float arr[3][3])
+        inline explicit Matrix3 (const double arr[3][3])
 		{
-			memcpy(m,arr,9*sizeof(float));
+			memcpy(m,arr,9*sizeof(double));
 		}
         inline Matrix3 (const Matrix3& rkMatrix)
 		{
-			memcpy(m,rkMatrix.m,9*sizeof(float));
+			memcpy(m,rkMatrix.m,9*sizeof(double));
 		}
-        Matrix3 (float fEntry00, float fEntry01, float fEntry02,
-                    float fEntry10, float fEntry11, float fEntry12,
-                    float fEntry20, float fEntry21, float fEntry22)
+        Matrix3 (double fEntry00, double fEntry01, double fEntry02,
+                    double fEntry10, double fEntry11, double fEntry12,
+                    double fEntry20, double fEntry21, double fEntry22)
 		{
 			m[0][0] = fEntry00;
 			m[0][1] = fEntry01;
@@ -101,9 +101,9 @@ THE SOFTWARE.
 		}
 
         // member access, allows use of construct mat[r][c]
-        inline float* operator[] (size_t iRow) const
+        inline double* operator[] (size_t iRow) const
 		{
-			return (float*)m[iRow];
+			return (double*)m[iRow];
 		}
         /*inline operator Real* ()
 		{
@@ -116,7 +116,7 @@ THE SOFTWARE.
         // assignment and comparison
         inline Matrix3& operator= (const Matrix3& rkMatrix)
 		{
-			memcpy(m,rkMatrix.m,9*sizeof(float));
+			memcpy(m,rkMatrix.m,9*sizeof(double));
 			return *this;
 		}
         bool operator== (const Matrix3& rkMatrix) const;
@@ -139,16 +139,16 @@ THE SOFTWARE.
             const Matrix3& rkMatrix);
 
         // matrix * scalar
-        Matrix3 operator* (float fScalar) const;
+        Matrix3 operator* (double fScalar) const;
 
         // scalar * matrix
-        friend Matrix3 operator* (float fScalar, const Matrix3& rkMatrix);
+        friend Matrix3 operator* (double fScalar, const Matrix3& rkMatrix);
 
         // utilities
         Matrix3 Transpose () const;
-        bool Inverse (Matrix3& rkInverse, float fTolerance = 1e-06) const;
-        Matrix3 Inverse (float fTolerance = 1e-06) const;
-        float Determinant () const;
+        bool Inverse (Matrix3& rkInverse, double fTolerance = 1e-06) const;
+        Matrix3 Inverse (double fTolerance = 1e-06) const;
+        double Determinant () const;
 
         // singular value decomposition
         void SingularValueDecomposition (Matrix3& rkL, Vector3& rkS,
@@ -163,7 +163,7 @@ THE SOFTWARE.
         void QDUDecomposition (Matrix3& rkQ, Vector3& rkD,
             Vector3& rkU) const;
 
-        float SpectralNorm () const;
+        double SpectralNorm () const;
 
         // matrix must be orthonormal
         void ToAxisAngle (Vector3& rkAxis, Radian& rfAngle) const;
@@ -196,7 +196,7 @@ THE SOFTWARE.
         void FromEulerAnglesZXY (const Radian& fYAngle, const Radian& fPAngle, const Radian& fRAngle);
         void FromEulerAnglesZYX (const Radian& fYAngle, const Radian& fPAngle, const Radian& fRAngle);
         // eigensolver, matrix must be symmetric
-        void EigenSolveSymmetric (float afEigenvalue[3],
+        void EigenSolveSymmetric (double afEigenvalue[3],
             Vector3 akEigenvector[3]) const;
 
         static void TensorProduct (const Vector3& rkU, const Vector3& rkV,
@@ -206,14 +206,14 @@ THE SOFTWARE.
 		inline bool hasScale() const
 		{
 			// check magnitude of column vectors (==local axes)
-			float t = m[0][0] * m[0][0] + m[1][0] * m[1][0] + m[2][0] * m[2][0];
-			if (!Math::RealEqual(t, 1.0, (float)1e-04))
+			double t = m[0][0] * m[0][0] + m[1][0] * m[1][0] + m[2][0] * m[2][0];
+			if (!Math::RealEqual(t, 1.0, (double)1e-04))
 				return true;
 			t = m[0][1] * m[0][1] + m[1][1] * m[1][1] + m[2][1] * m[2][1];
-			if (!Math::RealEqual(t, 1.0, (float)1e-04))
+			if (!Math::RealEqual(t, 1.0, (double)1e-04))
 				return true;
 			t = m[0][2] * m[0][2] + m[1][2] * m[1][2] + m[2][2] * m[2][2];
-			if (!Math::RealEqual(t, 1.0, (float)1e-04))
+			if (!Math::RealEqual(t, 1.0, (double)1e-04))
 				return true;
 
 			return false;
@@ -230,17 +230,17 @@ THE SOFTWARE.
 			return o;
 		}
 
-        static const float EPSILON;
+        static const double EPSILON;
         static const Matrix3 ZERO;
         static const Matrix3 IDENTITY;
 
     protected:
         // support for eigensolver
-        void Tridiagonal (float afDiag[3], float afSubDiag[3]);
-        bool QLAlgorithm (float afDiag[3], float afSubDiag[3]);
+        void Tridiagonal (double afDiag[3], double afSubDiag[3]);
+        bool QLAlgorithm (double afDiag[3], double afSubDiag[3]);
 
         // support for singular value decomposition
-        static const float ms_fSvdEpsilon;
+        static const double ms_fSvdEpsilon;
         static const unsigned int ms_iSvdMaxIterations;
         static void Bidiagonalize (Matrix3& kA, Matrix3& kL,
             Matrix3& kR);
@@ -248,9 +248,9 @@ THE SOFTWARE.
             Matrix3& kR);
 
         // support for spectral norm
-        static float MaxCubicRoot (float afCoeff[3]);
+        static double MaxCubicRoot (double afCoeff[3]);
 
-        float m[3][3];
+        double m[3][3];
 
         // for faster access
         friend class Matrix4;

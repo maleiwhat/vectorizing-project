@@ -553,8 +553,9 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	m_CvPatchs = S2GetPatchs(m_vavImage, 0, 0);
 	ImageSpline is = S3GetPatchs(m_vavImage, 0, 0);
 	Lines line;
+	Lines line_control;
 	float_vector2d linewidths;
-	ComputeLines(m_vavImage, line, linewidths);
+	ComputeLines(m_vavImage, line, linewidths, line_control);
 	((VAV_View*)this->GetActiveView())->
 		m_D3DApp.AddLines(line, linewidths, m_vavImage.GetHeight());
 	TriangulationCgal_Patch cgal_patch;
@@ -576,13 +577,13 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles(), m_vavImage.GetHeight());
 	((VAV_View*)this->GetActiveView())->
 		m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles(), m_vavImage.GetHeight());
-	for (int i=0;i< is.m_ControlPoints.size();++i)
+	for (int i=0;i< line_control.size();++i)
 	{
 		D3DXVECTOR3 color;
 		color.x = rand()/(float)RAND_MAX;
 		color.y = rand()/(float)RAND_MAX;
 		color.z = rand()/(float)RAND_MAX;
-		Line& cps = is.m_ControlPoints[i].m_Points;
+		Line& cps = line_control[i];
 		for (int j=0;j<cps.size();++j)
 		{
 			((VAV_View*)this->GetActiveView())->

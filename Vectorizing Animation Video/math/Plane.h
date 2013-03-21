@@ -54,9 +54,9 @@ THE SOFTWARE.
         Plane ();
         Plane (const Plane& rhs);
         /** Construct a plane through a normal, and a distance to move the plane along the normal.*/
-        Plane (const Vector3& rkNormal, float fConstant);
+        Plane (const Vector3& rkNormal, double fConstant);
 		/** Construct a plane using the 4 constants directly **/
-		Plane (float a, float b, float c, float d);
+		Plane (double a, double b, double c, double d);
         Plane (const Vector3& rkNormal, const Vector3& rkPoint);
         Plane (const Vector3& rkPoint0, const Vector3& rkPoint1,
             const Vector3& rkPoint2);
@@ -100,7 +100,7 @@ THE SOFTWARE.
             The absolute value of the return value is the true distance only
             when the plane normal is a unit length vector.
         */
-        float getDistance (const Vector3& rkPoint) const;
+        double getDistance (const Vector3& rkPoint) const;
 
         /** Redefine this plane based on 3 points. */
         void redefine(const Vector3& rkPoint0, const Vector3& rkPoint1,
@@ -127,10 +127,10 @@ THE SOFTWARE.
                 will be no changes made to their components.
             @returns The previous length of the plane's normal.
         */
-        float normalise(void);
+        double normalise(void);
 
 		Vector3 normal;
-        float d;
+        double d;
 
         /// Comparison operator
         bool operator==(const Plane& rhs) const

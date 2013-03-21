@@ -36,21 +36,21 @@ THE SOFTWARE.
 #  pragma warning (disable : 4305)
 
 
-const float Math::POS_INFINITY = std::numeric_limits<float>::infinity();
-const float Math::NEG_INFINITY = -std::numeric_limits<float>::infinity();
-const float Math::PI = float( 4.0 * atan( 1.0 ) );
-const float Math::TWO_PI = float( 2.0 * PI );
-const float Math::HALF_PI = float( 0.5 * PI );
-const float Math::fDeg2Rad = PI / float(180.0);
-const float Math::fRad2Deg = float(180.0) / PI;
-const float Math::LOG2 = log(float(2.0));
+const double Math::POS_INFINITY = std::numeric_limits<double>::infinity();
+const double Math::NEG_INFINITY = -std::numeric_limits<double>::infinity();
+const double Math::PI = double( 4.0 * atan( 1.0 ) );
+const double Math::TWO_PI = double( 2.0 * PI );
+const double Math::HALF_PI = double( 0.5 * PI );
+const double Math::fDeg2Rad = PI / double(180.0);
+const double Math::fRad2Deg = double(180.0) / PI;
+const double Math::LOG2 = log(double(2.0));
 
 int Math::mTrigTableSize;
 Math::AngleUnit Math::msAngleUnit;
 
-float  Math::mTrigTableFactor;
-float *Math::mSinTable = NULL;
-float *Math::mTanTable = NULL;
+double  Math::mTrigTableFactor;
+double *Math::mSinTable = NULL;
+double *Math::mTanTable = NULL;
 
 //-----------------------------------------------------------------------
 Math::Math( unsigned int trigTableSize )
@@ -60,8 +60,8 @@ Math::Math( unsigned int trigTableSize )
 	mTrigTableSize = trigTableSize;
 	mTrigTableFactor = mTrigTableSize / Math::TWO_PI;
 
-	mSinTable = new float[mTrigTableSize];
-	mTanTable = new float[mTrigTableSize];
+	mSinTable = new double[mTrigTableSize];
+	mTanTable = new double[mTrigTableSize];
 
 	buildTrigTables();
 }
@@ -80,7 +80,7 @@ void Math::buildTrigTables(void)
 	// Could get away with building only PI sized Sin table but simpler this 
 	// way. Who cares, it'll ony use an extra 8k of memory anyway and I like 
 	// simplicity.
-	float angle;
+	double angle;
 	for (int i = 0; i < mTrigTableSize; ++i)
 	{
 		angle = Math::TWO_PI * i / mTrigTableSize;
@@ -89,7 +89,7 @@ void Math::buildTrigTables(void)
 	}
 }
 //-----------------------------------------------------------------------	
-float Math::SinTable (float fValue)
+double Math::SinTable (double fValue)
 {
 	// Convert range to index values, wrap if required
 	int idx;
@@ -105,7 +105,7 @@ float Math::SinTable (float fValue)
 	return mSinTable[idx];
 }
 //-----------------------------------------------------------------------
-float Math::TanTable (float fValue)
+double Math::TanTable (double fValue)
 {
 	// Convert range to index values, wrap if required
 	int idx = int(fValue *= mTrigTableFactor) % mTrigTableSize;
@@ -117,7 +117,7 @@ int Math::ISign (int iValue)
 	return ( iValue > 0 ? +1 : ( iValue < 0 ? -1 : 0 ) );
 }
 //-----------------------------------------------------------------------
-Radian Math::ACos (float fValue)
+Radian Math::ACos (double fValue)
 {
 	if ( -1.0 < fValue )
 	{
@@ -132,7 +132,7 @@ Radian Math::ACos (float fValue)
 	}
 }
 //-----------------------------------------------------------------------
-Radian Math::ASin (float fValue)
+Radian Math::ASin (double fValue)
 {
 	if ( -1.0 < fValue )
 	{
@@ -147,7 +147,7 @@ Radian Math::ASin (float fValue)
 	}
 }
 //-----------------------------------------------------------------------
-float Math::Sign (float fValue)
+double Math::Sign (double fValue)
 {
 	if ( fValue > 0.0 )
 		return 1.0;
@@ -158,19 +158,19 @@ float Math::Sign (float fValue)
 	return 0.0;
 }
 //-----------------------------------------------------------------------
-float Math::UnitRandom ()
+double Math::UnitRandom ()
 {
-	return (float)rand() / RAND_MAX;
+	return (double)rand() / RAND_MAX;
 }
 
 //-----------------------------------------------------------------------
-float Math::RangeRandom (float fLow, float fHigh)
+double Math::RangeRandom (double fLow, double fHigh)
 {
 	return (fHigh-fLow)*UnitRandom() + fLow;
 }
 
 //-----------------------------------------------------------------------
-float Math::SymmetricRandom ()
+double Math::SymmetricRandom ()
 {
 	return 2.0f * UnitRandom() - 1.0f;
 }
@@ -186,7 +186,7 @@ Math::AngleUnit Math::getAngleUnit(void)
 	return msAngleUnit;
 }
 //-----------------------------------------------------------------------
-float Math::AngleUnitsToRadians(float angleunits)
+double Math::AngleUnitsToRadians(double angleunits)
 {
 	if (msAngleUnit == AU_DEGREE)
 		return angleunits * fDeg2Rad;
@@ -195,7 +195,7 @@ float Math::AngleUnitsToRadians(float angleunits)
 }
 
 //-----------------------------------------------------------------------
-float Math::RadiansToAngleUnits(float radians)
+double Math::RadiansToAngleUnits(double radians)
 {
 	if (msAngleUnit == AU_DEGREE)
 		return radians * fRad2Deg;
@@ -204,7 +204,7 @@ float Math::RadiansToAngleUnits(float radians)
 }
 
 //-----------------------------------------------------------------------
-float Math::AngleUnitsToDegrees(float angleunits)
+double Math::AngleUnitsToDegrees(double angleunits)
 {
 	if (msAngleUnit == AU_RADIAN)
 		return angleunits * fRad2Deg;
@@ -213,7 +213,7 @@ float Math::AngleUnitsToDegrees(float angleunits)
 }
 
 //-----------------------------------------------------------------------
-float Math::DegreesToAngleUnits(float degrees)
+double Math::DegreesToAngleUnits(double degrees)
 {
 	if (msAngleUnit == AU_RADIAN)
 		return degrees * fDeg2Rad;
@@ -227,7 +227,7 @@ bool Math::pointInTri2D(const Vector2& p, const Vector2& a,
 {
 	// Winding must be consistent from all edges for point to be inside
 	Vector2 v1, v2;
-	float dot[3];
+	double dot[3];
 	bool zeroDot[3];
 
 	v1 = b - a;
@@ -275,7 +275,7 @@ bool Math::pointInTri3D(const Vector3& p, const Vector3& a,
 {
 	// Winding must be consistent from all edges for point to be inside
 	Vector3 v1, v2;
-	float dot[3];
+	double dot[3];
 	bool zeroDot[3];
 
 	v1 = b - a;
@@ -318,7 +318,7 @@ bool Math::pointInTri3D(const Vector3& p, const Vector3& a,
 	return true;
 }
 //-----------------------------------------------------------------------
-bool Math::RealEqual( float a, float b, float tolerance )
+bool Math::RealEqual( double a, double b, double tolerance )
 {
 	if (fabs(b-a) <= tolerance)
 		return true;
@@ -327,25 +327,25 @@ bool Math::RealEqual( float a, float b, float tolerance )
 }
 
 //-----------------------------------------------------------------------
-std::pair<bool, float> Math::intersects(const Ray& ray, const Plane& plane)
+std::pair<bool, double> Math::intersects(const Ray& ray, const Plane& plane)
 {
 
-	float denom = plane.normal.dotProduct(ray.getDirection());
-	if (Math::Abs(denom) < std::numeric_limits<float>::epsilon())
+	double denom = plane.normal.dotProduct(ray.getDirection());
+	if (Math::Abs(denom) < std::numeric_limits<double>::epsilon())
 	{
 		// Parallel
-		return std::pair<bool, float>(false, 0);
+		return std::pair<bool, double>(false, 0);
 	}
 	else
 	{
-		float nom = plane.normal.dotProduct(ray.getOrigin()) + plane.d;
-		float t = -(nom/denom);
-		return std::pair<bool, float>(t >= 0, t);
+		double nom = plane.normal.dotProduct(ray.getOrigin()) + plane.d;
+		double t = -(nom/denom);
+		return std::pair<bool, double>(t >= 0, t);
 	}
 
 }
 //-----------------------------------------------------------------------
-std::pair<bool, float> Math::intersects(const Ray& ray, 
+std::pair<bool, double> Math::intersects(const Ray& ray, 
 	const std::vector<Plane>& planes, bool normalIsOutside)
 {
 	std::list<Plane> planesList;
@@ -356,14 +356,14 @@ std::pair<bool, float> Math::intersects(const Ray& ray,
 	return intersects(ray, planesList, normalIsOutside);
 }
 //-----------------------------------------------------------------------
-std::pair<bool, float> Math::intersects(const Ray& ray, 
+std::pair<bool, double> Math::intersects(const Ray& ray, 
 	const std::list<Plane>& planes, bool normalIsOutside)
 {
 	std::list<Plane>::const_iterator planeit, planeitend;
 	planeitend = planes.end();
 	bool allInside = true;
-	std::pair<bool, float> ret;
-	std::pair<bool, float> end;
+	std::pair<bool, double> ret;
+	std::pair<bool, double> end;
 	ret.first = false;
 	ret.second = 0.0f;
 	end.first = false;
@@ -383,7 +383,7 @@ std::pair<bool, float> Math::intersects(const Ray& ray,
 		{
 			allInside = false;
 			// Test single plane
-			std::pair<bool, float> planeRes = 
+			std::pair<bool, double> planeRes = 
 				ray.intersects(plane);
 			if (planeRes.first)
 			{
@@ -401,7 +401,7 @@ std::pair<bool, float> Math::intersects(const Ray& ray,
 		}
 		else
 		{
-			std::pair<bool, float> planeRes = 
+			std::pair<bool, double> planeRes = 
 				ray.intersects(plane);
 			if (planeRes.first)
 			{
@@ -439,55 +439,55 @@ std::pair<bool, float> Math::intersects(const Ray& ray,
 	return ret;
 }
 //-----------------------------------------------------------------------
-std::pair<bool, float> Math::intersects(const Ray& ray, const Sphere& sphere, 
+std::pair<bool, double> Math::intersects(const Ray& ray, const Sphere& sphere, 
 	bool discardInside)
 {
 	const Vector3& raydir = ray.getDirection();
 	// Adjust ray origin relative to sphere center
 	const Vector3& rayorig = ray.getOrigin() - sphere.getCenter();
-	float radius = sphere.getRadius();
+	double radius = sphere.getRadius();
 
 	// Check origin inside first
 	if (rayorig.squaredLength() <= radius*radius && discardInside)
 	{
-		return std::pair<bool, float>(true, 0);
+		return std::pair<bool, double>(true, 0);
 	}
 
 	// Mmm, quadratics
 	// Build coeffs which can be used with std quadratic solver
 	// ie t = (-b +/- sqrt(b*b + 4ac)) / 2a
-	float a = raydir.dotProduct(raydir);
-	float b = 2 * rayorig.dotProduct(raydir);
-	float c = rayorig.dotProduct(rayorig) - radius*radius;
+	double a = raydir.dotProduct(raydir);
+	double b = 2 * rayorig.dotProduct(raydir);
+	double c = rayorig.dotProduct(rayorig) - radius*radius;
 
 	// Calc determinant
-	float d = (b*b) - (4 * a * c);
+	double d = (b*b) - (4 * a * c);
 	if (d < 0)
 	{
 		// No intersection
-		return std::pair<bool, float>(false, 0);
+		return std::pair<bool, double>(false, 0);
 	}
 	else
 	{
 		// BTW, if d=0 there is one intersection, if d > 0 there are 2
 		// But we only want the closest one, so that's ok, just use the 
 		// '-' version of the solver
-		float t = ( -b - Math::Sqrt(d) ) / (2 * a);
+		double t = ( -b - Math::Sqrt(d) ) / (2 * a);
 		if (t < 0)
 			t = ( -b + Math::Sqrt(d) ) / (2 * a);
-		return std::pair<bool, float>(true, t);
+		return std::pair<bool, double>(true, t);
 	}
 
 
 }
 //-----------------------------------------------------------------------
-std::pair<bool, float> Math::intersects(const Ray& ray, const AxisAlignedBox& box)
+std::pair<bool, double> Math::intersects(const Ray& ray, const AxisAlignedBox& box)
 {
-	if (box.isNull()) return std::pair<bool, float>(false, 0);
-	if (box.isInfinite()) return std::pair<bool, float>(true, 0);
+	if (box.isNull()) return std::pair<bool, double>(false, 0);
+	if (box.isInfinite()) return std::pair<bool, double>(true, 0);
 
-	float lowt = 0.0f;
-	float t;
+	double lowt = 0.0f;
+	double t;
 	bool hit = false;
 	Vector3 hitpoint;
 	const Vector3& min = box.getMinimum();
@@ -498,7 +498,7 @@ std::pair<bool, float> Math::intersects(const Ray& ray, const AxisAlignedBox& bo
 	// Check origin inside first
 	if ( rayorig > min && rayorig < max )
 	{
-		return std::pair<bool, float>(true, 0);
+		return std::pair<bool, double>(true, 0);
 	}
 
 	// Check each face in turn, only check closest 3
@@ -605,12 +605,12 @@ std::pair<bool, float> Math::intersects(const Ray& ray, const AxisAlignedBox& bo
 		}
 	}
 
-	return std::pair<bool, float>(hit, lowt);
+	return std::pair<bool, double>(hit, lowt);
 
 } 
 //-----------------------------------------------------------------------
 bool Math::intersects(const Ray& ray, const AxisAlignedBox& box,
-	float* d1, float* d2)
+	double* d1, double* d2)
 {
 	if (box.isNull())
 		return false;
@@ -632,7 +632,7 @@ bool Math::intersects(const Ray& ray, const AxisAlignedBox& box,
 	absDir[1] = Math::Abs(raydir[1]);
 	absDir[2] = Math::Abs(raydir[2]);
 
-	// Sort the axis, ensure check minimise floating error axis first
+	// Sort the axis, ensure check minimise doubleing error axis first
 	int imax = 0, imid = 1, imin = 2;
 	if (absDir[0] < absDir[2])
 	{
@@ -650,13 +650,13 @@ bool Math::intersects(const Ray& ray, const AxisAlignedBox& box,
 		imax = 1;
 	}
 
-	float start = 0, end = Math::POS_INFINITY;
+	double start = 0, end = Math::POS_INFINITY;
 
 #define _CALC_AXIS(i)                                       \
 	do {                                                    \
-	float denom = 1 / raydir[i];                         \
-	float newstart = (min[i] - rayorig[i]) * denom;      \
-	float newend = (max[i] - rayorig[i]) * denom;        \
+	double denom = 1 / raydir[i];                         \
+	double newstart = (min[i] - rayorig[i]) * denom;      \
+	double newend = (max[i] - rayorig[i]) * denom;        \
 	if (newstart > newend) std::swap(newstart, newend); \
 	if (newstart > end || newend < start) return false; \
 	if (newstart > start) start = newstart;             \
@@ -667,7 +667,7 @@ bool Math::intersects(const Ray& ray, const AxisAlignedBox& box,
 
 	_CALC_AXIS(imax);
 
-	if (absDir[imid] < std::numeric_limits<float>::epsilon())
+	if (absDir[imid] < std::numeric_limits<double>::epsilon())
 	{
 		// Parallel with middle and minimise axis, check bounds only
 		if (rayorig[imid] < min[imid] || rayorig[imid] > max[imid] ||
@@ -678,7 +678,7 @@ bool Math::intersects(const Ray& ray, const AxisAlignedBox& box,
 	{
 		_CALC_AXIS(imid);
 
-		if (absDir[imin] < std::numeric_limits<float>::epsilon())
+		if (absDir[imin] < std::numeric_limits<double>::epsilon())
 		{
 			// Parallel with minimise axis, check bounds only
 			if (rayorig[imin] < min[imin] || rayorig[imin] > max[imin])
@@ -697,33 +697,33 @@ bool Math::intersects(const Ray& ray, const AxisAlignedBox& box,
 	return true;
 }
 //-----------------------------------------------------------------------
-std::pair<bool, float> Math::intersects(const Ray& ray, const Vector3& a,
+std::pair<bool, double> Math::intersects(const Ray& ray, const Vector3& a,
 	const Vector3& b, const Vector3& c, const Vector3& normal,
 	bool positiveSide, bool negativeSide)
 {
 	//
 	// Calculate intersection with plane.
 	//
-	float t;
+	double t;
 	{
-		float denom = normal.dotProduct(ray.getDirection());
+		double denom = normal.dotProduct(ray.getDirection());
 
 		// Check intersect side
-		if (denom > + std::numeric_limits<float>::epsilon())
+		if (denom > + std::numeric_limits<double>::epsilon())
 		{
 			if (!negativeSide)
-				return std::pair<bool, float>(false, 0);
+				return std::pair<bool, double>(false, 0);
 		}
-		else if (denom < - std::numeric_limits<float>::epsilon())
+		else if (denom < - std::numeric_limits<double>::epsilon())
 		{
 			if (!positiveSide)
-				return std::pair<bool, float>(false, 0);
+				return std::pair<bool, double>(false, 0);
 		}
 		else
 		{
 			// Parallel or triangle area is close to zero when
 			// the plane normal not normalised.
-			return std::pair<bool, float>(false, 0);
+			return std::pair<bool, double>(false, 0);
 		}
 
 		t = normal.dotProduct(a - ray.getOrigin()) / denom;
@@ -731,7 +731,7 @@ std::pair<bool, float> Math::intersects(const Ray& ray, const Vector3& a,
 		if (t < 0)
 		{
 			// Intersection is behind origin
-			return std::pair<bool, float>(false, 0);
+			return std::pair<bool, double>(false, 0);
 		}
 	}
 
@@ -740,9 +740,9 @@ std::pair<bool, float> Math::intersects(const Ray& ray, const Vector3& a,
 	//
 	size_t i0, i1;
 	{
-		float n0 = Math::Abs(normal[0]);
-		float n1 = Math::Abs(normal[1]);
-		float n2 = Math::Abs(normal[2]);
+		double n0 = Math::Abs(normal[0]);
+		double n1 = Math::Abs(normal[1]);
+		double n2 = Math::Abs(normal[2]);
 
 		i0 = 1; i1 = 2;
 		if (n1 > n2)
@@ -759,38 +759,38 @@ std::pair<bool, float> Math::intersects(const Ray& ray, const Vector3& a,
 	// Check the intersection point is inside the triangle.
 	//
 	{
-		float u1 = b[i0] - a[i0];
-		float v1 = b[i1] - a[i1];
-		float u2 = c[i0] - a[i0];
-		float v2 = c[i1] - a[i1];
-		float u0 = t * ray.getDirection()[i0] + ray.getOrigin()[i0] - a[i0];
-		float v0 = t * ray.getDirection()[i1] + ray.getOrigin()[i1] - a[i1];
+		double u1 = b[i0] - a[i0];
+		double v1 = b[i1] - a[i1];
+		double u2 = c[i0] - a[i0];
+		double v2 = c[i1] - a[i1];
+		double u0 = t * ray.getDirection()[i0] + ray.getOrigin()[i0] - a[i0];
+		double v0 = t * ray.getDirection()[i1] + ray.getOrigin()[i1] - a[i1];
 
-		float alpha = u0 * v2 - u2 * v0;
-		float beta  = u1 * v0 - u0 * v1;
-		float area  = u1 * v2 - u2 * v1;
+		double alpha = u0 * v2 - u2 * v0;
+		double beta  = u1 * v0 - u0 * v1;
+		double area  = u1 * v2 - u2 * v1;
 
-		// epsilon to avoid float precision error
-		const float EPSILON = 1e-6f;
+		// epsilon to avoid double precision error
+		const double EPSILON = 1e-6f;
 
-		float tolerance = - EPSILON * area;
+		double tolerance = - EPSILON * area;
 
 		if (area > 0)
 		{
 			if (alpha < tolerance || beta < tolerance || alpha+beta > area-tolerance)
-				return std::pair<bool, float>(false, 0);
+				return std::pair<bool, double>(false, 0);
 		}
 		else
 		{
 			if (alpha > tolerance || beta > tolerance || alpha+beta < area-tolerance)
-				return std::pair<bool, float>(false, 0);
+				return std::pair<bool, double>(false, 0);
 		}
 	}
 
-	return std::pair<bool, float>(true, t);
+	return std::pair<bool, double>(true, t);
 }
 //-----------------------------------------------------------------------
-std::pair<bool, float> Math::intersects(const Ray& ray, const Vector3& a,
+std::pair<bool, double> Math::intersects(const Ray& ray, const Vector3& a,
 	const Vector3& b, const Vector3& c,
 	bool positiveSide, bool negativeSide)
 {
@@ -805,12 +805,12 @@ bool Math::intersects(const Sphere& sphere, const AxisAlignedBox& box)
 
 	// Use splitting planes
 	const Vector3& center = sphere.getCenter();
-	float radius = sphere.getRadius();
+	double radius = sphere.getRadius();
 	const Vector3& min = box.getMinimum();
 	const Vector3& max = box.getMaximum();
 
 	// Arvo's algorithm
-	float s, d = 0;
+	double s, d = 0;
 	for (int i = 0; i < 3; ++i)
 	{
 		if (center.ptr()[i] < min.ptr()[i])
@@ -842,7 +842,7 @@ bool Math::intersects(const Sphere& sphere, const Plane& plane)
 //-----------------------------------------------------------------------
 Vector3 Math::calculateTangentSpaceVector(
 	const Vector3& position1, const Vector3& position2, const Vector3& position3,
-	float u1, float v1, float u2, float v2, float u3, float v3)
+	double u1, double v1, double u2, double v2, double u3, double v3)
 {
 	//side0 is the vector along one side of the triangle of vertices passed in, 
 	//and side1 is the vector along another side. Taking the cross product of these returns the normal.
@@ -852,13 +852,13 @@ Vector3 Math::calculateTangentSpaceVector(
 	Vector3 normal = side1.crossProduct(side0);
 	normal.normalise();
 	//Now we use a formula to calculate the tangent. 
-	float deltaV0 = v1 - v2;
-	float deltaV1 = v3 - v1;
+	double deltaV0 = v1 - v2;
+	double deltaV1 = v3 - v1;
 	Vector3 tangent = deltaV1 * side0 - deltaV0 * side1;
 	tangent.normalise();
 	//Calculate binormal
-	float deltaU0 = u1 - u2;
-	float deltaU1 = u3 - u1;
+	double deltaU0 = u1 - u2;
+	double deltaU1 = u3 - u1;
 	Vector3 binormal = deltaU1 * side0 - deltaU0 * side1;
 	binormal.normalise();
 	//Now, we take the cross product of the tangents to get a vector which 
@@ -914,11 +914,11 @@ Vector3 Math::calculateBasicFaceNormalWithoutNormalize(const Vector3& v1, const 
 	return normal;
 }
 //-----------------------------------------------------------------------
-float Math::gaussianDistribution(float x, float offset, float scale)
+double Math::gaussianDistribution(double x, double offset, double scale)
 {
-	float nom = Math::Exp(
+	double nom = Math::Exp(
 		-Math::Sqr(x - offset) / (2 * Math::Sqr(scale)));
-	float denom = scale * Math::Sqrt(2 * Math::PI);
+	double denom = scale * Math::Sqrt(2 * Math::PI);
 
 	return nom / denom;
 
@@ -963,7 +963,7 @@ Matrix4 Math::makeViewMatrix(const Vector3& position, const Quaternion& orientat
 
 }
 //---------------------------------------------------------------------
-float Math::boundingRadiusFromAABB(const AxisAlignedBox& aabb)
+double Math::boundingRadiusFromAABB(const AxisAlignedBox& aabb)
 {
 	Vector3 max = aabb.getMaximum();
 	Vector3 min = aabb.getMinimum();
