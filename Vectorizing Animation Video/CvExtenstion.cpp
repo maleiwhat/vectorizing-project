@@ -1543,15 +1543,30 @@ void AddCathetus(CvPatchs& cvps, cv::Mat timage)
 void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2)
 {
 	tmp_image2 = cv::Scalar(0);
+	cv::RNG rng(12345);
 
 	for (auto it = tmp_cvps.begin(); it != tmp_cvps.end(); ++it)
 	{
+		int r = rng.uniform(100, 255);
+		int g = rng.uniform(100, 255);
+		int b = rng.uniform(100, 255);
+
 		for (auto it2 = it->Outer2().begin(); it2 != it->Outer2().end(); ++it2)
 		{
 			cv::Vec3b& intensity = tmp_image2.at<cv::Vec3b>(it2->y, it2->x);
-			intensity[0] = 255;
-			intensity[1] = 255;
-			intensity[2] = 255;
+			intensity[0] = r;
+			intensity[1] = g;
+			intensity[2] = b;
+		}
+		for (auto it2 = it->Inter().begin(); it2 != it->Inter().end(); ++it2)
+		{
+			for (auto it3 = it2->begin(); it3 != it2->end(); ++it3)
+			{
+				cv::Vec3b& intensity = tmp_image2.at<cv::Vec3b>(it3->y, it3->x);
+				intensity[0] = r;
+				intensity[1] = g;
+				intensity[2] = b;
+			}
 		}
 	}
 
@@ -1588,34 +1603,6 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 // 	imshow("gap", Der2);
 // 	cv::waitKey();
 	CvPatchs cvps;
-
-	for (int i = 1; i < image.rows - 1; i++)
-	{
-		for (int j = 1; j < image.cols - 1; j++)
-		{
-			S2FloodFill(image, mask, Der2, 20, j, i, dilation, erosion);
-		}
-	}
-
-	Erosion(mask, 1, 2);
-
-	for (int i = 1; i < mask.rows - 1; i++)
-	{
-		for (int j = 1; j < mask.cols - 1; j++)
-		{
-			uchar& v = mask.at<uchar>(i, j);
-			uchar& v2 = Der2.at<uchar>(i - 1, j - 1);
-
-			if (v > 0)
-			{
-				v2 = 0;
-			}
-			else
-			{
-				v2 = 255;
-			}
-		}
-	}
 
 	image0.copyTo(image);
 	mask = cv::Scalar::all(0);
@@ -1671,7 +1658,9 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
 	gap_image = cv::Scalar(0);
 	image = image0.clone();
-
+	cv::imshow("gap_image", gap_image);
+	cv::imshow("joint_mask", joint_mask);
+	cv::waitKey();
 	// Find Boundary
 	for (int i = 0; i < joint_mask.rows ; i++)
 	{
@@ -1750,7 +1739,8 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	joint_image.create(joint_mask.rows , joint_mask.cols , CV_8UC3);
 	joint_image = cv::Scalar::all(0);
 	Der2 = mask.clone();
-
+	cv::imshow("joint_mask", joint_mask);
+	cv::waitKey();
 	// show joint
 	for (int i = 0; i < joint_mask.rows ; i++)
 	{
@@ -1767,7 +1757,8 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			}
 		}
 	}
-
+	cv::imshow("joint_mask", joint_mask);
+	cv::waitKey();
 // 	// delete gap
 // 	gap_image = cv::Scalar::all(0);
 	tmp_image = joint_image.clone();
@@ -1874,35 +1865,10 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			intensity[2] = count / (255 * 255);
 		}
 
-// 		cv::namedWindow("joint_image", 0);
-// 		imshow("joint_image", tmp_image2);
-// 		cv::waitKey();
 		count++;
 	}
 
-// 	for (int i = 0; i < joint_mask.rows ; i++)
-// 	{
-// 		for (int j = 0; j < joint_mask.cols ; j++)
-// 		{
-// 			if (joint_mask.at<uchar>(i , j) == 255) // joint
-// 			{
-// 				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i, j);
-// 				v1[0] = 255;
-// 				v1[1] = 255;
-// 				v1[2] = 255;
-// 			}
-// 		}
-// 	}
-//	PatchLines res = GetPatchSplines(cvps, image);
 	ImageSpline  is = GetImageSpline(tmp_cvps, lines, tmp_image);
-// 	for (int i = 1; i < is.m_PatchSplines.size(); ++i)
-// 	{
-// 		visualize_patch_lines(is, i, gap_image);
-// 	}
-// 	for (int i = 0; i < res.size(); ++i)
-// 	{
-// 		is.AddPatchSpline(res[i]);
-// 	}
 	//is.ComputeToLineFragments();
 	is.ComputeToSplineFragments();
 	return is;
@@ -1913,16 +1879,16 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 	ImageSpline is;
 	LineFragments lfs;
 	PatchSplines pss;
+	PatchSplines psin;
 	int last_lineidx;
 	int patchid = 0;
 	printf("patchssize: %d\n", patchs.size());
-	cv::Mat vis = lineImage.clone();
+	is.m_CvPatchs = patchs;
 
 	for (auto it = patchs.begin(); it != patchs.end(); ++it, ++patchid)
 	{
 		last_lineidx = -1;
 		PatchSpline ps;
-		vis = cv::Scalar(0);
 
 		for (auto it2 = ++(it->Outer2().begin()); it2 != it->Outer2().end(); ++it2)
 		{
@@ -2021,7 +1987,122 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 
 		assert(start == end);
 		pss.push_back(ps);
+
+		if (it->Inter().size() == 0)
+		{
+			continue;
+		}
+
+		for (auto it2 = ++(it->Inter().begin()); it2 != it->Inter().end(); ++it2)
+		{
+			if (it2->size() < 4)
+			{
+				continue;
+			}
+			ps = PatchSpline();
+			for (auto it3 = ++(it2->begin()); it3 != it2->end(); ++it3)
+			{
+				cv::Vec3b& intensity = lineImage.at<cv::Vec3b>(it3->y, it3->x);
+				int hash = intensity[0] + intensity[1] * 255 + intensity[2] * 255 * 255;
+				hash -= 1;
+
+				if (hash != last_lineidx && hash >= 0)
+				{
+					Line& now_line = lines[hash];
+
+					if (*(now_line.begin() + 1) == Vector2(it3->x, it3->y))
+					{
+						last_lineidx = hash;
+						LineIndex li;
+						li.m_id = hash;
+
+						if (now_line.front() == Vector2((it3 - 1)->x, (it3 - 1)->y))
+						{
+							li.m_Forward = true;
+						}
+						else
+						{
+							li.m_Forward = false;
+						}
+
+						bool has_insert = false;
+
+						for (int i = 0; i < ps.m_LineIndexs.size(); ++i)
+						{
+							if (li.m_id == ps.m_LineIndexs[i].m_id)
+							{
+								has_insert = true;
+							}
+						}
+
+						if (!has_insert)
+						{
+							ps.m_LineIndexs.push_back(li);
+						}
+					}
+					else if (* (now_line.end() - 2) == Vector2(it3->x, it3->y))
+					{
+						last_lineidx = hash;
+						LineIndex li;
+						li.m_id = hash;
+
+						if (now_line.back() == Vector2((it3 - 1)->x, (it3 - 1)->y))
+						{
+							li.m_Forward = false;
+						}
+						else
+						{
+							li.m_Forward = true;
+						}
+
+						bool has_insert = false;
+
+						for (int i = 0; i < ps.m_LineIndexs.size(); ++i)
+						{
+							if (li.m_id == ps.m_LineIndexs[i].m_id)
+							{
+								has_insert = true;
+							}
+						}
+
+						if (!has_insert)
+						{
+							ps.m_LineIndexs.push_back(li);
+						}
+					}
+				}
+			}
+			if (ps.m_LineIndexs.empty())
+			{
+				continue;
+			}
+			LineIndex li2 = ps.m_LineIndexs.back();
+			LineIndex li1 = ps.m_LineIndexs.front();
+			Vector2 start, end;
+
+			if (li1.m_Forward)
+			{
+				start = lines[li1.m_id].front();
+			}
+			else
+			{
+				start = lines[li1.m_id].back();
+			}
+
+			if (li2.m_Forward)
+			{
+				end = lines[li2.m_id].back();
+			}
+			else
+			{
+				end = lines[li2.m_id].front();
+			}
+
+			assert(start == end);
+			psin.push_back(ps);
+		}
 	}
+
 
 	for (auto it = lines.begin(); it != lines.end(); ++it)
 	{
@@ -2033,6 +2114,7 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 
 	is.m_LineFragments = lfs;
 	is.m_PatchSplines = pss;
+	is.m_PatchSplinesInter = psin;
 	return is;
 }
 
@@ -2077,13 +2159,6 @@ void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int r
 		return;
 	}
 
-// 	if (image.at<cv::Vec3b>(y, x)[0] == 255
-// 		|| image.at<cv::Vec3b>(y, x)[1] == 255
-// 		|| image.at<cv::Vec3b>(y, x)[2] == 255
-// 		)
-// 	{
-// 		return;
-// 	}
 	cv::Point seed(x, y);
 	cv::Rect ccomp;
 	printf("cc %d\n", cc);
@@ -2247,6 +2322,110 @@ void S2FloodFill(cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int
 	}
 }
 
+void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int x, int y, CvPatchs& out_array, int dilation, int erosion)
+{
+	if (mask01.at<uchar>(y + 1, x + 1) > 0
+		|| mask02.at<uchar>(y , x) > 0)
+	{
+		return;
+	}
+
+	cv::Vec3b v = image.at<cv::Vec3b>(y, x);
+	int b = cc % 255;
+	int g = cc / 255 ;
+	int r = cc / (255 * 255);
+
+	if (v[0] == 0 && v[1] == 0 && v[2] == 0)
+	{
+		return;
+		b = 0;
+		g = 0;
+		r = 0;
+		cc--;
+	}
+
+	cv::Point seed(x, y);
+	cv::Rect ccomp;
+	printf("bcc %d\n", cc);
+	
+	cc++;
+	cv::Scalar newVal(b, g, r);
+	int area;
+	int lo = range;
+	int up = range;
+	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
+	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
+	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
+	                 cv::Scalar(up, up, up), flags);
+	// get Contour line
+	cv::Mat mask2 = mask01.clone();
+	ClearEdge(mask2);
+
+	for (int i = 1; i < mask2.rows - 1; i++)
+	{
+		for (int j = 1; j < mask2.cols - 1; j++)
+		{
+			uchar& v = mask2.at<uchar>(i, j);
+
+			if (v > 128)
+			{
+				v = 255;
+			}
+			else
+			{
+				v = 0;
+			}
+		}
+	}
+
+	CvPoints2d points;
+	cv::findContours(mask2, points, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+	double tarea = cv::contourArea(points.front());
+
+	if (dilation > 0)
+	{
+		Dilation(mask2, 1, dilation);
+	}
+
+	cv::Mat mask22 = mask2.clone();
+
+	if (erosion > 0)
+	{
+		Erosion(mask2, 1, erosion);
+	}
+
+	CvPoints2d points2;
+	cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+
+	for (int i = erosion - 1; i >= 0 && points2.empty(); --i)
+	{
+		mask2 = mask22.clone();
+
+		if (i > 0)
+		{
+			Erosion(mask2, 2, i);
+		}
+
+		cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+	}
+
+	CvPatch cvp;
+	cvp.Outer() = points.front();
+
+	if (points.size() > 1)
+	{
+		std::copy(points.begin() + 1, points.end(), std::back_inserter(cvp.Inter()));
+	}
+
+	cvp.Outer2() = points2.front();
+
+	if (points2.size() > 1)
+	{
+		std::copy(points2.begin() + 1, points2.end(), std::back_inserter(cvp.Inter2()));
+	}
+
+	out_array.push_back(cvp);
+}
 
 void LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y)
 {
@@ -2987,7 +3166,7 @@ void FillSmallHole(cv::Mat& patchImage)
 	cv::waitKey();
 }
 
-void GetSkeletonLine(cv::Mat bmap, Lines& lines, float_vector2d& linewidths)
+void GetSkeletonLine(cv::Mat bmap, Lines& lines, double_vector2d& linewidths)
 {
 	int rectw = 5, recth = 5;
 	floatptrs aryr(rectw * recth);
@@ -2997,13 +3176,13 @@ void GetSkeletonLine(cv::Mat bmap, Lines& lines, float_vector2d& linewidths)
 	normalize(skeleton, skeleton, 0, 255, cv::NORM_MINMAX);
 	imshow("skeleton", skeleton);
 	lines = ComputeEdgeLine2(skeleton);
-	float_vector2d().swap(linewidths);
+	double_vector2d().swap(linewidths);
 	linewidths.resize(lines.size());
 
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		Line& now_line = lines[i];
-		float_vector& now_linewidth = linewidths[i];
+		double_vector& now_linewidth = linewidths[i];
 		now_linewidth.resize(now_line.size());
 
 		for (int j = 0; j < now_line.size(); ++j)
@@ -3033,14 +3212,48 @@ void GetSkeletonLine(cv::Mat bmap, Lines& lines, float_vector2d& linewidths)
 	}
 }
 
-void ComputeLines(cv::Mat img, Lines& lines, float_vector2d& linewidths, Lines& lines2)
+ImageSpline ComputeLines(cv::Mat img, Lines& lines, double_vector2d& linewidths, Lines& lines2)
 {
-	cv::Mat img1u;
-	img.convertTo(img1u, CV_32FC3);
-	Collect_Water(img1u, img1u, 5, 5);
-	GetSkeletonLine(img1u, lines, linewidths);
+	cv::Mat image, mask, joint_image, mask2;
+	img.convertTo(image, CV_32FC3);
+	Collect_Water(image, image, 5, 5);
+	joint_image.create(image.rows, image.cols, CV_8UC3);
+	joint_image = cv::Scalar::all(0);
+	mask2 = joint_image.clone();
+	
+	for (int i = 0; i < joint_image.rows; i++)
+	{
+		for (int j = 0; j < joint_image.cols; j++)
+		{
+			if (image.at<float>(i, j) > 0)
+			{
+				cv::Vec3b& v = joint_image.at<cv::Vec3b>(i, j);
+				v[0] = 255;
+				v[1] = 255;
+				v[2] = 255;
+			}
+		}
+	}
+	cv::imshow("joint_image", joint_image);
+	cv::waitKey();
+	ImageSpline is = S4GetPatchs(joint_image, 0, 0);
+	return is;
+
+	mask.create(joint_image.rows + 2, joint_image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	CvPatchs tmp_cvps;
+	int cc = 0;
+
+	for (int i = 0; i < joint_image.rows - 1; i++)
+	{
+		for (int j = 0; j < joint_image.cols - 1; j++)
+		{
+			S3FloodFill(cc, joint_image, mask, mask2, 0, j, i, tmp_cvps);
+		}
+	}
+
+	GetSkeletonLine(image, lines, linewidths);
 	lines2.resize(lines.size());
-	int j = 0;
 
 	// ¥­§¡¦UÂI
 // 	for (int count = 0; count < 1; count++)
@@ -3049,22 +3262,22 @@ void ComputeLines(cv::Mat img, Lines& lines, float_vector2d& linewidths, Lines& 
 // 		{
 // 			Line& cps = lines[i];
 // 			Line newcps;
-// 
+//
 // 			if (cps.size() < 4) { continue; }
-// 
+//
 // 			newcps.push_back(cps.front());
-// 
+//
 // 			for (int j = 1; j < cps.size() - 1; j ++)
 // 			{
 // 				Vector2 vec = (cps[j] * 2 + cps[j + 1] * 0.5 + cps[j - 1] * 0.5) / 3.0f;
 // 				newcps.push_back(vec);
 // 			}
-// 
+//
 // 			if (cps.back() != newcps.back())
 // 			{
 // 				newcps.push_back(cps.back());
 // 			}
-// 
+//
 // 			cps = newcps;
 // 		}
 // 	}
@@ -3207,7 +3420,7 @@ void ComputeLines(cv::Mat img, Lines& lines, float_vector2d& linewidths, Lines& 
 	{
 		cv::Vec3b color(rng.uniform(100, 255), rng.uniform(100, 255), rng.uniform(100, 255));
 		Line& now_line = lines[i];
-		float_vector& now_linewidth = linewidths[i];
+		double_vector& now_linewidth = linewidths[i];
 
 		for (int j = 1; j < now_line.size(); ++j)
 		{
@@ -3221,5 +3434,266 @@ void ComputeLines(cv::Mat img, Lines& lines, float_vector2d& linewidths, Lines& 
 	}
 
 	imshow("drawing", show3u3);
+	//return tmp_cvps;
 }
 
+
+ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
+{
+	assert(image0.type() == CV_8UC3);
+	cv::Mat img1u, img2u, cImg2;
+	cImg2 = image0.clone();
+	cvtColor(image0, img1u, CV_BGR2GRAY);
+	cv::Mat srcImg1f, show3u = cv::Mat::zeros(img1u.size(), CV_8UC3);
+	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
+
+	cv::Mat mask, image, joint_mask, tmp_image, joint_image;
+	image0.copyTo(image);
+	joint_mask.create(image.rows * 2 + 1, image.cols * 2 + 1, CV_8UC1);
+	tmp_image.create(image.rows + 2, image.cols + 2, CV_8UC3);
+	joint_mask = cv::Scalar::all(0);
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	
+	CvPatchs cvps;
+
+	image0.copyTo(image);
+	mask = cv::Scalar::all(0);
+
+	int cc = 1;
+
+	for (int i = 1; i < image.rows - 1; i++)
+	{
+		for (int j = 1; j < image.cols - 1; j++)
+		{
+			S3FloodFill(cc, image, mask, joint_mask, 0, j, i, cvps, dilation, erosion);
+		}
+	}
+
+	// create bigger image to fix border problem
+	tmp_image = cv::Scalar::all(0);
+
+	for (int i = 0; i < image.rows ; i++)
+	{
+		for (int j = 0; j < image.cols ; j++)
+		{
+			tmp_image.at<cv::Vec3b>(i + 1, j + 1) = image.at<cv::Vec3b>(i , j);
+		}
+	}
+
+	cv::Mat gap_image;
+	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
+	gap_image = cv::Scalar(0);
+
+	// Find Boundary
+	for (int i = 0; i < joint_mask.rows ; i++)
+	{
+		for (int j = 0; j < joint_mask.cols ; j++)
+		{
+			int id2 = i % 2;
+			int jd2 = j % 2;
+			cv::Vec3b& v = tmp_image.at<cv::Vec3b>(i / 2, j / 2);
+
+			if ((v[0] + v[1] + v[2]) == 0)
+			{
+				if (i > 0 && j > 0)
+				{
+					gap_image.at<uchar>(i - 1 , j - 1) = 255;
+				}
+			}
+
+			if (id2 == 1 && jd2 == 1)
+			{
+				continue;
+			}
+
+			if (id2 == 0 && jd2 == 0)
+			{
+				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2, j / 2);
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2, j / 2 + 1);
+				cv::Vec3b& v3 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2);
+				cv::Vec3b& v4 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+
+				if (v1 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+
+				if (v1 != v3)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+
+				if (v4 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+
+				if (v4 != v3)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+			}
+			else if (id2 == 1)
+			{
+				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2);
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+
+				if (v1 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+			}
+			else if (jd2 == 1)
+			{
+				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2 , j / 2 + 1);
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+
+				if (v1 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+			}
+		}
+	}
+
+	mask.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	// create smaller image to fix border problem
+	joint_image.create(joint_mask.rows , joint_mask.cols , CV_8UC3);
+	joint_image = cv::Scalar::all(0);
+
+
+	// show joint
+	for (int i = 0; i < joint_mask.rows ; i++)
+	{
+		for (int j = 0; j < joint_mask.cols ; j++)
+		{
+			if (joint_mask.at<uchar>(i, j) >= 3) // joint
+			{
+				joint_mask.at<uchar>(i, j) = 255;
+				//printf("%d, %d\n", j, i);
+			}
+			else if (joint_mask.at<uchar>(i, j) > 0)
+			{
+				joint_mask.at<uchar>(i, j) = 60;
+			}
+		}
+	}
+
+	// 	// delete gap
+	// 	gap_image = cv::Scalar::all(0);
+	tmp_image = joint_image.clone();
+
+	for (int i = 0; i < joint_image.rows ; i++)
+	{
+		for (int j = 0; j < joint_image.cols ; j++)
+		{
+			if (joint_mask.at<uchar>(i , j) == 255) // joint
+			{
+				cv::Vec3b& v1 = joint_image.at<cv::Vec3b>(i, j);
+				v1[0] = 255;
+				v1[1] = 255;
+				v1[2] = 255;
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i, j);
+				v2[0] = 255;
+				v2[1] = 255;
+				v2[2] = 255;
+				gap_image.at<uchar>(i, j) = 128;
+			}
+			else if (joint_mask.at<uchar>(i , j) == 60)
+			{
+				cv::Vec3b& v1 = joint_image.at<cv::Vec3b>(i, j);
+				v1[0] = 255;
+				v1[1] = 255;
+				v1[2] = 255;
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i, j);
+				v2[0] = 60;
+				v2[1] = 60;
+				v2[2] = 60;
+				gap_image.at<uchar>(i, j) = 128;
+			}
+		}
+	}
+
+	mask = cv::Scalar::all(0);
+	cc = 1;
+
+	for (int i = 0; i < tmp_image.rows; i++)
+	{
+		for (int j = 0; j < tmp_image.cols; j++)
+		{
+			LineFloodFill(tmp_image, mask, cc, j, i);
+		}
+	}
+	cv::namedWindow("LineFloodFill", 0);
+	imshow("LineFloodFill", tmp_image);
+	cv::waitKey();
+	Lines lines = GetAllLineFromLineImage(tmp_image);
+	cc = 1;
+	CvPatchs tmp_cvps;
+	cv::namedWindow("gap_image", 0);
+	imshow("gap_image", gap_image);
+	cv::waitKey();
+	// don't floodfill gap
+	//gap_image = cv::Scalar::all(0);
+	mask = cv::Scalar::all(0);
+
+	for (int i = 0; i < joint_image.rows - 1; i++)
+	{
+		for (int j = 0; j < joint_image.cols - 1; j++)
+		{
+			S2FloodFill(cc, joint_image, mask, gap_image, 0, j, i, tmp_cvps, 1);
+		}
+	}
+
+	cv::namedWindow("joint_image", 0);
+	imshow("joint_image", joint_image);
+	cv::waitKey();
+	cv::Mat tmp_image2 = gap_image.clone();
+	tmp_image2.create(gap_image.size(), CV_8UC3);
+	DrawCvPatchs(tmp_cvps, tmp_image2);
+	tmp_image2 = cv::Scalar::all(0);
+	AddCathetus(tmp_cvps, tmp_image2);
+
+	for (auto it = tmp_cvps.begin(); it != tmp_cvps.end(); ++it)
+	{
+		for (auto it2 = it->Outer2().begin(); it2 != it->Outer2().end(); ++it2)
+		{
+			it2->x -= 1;
+			it2->y -= 1;
+		}
+	}
+
+	printf("\n");
+	DrawCvPatchs(tmp_cvps, tmp_image2);
+	tmp_image = cv::Scalar::all(0);
+	int count = 1;
+	gap_image = tmp_image.clone();
+
+	for (auto it = lines.begin(); it != lines.end(); ++it)
+	{
+		int b = rand() % 255;
+		int g = rand() % 255;
+		int r = rand() % 255;
+
+		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
+		{
+			cv::Vec3b& intensity2 = tmp_image2.at<cv::Vec3b>(it2->y, it2->x);
+			intensity2[0] = b;
+			intensity2[1] = g;
+			intensity2[2] = r;
+			cv::Vec3b& intensity = tmp_image.at<cv::Vec3b>(it2->y, it2->x);
+			intensity[0] = count % 255;
+			intensity[1] = (count / 255) % 255;
+			intensity[2] = count / (255 * 255);
+		}
+
+		count++;
+	}
+
+	ImageSpline  is = GetImageSpline(tmp_cvps, lines, tmp_image);
+	//is.ComputeToLineFragments();
+	is.ComputeToSplineFragments();
+	return is;
+}

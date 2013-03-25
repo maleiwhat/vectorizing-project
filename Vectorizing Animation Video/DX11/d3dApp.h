@@ -32,7 +32,7 @@ public:
 	void AddTrianglesLine( Triangles& tris, float h);
 	void AddPatchTriangles( Triangles& tris, float h );
 	void AddBigPoint(float x, float y, float h, D3DXVECTOR3 color);
-	void AddLines(Lines& lines, float_vector2d& linewidths, float h);
+	void AddLines(Lines& lines, double_vector2d& linewidths, float h);
 	void ClearPatchs();
 	void SetPatchTransparency(float t);
 	void SetSelectPatchTransparency(float t);

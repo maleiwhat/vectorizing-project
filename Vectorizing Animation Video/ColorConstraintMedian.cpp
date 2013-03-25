@@ -1,6 +1,6 @@
 #include "ColorConstraintMedian.h"
 
-float GetLight( const Vector3& v )
+double GetLight( const Vector3& v )
 {
 	return v[0] * 0.299 + v[1] * 0.587 + v[2] * 0.114;
 }
@@ -50,9 +50,8 @@ cv::Vec3b ColorConstraintMedian::GetColorCvPoint( double x, double y )
 	return res;
 }
 
-ColorConstraintMedian::ColorConstraintMedian():m_NeedComputeMedian(true)
+ColorConstraintMedian::ColorConstraintMedian():m_NeedComputeMedian(true), m_Median(0, 0, 0)
 {
-
 }
 
 void ColorConstraintMedian::ComputeMedian()
@@ -63,4 +62,5 @@ void ColorConstraintMedian::ComputeMedian()
 		std::sort(m_Colors.begin(), m_Colors.end(), LightCompareVector3);
 		m_Median = m_Colors[m_Colors.size()/2];
 	}
+	printf("color r: %f g: %f b: %f\n", m_Median[0], m_Median[1], m_Median[2]);
 }

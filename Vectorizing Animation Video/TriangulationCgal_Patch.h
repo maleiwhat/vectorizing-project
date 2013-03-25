@@ -73,6 +73,7 @@ public:
 	void mark_domains(Triangulation& ct, Triangulation::Face_handle start, int index, std::list<Triangulation::Edge>& border);
 	void mark_domains(Triangulation& cdt);
 	void insert_polygonSpline(Triangulation& cdt, ImageSpline m_ImageSpline, int i);
+	void insert_polygonSplineInter(Triangulation& cdt, ImageSpline m_ImageSpline, int idx);
 	Triangulation	m_Triangulation;
 	Criteria	m_Criteria;
 	Points		m_SeedPoints;

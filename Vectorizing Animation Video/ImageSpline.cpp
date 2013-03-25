@@ -134,11 +134,11 @@ void ImageSpline::ComputeToSplineFragments()
 		cps = newcps;
 	}
 
-	//return;
+	return;
 	m_SplineFragments.clear();
 
 	// ¥­§¡¦UÂI
-	for (int count = 0; count < 3; count++)
+	for (int count = 0; count < 7; count++)
 	{
 		for (int i = 0; i < m_LineFragments.size(); ++i)
 		{
@@ -151,7 +151,7 @@ void ImageSpline::ComputeToSplineFragments()
 
 			for (int j = 1; j < cps.size() - 1; j ++)
 			{
-				Vector2 vec = (cps[j] * 2 + cps[j + 1] * 0.5 + cps[j - 1] * 0.5) / 3.0f;
+				Vector2 vec = (cps[j] * 3 + cps[j + 1] * 0.5 + cps[j - 1] * 0.5) / 4.0f;
 				newcps.push_back(vec);
 			}
 

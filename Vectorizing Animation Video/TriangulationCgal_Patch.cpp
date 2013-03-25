@@ -46,11 +46,28 @@ void TriangulationCgal_Patch::Compute()
 		}
 
 		insert_polygon(m_Triangulation, poly, i);
+
+		for (auto it = m_Patch[i].Inter().begin(); it != m_Patch[i].Inter().end(); ++it)
+		{
+			Polygon poly2;
+
+			for (auto it2 = it->begin(); it2 != it->end(); it2++)
+			{
+				poly2.push_back(Point(it2->x, it2->y));
+			}
+
+			insert_polygon(m_Triangulation, poly2, -1);
+		}
 	}
 
 	for (int i = 0; i < m_ImageSpline.m_PatchSplines.size(); ++i)
 	{
 		insert_polygonSpline(m_Triangulation, m_ImageSpline, i);
+	}
+
+	for (int i = 0; i < m_ImageSpline.m_PatchSplinesInter.size(); ++i)
+	{
+		insert_polygonSplineInter(m_Triangulation, m_ImageSpline, i);
 	}
 
 	Mesher mesher(m_Triangulation);
@@ -117,6 +134,7 @@ void TriangulationCgal_Patch::insert_polygonSpline(Triangulation& cdt, ImageSpli
 		Vector2 v = m_ImageSpline.m_LineFragments[start_idx.m_id].m_Points.back();
 		last = Point(v.x - 0.5, v.y - 0.5);
 	}
+
 	Point start = last;
 	Triangulation::Vertex_handle v_prev  = cdt.insert(last);
 	v_prev->info().nesting_level = idx;
@@ -158,6 +176,74 @@ void TriangulationCgal_Patch::insert_polygonSpline(Triangulation& cdt, ImageSpli
 			}
 		}
 	}
+
+	assert(start == last);
+}
+
+
+void TriangulationCgal_Patch::insert_polygonSplineInter(Triangulation& cdt, ImageSpline m_ImageSpline, int idx)
+{
+	PatchSpline& ps = m_ImageSpline.m_PatchSplinesInter[idx];
+	if (ps.m_LineIndexs.empty())
+	{
+		return;
+	}
+	LineIndex start_idx = ps.m_LineIndexs.front();
+	Point last;
+
+	if (start_idx.m_Forward)
+	{
+		Vector2 v = m_ImageSpline.m_LineFragments[start_idx.m_id].m_Points.front();
+		last = Point(v.x - 0.5, v.y - 0.5);
+	}
+	else
+	{
+		Vector2 v = m_ImageSpline.m_LineFragments[start_idx.m_id].m_Points.back();
+		last = Point(v.x - 0.5, v.y - 0.5);
+	}
+
+	Point start = last;
+	Triangulation::Vertex_handle v_prev  = cdt.insert(last);
+	v_prev->info().nesting_level = -1;
+
+	for (auto it = ps.m_LineIndexs.begin(); it != ps.m_LineIndexs.end(); ++it)
+	{
+		Line pts = m_ImageSpline.m_LineFragments[it->m_id].m_Points;
+
+		if (it->m_Forward)
+		{
+			for (auto it2 = pts.begin(); it2 != pts.end(); ++it2)
+			{
+				Point now(it2->x - 0.5, it2->y - 0.5);
+
+				if (now != last)
+				{
+					Triangulation::Vertex_handle vh = m_Triangulation.insert(now);
+					vh->info().nesting_level = -1;
+					m_Triangulation.insert_constraint(v_prev, vh);
+					v_prev = vh;
+					last = now;
+				}
+			}
+		}
+		else
+		{
+			for (auto it2 = pts.rbegin(); it2 != pts.rend(); ++it2)
+			{
+				Point now(it2->x - 0.5, it2->y - 0.5);
+
+				if (now != last)
+				{
+					Triangulation::Vertex_handle vh = m_Triangulation.insert(now);
+					vh->info().nesting_level = -1;
+					m_Triangulation.insert_constraint(v_prev, vh);
+					v_prev = vh;
+					last = now;
+				}
+			}
+		}
+	}
+
 	assert(start == last);
 }
 

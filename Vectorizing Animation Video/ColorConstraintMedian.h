@@ -4,7 +4,7 @@
 #include "math/Vector3.h"
 #include "shared_ptr.h"
 
-float GetLight(const Vector3& v);
+double GetLight(const Vector3& v);
 bool LightCompareVector3(const Vector3& v1, const Vector3& v2);
 
 class ColorConstraintMedian

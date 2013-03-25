@@ -946,18 +946,18 @@ void D3DApp::AddBigPoint(float x, float y, float h, D3DXVECTOR3 color)
 	m_PointsVertices.push_back(pv);
 }
 
-void D3DApp::AddLines(Lines& lines, float_vector2d& linewidths, float h)
+void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths, float h)
 {
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		Line& now_line = lines[i];
 
-		if (now_line.size() < 2)
+		if (now_line.size() < 3)
 		{
 			continue;
 		}
 
-		float_vector& now_linewidth = linewidths[i];
+		double_vector& now_linewidth = linewidths[i];
 		float r, g, b;
 		r = (rand() % 155 + 100) / 255.0f;
 		g = (rand() % 155 + 100) / 255.0f;

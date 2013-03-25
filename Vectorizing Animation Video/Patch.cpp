@@ -189,7 +189,7 @@ void CvPatch::SetImage(cv::Mat& image)
 
 	for (auto it = m_Outer2.begin(); it != m_Outer2.end(); ++it)
 	{
-		cv::Vec3b& c = GetColor(image, it->x, it->y);
+		cv::Vec3b& c = GetColor(image, it->x/2, it->y/2);
 		m_OuterColor.push_back(c);
 	}
 
@@ -199,7 +199,7 @@ void CvPatch::SetImage(cv::Mat& image)
 
 		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
 		{
-			cv::Vec3b& c = GetColor(image, it2->x, it2->y);
+			cv::Vec3b& c = GetColor(image, it2->x/2, it2->y/2);
 			data.push_back(c);
 		}
 
@@ -222,13 +222,13 @@ ColorConstraint_sptr CvPatch::GetColorConstraint()
 	ColorConstraint_sptr res = ColorConstraint_sptr(new ColorConstraint);
 	cv::Rect rect = cv::boundingRect(m_Outer);
 
-	for (int i = rect.x; i < rect.x + rect.width - 1; i += 2)
+	for (int i = rect.x; i < rect.x + rect.width - 1; i += 3)
 	{
-		for (int j = rect.y; j < rect.y + rect.height - 1; j += 2)
+		for (int j = rect.y; j < rect.y + rect.height - 1; j += 3)
 		{
 			if (Inside(i, j))
 			{
-				res->AddPoint(i, j, m_refImage->at<cv::Vec3b>(j, i));
+				res->AddPoint(i/2, j/2, m_refImage->at<cv::Vec3b>(j/2, i/2));
 			}
 		}
 	}
