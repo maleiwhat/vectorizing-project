@@ -550,42 +550,49 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	//Lines lines = ComputeTrappedBallEdge(m_vavImage, lines1, 5);
 	//cv::Mat lineImage = MakeLineImage(m_vavImage, lines);
 	//m_CvPatchs = S1GetPatchs(lineImage, 1, 10);
-	m_CvPatchs = S2GetPatchs(m_vavImage, 0, 0);
-	//ImageSpline is = S3GetPatchs(m_vavImage, 0, 0);
+	//m_CvPatchs = S2GetPatchs(m_vavImage, 0, 0);
+	//ImageSpline is = S4GetPatchs(m_vavImage, 0, 0);
 	Lines line;
 	Lines line_control;
 	double_vector2d linewidths;
-	ImageSpline is = ComputeLines(m_vavImage, line, linewidths, line_control);
+	ImageSpline is2 = ComputeLines(m_vavImage, line, linewidths, line_control);
 	
 	
-	((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddLines(line, linewidths, m_vavImage.GetHeight());
-	TriangulationCgal_Patch cgal_patch;
-	cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-	cgal_patch.AddImageSpline(is);
+// 	((VAV_View*)this->GetActiveView())->
+// 		m_D3DApp.AddLines(line, linewidths, m_vavImage.GetHeight());
+	TriangulationCgal_Patch cgal_patch, cgal_contour;
+//	cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+//	cgal_patch.AddImageSpline(is);
+ 	cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+ 	cgal_contour.AddImageSpline(is2);
 // 	for (int i = 0; i < is.m_CvPatchs.size(); ++i)
 // 	{
 // 		is.m_CvPatchs[i].SetImage(m_vavImage);
 // 		ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint();
-// 		
-// 		//Patch patch = ToPatch(m_CvPatchs[i]);
-// 		//patch.SplinePoints(0.3);
+// 		//ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
 // 		cgal_patch.AddColorConstraint(constraint_sptr);
-// 		//cgal_patch.AddPatch(patch);
 // 	}
-
-	for (int i = 0; i < is.m_CvPatchs.size(); ++i)
+// 	cgal_patch.SetCriteria(0.01, 4000);
+// 	cgal_patch.Compute();
+	for (int i = 0; i < is2.m_CvPatchs.size(); ++i)
 	{
-		is.m_CvPatchs[i].SetImage(m_vavImage);
 		ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
-		cgal_patch.AddColorConstraint(constraint_sptr);
+		cgal_contour.AddColorConstraint(constraint_sptr);
 	}
-	cgal_patch.SetCriteria(0.125, 4000);
-	cgal_patch.Compute();
+
+	cgal_contour.SetCriteria(0.1, 4000);
+	cgal_contour.Compute();
+
+// 	((VAV_View*)this->GetActiveView())->
+// 		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles(), m_vavImage.GetHeight());
+// 	((VAV_View*)this->GetActiveView())->
+// 		m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles(), m_vavImage.GetHeight());
+
 	((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles(), m_vavImage.GetHeight());
+		m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles(), m_vavImage.GetHeight());
 	((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles(), m_vavImage.GetHeight());
+		m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles(), m_vavImage.GetHeight());
+
 	for (int i=0;i< line_control.size();++i)
 	{
 		D3DXVECTOR3 color;
@@ -601,11 +608,11 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	}
 
 
-// 	for (int i = 0; i < patchs.size(); ++i)
+// 	for (int i = 0; i < is2.m_CvPatchs.size(); ++i)
 // 	{
 // 		TriangulationCgal_Patch cgal_line;
 // 		cgal_line.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-// 		cgal_line.AddPatch(ToPatch(patchs[i]));
+// 		cgal_line.AddPatch(ToPatch(is2.m_CvPatchs[i]));
 // 		ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
 // 		cgal_line.AddColorConstraint(constraint_sptr);
 // 		cgal_line.SetCriteria(0.125, 4000);

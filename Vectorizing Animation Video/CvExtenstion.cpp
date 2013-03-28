@@ -1480,62 +1480,86 @@ void DrawCvPoints(CvPoints& tmp_cvps, cv::Mat tmp_image2)
 	cv::waitKey();
 }
 
+void AddCathetus(CvPoints& cps)
+{
+	if (!CheckCathetus(cps.back(), cps.front()))
+	{
+		if (CheckCathetus(*(cps.end() - 2), cps.back()))
+		{
+			cv::Point p3 = GetCathetusPoint(*(cps.end() - 2), cps.back());
+			cps.insert(cps.begin(), p3);
+		}
+	}
+	if (!CheckCathetus(cps.front(), *(cps.begin() + 1)))
+	{
+		cv::Point p3 = cps.front();
+		p3.x -= 1;
+		p3.y += 1;
+		if (p3 == *(cps.begin() + 1))
+		{
+			p3.y -= 1;
+			cps.insert(cps.begin() + 1, p3);
+		}
+		else if (CheckCathetus(cps.back(), cps.front()))
+		{
+			cv::Point p3 = GetCathetusPoint(cps.back(), cps.front());
+			cps.insert(cps.begin() + 1, p3);
+		}
+	}
+
+	for (int i = 1; i < cps.size() - 1; ++i)
+	{
+		if (!CheckCathetus(cps[i], cps[i + 1]))
+		{
+			if (CheckCathetus(cps[i - 1], cps[i]))
+			{
+				cv::Point p3 = GetCathetusPoint(cps[i - 1], cps[i]);
+				cps.insert(cps.begin() + i + 1, p3);
+			}
+		}
+	}
+
+	// double check
+	if (!CheckCathetus(cps.back(), cps.front()))
+	{
+		if (CheckCathetus(*(cps.end() - 2), cps.back()))
+		{
+			cv::Point p3 = GetCathetusPoint(*(cps.end() - 2), cps.back());
+			cps.insert(cps.begin(), p3);
+		}
+	}
+
+	if (!CheckCathetus(cps.front(), *(cps.begin() + 1)))
+	{
+		if (CheckCathetus(cps.back(), cps.front()))
+		{
+			cv::Point p3 = GetCathetusPoint(cps.back(), cps.front());
+			cps.insert(cps.begin() + 1, p3);
+		}
+	}
+
+	for (int i = 1; i < 4 && i < cps.size() - 1; ++i)
+	{
+		if (!CheckCathetus(cps[i], cps[i + 1]))
+		{
+			if (CheckCathetus(cps[i - 1], cps[i]))
+			{
+				cv::Point p3 = GetCathetusPoint(cps[i - 1], cps[i]);
+				cps.insert(cps.begin() + i + 1, p3);
+			}
+		}
+	}
+}
+
 void AddCathetus(CvPatchs& cvps, cv::Mat timage)
 {
 	for (auto it = cvps.begin(); it != cvps.end(); ++it)
 	{
-		CvPoints& cps = it->Outer2();
-
-		if (!CheckCathetus(cps.front(), *(cps.begin() + 1)))
+		AddCathetus(it->Outer2());
+		for (auto it2 = it->Inter().begin();it2 != it->Inter().end();++it2)
 		{
-			cv::Point p3 = cps.front();
-			p3.x -= 1;
-			cps.insert(cps.begin() + 1, p3);
+			AddCathetus(*it2);
 		}
-
-		for (int i = 1; i < cps.size() - 1; ++i)
-		{
-			if (!CheckCathetus(cps[i], cps[i + 1]))
-			{
-				if (CheckCathetus(cps[i - 1], cps[i]))
-				{
-					cv::Point p3 = GetCathetusPoint(cps[i - 1], cps[i]);
-					cps.insert(cps.begin() + i + 1, p3);
-				}
-			}
-		}
-
-		// double check
-		if (!CheckCathetus(cps.back(), cps.front()))
-		{
-			if (CheckCathetus(*(cps.end() - 2), cps.back()))
-			{
-				cv::Point p3 = GetCathetusPoint(*(cps.end() - 2), cps.back());
-				cps.insert(cps.begin(), p3);
-			}
-		}
-
-		if (!CheckCathetus(cps.front(), *(cps.begin() + 1)))
-		{
-			if (CheckCathetus(cps.back(), cps.front()))
-			{
-				cv::Point p3 = GetCathetusPoint(cps.back(), cps.front());
-				cps.insert(cps.begin() + 1, p3);
-			}
-		}
-
-		for (int i = 1; i < 4 && i < cps.size() - 1; ++i)
-		{
-			if (!CheckCathetus(cps[i], cps[i + 1]))
-			{
-				if (CheckCathetus(cps[i - 1], cps[i]))
-				{
-					cv::Point p3 = GetCathetusPoint(cps[i - 1], cps[i]);
-					cps.insert(cps.begin() + i + 1, p3);
-				}
-			}
-		}
-
 		//DrawCvPoints(cps, timage);
 	}
 }
@@ -1586,7 +1610,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	CmCurveEx dEdge(srcImg1f);
 	dEdge.CalSecDer(3, 0.01f, 0.2f);
 	cv::Mat Der2 = dEdge.GetDer2();
-	Dilation(Der2, 1, 1);
+	//Dilation(Der2, 1, 1);
 	cv::Mat mask, image, joint_mask, tmp_image, joint_image;
 	image0.copyTo(image);
 	joint_mask.create(image.rows * 2 + 1, image.cols * 2 + 1, CV_8UC1);
@@ -1594,14 +1618,6 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	joint_mask = cv::Scalar::all(0);
 	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
 	mask = cv::Scalar::all(0);
-// 	cv::namedWindow("gap", 0);
-// 	imshow("gap", Der2);
-// 	cv::waitKey();
-// 	normalize(Der2, Der2, 0, 1, cv::NORM_MINMAX);
-// 	cvThin(Der2.clone(), Der2, 10);
-// 	normalize(Der2, Der2, 0, 255, cv::NORM_MINMAX);
-// 	imshow("gap", Der2);
-// 	cv::waitKey();
 	CvPatchs cvps;
 
 	image0.copyTo(image);
@@ -1629,10 +1645,12 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		}
 	}
 
-	//imshow("Image2", image);
-	FixHole(image);
+	imshow("Image2", image);
+	//FixHole(image);
 	//imshow("Image", image);
+	cv::waitKey();
 	mask = cv::Scalar::all(0);
+	Der2 = cv::Scalar::all(0);
 	int cc = 1;
 
 	for (int i = 1; i < image.rows - 1; i++)
@@ -1658,8 +1676,9 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
 	gap_image = cv::Scalar(0);
 	image = image0.clone();
-	cv::imshow("gap_image", gap_image);
-	cv::imshow("joint_mask", joint_mask);
+	cv::imshow("image", image);
+	normalize(tmp_image, img2u, 0, 255, cv::NORM_MINMAX);
+	cv::imshow("tmp_image", img2u);
 	cv::waitKey();
 	// Find Boundary
 	for (int i = 0; i < joint_mask.rows ; i++)
@@ -1739,7 +1758,8 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	joint_image.create(joint_mask.rows , joint_mask.cols , CV_8UC3);
 	joint_image = cv::Scalar::all(0);
 	Der2 = mask.clone();
-	cv::imshow("joint_mask", joint_mask);
+	normalize(joint_mask, img2u, 0, 255, cv::NORM_MINMAX);
+	cv::imshow("joint_mask", img2u);
 	cv::waitKey();
 	// show joint
 	for (int i = 0; i < joint_mask.rows ; i++)
@@ -1753,7 +1773,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			}
 			else if (joint_mask.at<uchar>(i, j) > 0)
 			{
-				joint_mask.at<uchar>(i, j) = 60;
+				joint_mask.at<uchar>(i, j) = 128;
 			}
 		}
 	}
@@ -1779,7 +1799,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 				v2[2] = 255;
 				gap_image.at<uchar>(i, j) = 128;
 			}
-			else if (joint_mask.at<uchar>(i , j) == 60)
+			else if (joint_mask.at<uchar>(i , j) == 128)
 			{
 				cv::Vec3b& v1 = joint_image.at<cv::Vec3b>(i, j);
 				v1[0] = 255;
@@ -1808,7 +1828,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	Lines lines = GetAllLineFromLineImage(tmp_image);
 	cc = 1;
 	CvPatchs tmp_cvps;
-	cv::namedWindow("gap_image", 0);
+	//cv::namedWindow("gap_image", 0);
 	imshow("gap_image", gap_image);
 	cv::waitKey();
 	// don't floodfill gap
@@ -1823,7 +1843,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		}
 	}
 
-	cv::namedWindow("joint_image", 0);
+	//cv::namedWindow("joint_image", 0);
 	imshow("joint_image", joint_image);
 	cv::waitKey();
 	cv::Mat tmp_image2 = gap_image.clone();
@@ -1838,6 +1858,14 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		{
 			it2->x -= 1;
 			it2->y -= 1;
+		}
+		for (auto it2 = it->Inter().begin();it2 != it->Inter().end();++it2)
+		{
+			for (auto it3 = it2->begin();it3 != it2->end();++it3)
+			{
+				it3->x -= 1;
+				it3->y -= 1;
+			}
 		}
 	}
 
@@ -1870,7 +1898,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 
 	ImageSpline  is = GetImageSpline(tmp_cvps, lines, tmp_image);
 	//is.ComputeToLineFragments();
-	is.ComputeToSplineFragments();
+	//is.ComputeToSplineFragments();
 	return is;
 }
 
