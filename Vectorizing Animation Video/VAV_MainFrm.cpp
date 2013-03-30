@@ -551,7 +551,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	//cv::Mat lineImage = MakeLineImage(m_vavImage, lines);
 	//m_CvPatchs = S1GetPatchs(lineImage, 1, 10);
 	//m_CvPatchs = S2GetPatchs(m_vavImage, 0, 0);
-	//ImageSpline is = S4GetPatchs(m_vavImage, 0, 0);
+	//ImageSpline is = S3GetPatchs(m_vavImage, 0, 0);
 	Lines line;
 	Lines line_control;
 	double_vector2d linewidths;
@@ -593,19 +593,20 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	((VAV_View*)this->GetActiveView())->
 		m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles(), m_vavImage.GetHeight());
 
-	for (int i=0;i< line_control.size();++i)
-	{
-		D3DXVECTOR3 color;
-		color.x = rand()/(float)RAND_MAX;
-		color.y = rand()/(float)RAND_MAX;
-		color.z = rand()/(float)RAND_MAX;
-		Line& cps = line_control[i];
-		for (int j=0;j<cps.size();++j)
-		{
-			((VAV_View*)this->GetActiveView())->
-				m_D3DApp.AddBigPoint(cps[j].x-0.5, cps[j].y-0.5, m_vavImage.GetHeight(), color);
-		}
-	}
+	// Control Points
+// 	for (int i=0;i< line_control.size();++i)
+// 	{
+// 		D3DXVECTOR3 color;
+// 		color.x = rand()/(float)RAND_MAX;
+// 		color.y = rand()/(float)RAND_MAX;
+// 		color.z = rand()/(float)RAND_MAX;
+// 		Line& cps = line_control[i];
+// 		for (int j=0;j<cps.size();++j)
+// 		{
+// 			((VAV_View*)this->GetActiveView())->
+// 				m_D3DApp.AddBigPoint(cps[j].x-0.5, cps[j].y-0.5, m_vavImage.GetHeight(), color);
+// 		}
+// 	}
 
 
 // 	for (int i = 0; i < is2.m_CvPatchs.size(); ++i)

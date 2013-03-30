@@ -138,31 +138,31 @@ void ImageSpline::ComputeToSplineFragments()
 	m_SplineFragments.clear();
 
 	// 平均各點
-	for (int count = 0; count < 7; count++)
-	{
-		for (int i = 0; i < m_LineFragments.size(); ++i)
-		{
-			Line& cps = m_LineFragments[i].m_Points;
-			Line newcps;
-
-			if (cps.size() < 4) { continue; }
-
-			newcps.push_back(cps.front());
-
-			for (int j = 1; j < cps.size() - 1; j ++)
-			{
-				Vector2 vec = (cps[j] * 3 + cps[j + 1] * 0.5 + cps[j - 1] * 0.5) / 4.0f;
-				newcps.push_back(vec);
-			}
-
-			if (cps.back() != newcps.back())
-			{
-				newcps.push_back(cps.back());
-			}
-
-			cps = newcps;
-		}
-	}
+// 	for (int count = 0; count < 7; count++)
+// 	{
+// 		for (int i = 0; i < m_LineFragments.size(); ++i)
+// 		{
+// 			Line& cps = m_LineFragments[i].m_Points;
+// 			Line newcps;
+// 
+// 			if (cps.size() < 4) { continue; }
+// 
+// 			newcps.push_back(cps.front());
+// 
+// 			for (int j = 1; j < cps.size() - 1; j ++)
+// 			{
+// 				Vector2 vec = (cps[j] * 3 + cps[j + 1] * 0.5 + cps[j - 1] * 0.5) / 4.0f;
+// 				newcps.push_back(vec);
+// 			}
+// 
+// 			if (cps.back() != newcps.back())
+// 			{
+// 				newcps.push_back(cps.back());
+// 			}
+// 
+// 			cps = newcps;
+// 		}
+// 	}
 
 	
 	// 略過 只折一次點

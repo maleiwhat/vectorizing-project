@@ -348,9 +348,6 @@
     <ClInclude Include="LineFragment.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="curve_fit.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
     <ClInclude Include="SplineFragment.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
@@ -534,12 +531,6 @@
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="LineFragment.cpp">
-      <Filter>原始程式檔</Filter>
-    </ClCompile>
-    <ClCompile Include="curve_fit.cpp">
-      <Filter>原始程式檔</Filter>
-    </ClCompile>
-    <ClCompile Include="imath.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="SplineFragment.cpp">

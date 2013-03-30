@@ -98,7 +98,7 @@ void TriangulationCgal_Patch::Compute()
 			}
 			else
 			{
-				t.m_Colors[0] = 0;
+				t.m_Colors[0] = 255;
 				t.m_Colors[1] = 0;
 				t.m_Colors[2] = 0;
 			}
@@ -183,6 +183,7 @@ void TriangulationCgal_Patch::insert_polygonSpline(Triangulation& cdt, ImageSpli
 
 void TriangulationCgal_Patch::insert_polygonSplineInter(Triangulation& cdt, ImageSpline m_ImageSpline, int idx)
 {
+	const int NESTING_LEVEL = -2;
 	PatchSpline& ps = m_ImageSpline.m_PatchSplinesInter[idx];
 	if (ps.m_LineIndexs.empty())
 	{
@@ -204,7 +205,7 @@ void TriangulationCgal_Patch::insert_polygonSplineInter(Triangulation& cdt, Imag
 
 	Point start = last;
 	Triangulation::Vertex_handle v_prev  = cdt.insert(last);
-	v_prev->info().nesting_level = -1;
+	v_prev->info().nesting_level = NESTING_LEVEL;
 
 	for (auto it = ps.m_LineIndexs.begin(); it != ps.m_LineIndexs.end(); ++it)
 	{
@@ -219,7 +220,7 @@ void TriangulationCgal_Patch::insert_polygonSplineInter(Triangulation& cdt, Imag
 				if (now != last)
 				{
 					Triangulation::Vertex_handle vh = m_Triangulation.insert(now);
-					vh->info().nesting_level = -1;
+					vh->info().nesting_level = NESTING_LEVEL;
 					m_Triangulation.insert_constraint(v_prev, vh);
 					v_prev = vh;
 					last = now;
@@ -235,7 +236,7 @@ void TriangulationCgal_Patch::insert_polygonSplineInter(Triangulation& cdt, Imag
 				if (now != last)
 				{
 					Triangulation::Vertex_handle vh = m_Triangulation.insert(now);
-					vh->info().nesting_level = -1;
+					vh->info().nesting_level = NESTING_LEVEL;
 					m_Triangulation.insert_constraint(v_prev, vh);
 					v_prev = vh;
 					last = now;
