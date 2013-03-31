@@ -74,12 +74,16 @@ public:
 	void mark_domains(Triangulation& cdt);
 	void insert_polygonSpline(Triangulation& cdt, ImageSpline m_ImageSpline, int i);
 	void insert_polygonSplineInter(Triangulation& cdt, ImageSpline m_ImageSpline, int idx);
+	void force_mark_domains(Triangulation& ct, Triangulation::Face_handle start, int index, std::list<Triangulation::Edge>& border);
+	static const int TRIANGLE_NOT_INIT = -1;
+	static const int TRIANGLE_TRANSPARENT = -2;
+
 	Triangulation	m_Triangulation;
 	Criteria	m_Criteria;
 	Points		m_SeedPoints;
 	Patchs		m_Patch;
 	Polygon		m_Polygon;
-	int	m_w, m_h;
+	int		m_w, m_h;
 	ColorConstraint_sptrs	m_ColorConstraint;
 	ImageSpline	m_ImageSpline;
 };

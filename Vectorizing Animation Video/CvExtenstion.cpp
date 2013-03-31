@@ -1107,7 +1107,7 @@ void S1FloodFill(cv::Mat& image, cv::Mat& mask, int x, int y, CvPatchs& out_arra
 	}
 
 	cv::imshow("image", image);
-	cv::waitKey();
+	//cv::waitKey();
 	CvPoints2d points;
 	cv::findContours(mask2, points, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
 	double tarea = cv::contourArea(points.front());
@@ -1294,7 +1294,7 @@ CvPatchs S2GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	dEdge.CalSecDer(3, 0.01f, 0.2f);
 	cv::Mat Der2 = dEdge.GetDer2();
 	imshow("Image2", Der2);
-	cv::waitKey();
+	//cv::waitKey();
 	Dilation(Der2, 1, 1);
 	cv::Mat mask, image;
 	image0.copyTo(image);
@@ -1356,7 +1356,7 @@ CvPatchs S2GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	}
 
 	imshow("Image2", image);
-	cv::waitKey();
+	//cv::waitKey();
 	//FixHole(image);
 	mask = cv::Scalar::all(0);
 	int cc = 0;
@@ -1433,7 +1433,7 @@ void visualize_patch_lines(ImageSpline imageSpline, int idx, cv::Mat& image)
 
 	cv::namedWindow("joint_mask2", 0);
 	imshow("joint_mask2", image);
-	cv::waitKey();
+	//cv::waitKey();
 	assert(start == end);
 }
 
@@ -1477,7 +1477,7 @@ void DrawCvPoints(CvPoints& tmp_cvps, cv::Mat tmp_image2)
 
 	cv::namedWindow("joint_mask2", 0);
 	imshow("joint_mask2", tmp_image2);
-	cv::waitKey();
+	//cv::waitKey();
 }
 
 void AddCathetus(CvPoints& cps)
@@ -1596,7 +1596,7 @@ void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2)
 
 	//cv::namedWindow("DrawCvPatchs", 0);
 	imshow("DrawCvPatchs", tmp_image2);
-	cv::waitKey();
+	//cv::waitKey();
 }
 
 ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
@@ -1762,7 +1762,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	Der2 = mask.clone();
 	normalize(joint_mask, img2u, 0, 255, cv::NORM_MINMAX);
 	cv::imshow("joint_mask", img2u);
-	cv::waitKey();
+	//cv::waitKey();
 	// show joint
 	for (int i = 0; i < joint_mask.rows ; i++)
 	{
@@ -1780,7 +1780,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	}
 	cv::imwrite("Joint Image.png", joint_mask);
 	cv::imshow("Joint Image", joint_mask);
-	cv::waitKey();
+	//cv::waitKey();
 // 	// delete gap
 // 	gap_image = cv::Scalar::all(0);
 	tmp_image = joint_image.clone();
@@ -1832,7 +1832,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	CvPatchs tmp_cvps;
 	//cv::namedWindow("gap_image", 0);
 	imshow("gap_image", gap_image);
-	cv::waitKey();
+	//cv::waitKey();
 	// don't floodfill gap
 	//gap_image = cv::Scalar::all(0);
 	mask = cv::Scalar::all(0);
@@ -1847,7 +1847,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 
 	//cv::namedWindow("joint_image", 0);
 	imshow("joint_image", joint_image);
-	cv::waitKey();
+	//cv::waitKey();
 	cv::Mat tmp_image2 = gap_image.clone();
 	tmp_image2.create(gap_image.size(), CV_8UC3);
 	DrawCvPatchs(tmp_cvps, tmp_image2);
@@ -2023,7 +2023,7 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 			continue;
 		}
 
-		for (auto it2 = ++(it->Inter2().begin()); it2 != it->Inter2().end(); ++it2)
+		for (auto it2 = it->Inter2().begin(); it2 != it->Inter2().end(); ++it2)
 		{
 			if (it2->size() < 4)
 			{
@@ -3142,7 +3142,7 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 	}
 
 	sum = sum / MaxCapacity.rows / MaxCapacity.cols;
-	sum *= 1.2;
+	sum *= 1.4;
 	std::cout << "sum: " << sum << std::endl;
 
 	for (int r = 0; r < MaxCapacity.rows; r++)
@@ -3192,7 +3192,7 @@ void FillSmallHole(cv::Mat& patchImage)
 	}
 
 	imshow("Contours", patchImage);
-	cv::waitKey();
+	//cv::waitKey();
 }
 
 void GetSkeletonLine(cv::Mat bmap, Lines& lines, double_vector2d& linewidths)
@@ -3264,7 +3264,7 @@ ImageSpline ComputeLines(cv::Mat img, Lines& lines, double_vector2d& linewidths,
 		}
 	}
 	cv::imshow("joint_image", joint_image);
-	cv::waitKey();
+	//cv::waitKey();
 	ImageSpline is = S4GetPatchs(joint_image, 0, 0);
 	return is;
 
@@ -3655,7 +3655,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	}
 	//cv::namedWindow("LineFloodFill", 0);
 	imshow("LineFloodFill", tmp_image);
-	cv::waitKey();
+	//cv::waitKey();
 	Lines lines = GetAllLineFromLineImage(tmp_image);
 	cc = 1;
 	CvPatchs tmp_cvps;
@@ -3675,7 +3675,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	}
 
 	imshow("joint_image", joint_image);
-	cv::waitKey();
+	//cv::waitKey();
 	cv::Mat tmp_image2 = gap_image.clone();
 	tmp_image2.create(gap_image.size(), CV_8UC3);
 	//DrawCvPatchs(tmp_cvps, tmp_image2);
@@ -3725,7 +3725,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	}
 
 	imshow("tmp_image2", tmp_image2);
-	cv::waitKey();
+	//cv::waitKey();
 	
 	ImageSpline  is = GetImageSpline(tmp_cvps, lines, tmp_image);
 	//is.ComputeToLineFragments();

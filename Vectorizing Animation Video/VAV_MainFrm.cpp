@@ -572,15 +572,17 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 // 		//ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
 // 		cgal_patch.AddColorConstraint(constraint_sptr);
 // 	}
-// 	cgal_patch.SetCriteria(0.01, 4000);
+// 	cgal_patch.SetCriteria(0.001, 4000);
 // 	cgal_patch.Compute();
 	for (int i = 0; i < is2.m_CvPatchs.size(); ++i)
 	{
 		ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
 		cgal_contour.AddColorConstraint(constraint_sptr);
 	}
-
-	cgal_contour.SetCriteria(0.1, 4000);
+	ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
+	constraint_sptr->AddPoint(0,0,Vector3(255,0,0));
+	cgal_contour.AddColorConstraint(constraint_sptr);
+	cgal_contour.SetCriteria(0.001, 4000);
 	cgal_contour.Compute();
 
 // 	((VAV_View*)this->GetActiveView())->
