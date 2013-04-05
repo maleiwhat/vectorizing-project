@@ -1582,6 +1582,9 @@ void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2)
 			intensity[1] = g;
 			intensity[2] = b;
 		}
+		r = rng.uniform(100, 255);
+		g = rng.uniform(100, 255);
+		b = rng.uniform(100, 255);
 		for (auto it2 = it->Inter2().begin(); it2 != it->Inter2().end(); ++it2)
 		{
 			for (auto it3 = it2->begin(); it3 != it2->end(); ++it3)
@@ -1958,6 +1961,10 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 					if (!has_insert)
 					{
 						ps.m_LineIndexs.push_back(li);
+						if (now_line.front() == now_line.back())
+						{
+							break;
+						}
 					}
 				}
 				else if (* (now_line.end() - 2) == Vector2(it2->x, it2->y))
@@ -1988,6 +1995,10 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 					if (!has_insert)
 					{
 						ps.m_LineIndexs.push_back(li);
+						if (now_line.front() == now_line.back())
+						{
+							break;
+						}
 					}
 				}
 			}
@@ -2038,7 +2049,7 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 				if (hash != last_lineidx && hash >= 0)
 				{
 					Line& now_line = lines[hash];
-
+										
 					if (*(now_line.begin() + 1) == Vector2(it3->x, it3->y))
 					{
 						last_lineidx = hash;
@@ -2067,6 +2078,10 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 						if (!has_insert)
 						{
 							ps.m_LineIndexs.push_back(li);
+							if (now_line.front() == now_line.back())
+							{
+								break;
+							}
 						}
 					}
 					else if (* (now_line.end() - 2) == Vector2(it3->x, it3->y))
@@ -2097,6 +2112,10 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 						if (!has_insert)
 						{
 							ps.m_LineIndexs.push_back(li);
+							if (now_line.front() == now_line.back())
+							{
+								break;
+							}
 						}
 					}
 				}
@@ -2126,9 +2145,16 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 			{
 				end = lines[li2.m_id].front();
 			}
-
-			assert(start == end);
-			psin.push_back(ps);
+			if (ps.m_LineIndexs.size() > 1)
+			{
+				assert(start == end);
+				psin.push_back(ps);
+			}
+			else
+			{
+				assert(start == end);
+				psin.push_back(ps);
+			}			
 		}
 	}
 

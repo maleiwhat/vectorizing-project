@@ -1,12 +1,6 @@
 #pragma once
 #include <opencv2\core\core.hpp>
-#include <vector>
-#include "math/Vector2.h"
-
-typedef Vector2s Line;
-typedef std::vector<Line> Lines;
-typedef std::vector<cv::Point> CvPoints;
-typedef std::vector<CvPoints> CvPoints2d;
+#include "Line.h"
 
 struct CEdge
 {

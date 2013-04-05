@@ -230,7 +230,9 @@ void D3DApp::DrawScene()
 		m_Pics_Width->SetFloat(mClientWidth);
 		m_Pics_Height->SetFloat(mClientHeight);
 	}
-	if (!m_DXUT_UI) return;
+
+	if (!m_DXUT_UI) { return; }
+
 	m_DXUT_UI->UpdataUI(0.1f);
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, m_ClearColor);
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -408,7 +410,6 @@ void D3DApp::BuildShaderFX()
 	m_TriangleLine_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri2);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6, PassDescTri2.pIAInputSignature,
 	                                  PassDescTri2.IAInputSignatureSize, &m_TriangleLine_PLayout));
-
 	hr = D3DX11CompileFromFile(_T("shader\\patch.fx"), NULL, NULL, NULL,
 	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
 
@@ -435,7 +436,6 @@ void D3DApp::BuildShaderFX()
 	m_Patch_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri3);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6, PassDescTri3.pIAInputSignature,
 	                                  PassDescTri3.IAInputSignatureSize, &m_Patch_PLayout));
-
 	hr = D3DX11CompileFromFile(_T("shader\\bigpoint.fx"), NULL, NULL, NULL,
 	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
 
@@ -462,7 +462,6 @@ void D3DApp::BuildShaderFX()
 	m_Points_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri4);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PointVertex, 3, PassDescTri4.pIAInputSignature,
 	                                  PassDescTri4.IAInputSignatureSize, &m_Points_PLayout));
-
 	hr = D3DX11CompileFromFile(_T("shader\\Line.fx"), NULL, NULL, NULL,
 	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
 
@@ -489,9 +488,8 @@ void D3DApp::BuildShaderFX()
 	m_Lines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri5);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_LineVertex, 6, PassDescTri5.pIAInputSignature,
 	                                  PassDescTri5.IAInputSignatureSize, &m_Lines_PLayout));
-
 	hr = D3DX11CompileFromFile(_T("shader\\Line.fx"), NULL, NULL, NULL,
-		"fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
+	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
 
 	if (FAILED(hr))
 	{
@@ -515,8 +513,7 @@ void D3DApp::BuildShaderFX()
 	D3DX11_PASS_DESC PassDescTri6;
 	m_SkeletonLines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri6);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_LineVertex, 6, PassDescTri6.pIAInputSignature,
-		PassDescTri6.IAInputSignatureSize, &m_SkeletonLines_PLayout));
-
+	                                  PassDescTri6.IAInputSignatureSize, &m_SkeletonLines_PLayout));
 	m_Pics_Width->SetFloat(mClientWidth);
 	m_Pics_Height->SetFloat(mClientHeight);
 	m_Triangle_Width->SetFloat(mClientWidth);
@@ -581,7 +578,9 @@ void D3DApp::BuildPoint()
 	ReleaseCOM(m_Points_Buffer);
 	ReleaseCOM(m_Lines_Buffer);
 	ReleaseCOM(m_SkeletonLines_Buffer);
-	if (!m_DeviceContext) return;
+
+	if (!m_DeviceContext) { return; }
+
 	m_PicsVertices.clear();
 
 	if (m_Pics_Texture)
@@ -686,7 +685,7 @@ void special_normal(Vector2& v)
 	if (v.y < -1) { v.y = -1; }
 }
 
-void D3DApp::AddTriangles(Triangles& tris, float h, const vavImage& vimage)
+void D3DApp::AddTriangles( Triangles& tris, const vavImage& vimage )
 {
 	TriangleVertex tv;
 
@@ -709,17 +708,17 @@ void D3DApp::AddTriangles(Triangles& tris, float h, const vavImage& vimage)
 		vmove += v3;
 		const const cv::Vec3b& c3 = vimage.GetColor(v3.x, v3.y);
 		tv.p1.x = tris[i].m_Points[0].x;
-		tv.p1.y = h - tris[i].m_Points[0].y;
+		tv.p1.y = m_PicH - tris[i].m_Points[0].y;
 		tv.c1.x = c1[2] / 255.0f;
 		tv.c1.y = c1[1] / 255.0f;
 		tv.c1.z = c1[0] / 255.0f;
 		tv.p2.x = tris[i].m_Points[1].x;
-		tv.p2.y = h - tris[i].m_Points[1].y;
+		tv.p2.y = m_PicH - tris[i].m_Points[1].y;
 		tv.c2.x = c2[2] / 255.0f;
 		tv.c2.y = c2[1] / 255.0f;
 		tv.c2.z = c2[0] / 255.0f;
 		tv.p3.x = tris[i].m_Points[2].x;
-		tv.p3.y = h - tris[i].m_Points[2].y;
+		tv.p3.y = m_PicH - tris[i].m_Points[2].y;
 		tv.c3.x = c3[2] / 255.0f;
 		tv.c3.y = c3[1] / 255.0f;
 		tv.c3.z = c3[0] / 255.0f;
@@ -727,7 +726,7 @@ void D3DApp::AddTriangles(Triangles& tris, float h, const vavImage& vimage)
 	}
 }
 
-void D3DApp::AddPatchTriangles(Triangles& tris, float h)
+void D3DApp::AddPatchTriangles( Triangles& tris )
 {
 	TriangleVertex tv;
 	float r, g, b;
@@ -741,17 +740,17 @@ void D3DApp::AddPatchTriangles(Triangles& tris, float h)
 		Vector2& v2 = tris[i].m_Points[1];
 		Vector2& v3 = tris[i].m_Points[2];
 		tv.p1.x = tris[i].m_Points[0].x;
-		tv.p1.y = h - tris[i].m_Points[0].y;
+		tv.p1.y = m_PicH - tris[i].m_Points[0].y;
 		tv.c1.x = r;
 		tv.c1.y = g;
 		tv.c1.z = b;
 		tv.p2.x = tris[i].m_Points[1].x;
-		tv.p2.y = h - tris[i].m_Points[1].y;
+		tv.p2.y = m_PicH - tris[i].m_Points[1].y;
 		tv.c2.x = r;
 		tv.c2.y = g;
 		tv.c2.z = b;
 		tv.p3.x = tris[i].m_Points[2].x;
-		tv.p3.y = h - tris[i].m_Points[2].y;
+		tv.p3.y = m_PicH - tris[i].m_Points[2].y;
 		tv.c3.x = r;
 		tv.c3.y = g;
 		tv.c3.z = b;
@@ -759,7 +758,7 @@ void D3DApp::AddPatchTriangles(Triangles& tris, float h)
 	}
 }
 
-void D3DApp::AddColorTriangles(Triangles& tris, float h)
+void D3DApp::AddColorTriangles( Triangles& tris )
 {
 	TriangleVertex tv;
 
@@ -769,17 +768,17 @@ void D3DApp::AddColorTriangles(Triangles& tris, float h)
 		Vector2& v2 = tris[i].m_Points[1];
 		Vector2& v3 = tris[i].m_Points[2];
 		tv.p1.x = tris[i].m_Points[0].x;
-		tv.p1.y = h - tris[i].m_Points[0].y;
+		tv.p1.y = m_PicH - tris[i].m_Points[0].y;
 		tv.c1.x = tris[i].m_Colors[0][2] / 255.0f;
 		tv.c1.y = tris[i].m_Colors[0][1] / 255.0f;
 		tv.c1.z = tris[i].m_Colors[0][0] / 255.0f;
 		tv.p2.x = tris[i].m_Points[1].x;
-		tv.p2.y = h - tris[i].m_Points[1].y;
+		tv.p2.y = m_PicH - tris[i].m_Points[1].y;
 		tv.c2.x = tris[i].m_Colors[1][2] / 255.0f;
 		tv.c2.y = tris[i].m_Colors[1][1] / 255.0f;
 		tv.c2.z = tris[i].m_Colors[1][0] / 255.0f;
 		tv.p3.x = tris[i].m_Points[2].x;
-		tv.p3.y = h - tris[i].m_Points[2].y;
+		tv.p3.y = m_PicH - tris[i].m_Points[2].y;
 		tv.c3.x = tris[i].m_Colors[2][2] / 255.0f;
 		tv.c3.y = tris[i].m_Colors[2][1] / 255.0f;
 		tv.c3.z = tris[i].m_Colors[2][0] / 255.0f;
@@ -787,7 +786,7 @@ void D3DApp::AddColorTriangles(Triangles& tris, float h)
 	}
 }
 
-void D3DApp::AddTrianglesLine(Triangles& tris, float h)
+void D3DApp::AddTrianglesLine( Triangles& tris )
 {
 	TriangleVertex tv;
 	float r, g, b;
@@ -801,17 +800,17 @@ void D3DApp::AddTrianglesLine(Triangles& tris, float h)
 		Vector2& v2 = tris[i].m_Points[1];
 		Vector2& v3 = tris[i].m_Points[2];
 		tv.p1.x = tris[i].m_Points[0].x;
-		tv.p1.y = h - tris[i].m_Points[0].y;
+		tv.p1.y = m_PicH - tris[i].m_Points[0].y;
 		tv.c1.x = r;
 		tv.c1.y = g;
 		tv.c1.z = b;
 		tv.p2.x = tris[i].m_Points[1].x;
-		tv.p2.y = h - tris[i].m_Points[1].y;
+		tv.p2.y = m_PicH - tris[i].m_Points[1].y;
 		tv.c2.x = r;
 		tv.c2.y = g;
 		tv.c2.z = b;
 		tv.p3.x = tris[i].m_Points[2].x;
-		tv.p3.y = h - tris[i].m_Points[2].y;
+		tv.p3.y = m_PicH - tris[i].m_Points[2].y;
 		tv.c3.x = r;
 		tv.c3.y = g;
 		tv.c3.z = b;
@@ -935,18 +934,18 @@ void D3DApp::SetPictureTransparency(float t)
 	m_Pics_Transparency->SetFloat(t);
 }
 
-void D3DApp::AddBigPoint(float x, float y, float h, D3DXVECTOR3 color)
+void D3DApp::AddBigPoint(float x, float y, D3DXVECTOR3 color)
 {
 	PointVertex pv;
 	pv.color = color;
 	pv.size.x = 1;
 	pv.size.y = 1;
 	pv.position.x = x;
-	pv.position.y = h - y;
+	pv.position.y = m_PicH - y;
 	m_PointsVertices.push_back(pv);
 }
 
-void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths, float h)
+void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 {
 	for (int i = 0; i < lines.size(); ++i)
 	{
@@ -967,13 +966,13 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths, float h)
 		lv.color.y = g;
 		lv.color.z = b;
 		lv.p1.x = now_line[0].x;
-		lv.p1.y = h - now_line[0].y;
+		lv.p1.y = m_PicH - now_line[0].y;
 		lv.p2.x = now_line[0].x;
-		lv.p2.y = h - now_line[0].y;
+		lv.p2.y = m_PicH - now_line[0].y;
 		lv.p3.x = now_line[1].x;
-		lv.p3.y = h - now_line[1].y;
+		lv.p3.y = m_PicH - now_line[1].y;
 		lv.p4.x = now_line[2].x;
-		lv.p4.y = h - now_line[2].y;
+		lv.p4.y = m_PicH - now_line[2].y;
 		lv.width.x = now_linewidth[0] + 2;
 		lv.width.y = now_linewidth[1] + 2;
 		m_LinesVertices.push_back(lv);
@@ -988,13 +987,13 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths, float h)
 			lv.color.y = g;
 			lv.color.z = b;
 			lv.p1.x = now_line[j - 1].x;
-			lv.p1.y = h - now_line[j - 1].y;
+			lv.p1.y = m_PicH - now_line[j - 1].y;
 			lv.p2.x = now_line[j].x;
-			lv.p2.y = h - now_line[j].y;
+			lv.p2.y = m_PicH - now_line[j].y;
 			lv.p3.x = now_line[j + 1].x;
-			lv.p3.y = h - now_line[j + 1].y;
+			lv.p3.y = m_PicH - now_line[j + 1].y;
 			lv.p4.x = now_line[j + 2].x;
-			lv.p4.y = h - now_line[j + 2].y;
+			lv.p4.y = m_PicH - now_line[j + 2].y;
 			lv.width.x = now_linewidth[j] + 2;
 			lv.width.y = now_linewidth[j + 1] + 2;
 			m_LinesVertices.push_back(lv);
@@ -1004,19 +1003,71 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths, float h)
 		}
 
 		lv.p1.x = now_line[now_line.size() - 3].x;
-		lv.p1.y = h - now_line[now_line.size() - 3].y;
+		lv.p1.y = m_PicH - now_line[now_line.size() - 3].y;
 		lv.p2.x = now_line[now_line.size() - 2].x;
-		lv.p2.y = h - now_line[now_line.size() - 2].y;
+		lv.p2.y = m_PicH - now_line[now_line.size() - 2].y;
 		lv.p3.x = now_line[now_line.size() - 1].x;
-		lv.p3.y = h - now_line[now_line.size() - 1].y;
+		lv.p3.y = m_PicH - now_line[now_line.size() - 1].y;
 		lv.p4.x = now_line[now_line.size() - 1].x;
-		lv.p4.y = h - now_line[now_line.size() - 1].y;
+		lv.p4.y = m_PicH - now_line[now_line.size() - 1].y;
 		lv.width.x = now_linewidth[0] + 2;
 		lv.width.y = now_linewidth[1] + 2;
 		m_LinesVertices.push_back(lv);
 		lv.width.x = 1;
 		lv.width.y = 1;
 		m_SkeletonLinesVertices.push_back(lv);
+	}
+}
+
+void D3DApp::AddLines(Lines& lines)
+{
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		Line& now_line = lines[i];
+
+		if (now_line.size() < 2)
+		{
+			continue;
+		}
+
+		float r, g, b;
+		r = (rand() % 155 + 100) / 255.0f;
+		g = (rand() % 155 + 100) / 255.0f;
+		b = (rand() % 155 + 100) / 255.0f;
+		LineVertex lv;
+		lv.color.x = r;
+		lv.color.y = g;
+		lv.color.z = b;
+		lv.p1.x = now_line[0].x;
+		lv.p1.y = m_PicH - now_line[0].y;
+		lv.p2.x = now_line[0].x;
+		lv.p2.y = m_PicH - now_line[0].y;
+		lv.p3.x = now_line[1].x;
+		lv.p3.y = m_PicH - now_line[1].y;
+		lv.p4.x = now_line[1].x;
+		lv.p4.y = m_PicH - now_line[1].y;
+		lv.width.x = 1;
+		lv.width.y = 1;
+		m_SkeletonLinesVertices.push_back(lv);
+
+		for (int j = 1; j < now_line.size(); ++j)
+		{
+			LineVertex lv;
+			lv.color.x = r;
+			lv.color.y = g;
+			lv.color.z = b;
+			lv.p1.x = now_line[j - 1].x;
+			lv.p1.y = m_PicH - now_line[j - 1].y;
+			lv.p2.x = now_line[j-1].x;
+			lv.p2.y = m_PicH - now_line[j-1].y;
+			lv.p3.x = now_line[j].x;
+			lv.p3.y = m_PicH - now_line[j].y;
+			lv.p4.x = now_line[j].x;
+			lv.p4.y = m_PicH - now_line[j].y;
+			lv.width.x = 1;
+			lv.width.y = 1;
+			m_SkeletonLinesVertices.push_back(lv);
+		}
 	}
 }
 

@@ -557,7 +557,6 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	double_vector2d linewidths;
 	ImageSpline is2 = ComputeLines(m_vavImage, line, linewidths, line_control);
 	
-	
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddLines(line, linewidths, m_vavImage.GetHeight());
 	TriangulationCgal_Patch cgal_patch, cgal_contour;
@@ -586,14 +585,14 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	cgal_contour.Compute();
 
 // 	((VAV_View*)this->GetActiveView())->
-// 		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles(), m_vavImage.GetHeight());
+// 		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
 // 	((VAV_View*)this->GetActiveView())->
-// 		m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles(), m_vavImage.GetHeight());
+// 		m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
 
 	((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles(), m_vavImage.GetHeight());
+		m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles());
 	((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles(), m_vavImage.GetHeight());
+		m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles());
 
 	// Control Points
 // 	for (int i=0;i< line_control.size();++i)
@@ -606,7 +605,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 // 		for (int j=0;j<cps.size();++j)
 // 		{
 // 			((VAV_View*)this->GetActiveView())->
-// 				m_D3DApp.AddBigPoint(cps[j].x-0.5, cps[j].y-0.5, m_vavImage.GetHeight(), color);
+// 				m_D3DApp.AddBigPoint(cps[j].x-0.5, cps[j].y-0.5, color);
 // 		}
 // 	}
 
