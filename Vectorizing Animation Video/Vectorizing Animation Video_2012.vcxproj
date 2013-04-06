@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="algSpline.h" />
     <ClInclude Include="algSpline2d.h" />
+    <ClInclude Include="CgalPatch.h" />
     <ClInclude Include="ClassView.h" />
     <ClInclude Include="CmCurveEx.h" />
     <ClInclude Include="ColorConstraint.h" />
@@ -220,6 +221,7 @@
   <ItemGroup>
     <ClCompile Include="algSpline.cpp" />
     <ClCompile Include="algSpline2d.cpp" />
+    <ClCompile Include="CgalPatch.cpp" />
     <ClCompile Include="ClassView.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>

@@ -1910,9 +1910,10 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 {
 	ImageSpline is;
-	LineFragments lfs;
-	PatchSplines pss;
-	PatchSplines psin;
+	LineFragments& lfs = is.m_LineFragments;
+	PatchSplines& patchContour = is.m_PatchSplines;
+	PatchSplines2d& patchInters = is.m_PatchSplinesInter;
+
 	int last_lineidx;
 	int patchid = 0;
 	printf("patchssize: %d\n", patchs.size());
@@ -2027,13 +2028,15 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 		}
 
 		assert(start == end);
-		pss.push_back(ps);
+		patchContour.push_back(ps);
 
 		if (it->Inter2().size() == 0)
 		{
+			patchInters.push_back(PatchSplines());
 			continue;
 		}
 
+		PatchSplines patchInter;
 		for (auto it2 = it->Inter2().begin(); it2 != it->Inter2().end(); ++it2)
 		{
 			if (it2->size() < 4)
@@ -2148,14 +2151,15 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 			if (ps.m_LineIndexs.size() > 1)
 			{
 				assert(start == end);
-				psin.push_back(ps);
+				patchInter.push_back(ps);
 			}
 			else
 			{
 				assert(start == end);
-				psin.push_back(ps);
+				patchInter.push_back(ps);
 			}			
 		}
+		patchInters.push_back(patchInter);
 	}
 
 
@@ -2166,10 +2170,7 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 		lf.m_Points = *it;
 		lfs.push_back(lf);
 	}
-
-	is.m_LineFragments = lfs;
-	is.m_PatchSplines = pss;
-	is.m_PatchSplinesInter = psin;
+	
 	return is;
 }
 

@@ -7,7 +7,7 @@
 #include <CGAL/Triangulation_euclidean_traits_xy_3.h>
 #include <CGAL/Delaunay_triangulation_2.h>
 
-
+#include "ImageSpline.h"
 #include "Line.h"
 
 class VoronoiCgal_Patch : public TriangulationBase
@@ -27,33 +27,23 @@ public:
 	LineSegs	m_Lines;
 	Points		m_Points;
 	Delaunay	m_Delaunay;
+	ImageSpline	m_ImageSpline;
 
+
+	void insert_polygon(Delaunay& cdt, ImageSpline& m_ImageSpline, int idx);
+
+	void insert_polygonInter(Delaunay& cdt, ImageSpline& m_ImageSpline, int idx);
+	void insert_polygonInter2(Delaunay& cdt, ImageSpline& m_ImageSpline, PatchSpline& ps);
+
+	void AddImageSpline(ImageSpline& is)
+	{
+		m_ImageSpline = is;
+	}
 	void AddPoint(double x, double y)
 	{
 		m_Points.push_back(Point(x, y));
 	}
-	void Compute()
-	{
-		m_Delaunay.insert(m_Points.begin(), m_Points.end());
-		Delaunay::Finite_edges_iterator eit = m_Delaunay.finite_edges_begin();
-
-		for (; eit != m_Delaunay.finite_edges_end(); ++eit)
-		{
-			CGAL::Object o = m_Delaunay.dual(eit);
-
-			if (CGAL::object_cast<K::Segment_2>(&o))
-			{
-				const K::Segment_2* seg = CGAL::object_cast<K::Segment_2>(&o);
-				Point p1(seg->source().hx(), seg->source().hy());
-				Point p2(seg->target().hx(), seg->target().hy());
-				m_Lines.push_back(
-					LineSeg(
-						Vector2(p1.hx(), p1.hy()), Vector2(p2.hx(), p2.hy())
-						) 
-					);
-			}
-		}
-	}
+	void Compute();
 	void Clear() {}
 
 };

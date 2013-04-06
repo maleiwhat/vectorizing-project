@@ -20,6 +20,7 @@
 #include "TriangulationCgal_SeedPoint.h"
 #include "TriangulationCgal_Sideline.h"
 #include "TriangulationCgal_Patch.h"
+#include "VoronoiCgal_Patch.h"
 #include "CvExtenstion.h"
 
 #ifdef _DEBUG
@@ -560,10 +561,12 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddLines(line, linewidths, m_vavImage.GetHeight());
 	TriangulationCgal_Patch cgal_patch, cgal_contour;
+	VoronoiCgal_Patch cgal_voronoi;
 //	cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
 //	cgal_patch.AddImageSpline(is);
  	cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
  	cgal_contour.AddImageSpline(is2);
+	cgal_voronoi.AddImageSpline(is2);
 // 	for (int i = 0; i < is.m_CvPatchs.size(); ++i)
 // 	{
 // 		is.m_CvPatchs[i].SetImage(m_vavImage);
@@ -583,6 +586,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	cgal_contour.AddColorConstraint(constraint_sptr);
 	cgal_contour.SetCriteria(0.001, 4000);
 	cgal_contour.Compute();
+	cgal_voronoi.Compute();
 
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
@@ -593,6 +597,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles());
 	((VAV_View*)this->GetActiveView())->
 		m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles());
+	((VAV_View*)this->GetActiveView())->
+		m_D3DApp.AddLineSegs(cgal_voronoi.m_Lines);
 
 	// Control Points
 // 	for (int i=0;i< line_control.size();++i)

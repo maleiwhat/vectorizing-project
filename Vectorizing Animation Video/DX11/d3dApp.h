@@ -34,6 +34,7 @@ public:
 	void AddBigPoint(float x, float y, D3DXVECTOR3 color);
 	void AddLines(Lines& lines, double_vector2d& linewidths);
 	void AddLines(Lines& lines);
+	void AddLineSegs(LineSegs& lines);
 	void ClearPatchs();
 	void SetPatchTransparency(float t);
 	void SetSelectPatchTransparency(float t);

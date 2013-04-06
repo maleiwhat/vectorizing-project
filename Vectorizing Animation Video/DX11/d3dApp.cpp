@@ -1071,3 +1071,33 @@ void D3DApp::AddLines(Lines& lines)
 	}
 }
 
+void D3DApp::AddLineSegs( LineSegs& lines )
+{
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		LineSeg& now_line = lines[i];
+		
+		float r, g, b;
+		r = (rand() % 155 + 100) / 255.0f;
+		g = (rand() % 155 + 100) / 255.0f;
+		b = (rand() % 155 + 100) / 255.0f;
+		g = 1;
+		r = b = 0;
+		LineVertex lv;
+		lv.color.x = r;
+		lv.color.y = g;
+		lv.color.z = b;
+		lv.p1.x = now_line.beg.x;
+		lv.p1.y = m_PicH - now_line.beg.y;
+		lv.p2.x = now_line.beg.x;
+		lv.p2.y = m_PicH - now_line.beg.y;
+		lv.p3.x = now_line.end.x;
+		lv.p3.y = m_PicH - now_line.end.y;
+		lv.p4.x = now_line.end.x;
+		lv.p4.y = m_PicH - now_line.end.y;
+		lv.width.x = 0.5;
+		lv.width.y = 0.5;
+		m_SkeletonLinesVertices.push_back(lv);
+	}
+}
+

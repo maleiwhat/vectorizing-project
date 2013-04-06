@@ -30,3 +30,4 @@ public:
 	LineIndexs	m_LineIndexs;
 };
 typedef std::vector<PatchSpline> PatchSplines;
+typedef std::vector<PatchSplines> PatchSplines2d;

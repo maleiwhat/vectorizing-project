@@ -20,7 +20,7 @@ public:
 	LineFragments	m_LineFragments;
 	LineFragments	m_ControlPoints;
 	PatchSplines	m_PatchSplines;
-	PatchSplines	m_PatchSplinesInter;
+	PatchSplines2d	m_PatchSplinesInter;
 private:
 	PatchLines	m_PatchLines;
 	SplineFragments m_SplineFragments;

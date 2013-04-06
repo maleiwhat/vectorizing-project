@@ -73,8 +73,9 @@ public:
 
 	void mark_domains(Triangulation& ct, Triangulation::Face_handle start, int index, std::list<Triangulation::Edge>& border);
 	void mark_domains(Triangulation& cdt);
-	void insert_polygonSpline(Triangulation& cdt, ImageSpline m_ImageSpline, int i);
-	void insert_polygonSplineInter(Triangulation& cdt, ImageSpline m_ImageSpline, int idx);
+	void insert_polygon(Triangulation& cdt, ImageSpline& is, int i);
+	void insert_polygonInter(Triangulation& cdt, ImageSpline& is, int idx);
+	void insert_polygonInter2(Triangulation& cdt, ImageSpline& is, PatchSpline& ps);
 	void force_mark_domains(Triangulation& ct, Triangulation::Face_handle start, int index, std::list<Triangulation::Edge>& border);
 	static const int TRIANGLE_NOT_INIT = -1;
 	static const int TRIANGLE_TRANSPARENT = -2;

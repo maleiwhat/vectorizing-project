@@ -64,12 +64,12 @@ void TriangulationCgal_Patch::Compute()
 
 	for (int i = 0; i < m_ImageSpline.m_PatchSplines.size(); ++i)
 	{
-		insert_polygonSpline(m_Triangulation, m_ImageSpline, i);
+		insert_polygon(m_Triangulation, m_ImageSpline, i);
 	}
 
 	for (int i = 0; i < m_ImageSpline.m_PatchSplinesInter.size(); ++i)
 	{
-		insert_polygonSplineInter(m_Triangulation, m_ImageSpline, i);
+		insert_polygonInter(m_Triangulation, m_ImageSpline, i);
 	}
 	
 	Mesher mesher(m_Triangulation);
@@ -121,7 +121,7 @@ void TriangulationCgal_Patch::Clear()
 	m_SeedPoints.clear();
 }
 
-void TriangulationCgal_Patch::insert_polygonSpline(Triangulation& cdt, ImageSpline m_ImageSpline, int idx)
+void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_ImageSpline, int idx)
 {
 	PatchSpline& ps = m_ImageSpline.m_PatchSplines[idx];
 	LineIndex start_idx = ps.m_LineIndexs.front();
@@ -157,10 +157,13 @@ void TriangulationCgal_Patch::insert_polygonSpline(Triangulation& cdt, ImageSpli
 				{
 					Triangulation::Vertex_handle vh = m_Triangulation.insert(now);
 					assert(vh->info().nesting_level == -1 || vh->info().nesting_level == idx);
-					vh->info().nesting_level = idx;
-					m_Triangulation.insert_constraint(v_prev, vh);
-					v_prev = vh;
-					last = now;
+					if (vh->info().nesting_level == -1 || vh->info().nesting_level == idx)
+					{
+						vh->info().nesting_level = idx;
+						m_Triangulation.insert_constraint(v_prev, vh);
+						v_prev = vh;
+						last = now;
+					}
 				}
 			}
 		}
@@ -174,10 +177,13 @@ void TriangulationCgal_Patch::insert_polygonSpline(Triangulation& cdt, ImageSpli
 				{
 					Triangulation::Vertex_handle vh = m_Triangulation.insert(now);
 					assert(vh->info().nesting_level == -1 || vh->info().nesting_level == idx);
-					vh->info().nesting_level = idx;
-					m_Triangulation.insert_constraint(v_prev, vh);
-					v_prev = vh;
-					last = now;
+					if (vh->info().nesting_level == -1 || vh->info().nesting_level == idx)
+					{
+						vh->info().nesting_level = idx;
+						m_Triangulation.insert_constraint(v_prev, vh);
+						v_prev = vh;
+						last = now;
+					}
 				}
 			}
 		}
@@ -186,11 +192,9 @@ void TriangulationCgal_Patch::insert_polygonSpline(Triangulation& cdt, ImageSpli
 	assert(start == last);
 }
 
-
-void TriangulationCgal_Patch::insert_polygonSplineInter(Triangulation& cdt, ImageSpline m_ImageSpline, int idx)
+void TriangulationCgal_Patch::insert_polygonInter2( Triangulation& cdt, ImageSpline& is, PatchSpline& ps )
 {
 	const int NESTING_LEVEL = TRIANGLE_TRANSPARENT;
-	PatchSpline& ps = m_ImageSpline.m_PatchSplinesInter[idx];
 	if (ps.m_LineIndexs.empty())
 	{
 		return;
@@ -200,23 +204,23 @@ void TriangulationCgal_Patch::insert_polygonSplineInter(Triangulation& cdt, Imag
 
 	if (start_idx.m_Forward)
 	{
-		Vector2 v = m_ImageSpline.m_LineFragments[start_idx.m_id].m_Points.front();
+		Vector2 v = is.m_LineFragments[start_idx.m_id].m_Points.front();
 		last = Point(v.x, v.y);
 	}
 	else
 	{
-		Vector2 v = m_ImageSpline.m_LineFragments[start_idx.m_id].m_Points.back();
+		Vector2 v = is.m_LineFragments[start_idx.m_id].m_Points.back();
 		last = Point(v.x, v.y);
 	}
 
 	Point start = last;
 	Triangulation::Vertex_handle v_prev  = cdt.insert(last);
-	assert(v_prev->info().nesting_level == -1);
+	//assert(v_prev->info().nesting_level == -1);
 	v_prev->info().nesting_level = NESTING_LEVEL;
 
 	for (auto it = ps.m_LineIndexs.begin(); it != ps.m_LineIndexs.end(); ++it)
 	{
-		Line pts = m_ImageSpline.m_LineFragments[it->m_id].m_Points;
+		Line pts = is.m_LineFragments[it->m_id].m_Points;
 
 		if (it->m_Forward)
 		{
@@ -259,6 +263,16 @@ void TriangulationCgal_Patch::insert_polygonSplineInter(Triangulation& cdt, Imag
 	}
 
 	assert(start == last);
+}
+
+void TriangulationCgal_Patch::insert_polygonInter(Triangulation& cdt, ImageSpline& is, int idx)
+{
+	PatchSplines& pss = is.m_PatchSplinesInter[idx];
+
+	for (int i = 0; i < pss.size(); ++i)
+	{
+		insert_polygonInter2(cdt, is, pss[i]);
+	}
 }
 
 void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, const Polygon& polygon, int domain)
@@ -442,4 +456,6 @@ void TriangulationCgal_Patch::SetSize(int w, int h)
 	m_w = w;
 	m_h = h;
 }
+
+
 
