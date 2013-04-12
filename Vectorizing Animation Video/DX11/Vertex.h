@@ -27,7 +27,7 @@ struct TriangleVertex
 };
 typedef std::vector<TriangleVertex> TriangleVertices;
 
-//Picture Vertex format
+//Point Vertex format
 struct PointVertex
 {
 	D3DXVECTOR2 position;
@@ -36,7 +36,7 @@ struct PointVertex
 };
 typedef std::vector<PointVertex> PointVertices;
 
-//Picture Vertex format
+//Line Vertex format
 struct LineVertex
 {
 	D3DXVECTOR2 p1;
@@ -48,9 +48,18 @@ struct LineVertex
 };
 typedef std::vector<LineVertex> LineVertices;
 
+struct SkeletonLineVertex
+{
+	D3DXVECTOR2 p1;
+	D3DXVECTOR2 p2;
+	D3DXVECTOR3 color;
+};
+typedef std::vector<SkeletonLineVertex> SkeletonLineVertexes;
+
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_PointVertex[];
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_PICVertex[];
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_TRIVertex[];
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_LineVertex[];
+extern D3D11_INPUT_ELEMENT_DESC VertexDesc_SkeletonLineVertex[];
 
 #endif // VERTEX_H

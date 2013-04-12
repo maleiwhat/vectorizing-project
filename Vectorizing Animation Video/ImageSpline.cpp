@@ -134,7 +134,7 @@ void ImageSpline::ComputeToSplineFragments()
 		cps = newcps;
 	}
 
-	//return;
+	return;
 	m_SplineFragments.clear();
 
 	// ¥­§¡¦UÂI

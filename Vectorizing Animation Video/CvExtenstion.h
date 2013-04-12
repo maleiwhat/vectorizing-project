@@ -35,7 +35,7 @@ CvPatchs S1GetPatchs(const cv::Mat& image);
 CvPatchs S1GetPatchs(const cv::Mat& image0, int dilation, int erosion);
 CvPatchs S2GetPatchs(const cv::Mat& image, int dilation = 0, int erosion = 0);
 ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion);
-ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage);
+ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines, cv::Mat lineImage);
 PatchLines GetPatchSplines(CvPatchs& patchs, cv::Mat& patchImage);
 Lines GetAllLineFromLineImage(cv::Mat& lineImage);
 void	FixHole(cv::Mat& patchImage);

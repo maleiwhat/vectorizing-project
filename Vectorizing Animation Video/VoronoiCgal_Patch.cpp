@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "VoronoiCgal_Patch.h"
 #include "CgalPatch.h"
 
@@ -127,8 +128,15 @@ void VoronoiCgal_Patch::insert_polygonInter(Delaunay& cdt, ImageSpline& is, int 
 
 void VoronoiCgal_Patch::Compute()
 {
-	CgalPatchs cgalpatchs = MakePatchs(m_ImageSpline);
-	for (int i = 0; i < m_ImageSpline.m_PatchSplines.size(); ++i)
+	m_CgalPatchs = MakePatchs(m_ImageSpline);
+
+	for (int i = 0; i < m_CgalPatchs.size(); ++i)
+	{
+		m_OutLines.push_back(m_CgalPatchs[i].Outer());
+		m_OutLines.insert(m_OutLines.end(), m_CgalPatchs[i].Inter().begin(), m_CgalPatchs[i].Inter().end());
+	}
+
+	for (int i = 0; i < m_CgalPatchs.size(); ++i)
 	{
 		m_Delaunay = Delaunay();
 		insert_polygon(m_Delaunay, m_ImageSpline, i);
@@ -145,16 +153,82 @@ void VoronoiCgal_Patch::Compute()
 				Point p1(seg->source().hx(), seg->source().hy());
 				Point p2(seg->target().hx(), seg->target().hy());
 
-				if (cgalpatchs[i].CheckInside(p1.hx(), p1.hy()) &&
-					cgalpatchs[i].CheckInside(p2.hx(), p2.hy()))
+				if (m_CgalPatchs[i].CheckInside(p1.hx(), p1.hy()) &&
+				                m_CgalPatchs[i].CheckInside(p2.hx(), p2.hy()))
 				{
-					m_Lines.push_back(
-						LineSeg(
-						Vector2(p1.hx(), p1.hy()), Vector2(p2.hx(), p2.hy())
-						)
-						);
+					m_LineSegs.push_back(
+					        LineSeg(
+					                Vector2(p1.hx(), p1.hy()), Vector2(p2.hx(), p2.hy())
+					        )
+					);
 				}
 			}
+		}
+	}
+
+	//MakeLines();
+}
+
+void VoronoiCgal_Patch::MakeLines()
+{
+	m_Lines.clear();
+	Line lastline;
+	lastline.push_back(m_LineSegs.front().beg);
+	lastline.push_back(m_LineSegs.front().end);
+	Vector2 last = m_LineSegs.front().end;
+	m_LineSegs.erase(m_LineSegs.begin());
+
+	for (;;)
+	{
+		for (int i = 0; i < m_LineSegs.size(); ++i)
+		{
+			if (m_LineSegs[i].beg == last)
+			{
+				lastline.push_back(m_LineSegs[i].end);
+				last = m_LineSegs[i].end;
+				m_LineSegs.erase(m_LineSegs.begin() + i);
+				i = 0;
+			}
+			else if (m_LineSegs[i].end == last)
+			{
+				lastline.push_back(m_LineSegs[i].beg);
+				last = m_LineSegs[i].beg;
+				m_LineSegs.erase(m_LineSegs.begin() + i);
+				i = 0;
+			}
+		}
+
+		for (int i = 0; i < m_LineSegs.size(); ++i)
+		{
+			if (m_LineSegs[0].beg == last)
+			{
+				lastline.push_front(m_LineSegs[0].end);
+				last = m_LineSegs[0].end;
+				m_LineSegs.erase(m_LineSegs.begin());
+				i = 0;
+			}
+			else if (m_LineSegs[0].end == last)
+			{
+				lastline.push_front(m_LineSegs[0].beg);
+				last = m_LineSegs[0].beg;
+				m_LineSegs.erase(m_LineSegs.begin());
+				i = 0;
+			}
+		}
+
+		m_Lines.push_back(lastline);
+
+		if (!m_LineSegs.empty())
+		{
+			lastline.clear();
+			lastline.push_back(m_LineSegs.front().beg);
+			lastline.push_back(m_LineSegs.front().end);
+			last = m_LineSegs.front().end;
+			m_LineSegs.erase(m_LineSegs.begin());
+		}
+		else
+		{
+			break;
 		}
 	}
 }

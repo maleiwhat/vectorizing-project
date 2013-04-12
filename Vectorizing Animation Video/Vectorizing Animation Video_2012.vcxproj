@@ -316,6 +316,25 @@
   <ItemGroup>
     <ResourceCompile Include="Vectorizing Animation Video.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\bigpoint.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="shader\Line.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="shader\patch.fx">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\LineSkeleton.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="shader\SkeletonLine.fx">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

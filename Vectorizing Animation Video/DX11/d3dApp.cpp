@@ -202,8 +202,8 @@ void D3DApp::OnResize(int w, int h)
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
 	depthStencilDesc.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count   = 1; // multisampling must match
-	depthStencilDesc.SampleDesc.Quality = 0; // swap chain values.
+	depthStencilDesc.SampleDesc.Count   = 4; // multisampling must match
+	depthStencilDesc.SampleDesc.Quality = 2; // swap chain values.
 	depthStencilDesc.Usage          = D3D11_USAGE_DEFAULT;
 	depthStencilDesc.BindFlags      = D3D11_BIND_DEPTH_STENCIL;
 	depthStencilDesc.CPUAccessFlags = 0;
@@ -313,7 +313,7 @@ void D3DApp::DrawScene()
 	{
 		m_SkeletonLines_Transparency->SetFloat(0.9);
 		UINT offset = 0;
-		UINT stride2 = sizeof(LineVertex);
+		UINT stride2 = sizeof(SkeletonLineVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 		m_DeviceContext->IASetInputLayout(m_SkeletonLines_PLayout);
 		m_DeviceContext->IASetVertexBuffers(0, 1, &m_SkeletonLines_Buffer, &stride2, &offset);
@@ -488,7 +488,7 @@ void D3DApp::BuildShaderFX()
 	m_Lines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri5);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_LineVertex, 6, PassDescTri5.pIAInputSignature,
 	                                  PassDescTri5.IAInputSignatureSize, &m_Lines_PLayout));
-	hr = D3DX11CompileFromFile(_T("shader\\Line.fx"), NULL, NULL, NULL,
+	hr = D3DX11CompileFromFile(_T("shader\\SkeletonLine.fx"), NULL, NULL, NULL,
 	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL);
 
 	if (FAILED(hr))
@@ -652,8 +652,8 @@ void D3DApp::BuildPoint()
 
 	if (!m_SkeletonLinesVertices.empty())
 	{
-		m_vbd.ByteWidth = (UINT)(sizeof(LineVertex) * m_SkeletonLinesVertices.size());
-		m_vbd.StructureByteStride = sizeof(LineVertex);
+		m_vbd.ByteWidth = (UINT)(sizeof(SkeletonLineVertex) * m_SkeletonLinesVertices.size());
+		m_vbd.StructureByteStride = sizeof(SkeletonLineVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_SkeletonLinesVertices[0];
 		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_SkeletonLines_Buffer));
@@ -976,16 +976,19 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 		lv.width.x = now_linewidth[0] + 2;
 		lv.width.y = now_linewidth[1] + 2;
 		m_LinesVertices.push_back(lv);
-		lv.width.x = 2;
-		lv.width.y = 2;
-		m_SkeletonLinesVertices.push_back(lv);
+
+		SkeletonLineVertex slv;
+		slv.color.x = r;
+		slv.color.y = g;
+		slv.color.z = b;
+		slv.p1.x = now_line[0].x;
+		slv.p1.y = m_PicH - now_line[0].y;
+		slv.p2.x = now_line[1].x;
+		slv.p2.y = m_PicH - now_line[1].y;
+		m_SkeletonLinesVertices.push_back(slv);
 
 		for (int j = 1; j < now_line.size() - 2; ++j)
 		{
-			LineVertex lv;
-			lv.color.x = r;
-			lv.color.y = g;
-			lv.color.z = b;
 			lv.p1.x = now_line[j - 1].x;
 			lv.p1.y = m_PicH - now_line[j - 1].y;
 			lv.p2.x = now_line[j].x;
@@ -997,9 +1000,12 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 			lv.width.x = now_linewidth[j] + 2;
 			lv.width.y = now_linewidth[j + 1] + 2;
 			m_LinesVertices.push_back(lv);
-			lv.width.x = 1;
-			lv.width.y = 1;
-			m_SkeletonLinesVertices.push_back(lv);
+
+			slv.p1.x = now_line[j].x;
+			slv.p1.y = m_PicH - now_line[j].y;
+			slv.p2.x = now_line[j+1].x;
+			slv.p2.y = m_PicH - now_line[j+1].y;
+			m_SkeletonLinesVertices.push_back(slv);
 		}
 
 		lv.p1.x = now_line[now_line.size() - 3].x;
@@ -1013,9 +1019,11 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 		lv.width.x = now_linewidth[0] + 2;
 		lv.width.y = now_linewidth[1] + 2;
 		m_LinesVertices.push_back(lv);
-		lv.width.x = 1;
-		lv.width.y = 1;
-		m_SkeletonLinesVertices.push_back(lv);
+		slv.p1.x = now_line[now_line.size() - 2].x;
+		slv.p1.y = m_PicH - now_line[now_line.size() - 2].y;
+		slv.p2.x = now_line[now_line.size() - 1].x;
+		slv.p2.y = m_PicH - now_line[now_line.size() - 1].y;
+		m_SkeletonLinesVertices.push_back(slv);
 	}
 }
 
@@ -1034,39 +1042,55 @@ void D3DApp::AddLines(Lines& lines)
 		r = (rand() % 155 + 100) / 255.0f;
 		g = (rand() % 155 + 100) / 255.0f;
 		b = (rand() % 155 + 100) / 255.0f;
-		LineVertex lv;
-		lv.color.x = r;
-		lv.color.y = g;
-		lv.color.z = b;
-		lv.p1.x = now_line[0].x;
-		lv.p1.y = m_PicH - now_line[0].y;
-		lv.p2.x = now_line[0].x;
-		lv.p2.y = m_PicH - now_line[0].y;
-		lv.p3.x = now_line[1].x;
-		lv.p3.y = m_PicH - now_line[1].y;
-		lv.p4.x = now_line[1].x;
-		lv.p4.y = m_PicH - now_line[1].y;
-		lv.width.x = 1;
-		lv.width.y = 1;
-		m_SkeletonLinesVertices.push_back(lv);
+		SkeletonLineVertex slv;
+		slv.color.x = r;
+		slv.color.y = g;
+		slv.color.z = b;
 
 		for (int j = 1; j < now_line.size(); ++j)
 		{
-			LineVertex lv;
-			lv.color.x = r;
-			lv.color.y = g;
-			lv.color.z = b;
-			lv.p1.x = now_line[j - 1].x;
-			lv.p1.y = m_PicH - now_line[j - 1].y;
-			lv.p2.x = now_line[j-1].x;
-			lv.p2.y = m_PicH - now_line[j-1].y;
-			lv.p3.x = now_line[j].x;
-			lv.p3.y = m_PicH - now_line[j].y;
-			lv.p4.x = now_line[j].x;
-			lv.p4.y = m_PicH - now_line[j].y;
-			lv.width.x = 1;
-			lv.width.y = 1;
-			m_SkeletonLinesVertices.push_back(lv);
+			slv.color.x = r;
+			slv.color.y = g;
+			slv.color.z = b;
+			slv.p1.x = now_line[j].x;
+			slv.p1.y = m_PicH - now_line[j].y;
+			slv.p2.x = now_line[j-1].x;
+			slv.p2.y = m_PicH - now_line[j-1].y;
+			m_SkeletonLinesVertices.push_back(slv);
+		}
+	}
+}
+
+void D3DApp::AddLines( Points2d& lines )
+{
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		Points& now_line = lines[i];
+
+		if (now_line.size() < 2)
+		{
+			continue;
+		}
+
+		float r, g, b;
+		r = (rand() % 155 + 100) / 255.0f;
+		g = (rand() % 155 + 100) / 255.0f;
+		b = (rand() % 155 + 100) / 255.0f;
+		SkeletonLineVertex slv;
+		slv.color.x = r;
+		slv.color.y = g;
+		slv.color.z = b;
+
+		for (int j = 1; j < now_line.size(); ++j)
+		{
+			slv.color.x = r;
+			slv.color.y = g;
+			slv.color.z = b;
+			slv.p1.x = now_line[j].hx();
+			slv.p1.y = m_PicH - now_line[j].hy();
+			slv.p2.x = now_line[j-1].hx();
+			slv.p2.y = m_PicH - now_line[j-1].hy();
+			m_SkeletonLinesVertices.push_back(slv);
 		}
 	}
 }
@@ -1083,21 +1107,16 @@ void D3DApp::AddLineSegs( LineSegs& lines )
 		b = (rand() % 155 + 100) / 255.0f;
 		g = 1;
 		r = b = 0;
-		LineVertex lv;
-		lv.color.x = r;
-		lv.color.y = g;
-		lv.color.z = b;
-		lv.p1.x = now_line.beg.x;
-		lv.p1.y = m_PicH - now_line.beg.y;
-		lv.p2.x = now_line.beg.x;
-		lv.p2.y = m_PicH - now_line.beg.y;
-		lv.p3.x = now_line.end.x;
-		lv.p3.y = m_PicH - now_line.end.y;
-		lv.p4.x = now_line.end.x;
-		lv.p4.y = m_PicH - now_line.end.y;
-		lv.width.x = 0.5;
-		lv.width.y = 0.5;
-		m_SkeletonLinesVertices.push_back(lv);
+		
+		SkeletonLineVertex slv;
+		slv.color.x = r;
+		slv.color.y = g;
+		slv.color.z = b;
+		slv.p1.x = now_line.beg.x;
+		slv.p1.y = m_PicH - now_line.beg.y;
+		slv.p2.x = now_line.end.x;
+		slv.p2.y = m_PicH - now_line.end.y;
+		m_SkeletonLinesVertices.push_back(slv);
 	}
 }
 

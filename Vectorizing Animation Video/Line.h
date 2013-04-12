@@ -1,10 +1,17 @@
 #pragma once
 
 #include <vector>
-#include "math/Vector2.h"
 #include <opencv2/core/core.hpp>
+#include <deque>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include "math/Vector2.h"
 
-typedef Vector2s Line;
+typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef K::Point_2 Point;
+typedef std::vector<Point> Points;
+typedef std::vector<Points> Points2d;
+
+typedef std::deque<Vector2> Line;
 typedef std::vector<Line> Lines;
 typedef std::vector<cv::Point> CvPoints;
 typedef std::vector<CvPoints> CvPoints2d;
@@ -15,4 +22,4 @@ struct LineSeg
 	LineSeg(){}
 	LineSeg(Vector2& b, Vector2& e):beg(b), end(e){}
 };
-typedef std::vector<LineSeg> LineSegs;
+typedef std::deque<LineSeg> LineSegs;

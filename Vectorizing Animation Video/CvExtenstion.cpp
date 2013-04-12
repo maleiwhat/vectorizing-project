@@ -1907,7 +1907,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	return is;
 }
 
-ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
+ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines, cv::Mat lineImage)
 {
 	ImageSpline is;
 	LineFragments& lfs = is.m_LineFragments;
@@ -1932,7 +1932,7 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 
 			if (hash != last_lineidx && hash >= 0)
 			{
-				Line& now_line = lines[hash];
+				const Line& now_line = lines[hash];
 
 				if (*(now_line.begin() + 1) == Vector2(it2->x, it2->y))
 				{
@@ -2051,7 +2051,7 @@ ImageSpline GetImageSpline(CvPatchs& patchs, Lines& lines, cv::Mat lineImage)
 				hash -= 1;
 				if (hash != last_lineidx && hash >= 0)
 				{
-					Line& now_line = lines[hash];
+					const Line& now_line = lines[hash];
 										
 					if (*(now_line.begin() + 1) == Vector2(it3->x, it3->y))
 					{
@@ -3310,34 +3310,7 @@ ImageSpline ComputeLines(cv::Mat img, Lines& lines, double_vector2d& linewidths,
 
 	GetSkeletonLine(image, lines, linewidths);
 	lines2.resize(lines.size());
-
-	// ¥­§¡¦UÂI
-// 	for (int count = 0; count < 1; count++)
-// 	{
-// 		for (int i = 0; i < lines.size(); ++i)
-// 		{
-// 			Line& cps = lines[i];
-// 			Line newcps;
-//
-// 			if (cps.size() < 4) { continue; }
-//
-// 			newcps.push_back(cps.front());
-//
-// 			for (int j = 1; j < cps.size() - 1; j ++)
-// 			{
-// 				Vector2 vec = (cps[j] * 2 + cps[j + 1] * 0.5 + cps[j - 1] * 0.5) / 3.0f;
-// 				newcps.push_back(vec);
-// 			}
-//
-// 			if (cps.back() != newcps.back())
-// 			{
-// 				newcps.push_back(cps.back());
-// 			}
-//
-// 			cps = newcps;
-// 		}
-// 	}
-
+	
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		Line& cps = lines[i];
@@ -3422,52 +3395,6 @@ ImageSpline ComputeLines(cv::Mat img, Lines& lines, double_vector2d& linewidths,
 
 		cps = newcps;
 	}
-
-// 	for (auto it = lines.begin(); it != lines.end(); ++it,++j)
-// 	{
-// 		SplineShape ss;
-// 		algSpline sr, sg, sb;
-//
-// 		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
-// 		{
-// 			ss.AddPoint(it2->x, it2->y);
-// 		}
-// 		int	new_size = it->size() * 0.5;
-//
-// 		if (new_size < 5) { continue;; }
-//
-// 		float step = 1.f / (new_size);
-// 		it->clear();
-// 		ss.CurveFitting(0.4);
-// 		for (int i = 0; i <= new_size; ++i)
-// 		{
-// 			float t = step * i;
-// 			Vector2 v = ss.GetPoint(t);
-// 			it->push_back(Vec2(v.x, v.y));
-// 		}
-// 		new_size = it->size() * 0.2;
-// 		step = 1.f / (new_size);
-// 		for (int i = 0; i <= new_size; ++i)
-// 		{
-// 			float t = step * i;
-// 			Vector2 v = ss.GetPoint(t);
-// 			lines2[j].push_back(Vec2(v.x, v.y));
-// 		}
-// 	}
-// 	for (int i = 0; i < linewidths.size(); ++i)
-// 	{
-// 		Line& now_line = lines[i];
-// 		float_vector& now_linewidth = linewidths[i];
-//
-// 		if (now_line.size() < 10)
-// 		{
-// 			continue;
-// 		}
-// 		std::cout << i << " " << now_line[0].x << ", " << now_line[0].y << " size: " << now_line.size() << std::endl;
-// 		Line control_points = Get_C0_to_Cn_From_Values(now_line, now_line.size()/2);
-// 		now_line = Get_Values_From_C0_to_Cn(control_points, now_line.size());
-// 		std::cout << i << " " << now_line[0].x << ", " << now_line[0].y << " size: " << now_line.size() << std::endl;
-// 	}
 	cv::Mat drawing = cv::Mat::zeros(img.size(), CV_8UC3),
 	        show3u3 = cv::Mat::zeros(img.size(), CV_8UC3);;
 	cv::RNG rng(12345);
@@ -3757,5 +3684,22 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	ImageSpline  is = GetImageSpline(tmp_cvps, lines, tmp_image);
 	//is.ComputeToLineFragments();
 	is.ComputeToSplineFragments();
+	for (auto it = is.m_LineFragments.begin(); it != is.m_LineFragments.end(); ++it)
+	{
+		int b = rand() % 255;
+		int g = rand() % 255;
+		int r = rand() % 255;
+
+		assert(it->m_Points.front() == it->m_Points.back());
+		for (auto it2 = it->m_Points.begin(); it2 != it->m_Points.end(); ++it2)
+		{
+			cv::Vec3b& intensity2 = tmp_image2.at<cv::Vec3b>(it2->y, it2->x);
+			intensity2[0] = b;
+			intensity2[1] = g;
+			intensity2[2] = r;
+		}
+		count++;
+	}
+	imshow("tmp_image2", tmp_image2);
 	return is;
 }

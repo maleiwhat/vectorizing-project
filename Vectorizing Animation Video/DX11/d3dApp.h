@@ -8,6 +8,7 @@
 #include "Vertex.h"
 #include "TriangulationBase.h"
 #include "vavImage.h"
+#include "Line.h"
 
 class D3DApp
 {
@@ -35,6 +36,7 @@ public:
 	void AddLines(Lines& lines, double_vector2d& linewidths);
 	void AddLines(Lines& lines);
 	void AddLineSegs(LineSegs& lines);
+	void AddLines(Points2d& lines);
 	void ClearPatchs();
 	void SetPatchTransparency(float t);
 	void SetSelectPatchTransparency(float t);
@@ -159,7 +161,7 @@ protected:
 	ID3DX11EffectScalarVariable*	m_SkeletonLines_CenterX;
 	ID3DX11EffectScalarVariable*	m_SkeletonLines_CenterY;
 	ID3DX11EffectScalarVariable*	m_SkeletonLines_Transparency;
-	LineVertices			m_SkeletonLinesVertices;
+	SkeletonLineVertexes		m_SkeletonLinesVertices;
 
 	D3D11_BUFFER_DESC		m_vbd;
 	DXUTUI*				m_DXUT_UI;

@@ -139,6 +139,15 @@
     <None Include="shader\triangleline.fx">
       <Filter>shader</Filter>
     </None>
+    <None Include="shader\patch.fx">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\Line.fx">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\bigpoint.fx">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -556,5 +565,13 @@
     <ResourceCompile Include="Vectorizing Animation Video.rc">
       <Filter>資源檔</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shader\LineSkeleton.fx">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\SkeletonLine.fx">
+      <Filter>shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

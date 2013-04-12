@@ -9,26 +9,26 @@
 
 #include "ImageSpline.h"
 #include "Line.h"
+#include "CgalPatch.h"
 
 class VoronoiCgal_Patch : public TriangulationBase
 {
 public:
-
-	typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 	typedef CGAL::Delaunay_triangulation_2<K> Delaunay;
 	typedef Delaunay::Vertex_handle Vertex_handle;
-
-	typedef K::Point_2 Point;
-
+	
 	//typedef std::vector<Site>		Sites;
-	typedef std::vector<Point>		Points;
 	typedef std::vector<Vertex_handle>	Vertex_handles;
 
-	LineSegs	m_Lines;
+	LineSegs	m_LineSegs;
+	Lines		m_Lines;
 	Points		m_Points;
 	Delaunay	m_Delaunay;
 	ImageSpline	m_ImageSpline;
+	CgalPatchs	m_CgalPatchs;
+	Points2d	m_OutLines;
 
+	void MakeLines();
 
 	void insert_polygon(Delaunay& cdt, ImageSpline& m_ImageSpline, int idx);
 

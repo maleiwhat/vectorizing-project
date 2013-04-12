@@ -59,12 +59,8 @@ void CgalPatch::insert_polygon(ImageSpline& is, int idx)
 			for (auto it2 = pts.begin(); it2 != pts.end(); ++it2)
 			{
 				Point now(it2->x, it2->y);
-
-				if (now != last)
-				{
-					m_Outer.push_back(now);
-					last = now;
-				}
+				m_Outer.push_back(now);
+				last = now;
 			}
 		}
 		else
@@ -72,15 +68,13 @@ void CgalPatch::insert_polygon(ImageSpline& is, int idx)
 			for (auto it2 = pts.rbegin(); it2 != pts.rend(); ++it2)
 			{
 				Point now(it2->x, it2->y);
-
-				if (now != last)
-				{
-					m_Outer.push_back(now);
-					last = now;
-				}
+				m_Outer.push_back(now);
+				last = now;
 			}
 		}
 	}
+
+	m_Outer.push_back(start);
 }
 
 void CgalPatch::insert_polygonInter2(ImageSpline& is, PatchSpline& ps)
@@ -113,12 +107,8 @@ void CgalPatch::insert_polygonInter2(ImageSpline& is, PatchSpline& ps)
 			for (auto it2 = pts.begin(); it2 != pts.end(); ++it2)
 			{
 				Point now(it2->x, it2->y);
-
-				if (now != last)
-				{
-					points.push_back(now);
-					last = now;
-				}
+				points.push_back(now);
+				last = now;
 			}
 		}
 		else
@@ -126,12 +116,8 @@ void CgalPatch::insert_polygonInter2(ImageSpline& is, PatchSpline& ps)
 			for (auto it2 = pts.rbegin(); it2 != pts.rend(); ++it2)
 			{
 				Point now(it2->x, it2->y);
-
-				if (now != last)
-				{
-					points.push_back(now);
-					last = now;
-				}
+				points.push_back(now);
+				last = now;
 			}
 		}
 	}
@@ -164,15 +150,16 @@ void CgalPatch::SetData(ImageSpline& is)
 }
 
 
-CgalPatchs MakePatchs( ImageSpline& is )
+CgalPatchs MakePatchs(ImageSpline& is)
 {
 	CgalPatchs ans;
 
-	for (int i = 0; i < is.m_PatchSplines.size(); ++i)
+	for (int i = 0; i < is.m_PatchSplines.size(); i++)
 	{
 		ans.push_back(CgalPatch());
-		ans.back().insert_polygon(is, i);
+		//ans.back().insert_polygon(is, i);
 		ans.back().insert_polygonInter(is, i);
 	}
+
 	return ans;
 }
