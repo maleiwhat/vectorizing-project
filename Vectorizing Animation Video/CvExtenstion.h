@@ -106,6 +106,6 @@ typedef std::vector<floatptrs> floatptrs2d;
 void GetMatrixb(int w, int h, Vec3bptrs& ary, int x, int y, cv::Mat& img);
 void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth);
 void GetSkeletonLine(cv::Mat bmap, Lines& lines, double_vector2d& linewidths);
-ImageSpline ComputeLines(cv::Mat img, Lines& lines, double_vector2d& linewidths, Lines& lines2);
+ImageSpline ComputeLines(cv::Mat img);
 void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2);
 ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion);

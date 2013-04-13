@@ -512,7 +512,7 @@ void D3DApp::BuildShaderFX()
 	m_SkeletonLines_Transparency = m_SkeletonLines_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri6;
 	m_SkeletonLines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri6);
-	HR(m_d3dDevice->CreateInputLayout(VertexDesc_LineVertex, 6, PassDescTri6.pIAInputSignature,
+	HR(m_d3dDevice->CreateInputLayout(VertexDesc_SkeletonLineVertex, 3, PassDescTri6.pIAInputSignature,
 	                                  PassDescTri6.IAInputSignatureSize, &m_SkeletonLines_PLayout));
 	m_Pics_Width->SetFloat(mClientWidth);
 	m_Pics_Height->SetFloat(mClientHeight);
@@ -1029,7 +1029,9 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 
 void D3DApp::AddLines(Lines& lines)
 {
-	for (int i = 0; i < lines.size(); ++i)
+	static int ii = 0;
+	ii ++;
+	for (int i = 0; i < lines.size() /*&& i < ii*/; ++i)
 	{
 		Line& now_line = lines[i];
 
@@ -1049,9 +1051,6 @@ void D3DApp::AddLines(Lines& lines)
 
 		for (int j = 1; j < now_line.size(); ++j)
 		{
-			slv.color.x = r;
-			slv.color.y = g;
-			slv.color.z = b;
 			slv.p1.x = now_line[j].x;
 			slv.p1.y = m_PicH - now_line[j].y;
 			slv.p2.x = now_line[j-1].x;
@@ -1083,9 +1082,6 @@ void D3DApp::AddLines( Points2d& lines )
 
 		for (int j = 1; j < now_line.size(); ++j)
 		{
-			slv.color.x = r;
-			slv.color.y = g;
-			slv.color.z = b;
 			slv.p1.x = now_line[j].hx();
 			slv.p1.y = m_PicH - now_line[j].hy();
 			slv.p2.x = now_line[j-1].hx();

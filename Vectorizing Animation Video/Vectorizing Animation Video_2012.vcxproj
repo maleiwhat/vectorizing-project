@@ -199,6 +199,7 @@
     <ClInclude Include="OutputWnd.h" />
     <ClInclude Include="Patch.h" />
     <ClInclude Include="PatchSpline.h" />
+    <ClInclude Include="print.h" />
     <ClInclude Include="PropertiesWnd.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SplineFragment.h" />
@@ -328,9 +329,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\LineSkeleton.fx">
-      <FileType>Document</FileType>
-    </None>
     <None Include="shader\SkeletonLine.fx">
       <FileType>Document</FileType>
     </None>

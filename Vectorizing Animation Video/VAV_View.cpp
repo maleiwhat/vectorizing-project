@@ -203,7 +203,7 @@ BOOL VAV_View::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 	if (zDelta > 0)
 	{
-		m_Scale += 0.1;
+		m_Scale += 0.5;
 		printf("m_Scale %f\n", m_Scale);
 	}
 	else if (zDelta < 0)

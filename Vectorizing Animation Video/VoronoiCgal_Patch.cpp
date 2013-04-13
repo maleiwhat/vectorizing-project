@@ -1,6 +1,7 @@
 #include <algorithm>
 #include "VoronoiCgal_Patch.h"
 #include "CgalPatch.h"
+#include "print.h"
 
 void VoronoiCgal_Patch::insert_polygon(Delaunay& cdt, ImageSpline& m_ImageSpline, int idx)
 {
@@ -130,12 +131,28 @@ void VoronoiCgal_Patch::Compute()
 {
 	m_CgalPatchs = MakePatchs(m_ImageSpline);
 
+	// for  debug
+// 	for (int i = 0; i < m_CgalPatchs.size(); ++i)
+// 	{
+// 		m_OutLines.push_back(m_CgalPatchs[i].Outer());
+// 		m_OutLines.insert(m_OutLines.end(), m_CgalPatchs[i].Inter().begin(), m_CgalPatchs[i].Inter().end());
+// 	}
+
 	for (int i = 0; i < m_CgalPatchs.size(); ++i)
 	{
-		m_OutLines.push_back(m_CgalPatchs[i].Outer());
-		m_OutLines.insert(m_OutLines.end(), m_CgalPatchs[i].Inter().begin(), m_CgalPatchs[i].Inter().end());
+		Polygon_2 polygon(m_CgalPatchs[i].Outer().begin(), m_CgalPatchs[i].Outer().end());
+		
+		m_Polygon_with_holes_vector.push_back(Polygon_with_holes(polygon));
+		Polygon_with_holes& pwh = m_Polygon_with_holes_vector.back();
+		
+		for (auto it = m_CgalPatchs[i].Inter().begin(); it != m_CgalPatchs[i].Inter().end(); ++it)
+		{
+			pwh.add_hole(Polygon_2(it->begin(), it->end()));
+		}
+		SsPtr iss = CGAL::create_interior_straight_skeleton_2(pwh);
+		print_straight_skeleton(*iss);
 	}
-
+	
 	for (int i = 0; i < m_CgalPatchs.size(); ++i)
 	{
 		m_Delaunay = Delaunay();
@@ -166,7 +183,7 @@ void VoronoiCgal_Patch::Compute()
 		}
 	}
 
-	//MakeLines();
+	MakeLines();
 }
 
 void VoronoiCgal_Patch::MakeLines()
@@ -198,20 +215,22 @@ void VoronoiCgal_Patch::MakeLines()
 			}
 		}
 
+		last = lastline.front();
+
 		for (int i = 0; i < m_LineSegs.size(); ++i)
 		{
-			if (m_LineSegs[0].beg == last)
+			if (m_LineSegs[i].beg == last)
 			{
-				lastline.push_front(m_LineSegs[0].end);
-				last = m_LineSegs[0].end;
-				m_LineSegs.erase(m_LineSegs.begin());
+				lastline.push_front(m_LineSegs[i].end);
+				last = m_LineSegs[i].end;
+				m_LineSegs.erase(m_LineSegs.begin() + i);
 				i = 0;
 			}
-			else if (m_LineSegs[0].end == last)
+			else if (m_LineSegs[i].end == last)
 			{
-				lastline.push_front(m_LineSegs[0].beg);
-				last = m_LineSegs[0].beg;
-				m_LineSegs.erase(m_LineSegs.begin());
+				lastline.push_front(m_LineSegs[i].beg);
+				last = m_LineSegs[i].beg;
+				m_LineSegs.erase(m_LineSegs.begin() + i);
 				i = 0;
 			}
 		}

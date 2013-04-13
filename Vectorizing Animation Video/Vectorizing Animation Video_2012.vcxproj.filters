@@ -148,6 +148,9 @@
     <None Include="shader\bigpoint.fx">
       <Filter>shader</Filter>
     </None>
+    <None Include="shader\SkeletonLine.fx">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -369,6 +372,9 @@
     <ClInclude Include="CgalPatch.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="print.h">
+      <Filter>原始程式檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -565,13 +571,5 @@
     <ResourceCompile Include="Vectorizing Animation Video.rc">
       <Filter>資源檔</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="shader\LineSkeleton.fx">
-      <Filter>shader</Filter>
-    </FxCompile>
-    <FxCompile Include="shader\SkeletonLine.fx">
-      <Filter>shader</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>

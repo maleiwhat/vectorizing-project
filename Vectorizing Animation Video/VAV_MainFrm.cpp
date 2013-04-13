@@ -554,10 +554,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	//m_CvPatchs = S2GetPatchs(m_vavImage, 0, 0);
 	//ImageSpline is = S3GetPatchs(m_vavImage, 0, 0);
 	
-	Lines line;
-	Lines line_control;
-	double_vector2d linewidths;
-	ImageSpline is2 = ComputeLines(m_vavImage, line, linewidths, line_control);
+	ImageSpline is2 = ComputeLines(m_vavImage);
 	
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddLines(line, linewidths, m_vavImage.GetHeight());
@@ -568,6 +565,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
  	cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
  	cgal_contour.AddImageSpline(is2);
 	cgal_voronoi.AddImageSpline(is2);
+
 // 	for (int i = 0; i < is.m_CvPatchs.size(); ++i)
 // 	{
 // 		is.m_CvPatchs[i].SetImage(m_vavImage);
@@ -598,12 +596,12 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles());
 	((VAV_View*)this->GetActiveView())->
 		m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles());
-//  	((VAV_View*)this->GetActiveView())->
-//  		m_D3DApp.AddLineSegs(cgal_voronoi.m_LineSegs);
-// 	((VAV_View*)this->GetActiveView())->
-// 		m_D3DApp.AddLines(cgal_voronoi.m_Lines);
+ 	((VAV_View*)this->GetActiveView())->
+ 		m_D3DApp.AddLineSegs(cgal_voronoi.m_LineSegs);
 	((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddLines(cgal_voronoi.m_OutLines);
+		m_D3DApp.AddLines(cgal_voronoi.m_Lines);
+// 	((VAV_View*)this->GetActiveView())->
+// 		m_D3DApp.AddLines(cgal_voronoi.m_OutLines);
 
 	// Control Points
 // 	for (int i=0;i< line_control.size();++i)

@@ -118,6 +118,7 @@ SplineFragments& ImageSpline::GetSplineFragments()
 void ImageSpline::ComputeToSplineFragments()
 {
 	// 還原圖的大小
+	
 	for (int i = 0; i < m_LineFragments.size(); ++i)
 	{
 		Line& cps = m_LineFragments[i].m_Points;
@@ -134,7 +135,7 @@ void ImageSpline::ComputeToSplineFragments()
 		cps = newcps;
 	}
 
-	return;
+	
 	m_SplineFragments.clear();
 
 	// 平均各點

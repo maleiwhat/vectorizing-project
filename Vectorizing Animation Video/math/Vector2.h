@@ -128,7 +128,7 @@ public:
 
 	inline bool operator == ( const Vector2& rkVector ) const
 	{
-		return ( x == rkVector.x && y == rkVector.y );
+		return ( abs(x - rkVector.x) < 0.001 && abs(y - rkVector.y) < 0.001 );
 	}
 
 	inline bool operator != ( const Vector2& rkVector ) const

@@ -3268,7 +3268,7 @@ void GetSkeletonLine(cv::Mat bmap, Lines& lines, double_vector2d& linewidths)
 	}
 }
 
-ImageSpline ComputeLines(cv::Mat img, Lines& lines, double_vector2d& linewidths, Lines& lines2)
+ImageSpline ComputeLines(cv::Mat img)
 {
 	cv::Mat image, mask, joint_image, mask2;
 	img.convertTo(image, CV_32FC3);
@@ -3294,130 +3294,6 @@ ImageSpline ComputeLines(cv::Mat img, Lines& lines, double_vector2d& linewidths,
 	//cv::waitKey();
 	ImageSpline is = S4GetPatchs(joint_image, 0, 0);
 	return is;
-
-	mask.create(joint_image.rows + 2, joint_image.cols + 2, CV_8UC1);
-	mask = cv::Scalar::all(0);
-	CvPatchs tmp_cvps;
-	int cc = 0;
-
-	for (int i = 0; i < joint_image.rows - 1; i++)
-	{
-		for (int j = 0; j < joint_image.cols - 1; j++)
-		{
-			S3FloodFill(cc, joint_image, mask, mask2, 0, j, i, tmp_cvps);
-		}
-	}
-
-	GetSkeletonLine(image, lines, linewidths);
-	lines2.resize(lines.size());
-	
-	for (int i = 0; i < lines.size(); ++i)
-	{
-		Line& cps = lines[i];
-		Line newcps;
-
-		if (cps.size() < 5) { continue; }
-
-		newcps.push_back(cps.front());
-		Vector2 last(cps[1].x - cps[0].x , cps[1].y - cps[0].y);
-		int bigger0 = 0, smaller0 = 0;
-		int corner = 0;
-
-		for (int j = 1; j < cps.size() - 1; ++j)
-		{
-			Vector2 vec = cps[j + 1] - cps[j];
-			corner++;
-
-			if (last != vec)
-			{
-				double angle1 = atan2(last.x, last.y) / M_PI * 180;
-				double angle2 = atan2(vec.x, vec.y) / M_PI * 180;
-
-				if (angle2 - angle1 > 0)
-				{
-					bigger0++;
-					smaller0 = 0;
-				}
-				else if (angle2 - angle1 < 0)
-				{
-					bigger0 = 0;
-					smaller0++;
-				}
-
-				if (bigger0 > 1)
-				{
-					if (cps.back() != cps[j])
-					{
-						newcps.push_back(cps[j]);
-					}
-
-					corner = 0;
-				}
-				else if (smaller0 > 0)
-				{
-					if (cps.back() != cps[j])
-					{
-						newcps.push_back(cps[j]);
-					}
-
-					corner = 0;
-				}
-				else if (corner > 3)
-				{
-					if (cps.back() != cps[j])
-					{
-						newcps.push_back(cps[j]);
-					}
-
-					corner = 0;
-				}
-
-				last = vec;
-			}
-			else
-			{
-				if (corner > 10)
-				{
-					if (cps.back() != cps[j])
-					{
-						newcps.push_back(cps[j]);
-					}
-
-					corner = 0;
-				}
-			}
-		}
-
-		if (cps.back() != newcps.back())
-		{
-			newcps.push_back(cps.back());
-		}
-
-		cps = newcps;
-	}
-	cv::Mat drawing = cv::Mat::zeros(img.size(), CV_8UC3),
-	        show3u3 = cv::Mat::zeros(img.size(), CV_8UC3);;
-	cv::RNG rng(12345);
-
-	for (int i = 0; i < linewidths.size(); ++i)
-	{
-		cv::Vec3b color(rng.uniform(100, 255), rng.uniform(100, 255), rng.uniform(100, 255));
-		Line& now_line = lines[i];
-		double_vector& now_linewidth = linewidths[i];
-
-		for (int j = 1; j < now_line.size(); ++j)
-		{
-			if (j != 0)
-			{
-				cv::Point p1(now_line[j - 1].x, now_line[j - 1].y);
-				cv::Point p2(now_line[j].x, now_line[j].y);
-				line(show3u3, p1, p2, cv::Scalar(color), 1, 8, 0);
-			}
-		}
-	}
-
-	imshow("drawing", show3u3);
-	//return tmp_cvps;
 }
 
 
@@ -3677,29 +3553,13 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		}
 		count++;
 	}
-
 	imshow("tmp_image2", tmp_image2);
 	//cv::waitKey();
 	
-	ImageSpline  is = GetImageSpline(tmp_cvps, lines, tmp_image);
+	ImageSpline is = GetImageSpline(tmp_cvps, lines, tmp_image);
+	is.m_lines = lines;
 	//is.ComputeToLineFragments();
 	is.ComputeToSplineFragments();
-	for (auto it = is.m_LineFragments.begin(); it != is.m_LineFragments.end(); ++it)
-	{
-		int b = rand() % 255;
-		int g = rand() % 255;
-		int r = rand() % 255;
-
-		assert(it->m_Points.front() == it->m_Points.back());
-		for (auto it2 = it->m_Points.begin(); it2 != it->m_Points.end(); ++it2)
-		{
-			cv::Vec3b& intensity2 = tmp_image2.at<cv::Vec3b>(it2->y, it2->x);
-			intensity2[0] = b;
-			intensity2[1] = g;
-			intensity2[2] = r;
-		}
-		count++;
-	}
 	imshow("tmp_image2", tmp_image2);
 	return is;
 }

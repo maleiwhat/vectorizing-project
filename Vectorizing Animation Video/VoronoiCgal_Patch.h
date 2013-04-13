@@ -11,9 +11,19 @@
 #include "Line.h"
 #include "CgalPatch.h"
 
+#include<CGAL/Polygon_with_holes_2.h>
+#include<CGAL/create_straight_skeleton_from_polygon_with_holes_2.h>
+
+
 class VoronoiCgal_Patch : public TriangulationBase
 {
 public:
+	typedef CGAL::Polygon_2<K> Polygon_2 ;
+	typedef CGAL::Polygon_with_holes_2<K> Polygon_with_holes ;
+	typedef std::vector<Polygon_with_holes> Polygon_with_holes_vector;
+	typedef CGAL::Straight_skeleton_2<K> Ss ;
+	typedef boost::shared_ptr<Ss> SsPtr ;
+
 	typedef CGAL::Delaunay_triangulation_2<K> Delaunay;
 	typedef Delaunay::Vertex_handle Vertex_handle;
 	
@@ -27,6 +37,7 @@ public:
 	ImageSpline	m_ImageSpline;
 	CgalPatchs	m_CgalPatchs;
 	Points2d	m_OutLines;
+	Polygon_with_holes_vector	m_Polygon_with_holes_vector;
 
 	void MakeLines();
 

@@ -157,7 +157,7 @@ CgalPatchs MakePatchs(ImageSpline& is)
 	for (int i = 0; i < is.m_PatchSplines.size(); i++)
 	{
 		ans.push_back(CgalPatch());
-		//ans.back().insert_polygon(is, i);
+		ans.back().insert_polygon(is, i);
 		ans.back().insert_polygonInter(is, i);
 	}
 

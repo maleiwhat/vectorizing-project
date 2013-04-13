@@ -156,7 +156,7 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 				if (now != last)
 				{
 					Triangulation::Vertex_handle vh = m_Triangulation.insert(now);
-					assert(vh->info().nesting_level == -1 || vh->info().nesting_level == idx);
+					//assert(vh->info().nesting_level == -1 || vh->info().nesting_level == idx);
 					if (vh->info().nesting_level == -1 || vh->info().nesting_level == idx)
 					{
 						vh->info().nesting_level = idx;
@@ -176,7 +176,7 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 				if (now != last)
 				{
 					Triangulation::Vertex_handle vh = m_Triangulation.insert(now);
-					assert(vh->info().nesting_level == -1 || vh->info().nesting_level == idx);
+					//assert(vh->info().nesting_level == -1 || vh->info().nesting_level == idx);
 					if (vh->info().nesting_level == -1 || vh->info().nesting_level == idx)
 					{
 						vh->info().nesting_level = idx;
