@@ -13,7 +13,7 @@ public:
 	~ImageSpline(void);
 	void AddPatchSpline(const PatchLine& ps);
 	void ComputeToLineFragments();
-	void ComputeToSplineFragments();
+	void SmoothingFragments();
 
 	CvPatchs	m_CvPatchs;
 	SplineFragments& GetSplineFragments();

@@ -115,7 +115,7 @@ SplineFragments& ImageSpline::GetSplineFragments()
 	return m_SplineFragments;
 }
 
-void ImageSpline::ComputeToSplineFragments()
+void ImageSpline::SmoothingFragments()
 {
 	// 還原圖的大小
 	

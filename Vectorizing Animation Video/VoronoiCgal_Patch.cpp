@@ -1,7 +1,6 @@
 #include <algorithm>
 #include "VoronoiCgal_Patch.h"
 #include "CgalPatch.h"
-#include "print.h"
 
 void VoronoiCgal_Patch::insert_polygon(Delaunay& cdt, ImageSpline& m_ImageSpline, int idx)
 {
@@ -130,28 +129,6 @@ void VoronoiCgal_Patch::insert_polygonInter(Delaunay& cdt, ImageSpline& is, int 
 void VoronoiCgal_Patch::Compute()
 {
 	m_CgalPatchs = MakePatchs(m_ImageSpline);
-
-	// for  debug
-// 	for (int i = 0; i < m_CgalPatchs.size(); ++i)
-// 	{
-// 		m_OutLines.push_back(m_CgalPatchs[i].Outer());
-// 		m_OutLines.insert(m_OutLines.end(), m_CgalPatchs[i].Inter().begin(), m_CgalPatchs[i].Inter().end());
-// 	}
-
-	for (int i = 0; i < m_CgalPatchs.size(); ++i)
-	{
-		Polygon_2 polygon(m_CgalPatchs[i].Outer().begin(), m_CgalPatchs[i].Outer().end());
-		
-		m_Polygon_with_holes_vector.push_back(Polygon_with_holes(polygon));
-		Polygon_with_holes& pwh = m_Polygon_with_holes_vector.back();
-		
-		for (auto it = m_CgalPatchs[i].Inter().begin(); it != m_CgalPatchs[i].Inter().end(); ++it)
-		{
-			pwh.add_hole(Polygon_2(it->begin(), it->end()));
-		}
-		SsPtr iss = CGAL::create_interior_straight_skeleton_2(pwh);
-		print_straight_skeleton(*iss);
-	}
 	
 	for (int i = 0; i < m_CgalPatchs.size(); ++i)
 	{
@@ -159,31 +136,39 @@ void VoronoiCgal_Patch::Compute()
 		insert_polygon(m_Delaunay, m_ImageSpline, i);
 		insert_polygonInter(m_Delaunay, m_ImageSpline, i);
 		Delaunay::Finite_edges_iterator eit = m_Delaunay.finite_edges_begin();
-
-		for (; eit != m_Delaunay.finite_edges_end(); ++eit)
-		{
-			CGAL::Object o = m_Delaunay.dual(eit);
-
-			if (CGAL::object_cast<K::Segment_2>(&o))
-			{
-				const K::Segment_2* seg = CGAL::object_cast<K::Segment_2>(&o);
-				Point p1(seg->source().hx(), seg->source().hy());
-				Point p2(seg->target().hx(), seg->target().hy());
-
-				if (m_CgalPatchs[i].CheckInside(p1.hx(), p1.hy()) &&
-				                m_CgalPatchs[i].CheckInside(p2.hx(), p2.hy()))
-				{
-					m_LineSegs.push_back(
-					        LineSeg(
-					                Vector2(p1.hx(), p1.hy()), Vector2(p2.hx(), p2.hy())
-					        )
-					);
-				}
-			}
-		}
-	}
-
-	MakeLines();
+		//m_Lines.push_back(Line());
+		mark_domains(i);
+// 		for (; eit != m_Delaunay.finite_edges_end(); ++eit)
+// 		{
+// 			Vertex_handle v[] = { eit->first->vertex( m_Delaunay.ccw(eit->second) ),
+// 				eit->first->vertex( m_Delaunay.cw(eit->second) ),
+// 				eit->first->vertex( eit->second ), 
+// 				m_Delaunay.tds().mirror_vertex(eit->first,eit->second) };
+			
+// 			Point p1(v[1]->point().hx(), v[1]->point().hy());
+// 			Point p2(v[2]->point().hx(), v[2]->point().hy());
+// 			
+// 			CGAL::Object o = m_Delaunay.dual(eit);
+// 			
+// 			if (CGAL::object_cast<K::Segment_2>(&o))
+// 			{
+// 				const K::Segment_2* seg = CGAL::object_cast<K::Segment_2>(&o);
+// 				Point p1(seg->source().hx(), seg->source().hy());
+// 				Point p2(seg->target().hx(), seg->target().hy());
+// 				if (m_CgalPatchs[i].CheckInside(p1.hx(), p1.hy()) &&
+// 				          m_CgalPatchs[i].CheckInside(p2.hx(), p2.hy()))
+// 				{
+// 					m_LineSegs.push_back(
+// 					        LineSeg(
+// 					                Vector2(p1.hx(), p1.hy()), Vector2(p2.hx(), p2.hy())
+// 					        )
+// 					);
+// 				}
+// 			}
+//		}
+ 	}
+	printf("joints: %d\n", m_PositionGraph.m_Joints.size());
+	//MakeLines();
 }
 
 void VoronoiCgal_Patch::MakeLines()

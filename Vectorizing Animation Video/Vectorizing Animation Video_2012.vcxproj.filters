@@ -375,6 +375,12 @@
     <ClInclude Include="print.h">
       <Filter>原始程式檔</Filter>
     </ClInclude>
+    <ClInclude Include="PositionGraph.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionGraph_Node.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -564,6 +570,12 @@
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="CgalPatch.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionGraph.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionGraph_Node.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>

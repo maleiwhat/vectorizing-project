@@ -199,6 +199,8 @@
     <ClInclude Include="OutputWnd.h" />
     <ClInclude Include="Patch.h" />
     <ClInclude Include="PatchSpline.h" />
+    <ClInclude Include="PositionGraph.h" />
+    <ClInclude Include="PositionGraph_Node.h" />
     <ClInclude Include="print.h" />
     <ClInclude Include="PropertiesWnd.h" />
     <ClInclude Include="Resource.h" />
@@ -278,6 +280,8 @@
     </ClCompile>
     <ClCompile Include="Patch.cpp" />
     <ClCompile Include="PatchSpline.cpp" />
+    <ClCompile Include="PositionGraph.cpp" />
+    <ClCompile Include="PositionGraph_Node.cpp" />
     <ClCompile Include="PropertiesWnd.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>

@@ -3559,7 +3559,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	ImageSpline is = GetImageSpline(tmp_cvps, lines, tmp_image);
 	is.m_lines = lines;
 	//is.ComputeToLineFragments();
-	is.ComputeToSplineFragments();
+	is.SmoothingFragments();
 	imshow("tmp_image2", tmp_image2);
 	return is;
 }
