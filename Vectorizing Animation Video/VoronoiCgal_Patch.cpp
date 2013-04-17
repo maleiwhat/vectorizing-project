@@ -129,7 +129,7 @@ void VoronoiCgal_Patch::insert_polygonInter(Delaunay& cdt, ImageSpline& is, int 
 void VoronoiCgal_Patch::Compute()
 {
 	m_CgalPatchs = MakePatchs(m_ImageSpline);
-	
+
 	for (int i = 0; i < m_CgalPatchs.size(); ++i)
 	{
 		m_Delaunay = Delaunay();
@@ -138,37 +138,11 @@ void VoronoiCgal_Patch::Compute()
 		Delaunay::Finite_edges_iterator eit = m_Delaunay.finite_edges_begin();
 		//m_Lines.push_back(Line());
 		mark_domains(i);
-// 		for (; eit != m_Delaunay.finite_edges_end(); ++eit)
-// 		{
-// 			Vertex_handle v[] = { eit->first->vertex( m_Delaunay.ccw(eit->second) ),
-// 				eit->first->vertex( m_Delaunay.cw(eit->second) ),
-// 				eit->first->vertex( eit->second ), 
-// 				m_Delaunay.tds().mirror_vertex(eit->first,eit->second) };
-			
-// 			Point p1(v[1]->point().hx(), v[1]->point().hy());
-// 			Point p2(v[2]->point().hx(), v[2]->point().hy());
-// 			
-// 			CGAL::Object o = m_Delaunay.dual(eit);
-// 			
-// 			if (CGAL::object_cast<K::Segment_2>(&o))
-// 			{
-// 				const K::Segment_2* seg = CGAL::object_cast<K::Segment_2>(&o);
-// 				Point p1(seg->source().hx(), seg->source().hy());
-// 				Point p2(seg->target().hx(), seg->target().hy());
-// 				if (m_CgalPatchs[i].CheckInside(p1.hx(), p1.hy()) &&
-// 				          m_CgalPatchs[i].CheckInside(p2.hx(), p2.hy()))
-// 				{
-// 					m_LineSegs.push_back(
-// 					        LineSeg(
-// 					                Vector2(p1.hx(), p1.hy()), Vector2(p2.hx(), p2.hy())
-// 					        )
-// 					);
-// 				}
-// 			}
-//		}
- 	}
+	}
+
 	printf("joints: %d\n", m_PositionGraph.m_Joints.size());
 	//MakeLines();
+	MakeGraphLines();
 }
 
 void VoronoiCgal_Patch::MakeLines()
@@ -233,6 +207,214 @@ void VoronoiCgal_Patch::MakeLines()
 		else
 		{
 			break;
+		}
+	}
+}
+
+void VoronoiCgal_Patch::MakeGraphLines()
+{
+	const int JOINT_ID = -99;
+	int now_id = 0;
+
+	for (auto it = m_PositionGraph.m_Joints.begin(); it != m_PositionGraph.m_Joints.end(); ++it)
+	{
+		(**it).m_line_id = JOINT_ID;
+	}
+
+	for (auto it = m_PositionGraph.m_Joints.begin(); it != m_PositionGraph.m_Joints.end(); ++it)
+	{
+		for (auto it2 = (**it).m_Links.begin(); it2 != (**it).m_Links.end(); ++it2)
+		{
+			Line now_line;
+			now_line.push_back((**it).m_Position);
+			auto last_it3 = (**it2).m_Links.begin();
+			auto it3 = (**last_it3).m_Links.begin();
+
+			if (it3 == last_it3)
+			{
+				it3++;
+			}
+
+			for (;;)
+			{
+				now_line.push_back((**it3).m_Position);
+
+				if ((**it3).m_line_id == JOINT_ID)
+				{
+					break;
+				}
+
+				if ((**it3).m_line_id == -1)
+				{
+					(**it3).m_line_id = now_id;
+				}
+				else
+				{
+					break;
+				}
+
+				if ((**it).m_Links.size() == 1)
+				{
+					break;
+				}
+
+				if ((**it3).m_Links.begin() == last_it3)
+				{
+					last_it3 = it3;
+					it3 = ++(**it3).m_Links.begin();
+				}
+				else
+				{
+					last_it3 = it3;
+					it3 = (**it3).m_Links.begin();
+				}
+			}
+
+			if (now_line.size() > 1)
+			{
+				m_Lines.push_back(now_line);
+			}
+		}
+	}
+}
+
+void VoronoiCgal_Patch::mark_domains(int idx, Delaunay::Face_handle start, std::list<Delaunay::Edge>& border, Line& line)
+{
+	if (start->info().nesting_level != TRIANGLE_NOT_INIT)
+	{
+		return;
+	}
+
+	std::list<Delaunay::Face_handle> queue;
+	queue.push_back(start);
+	bool dont_add = false;
+
+	while (! queue.empty())
+	{
+		Delaunay::Face_handle fh = queue.front();
+		queue.pop_front();
+
+		if (fh->info().nesting_level == TRIANGLE_NOT_INIT)
+		{
+			fh->info().nesting_level = TRIANGLE_TRANSPARENT;
+			Point p1 = fh->vertex(0)->point();
+			Point p2 = fh->vertex(1)->point();
+			Point p3 = fh->vertex(2)->point();
+			LineSegs lineSegs;
+			int is_insert = 0;
+
+			for (int i = 0; i < 3; i++)
+			{
+				Delaunay::Edge e(fh, i);
+				Delaunay::Face_handle n = fh->neighbor(i);
+
+				if (m_Delaunay.is_infinite(e) && n->info().edge[i] > 0)
+				{
+					continue;
+				}
+				n->info().edge[i] = 1;
+				Delaunay::Face_handle fn = e.first->neighbor(e.second);
+				for (int ii = 0; ii < 3; ii++)
+				{
+					Delaunay::Edge ee(fh, ii);
+					if (e == ee)
+					{
+						fn->info().edge[ii] = 1;
+					}
+				}
+				if (!dont_add && n->info().nesting_level == TRIANGLE_NOT_INIT)
+				{
+					//queue.push_back(n);
+					//border.push_back(e);
+				}
+
+				CGAL::Object o = m_Delaunay.dual(e);
+
+				if (CGAL::object_cast<K::Segment_2>(&o))
+				{
+					const K::Segment_2* seg = CGAL::object_cast<K::Segment_2>(&o);
+					Point p1(seg->source().hx(), seg->source().hy());
+					Point p2(seg->target().hx(), seg->target().hy());
+					Vector2 pp1(p1.hx(), p1.hy());
+					Vector2 pp2(p2.hx(), p2.hy());
+
+					if (pp1 == pp2)
+					{
+						continue;
+					}
+
+					if (m_CgalPatchs[idx].CheckInside(p1.hx(), p1.hy()) &&
+					                m_CgalPatchs[idx].CheckInside(p2.hx(), p2.hy()))
+					{
+						queue.push_back(n);
+						m_LineSegs.push_back(LineSeg(pp1, pp2));
+						lineSegs.push_back(LineSeg(pp1, pp2));
+						is_insert++;
+					}
+				}
+			}
+
+			if (is_insert > 0)
+			{
+				if (is_insert == 3)
+				{
+					// find joint
+					int_vector score(4);
+					Vector2s pts;
+					pts.push_back(lineSegs.front().beg);
+					pts.push_back(lineSegs.front().end);
+					score[0] = 1;
+					score[1] = 1;
+
+					for (auto it = ++lineSegs.begin(); it != lineSegs.end(); ++it)
+					{
+						auto findbeg = std::find(pts.begin(), pts.end(), it->beg);
+
+						if (findbeg == pts.end())
+						{
+							pts.push_back(it->beg);
+							score[pts.size() - 1] = 1;
+						}
+						else
+						{
+							score[findbeg - pts.begin()] += 1;
+						}
+
+						auto findend = std::find(pts.begin(), pts.end(), it->end);
+
+						if (findend == pts.end())
+						{
+							pts.push_back(it->end);
+							score[pts.size() - 1] = 1;
+						}
+						else
+						{
+							score[findend - pts.begin()] += 1;
+						}
+					}
+
+					// show repeat amount
+					// 						for (int i = 0; i < score.size(); ++i)
+					// 						{
+					// 							if (score[i] == 4)
+					// 							{
+					// 								std::swap(pts[i], pts[0]);
+					// 							}
+					//
+					// 							printf("score: %d\n", score[i]);
+					// 						}
+					//
+					// 						printf("\n");
+					m_PositionGraph.AddJoint(pts[0], pts[1], pts[2], pts[3]);
+				}
+				else
+				{
+					for (auto it = lineSegs.begin(); it != lineSegs.end(); ++it)
+					{
+						m_PositionGraph.AddNewLine(it->beg, it->end);
+					}
+				}
+			}
 		}
 	}
 }

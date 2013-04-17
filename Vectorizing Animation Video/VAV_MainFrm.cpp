@@ -596,10 +596,10 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles());
 	((VAV_View*)this->GetActiveView())->
 		m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles());
- 	((VAV_View*)this->GetActiveView())->
- 		m_D3DApp.AddLineSegs(cgal_voronoi.m_LineSegs);
-// 	((VAV_View*)this->GetActiveView())->
-// 		m_D3DApp.AddLines(cgal_voronoi.m_Lines);
+//  	((VAV_View*)this->GetActiveView())->
+//  		m_D3DApp.AddLineSegs(cgal_voronoi.m_LineSegs);
+	((VAV_View*)this->GetActiveView())->
+		m_D3DApp.AddLines(cgal_voronoi.m_Lines);
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddLines(cgal_voronoi.m_OutLines);
 
