@@ -74,7 +74,7 @@ public:
 	void Clear() {}
 
 
-	void	mark_domains(int idx, Delaunay::Face_handle start, std::list<Delaunay::Edge>& border, Line& line);
+	bool	mark_domains(int idx, Delaunay::Face_handle start, std::list<Delaunay::Edge>& border, Line& line);
 	
 	void	mark_domains(int idx)
 	{
@@ -92,7 +92,7 @@ public:
 			if (TRIANGLE_NOT_INIT == fc->info().nesting_level)
 			{
 				Line line;
-				mark_domains(idx, fc, border, line);
+				//mark_domains(idx, fc, border, line);
 				//m_Lines.push_back(line);
 				//break;
 			}

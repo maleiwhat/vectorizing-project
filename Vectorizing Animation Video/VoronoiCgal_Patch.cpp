@@ -135,11 +135,40 @@ void VoronoiCgal_Patch::Compute()
 		m_Delaunay = Delaunay();
 		insert_polygon(m_Delaunay, m_ImageSpline, i);
 		insert_polygonInter(m_Delaunay, m_ImageSpline, i);
-		Delaunay::Finite_edges_iterator eit = m_Delaunay.finite_edges_begin();
+		LineSegs lineSegs;
+		for (auto e = m_Delaunay.finite_edges_begin(); e != m_Delaunay.finite_edges_end(); ++e)
+		{
+			CGAL::Object o = m_Delaunay.dual(e);
+
+			if (CGAL::object_cast<K::Segment_2>(&o))
+			{
+				const K::Segment_2* seg = CGAL::object_cast<K::Segment_2>(&o);
+				Point p1(seg->source().hx(), seg->source().hy());
+				Point p2(seg->target().hx(), seg->target().hy());
+				Vector2 pp1(p1.hx(), p1.hy());
+				Vector2 pp2(p2.hx(), p2.hy());
+
+				if (pp1 == pp2)
+				{
+					continue;
+				}
+
+				if (m_CgalPatchs[i].CheckInside(p1.hx(), p1.hy()) &&
+				                m_CgalPatchs[i].CheckInside(p2.hx(), p2.hy()))
+				{
+					m_LineSegs.push_back(LineSeg(pp1, pp2));
+					lineSegs.push_back(LineSeg(pp1, pp2));
+				}
+			}
+		}
+		for (auto it = lineSegs.begin();it!=lineSegs.end();++it)
+		{
+			m_PositionGraph.AddNewLine(it->beg, it->end);
+		}
 		//m_Lines.push_back(Line());
 		mark_domains(i);
 	}
-
+	m_PositionGraph.ComputeJoints();
 	printf("joints: %d\n", m_PositionGraph.m_Joints.size());
 	//MakeLines();
 	MakeGraphLines();
@@ -227,47 +256,50 @@ void VoronoiCgal_Patch::MakeGraphLines()
 		{
 			Line now_line;
 			now_line.push_back((**it).m_Position);
-			auto last_it3 = (**it2).m_Links.begin();
-			auto it3 = (**last_it3).m_Links.begin();
-
-			if (it3 == last_it3)
+			auto last_it3 = *it;
+			auto it3 = *it2;
+			
+			// already walk
+			if (it3->m_line_id != -1)
 			{
-				it3++;
+				continue;
 			}
 
 			for (;;)
 			{
-				now_line.push_back((**it3).m_Position);
+				now_line.push_back(it3->m_Position);
 
-				if ((**it3).m_line_id == JOINT_ID)
+				if (it3->m_line_id == JOINT_ID)
 				{
 					break;
 				}
-
-				if ((**it3).m_line_id == -1)
+				// set walked 
+				if (it3->m_line_id == -1)
 				{
-					(**it3).m_line_id = now_id;
+					it3->m_line_id = now_id;
 				}
 				else
 				{
 					break;
 				}
 
-				if ((**it).m_Links.size() == 1)
+				if (it3->m_Links.size() == 1)
 				{
 					break;
 				}
-
-				if ((**it3).m_Links.begin() == last_it3)
+				bool has_next = false;
+				assert(it3->m_Links.size() == 2);
+				for (auto it4 = it3->m_Links.begin(); it4 != it3->m_Links.end(); ++it4)
 				{
-					last_it3 = it3;
-					it3 = ++(**it3).m_Links.begin();
+					if ((**it4).m_line_id == -1 || ((**it4).m_line_id == JOINT_ID && *it4 != last_it3))
+					{
+						last_it3 = it3;
+						it3 = *it4;
+						has_next = true;
+						break;
+					}
 				}
-				else
-				{
-					last_it3 = it3;
-					it3 = (**it3).m_Links.begin();
-				}
+				assert(has_next);
 			}
 
 			if (now_line.size() > 1)
@@ -278,13 +310,14 @@ void VoronoiCgal_Patch::MakeGraphLines()
 	}
 }
 
-void VoronoiCgal_Patch::mark_domains(int idx, Delaunay::Face_handle start, std::list<Delaunay::Edge>& border, Line& line)
+bool VoronoiCgal_Patch::mark_domains(int idx, Delaunay::Face_handle start, std::list<Delaunay::Edge>& border, Line& line)
 {
 	if (start->info().nesting_level != TRIANGLE_NOT_INIT)
 	{
-		return;
+		return false;
 	}
 
+	bool ret = false;
 	std::list<Delaunay::Face_handle> queue;
 	queue.push_back(start);
 	bool dont_add = false;
@@ -308,20 +341,24 @@ void VoronoiCgal_Patch::mark_domains(int idx, Delaunay::Face_handle start, std::
 				Delaunay::Edge e(fh, i);
 				Delaunay::Face_handle n = fh->neighbor(i);
 
-				if (m_Delaunay.is_infinite(e) && n->info().edge[i] > 0)
+				if (m_Delaunay.is_infinite(e) || n->info().edge[i] > 0)
 				{
 					continue;
 				}
-				n->info().edge[i] = 1;
+
+				fh->info().edge[i] = 1;
 				Delaunay::Face_handle fn = e.first->neighbor(e.second);
+
 				for (int ii = 0; ii < 3; ii++)
 				{
-					Delaunay::Edge ee(fh, ii);
+					Delaunay::Edge ee(n, ii);
+
 					if (e == ee)
 					{
-						fn->info().edge[ii] = 1;
+						n->info().edge[ii] = 1;
 					}
 				}
+
 				if (!dont_add && n->info().nesting_level == TRIANGLE_NOT_INIT)
 				{
 					//queue.push_back(n);
@@ -393,18 +430,6 @@ void VoronoiCgal_Patch::mark_domains(int idx, Delaunay::Face_handle start, std::
 						}
 					}
 
-					// show repeat amount
-					// 						for (int i = 0; i < score.size(); ++i)
-					// 						{
-					// 							if (score[i] == 4)
-					// 							{
-					// 								std::swap(pts[i], pts[0]);
-					// 							}
-					//
-					// 							printf("score: %d\n", score[i]);
-					// 						}
-					//
-					// 						printf("\n");
 					m_PositionGraph.AddJoint(pts[0], pts[1], pts[2], pts[3]);
 				}
 				else
@@ -417,4 +442,6 @@ void VoronoiCgal_Patch::mark_domains(int idx, Delaunay::Face_handle start, std::
 			}
 		}
 	}
+
+	return true;
 }
