@@ -139,7 +139,7 @@ void ImageSpline::SmoothingFragments()
 	m_SplineFragments.clear();
 
 	// ¥­§¡¦UÂI
-	for (int count = 0; count < 7; count++)
+	for (int count = 0; count < 2; count++)
 	{
 		for (int i = 0; i < m_LineFragments.size(); ++i)
 		{
@@ -152,7 +152,7 @@ void ImageSpline::SmoothingFragments()
 
 			for (int j = 1; j < cps.size() - 1; j ++)
 			{
-				Vector2 vec = (cps[j] * 2 + cps[j + 1] * 0.5 + cps[j - 1] * 0.5) / 3.0f;
+				Vector2 vec = (cps[j] * 1 + cps[j + 1] * 0.5 + cps[j - 1] * 0.5) / 2.0f;
 				newcps.push_back(vec);
 			}
 
