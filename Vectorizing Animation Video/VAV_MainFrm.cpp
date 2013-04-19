@@ -604,19 +604,19 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 // 		m_D3DApp.AddLines(cgal_voronoi.m_OutLines);
 
 	// Control Points
-// 	for (int i=0;i< line_control.size();++i)
-// 	{
-// 		D3DXVECTOR3 color;
-// 		color.x = rand()/(float)RAND_MAX;
-// 		color.y = rand()/(float)RAND_MAX;
-// 		color.z = rand()/(float)RAND_MAX;
-// 		Line& cps = line_control[i];
-// 		for (int j=0;j<cps.size();++j)
-// 		{
-// 			((VAV_View*)this->GetActiveView())->
-// 				m_D3DApp.AddBigPoint(cps[j].x-0.5, cps[j].y-0.5, color);
-// 		}
-// 	}
+	for (int i=0;i< cgal_voronoi.m_Controls.size();++i)
+	{
+		D3DXVECTOR3 color;
+		color.x = rand()/(float)RAND_MAX;
+		color.y = rand()/(float)RAND_MAX;
+		color.z = rand()/(float)RAND_MAX;
+		Line& cps = cgal_voronoi.m_Controls[i];
+		for (int j=0;j<cps.size();++j)
+		{
+			((VAV_View*)this->GetActiveView())->
+				m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
+		}
+	}
 
 
 // 	for (int i = 0; i < is2.m_CvPatchs.size(); ++i)

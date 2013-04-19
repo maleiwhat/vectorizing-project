@@ -1,6 +1,8 @@
 #include <algorithm>
 #include "VoronoiCgal_Patch.h"
 #include "CgalPatch.h"
+#include "CvExtenstion2.h"
+#include "curve/HSplineCurve.h"
 
 void VoronoiCgal_Patch::insert_polygon(Delaunay& cdt, ImageSpline& m_ImageSpline, int idx)
 {
@@ -136,6 +138,7 @@ void VoronoiCgal_Patch::Compute()
 		insert_polygon(m_Delaunay, m_ImageSpline, i);
 		insert_polygonInter(m_Delaunay, m_ImageSpline, i);
 		LineSegs lineSegs;
+
 		for (auto e = m_Delaunay.finite_edges_begin(); e != m_Delaunay.finite_edges_end(); ++e)
 		{
 			CGAL::Object o = m_Delaunay.dual(e);
@@ -161,152 +164,54 @@ void VoronoiCgal_Patch::Compute()
 				}
 			}
 		}
-		for (auto it = lineSegs.begin();it!=lineSegs.end();++it)
+
+		for (auto it = lineSegs.begin(); it != lineSegs.end(); ++it)
 		{
 			m_PositionGraph.AddNewLine(it->beg, it->end);
 		}
-		//m_Lines.push_back(Line());
+
 		mark_domains(i);
 	}
+
 	m_PositionGraph.ComputeJoints();
 	printf("joints: %d\n", m_PositionGraph.m_Joints.size());
 	//MakeLines();
 	MakeGraphLines();
 }
 
-void VoronoiCgal_Patch::MakeLines()
-{
-	m_Lines.clear();
-	Line lastline;
-	lastline.push_back(m_LineSegs.front().beg);
-	lastline.push_back(m_LineSegs.front().end);
-	Vector2 last = m_LineSegs.front().end;
-	m_LineSegs.erase(m_LineSegs.begin());
-
-	for (;;)
-	{
-		for (int i = 0; i < m_LineSegs.size(); ++i)
-		{
-			if (m_LineSegs[i].beg == last)
-			{
-				lastline.push_back(m_LineSegs[i].end);
-				last = m_LineSegs[i].end;
-				m_LineSegs.erase(m_LineSegs.begin() + i);
-				i = 0;
-			}
-			else if (m_LineSegs[i].end == last)
-			{
-				lastline.push_back(m_LineSegs[i].beg);
-				last = m_LineSegs[i].beg;
-				m_LineSegs.erase(m_LineSegs.begin() + i);
-				i = 0;
-			}
-		}
-
-		last = lastline.front();
-
-		for (int i = 0; i < m_LineSegs.size(); ++i)
-		{
-			if (m_LineSegs[i].beg == last)
-			{
-				lastline.push_front(m_LineSegs[i].end);
-				last = m_LineSegs[i].end;
-				m_LineSegs.erase(m_LineSegs.begin() + i);
-				i = 0;
-			}
-			else if (m_LineSegs[i].end == last)
-			{
-				lastline.push_front(m_LineSegs[i].beg);
-				last = m_LineSegs[i].beg;
-				m_LineSegs.erase(m_LineSegs.begin() + i);
-				i = 0;
-			}
-		}
-
-		m_Lines.push_back(lastline);
-
-		if (!m_LineSegs.empty())
-		{
-			lastline.clear();
-			lastline.push_back(m_LineSegs.front().beg);
-			lastline.push_back(m_LineSegs.front().end);
-			last = m_LineSegs.front().end;
-			m_LineSegs.erase(m_LineSegs.begin());
-		}
-		else
-		{
-			break;
-		}
-	}
-}
 
 void VoronoiCgal_Patch::MakeGraphLines()
 {
-	const int JOINT_ID = -99;
-	int now_id = 0;
+	m_PositionGraph.MakeGraphLines();
+	m_Lines = m_PositionGraph.m_Lines;
+	m_Controls.resize(m_Lines.size());
 
-	for (auto it = m_PositionGraph.m_Joints.begin(); it != m_PositionGraph.m_Joints.end(); ++it)
-	{
-		(**it).m_line_id = JOINT_ID;
-	}
+// 	for (int i = 0; i < m_Lines.size(); ++i)
+// 	{
+// 		m_Controls[i] = GetControlPoint(m_Lines[i], 15);
+// 	}
 
-	for (auto it = m_PositionGraph.m_Joints.begin(); it != m_PositionGraph.m_Joints.end(); ++it)
+	for (int i = 0; i < m_Lines.size(); ++i)
 	{
-		for (auto it2 = (**it).m_Links.begin(); it2 != (**it).m_Links.end(); ++it2)
+		HSplineCurve hs;
+		const Line& cps = m_Controls[i];
+		Line& res = m_Lines[i];
+		Vector2 beg = res.front(), end = res.back();
+
+		for (int j = 0; j < res.size(); ++j)
 		{
-			Line now_line;
-			now_line.push_back((**it).m_Position);
-			auto last_it3 = *it;
-			auto it3 = *it2;
-			
-			// already walk
-			if (it3->m_line_id != -1)
-			{
-				continue;
-			}
-
-			for (;;)
-			{
-				now_line.push_back(it3->m_Position);
-
-				if (it3->m_line_id == JOINT_ID)
-				{
-					break;
-				}
-				// set walked 
-				if (it3->m_line_id == -1)
-				{
-					it3->m_line_id = now_id;
-				}
-				else
-				{
-					break;
-				}
-
-				if (it3->m_Links.size() == 1)
-				{
-					break;
-				}
-				bool has_next = false;
-				assert(it3->m_Links.size() == 2);
-				for (auto it4 = it3->m_Links.begin(); it4 != it3->m_Links.end(); ++it4)
-				{
-					if ((**it4).m_line_id == -1 || ((**it4).m_line_id == JOINT_ID && *it4 != last_it3))
-					{
-						last_it3 = it3;
-						it3 = *it4;
-						has_next = true;
-						break;
-					}
-				}
-				assert(has_next);
-			}
-
-			if (now_line.size() > 1)
-			{
-				m_Lines.push_back(now_line);
-			}
+			hs.AddPointByDistance(res[j]);
 		}
+
+		double dis = hs.GetDistance();
+		int step = dis / 2.0;
+		res.clear();
+		res.push_back(beg);
+		for (int j = 1; j < step; ++j)
+		{
+			res.push_back( hs.GetValue(j*2));
+		}
+		res.push_back(end);
 	}
 }
 

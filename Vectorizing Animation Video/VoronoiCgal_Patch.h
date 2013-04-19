@@ -46,6 +46,7 @@ public:
 
 	LineSegs	m_LineSegs;
 	Lines		m_Lines;
+	Lines		m_Controls;
 	Points		m_Points;
 	Delaunay	m_Delaunay;
 	ImageSpline	m_ImageSpline;
@@ -53,8 +54,6 @@ public:
 	Points2d	m_OutLines;
 	PositionGraph	m_PositionGraph;
 
-
-	void MakeLines();
 	void MakeGraphLines();
 
 	void insert_polygon(Delaunay& cdt, ImageSpline& m_ImageSpline, int idx);

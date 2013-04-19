@@ -12,7 +12,7 @@
 
 #include "curve/HSplineCurve.h"
 
-Vector2 HsplineCurve::GetValue(float time)
+Vector2 HSplineCurve::GetValue(double time)
 {
 	CheckSort();
 	if (m_points.empty())

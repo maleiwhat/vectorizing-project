@@ -12,7 +12,7 @@
 
 #include "curve/BsplineCurve.h"
 
-Vector2 BsplineCurve::GetValue(float time)
+Vector2 BsplineCurve::GetValue(double time)
 {
 	CheckSort();
 	if (m_points.empty())

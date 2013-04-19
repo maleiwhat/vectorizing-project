@@ -18,8 +18,8 @@
 class LinearLine : public PathInterpolater
 {
 public:
-	Vector2 GetValue(float time);
-	static Vector2 CalcStraightPos(const Vector2& p1, const Vector2& p2, float scalar)
+	Vector2 GetValue(double time);
+	static Vector2 CalcStraightPos(const Vector2& p1, const Vector2& p2, double scalar)
 	{
 		Vector2 out = p1 * (1.0f-scalar) + p2 * scalar;
 		return out;

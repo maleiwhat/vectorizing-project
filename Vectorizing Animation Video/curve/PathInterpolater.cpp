@@ -12,16 +12,26 @@
 
 #include "curve/PathInterpolater.h"
 
-void PathInterpolater::AddPoint(float time, Vector2 p)
+void PathInterpolater::AddPoint(double time, const Vector2& p)
 {
 	m_needsort = true;
 	m_points.push_back(PathPoint(time, p));
+}
+
+void PathInterpolater::AddPointByDistance( const Vector2& p )
+{
+	if (m_points.size() > 0)
+	{
+		m_RefenceDistance += p.distance(m_points.back().pos);
+	}
+	AddPoint(m_RefenceDistance, p);
 }
 
 void PathInterpolater::Clear()
 {
 	m_needsort = true;
 	m_points.clear();
+	m_RefenceDistance = 0;
 }
 
 void PathInterpolater::CheckSort()
@@ -31,5 +41,10 @@ void PathInterpolater::CheckSort()
 		std::sort(m_points.begin(), m_points.end());
 		m_needsort = false;
 	}
+}
+
+double PathInterpolater::GetDistance()
+{
+	return m_RefenceDistance;
 }
 

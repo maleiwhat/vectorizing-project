@@ -19,10 +19,10 @@
 struct PathPoint
 {
 	PathPoint(){}
-	PathPoint(float _time, Vector2 _pos)
+	PathPoint(double _time, Vector2 _pos)
 		:time(_time), pos(_pos)
 	{}
-	float time;
+	double time;
 	Vector2 pos;
 	bool operator < (const PathPoint&rhs) const
 	{
@@ -34,16 +34,19 @@ typedef std::vector<PathPoint> PathPoints;
 class PathInterpolater
 {
 public:
-	PathInterpolater():m_needsort(true){}
+	PathInterpolater():m_needsort(true), m_RefenceDistance(0){}
 	Vector2 m_position;
-	void AddPoint(float time, Vector2 p);
-	virtual Vector2 GetValue(float time)=0;
+	void AddPoint(double time, const Vector2& p);
+	void AddPointByDistance(const Vector2& p);
+	double GetDistance();
+	virtual Vector2 GetValue(double time)=0;
 	void Clear();
 	virtual ~PathInterpolater(){}
 protected:
 	void CheckSort();
 	bool m_needsort;
 	PathPoints m_points;
+	double m_RefenceDistance;
 };
 
 #endif  //_PATHINTERPOLATER_H

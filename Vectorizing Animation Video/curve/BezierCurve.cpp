@@ -13,7 +13,7 @@
 #include "curve/BezierCurve.h"
 #include <stdio.h>
 
-Vector2 BezierCurve::GetValue(float time)
+Vector2 BezierCurve::GetValue(double time)
 {
 	CheckSort();
 	if (m_points.empty())

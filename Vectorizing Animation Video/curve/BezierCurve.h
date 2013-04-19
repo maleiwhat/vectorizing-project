@@ -18,9 +18,9 @@
 class BezierCurve : public PathInterpolater
 {
 public:
-	Vector2 GetValue(float time);
+	Vector2 GetValue(double time);
 	inline Vector2 CalcBezierCurvePos(const Vector2& start, const Vector2& cnt1,
-		const Vector2& cnt2, const Vector2& end, float Scalar)
+		const Vector2& cnt2, const Vector2& end, double Scalar)
 	{
 		Vector2 out = start * (1.0f - Scalar) * (1.0f - Scalar) * (1.0f - Scalar) +
 			cnt1 * 3.0f * Scalar * (1.0f - Scalar) * (1.0f - Scalar) +

@@ -12,7 +12,7 @@
 
 #include "curve/LinearLine.h"
 
-Vector2 LinearLine::GetValue(float time) 
+Vector2 LinearLine::GetValue(double time) 
 {
 	CheckSort();
 	if (m_points.empty())
