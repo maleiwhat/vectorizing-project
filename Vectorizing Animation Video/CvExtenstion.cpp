@@ -1,4 +1,5 @@
 #define _USE_MATH_DEFINES
+#include "stdcv.h"
 #include <cmath>
 #include <algorithm>
 #include <iterator>
