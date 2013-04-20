@@ -332,38 +332,6 @@ void	TriangulationCgal_Patch::mark_domains(Triangulation& ct, Triangulation::Fac
 	}
 }
 
-
-void	TriangulationCgal_Patch::force_mark_domains(Triangulation& ct, Triangulation::Face_handle start, int index,
-					      std::list<Triangulation::Edge>& border)
-{
-	if (start->info().nesting_level != TRIANGLE_NOT_INIT)
-	{
-		return;
-	}
-
-	std::list<Triangulation::Face_handle> queue;
-	queue.push_back(start);
-
-	while (! queue.empty())
-	{
-		Triangulation::Face_handle fh = queue.front();
-		queue.pop_front();
-
-		fh->info().nesting_level = index;
-
-		for (int i = 0; i < 3; i++)
-		{
-			Triangulation::Edge e(fh, i);
-			Triangulation::Face_handle n = fh->neighbor(i);
-
-			if (!ct.is_constrained(e))
-			{
-				queue.push_back(n);
-			}
-		}
-	}
-}
-
 //explore set of facets connected with non constrained edges,
 //and attribute to each such set a nesting level.
 //We start from facets incident to the infinite vertex, with a nesting
@@ -419,21 +387,6 @@ void	TriangulationCgal_Patch::mark_domains(Triangulation& cdt)
 			mark_domains(cdt, n, domain, border);
 		}
 	}
-
-// 	for (; fc != m_Triangulation.finite_faces_end(); ++fc)
-// 	{
-// 		int transparent = fc->vertex(0)->info().nesting_level == TRIANGLE_TRANSPARENT;
-// 		transparent += fc->vertex(1)->info().nesting_level == TRIANGLE_TRANSPARENT;
-// 		transparent += fc->vertex(2)->info().nesting_level == TRIANGLE_TRANSPARENT;
-// 		int domain = fc->vertex(0)->info().nesting_level;
-// 		domain = fc->vertex(1)->info().nesting_level == 0 ? fc->vertex(1)->info().nesting_level : domain;
-// 		domain = fc->vertex(2)->info().nesting_level == 0 ? fc->vertex(2)->info().nesting_level : domain;
-// 
-// 		if (TRIANGLE_NOT_INIT == fc->info().nesting_level)
-// 		{
-// 			mark_domains(cdt, fc, 0, border);
-// 		}
-// 	}
 }
 
 void TriangulationCgal_Patch::AddPatch(Patch& cvps)

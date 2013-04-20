@@ -553,17 +553,15 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	//m_CvPatchs = S1GetPatchs(lineImage, 1, 10);
 	//m_CvPatchs = S2GetPatchs(m_vavImage, 0, 0);
 	//ImageSpline is = S3GetPatchs(m_vavImage, 0, 0);
-	
 	ImageSpline is2 = ComputeLines(m_vavImage);
-	
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddLines(line, linewidths, m_vavImage.GetHeight());
 	TriangulationCgal_Patch cgal_patch, cgal_contour;
 	VoronoiCgal_Patch cgal_voronoi;
 //	cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
 //	cgal_patch.AddImageSpline(is);
- 	cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
- 	cgal_contour.AddImageSpline(is2);
+	cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+	cgal_contour.AddImageSpline(is2);
 	cgal_voronoi.AddImageSpline(is2);
 
 // 	for (int i = 0; i < is.m_CvPatchs.size(); ++i)
@@ -580,44 +578,43 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
 		cgal_contour.AddColorConstraint(constraint_sptr);
 	}
+
 	ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
-	constraint_sptr->AddPoint(0,0,Vector3(255,0,0));
+	constraint_sptr->AddPoint(0, 0, Vector3(255, 0, 0));
 	cgal_contour.AddColorConstraint(constraint_sptr);
 	cgal_contour.SetCriteria(0.001, 4000);
 	cgal_contour.Compute();
 	cgal_voronoi.Compute();
-
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
-
 	((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles());
+	m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles());
 	((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles());
+	m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles());
 //  	((VAV_View*)this->GetActiveView())->
 //  		m_D3DApp.AddLineSegs(cgal_voronoi.m_LineSegs);
 	((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddLines(cgal_voronoi.m_Lines);
+	m_D3DApp.AddLines(cgal_voronoi.m_Lines);
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddLines(cgal_voronoi.m_OutLines);
 
 	// Control Points
-	for (int i=0;i< cgal_voronoi.m_Controls.size();++i)
+	for (int i = 0; i < cgal_voronoi.m_Controls.size(); ++i)
 	{
 		D3DXVECTOR3 color;
-		color.x = rand()/(float)RAND_MAX;
-		color.y = rand()/(float)RAND_MAX;
-		color.z = rand()/(float)RAND_MAX;
+		color.x = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+		color.y = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+		color.z = 0.5 + 0.5 * rand() / (float)RAND_MAX;
 		Line& cps = cgal_voronoi.m_Controls[i];
-		for (int j=0;j<cps.size();++j)
+
+		for (int j = 0; j < cps.size(); ++j)
 		{
 			((VAV_View*)this->GetActiveView())->
-				m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
+			m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
 		}
 	}
-
 
 // 	for (int i = 0; i < is2.m_CvPatchs.size(); ++i)
 // 	{
@@ -631,7 +628,6 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 // 		((VAV_View*)this->GetActiveView())->
 // 			m_D3DApp.AddColorTriangles(cgal_line.GetTriangles(), m_vavImage.GetHeight());
 // 	}
-
 	((VAV_View*)this->GetActiveView())->m_D3DApp.BuildPoint();
 	((VAV_View*)this->GetActiveView())->m_D3DApp.DrawScene();
 }

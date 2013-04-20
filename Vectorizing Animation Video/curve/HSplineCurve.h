@@ -20,7 +20,7 @@ class HSplineCurve : public PathInterpolater
 public:
 	Vector2 GetValue(double time);
 	static Vector2 CalcHSplineCurvePos(const Vector2& p4, const Vector2& p3,
-		const Vector2& p2, const Vector2& p1, double Scalar, double c = 1.7f)
+		const Vector2& p2, const Vector2& p1, double Scalar, double c = -0.5f)
 	{
 		double S2 = Scalar*Scalar, S3 = Scalar*Scalar*Scalar,tension = (1.0f-c)/2;
 		Vector2 start = p2, end = p3, cnt1 = (p1-p3)*tension, cnt2 = (p2-p4)*tension;

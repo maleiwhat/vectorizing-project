@@ -287,7 +287,7 @@ void D3DApp::DrawScene()
 
 	if (m_PointsVertices.size() > 0)
 	{
-		m_Points_Transparency->SetFloat(0.5);
+		m_Points_Transparency->SetFloat(0.9);
 		UINT offset = 0;
 		UINT stride2 = sizeof(PointVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
