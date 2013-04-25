@@ -95,6 +95,11 @@ public:
 	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnKillFocus(CWnd* pNewWnd);
+	afx_msg void OnCaptureChanged(CWnd *pWnd);
+	afx_msg void OnMouseLeave();
+	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
+	afx_msg void OnNcMButtonUp(UINT nHitTest, CPoint point);
 };
 
 #ifndef _DEBUG  // VAV_View.cpp ¤¤ªº°»¿ùª©¥»

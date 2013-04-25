@@ -16,6 +16,8 @@
 #include "Patch.h"
 #include "ColorConstraint.h"
 #include "ImageSpline.h"
+#include "PositionGraph.h"
+#include "Line.h"
 
 struct FaceInfo2
 {
@@ -88,6 +90,9 @@ public:
 	int		m_w, m_h;
 	ColorConstraint_sptrs	m_ColorConstraint;
 	ImageSpline	m_ImageSpline;
+	PositionGraph	m_PositionGraph;
+	LineSegs	m_LineSegs;
+	Lines		m_Lines;
 };
 
 

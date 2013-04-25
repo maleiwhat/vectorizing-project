@@ -17,7 +17,8 @@ public:
 
 	CvPatchs	m_CvPatchs;
 	SplineFragments& GetSplineFragments();
-	Lines		m_lines;
+	Lines		m_Lines;
+	Lines		m_Controls;
 	LineFragments	m_LineFragments;
 	LineFragments	m_ControlPoints;
 	PatchSplines	m_PatchSplines;

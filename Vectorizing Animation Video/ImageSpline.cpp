@@ -164,7 +164,47 @@ void ImageSpline::SmoothingFragments()
 			cps = newcps;
 		}
 	}
+	m_Controls.resize(m_LineFragments.size());
+	for (int i = 0; i < m_LineFragments.size(); ++i)
+	{
+		HSplineCurve hs;
+		Line& cps = m_Controls[i];
+		Line& res = m_LineFragments[i].m_Points;
 
+		Vector2 beg = res.front(), end = res.back();
+
+		for (int j = 0; j < res.size(); ++j)
+		{
+			hs.AddPointByDistance(res[j]);
+		}
+
+		double dis = hs.GetDistance();
+		int step = dis / 3.0;
+		cps.push_back(beg);
+
+		for (int j = 1; j < step; ++j)
+		{
+			cps.push_back(hs.GetValue(j * 3));
+		}
+
+		cps.push_back(end);
+// 		hs.Clear();
+// 
+// 		for (int j = 0; j < cps.size(); ++j)
+// 		{
+// 			hs.AddPointByDistance(cps[j]);
+// 		}
+
+		res.clear();
+		res.push_back(beg);
+
+		for (int j = 1; j < dis-1; ++j)
+		{
+			res.push_back(hs.GetValue(j));
+		}
+
+		res.push_back(end);
+	}
 	
 	// 略過 只折一次點
 

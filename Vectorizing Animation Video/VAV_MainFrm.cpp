@@ -554,6 +554,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	//m_CvPatchs = S2GetPatchs(m_vavImage, 0, 0);
 	//ImageSpline is = S3GetPatchs(m_vavImage, 0, 0);
 	ImageSpline is2 = ComputeLines(m_vavImage);
+	//return;
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddLines(line, linewidths, m_vavImage.GetHeight());
 	TriangulationCgal_Patch cgal_patch, cgal_contour;
@@ -584,7 +585,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	cgal_contour.AddColorConstraint(constraint_sptr);
 	cgal_contour.SetCriteria(0.001, 4000);
 	cgal_contour.Compute();
-	cgal_voronoi.Compute();
+	//cgal_voronoi.Compute();
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
 // 	((VAV_View*)this->GetActiveView())->
@@ -596,38 +597,41 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 //  	((VAV_View*)this->GetActiveView())->
 //  		m_D3DApp.AddLineSegs(cgal_voronoi.m_LineSegs);
 	((VAV_View*)this->GetActiveView())->
-	m_D3DApp.AddLines(cgal_voronoi.m_Lines);
+	m_D3DApp.AddLines(cgal_contour.m_Lines);
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddLines(cgal_voronoi.m_OutLines);
 
 	// Control Points
-	for (int i = 0; i < cgal_voronoi.m_Controls.size(); ++i)
+// 	for (int i = 0; i < cgal_voronoi.m_Controls.size(); ++i)
+// 	{
+// 		D3DXVECTOR3 color;
+// 		color.x = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+// 		color.y = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+// 		color.z = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+// 		Line& cps = cgal_voronoi.m_Controls[i];
+// 
+// 		for (int j = 0; j < cps.size(); ++j)
+// 		{
+// 			((VAV_View*)this->GetActiveView())->
+// 			m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
+// 		}
+// 	}
+
+	for (int i = 0; i < is2.m_Controls.size(); ++i)
 	{
 		D3DXVECTOR3 color;
 		color.x = 0.5 + 0.5 * rand() / (float)RAND_MAX;
 		color.y = 0.5 + 0.5 * rand() / (float)RAND_MAX;
 		color.z = 0.5 + 0.5 * rand() / (float)RAND_MAX;
-		Line& cps = cgal_voronoi.m_Controls[i];
+		Line& cps = is2.m_Controls[i];
 
 		for (int j = 0; j < cps.size(); ++j)
 		{
 			((VAV_View*)this->GetActiveView())->
-			m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
+				m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
 		}
 	}
 
-// 	for (int i = 0; i < is2.m_CvPatchs.size(); ++i)
-// 	{
-// 		TriangulationCgal_Patch cgal_line;
-// 		cgal_line.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-// 		cgal_line.AddPatch(ToPatch(is2.m_CvPatchs[i]));
-// 		ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
-// 		cgal_line.AddColorConstraint(constraint_sptr);
-// 		cgal_line.SetCriteria(0.125, 4000);
-// 		cgal_line.Compute();
-// 		((VAV_View*)this->GetActiveView())->
-// 			m_D3DApp.AddColorTriangles(cgal_line.GetTriangles(), m_vavImage.GetHeight());
-// 	}
 	((VAV_View*)this->GetActiveView())->m_D3DApp.BuildPoint();
 	((VAV_View*)this->GetActiveView())->m_D3DApp.DrawScene();
 }

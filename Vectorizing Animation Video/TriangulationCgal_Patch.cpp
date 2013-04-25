@@ -71,9 +71,10 @@ void TriangulationCgal_Patch::Compute()
 	{
 		insert_polygonInter(m_Triangulation, m_ImageSpline, i);
 	}
-	
+
 	Mesher mesher(m_Triangulation);
-	mesher.set_criteria(m_Criteria);
+	Criteria	criteria(0, 4000);
+	mesher.set_criteria(criteria);
 	mesher.refine_mesh();
 	mark_domains(m_Triangulation);
 	m_Triangles.clear();
@@ -109,6 +110,42 @@ void TriangulationCgal_Patch::Compute()
 		}
 	}
 
+	for (auto e = m_Triangulation.finite_edges_begin(); e != m_Triangulation.finite_edges_end(); ++e)
+	{
+		Triangulation::Face_handle fn = e->first->neighbor(e->second);
+
+		//CGAL::Object o = m_Delaunay.dual(e);
+		if (fn->is_in_domain() && fn->info().in_domain() && fn->info().nesting_level != TRIANGLE_TRANSPARENT)
+		{
+			if (!m_Triangulation.is_constrained(*e) && (!m_Triangulation.is_infinite(e->first)) && (!m_Triangulation.is_infinite(e->first->neighbor(e->second))))
+			{
+				Triangulation::Segment s = m_Triangulation.geom_traits().construct_segment_2_object()
+				                           (m_Triangulation.circumcenter(e->first), m_Triangulation.circumcenter(e->first->neighbor(e->second)));
+				const K::Segment_2* seg = &s;
+				Point p1(seg->source().hx(), seg->source().hy());
+				Point p2(seg->target().hx(), seg->target().hy());
+				Vector2 pp1(p1.hx(), p1.hy());
+				Vector2 pp2(p2.hx(), p2.hy());
+
+				if (pp1 == pp2)
+				{
+					continue;
+				}
+
+				m_LineSegs.push_back(LineSeg(pp1, pp2));
+			}
+		}
+	}
+
+	for (auto it = m_LineSegs.begin(); it != m_LineSegs.end(); ++it)
+	{
+		m_PositionGraph.AddNewLine(it->beg, it->end);
+	}
+
+	m_PositionGraph.ComputeJoints();
+	m_PositionGraph.MakeGraphLines();
+	printf("joints: %d\n", m_PositionGraph.m_Joints.size());
+	m_Lines = m_PositionGraph.m_Lines;
 }
 
 void TriangulationCgal_Patch::SetCriteria(float shapebound, float length)
@@ -140,7 +177,7 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 
 	Point start = last;
 	Triangulation::Vertex_handle v_prev  = cdt.insert(last);
-	assert(v_prev->info().nesting_level == -1);
+	//assert(v_prev->info().nesting_level == -1);
 	v_prev->info().nesting_level = idx;
 
 	for (auto it = ps.m_LineIndexs.begin(); it != ps.m_LineIndexs.end(); ++it)
@@ -156,6 +193,7 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 				if (now != last)
 				{
 					Triangulation::Vertex_handle vh = m_Triangulation.insert(now);
+
 					//assert(vh->info().nesting_level == -1 || vh->info().nesting_level == idx);
 					if (vh->info().nesting_level == -1 || vh->info().nesting_level == idx)
 					{
@@ -176,6 +214,7 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 				if (now != last)
 				{
 					Triangulation::Vertex_handle vh = m_Triangulation.insert(now);
+
 					//assert(vh->info().nesting_level == -1 || vh->info().nesting_level == idx);
 					if (vh->info().nesting_level == -1 || vh->info().nesting_level == idx)
 					{
@@ -192,13 +231,15 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 	assert(start == last);
 }
 
-void TriangulationCgal_Patch::insert_polygonInter2( Triangulation& cdt, ImageSpline& is, PatchSpline& ps )
+void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt, ImageSpline& is, PatchSpline& ps)
 {
 	const int NESTING_LEVEL = TRIANGLE_TRANSPARENT;
+
 	if (ps.m_LineIndexs.empty())
 	{
 		return;
 	}
+
 	LineIndex start_idx = ps.m_LineIndexs.front();
 	Point last;
 
@@ -231,6 +272,7 @@ void TriangulationCgal_Patch::insert_polygonInter2( Triangulation& cdt, ImageSpl
 				if (now != last)
 				{
 					Triangulation::Vertex_handle vh = m_Triangulation.insert(now);
+
 					if (vh->info().nesting_level == -1 || vh->info().nesting_level == NESTING_LEVEL)
 					{
 						vh->info().nesting_level = NESTING_LEVEL;
@@ -250,6 +292,7 @@ void TriangulationCgal_Patch::insert_polygonInter2( Triangulation& cdt, ImageSpl
 				if (now != last)
 				{
 					Triangulation::Vertex_handle vh = m_Triangulation.insert(now);
+
 					if (vh->info().nesting_level == -1 || vh->info().nesting_level == NESTING_LEVEL)
 					{
 						vh->info().nesting_level = NESTING_LEVEL;
@@ -354,7 +397,7 @@ void	TriangulationCgal_Patch::mark_domains(Triangulation& cdt)
 		int domain = fc->vertex(0)->info().nesting_level;
 		domain = fc->vertex(1)->info().nesting_level == 0 ? fc->vertex(1)->info().nesting_level : domain;
 		domain = fc->vertex(2)->info().nesting_level == 0 ? fc->vertex(2)->info().nesting_level : domain;
-		
+
 		if (TRIANGLE_NOT_INIT == fc->info().nesting_level && domain == 0)
 		{
 			mark_domains(cdt, fc, domain, border);
@@ -370,7 +413,6 @@ void	TriangulationCgal_Patch::mark_domains(Triangulation& cdt)
 		int domain = e.first->vertex(0)->info().nesting_level;
 		domain = e.first->vertex(1)->info().nesting_level > domain ? e.first->vertex(1)->info().nesting_level : domain;
 		domain = e.first->vertex(2)->info().nesting_level > domain ? e.first->vertex(2)->info().nesting_level : domain;
-
 		int transparent = e.first->vertex(0)->info().nesting_level == TRIANGLE_TRANSPARENT;
 		transparent += e.first->vertex(1)->info().nesting_level == TRIANGLE_TRANSPARENT;
 		transparent += e.first->vertex(2)->info().nesting_level == TRIANGLE_TRANSPARENT;
@@ -379,12 +421,15 @@ void	TriangulationCgal_Patch::mark_domains(Triangulation& cdt)
 		{
 			mark_domains(cdt, n, TRIANGLE_TRANSPARENT, border);
 		}
-		else 
-			if (n->info().nesting_level == TRIANGLE_NOT_INIT)
+		else if (n->info().nesting_level == TRIANGLE_NOT_INIT)
 		{
 			//mark_domains(cdt, n, e.first->info().nesting_level + 1, border);
 			printf("domain: %d\n", domain);
-			mark_domains(cdt, n, domain, border);
+
+			if (domain != -1)
+			{
+				mark_domains(cdt, n, domain, border);
+			}
 		}
 	}
 }

@@ -38,10 +38,14 @@ void VoronoiCgal_Patch::insert_polygon(Delaunay& cdt, ImageSpline& m_ImageSpline
 				if (now != last)
 				{
 					Delaunay::Vertex_handle vh = cdt.insert(now);
-					vh->info().nesting_level = idx;
-					cdt.insert_constraint(vh, v_prev);
-					v_prev = vh;
-					last = now;
+
+					if (vh->info().nesting_level == -1 || vh->info().nesting_level == idx)
+					{
+						vh->info().nesting_level = idx;
+						cdt.insert_constraint(v_prev, vh);
+						v_prev = vh;
+						last = now;
+					}
 				}
 			}
 		}
@@ -54,18 +58,24 @@ void VoronoiCgal_Patch::insert_polygon(Delaunay& cdt, ImageSpline& m_ImageSpline
 				if (now != last)
 				{
 					Delaunay::Vertex_handle vh = cdt.insert(now);
-					vh->info().nesting_level = idx;
-					cdt.insert_constraint(vh, v_prev);
-					v_prev = vh;
-					last = now;
+
+					if (vh->info().nesting_level == -1 || vh->info().nesting_level == idx)
+					{
+						vh->info().nesting_level = idx;
+						cdt.insert_constraint(v_prev, vh);
+						v_prev = vh;
+						last = now;
+					}
 				}
 			}
 		}
 	}
 }
 
-void VoronoiCgal_Patch::insert_polygonInter2(Delaunay& cdt, ImageSpline& is, PatchSpline& ps, int idx)
+void VoronoiCgal_Patch::insert_polygonInter2(Delaunay& cdt, ImageSpline& is, PatchSpline& ps)
 {
+	const int NESTING_LEVEL = TRIANGLE_TRANSPARENT;
+
 	if (ps.m_LineIndexs.empty())
 	{
 		return;
@@ -87,7 +97,7 @@ void VoronoiCgal_Patch::insert_polygonInter2(Delaunay& cdt, ImageSpline& is, Pat
 
 	Point start = last;
 	Delaunay::Vertex_handle v_prev  = cdt.insert(last);
-	v_prev->info().nesting_level = TRIANGLE_TRANSPARENT;
+	v_prev->info().nesting_level = NESTING_LEVEL;
 
 	for (auto it = ps.m_LineIndexs.begin(); it != ps.m_LineIndexs.end(); ++it)
 	{
@@ -102,10 +112,14 @@ void VoronoiCgal_Patch::insert_polygonInter2(Delaunay& cdt, ImageSpline& is, Pat
 				if (now != last)
 				{
 					Delaunay::Vertex_handle vh = m_Delaunay.insert(now);
-					vh->info().nesting_level = TRIANGLE_TRANSPARENT;
-					cdt.insert_constraint(vh, v_prev);
-					v_prev = vh;
-					last = now;
+
+					if (vh->info().nesting_level == -1 || vh->info().nesting_level == NESTING_LEVEL)
+					{
+						vh->info().nesting_level = NESTING_LEVEL;
+						cdt.insert_constraint(v_prev, vh);
+						v_prev = vh;
+						last = now;
+					}
 				}
 			}
 		}
@@ -118,10 +132,14 @@ void VoronoiCgal_Patch::insert_polygonInter2(Delaunay& cdt, ImageSpline& is, Pat
 				if (now != last)
 				{
 					Delaunay::Vertex_handle vh = m_Delaunay.insert(now);
-					vh->info().nesting_level = TRIANGLE_TRANSPARENT;
-					cdt.insert_constraint(vh, v_prev);
-					v_prev = vh;
-					last = now;
+
+					if (vh->info().nesting_level == -1 || vh->info().nesting_level == NESTING_LEVEL)
+					{
+						vh->info().nesting_level = NESTING_LEVEL;
+						cdt.insert_constraint(v_prev, vh);
+						v_prev = vh;
+						last = now;
+					}
 				}
 			}
 		}
@@ -134,7 +152,7 @@ void VoronoiCgal_Patch::insert_polygonInter(Delaunay& cdt, ImageSpline& is, int 
 
 	for (int i = 0; i < pss.size(); ++i)
 	{
-		insert_polygonInter2(cdt, is, pss[i], idx);
+		insert_polygonInter2(cdt, is, pss[i]);
 	}
 }
 
@@ -168,10 +186,6 @@ void VoronoiCgal_Patch::Compute()
 			{
 				Delaunay::Segment s = m_Delaunay.geom_traits().construct_segment_2_object()
 				                      (m_Delaunay.circumcenter(e->first), m_Delaunay.circumcenter(e->first->neighbor(e->second)));
-// 			}
-// 			if (CGAL::object_cast<K::Segment_2>(&o))
-// 			{
-//				const K::Segment_2* seg = CGAL::object_cast<K::Segment_2>(&o);
 				const K::Segment_2* seg = &s;
 				Point p1(seg->source().hx(), seg->source().hy());
 				Point p2(seg->target().hx(), seg->target().hy());
@@ -183,12 +197,8 @@ void VoronoiCgal_Patch::Compute()
 					continue;
 				}
 
-// 				if (m_CgalPatchs[i].CheckInside(p1.hx(), p1.hy()) &&
-// 				                m_CgalPatchs[i].CheckInside(p2.hx(), p2.hy()))
-				{
-					m_LineSegs.push_back(LineSeg(pp1, pp2));
-					lineSegs.push_back(LineSeg(pp1, pp2));
-				}
+				m_LineSegs.push_back(LineSeg(pp1, pp2));
+				lineSegs.push_back(LineSeg(pp1, pp2));
 			}
 		}
 
@@ -248,7 +258,7 @@ void VoronoiCgal_Patch::MakeGraphLines()
 		res.clear();
 		res.push_back(beg);
 
-		for (int j = 1; j < dis-1; ++j)
+		for (int j = 1; j < dis - 1; ++j)
 		{
 			res.push_back(hs.GetValue(j));
 		}
@@ -319,6 +329,30 @@ void VoronoiCgal_Patch::mark_domains(Delaunay& cdt)
 			mark_domains(cdt, fc, domain, border);
 			break;
 		}
+
+// 		fc->info().nesting_level = TRIANGLE_TRANSPARENT;
+// 		int constrained = 0;
+//
+// 		for (int i = 0; i < 3; ++i)
+// 		{
+// 			Delaunay::Edge e(fc, i);
+//
+// 			if (cdt.is_constrained(e))
+// 			{
+// 				constrained++;
+// 			}
+// 		}
+//
+// 		if (constrained == 1)
+// 		{
+// 			fc->info().nesting_level = 10;
+// 		}
+
+		if (TRIANGLE_NOT_INIT == fc->info().nesting_level && domain == 0)
+		{
+			mark_domains(cdt, fc, domain, border);
+			break;
+		}
 	}
 
 	while (! border.empty())
@@ -326,14 +360,14 @@ void VoronoiCgal_Patch::mark_domains(Delaunay& cdt)
 		Delaunay::Edge e = border.front();
 		border.pop_front();
 		Delaunay::Face_handle n = e.first->neighbor(e.second);
-		int domain = e.first->vertex(0)->info().nesting_level;
-		domain = e.first->vertex(1)->info().nesting_level > domain ? e.first->vertex(1)->info().nesting_level : domain;
-		domain = e.first->vertex(2)->info().nesting_level > domain ? e.first->vertex(2)->info().nesting_level : domain;
+		int domain = e.first->vertex(0)->info().nesting_level >= 0;
+		domain += e.first->vertex(1)->info().nesting_level >= 0;
+		domain += e.first->vertex(2)->info().nesting_level >= 0;
 		int transparent = e.first->vertex(0)->info().nesting_level == TRIANGLE_TRANSPARENT;
 		transparent += e.first->vertex(1)->info().nesting_level == TRIANGLE_TRANSPARENT;
 		transparent += e.first->vertex(2)->info().nesting_level == TRIANGLE_TRANSPARENT;
 
-		if (transparent >= 2)
+		if (transparent >= 2 || domain < 2)
 		{
 			mark_domains(cdt, n, TRIANGLE_TRANSPARENT, border);
 		}

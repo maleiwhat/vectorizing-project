@@ -80,7 +80,7 @@ public:
 	void insert_polygon(Delaunay& cdt, ImageSpline& m_ImageSpline, int idx);
 
 	void insert_polygonInter(Delaunay& cdt, ImageSpline& m_ImageSpline, int idx);
-	void insert_polygonInter2(Delaunay& cdt, ImageSpline& m_ImageSpline, PatchSpline& ps, int idx);
+	void insert_polygonInter2(Delaunay& cdt, ImageSpline& m_ImageSpline, PatchSpline& ps);
 
 	void AddImageSpline(ImageSpline& is)
 	{

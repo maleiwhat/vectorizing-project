@@ -46,6 +46,11 @@ BEGIN_MESSAGE_MAP(VAV_View, CView)
 	ON_WM_MBUTTONDOWN()
 	ON_WM_MBUTTONUP()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_KILLFOCUS()
+	ON_WM_CAPTURECHANGED()
+	ON_WM_MOUSELEAVE()
+	ON_WM_NCMOUSEMOVE()
+	ON_WM_NCMBUTTONUP()
 END_MESSAGE_MAP()
 
 // VAV_View 建構/解構
@@ -264,4 +269,58 @@ void VAV_View::OnLButtonDown(UINT nFlags, CPoint point)
 vavImage* VAV_View::GetImage()
 {
 	return &(GetMainFrame()->m_vavImage);
+}
+
+
+void VAV_View::OnKillFocus(CWnd* pNewWnd)
+{
+	CView::OnKillFocus(pNewWnd);
+
+	// TODO: 在此加入您的訊息處理常式程式碼
+	printf("OnMouseLeave\n");
+}
+
+
+void VAV_View::OnCaptureChanged(CWnd *pWnd)
+{
+	// TODO: 在此加入您的訊息處理常式程式碼
+
+	CView::OnCaptureChanged(pWnd);
+	printf("OnMouseLeave\n");
+}
+
+
+void VAV_View::OnMouseLeave()
+{
+	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
+
+	CView::OnMouseLeave();
+	printf("OnMouseLeave\n");
+	
+}
+
+
+void VAV_View::OnNcMouseMove(UINT nHitTest, CPoint point)
+{
+	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
+
+	CView::OnNcMouseMove(nHitTest, point);
+	printf("OnNcMouseMove\n");
+	m_D3DApp.SetLookCenter(m_LookCenter.x, m_LookCenter.y);
+	m_MButtonDown = false;
+	m_MouseUp.x = m_LookDown.x;
+	m_MouseUp.y = m_LookDown.y;
+}
+
+
+void VAV_View::OnNcMButtonUp(UINT nHitTest, CPoint point)
+{
+	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
+
+	CView::OnNcMButtonUp(nHitTest, point);
+	printf("OnNcMButtonUp\n");
+	m_D3DApp.SetLookCenter(m_LookCenter.x, m_LookCenter.y);
+	m_MButtonDown = false;
+	m_MouseUp.x = m_LookDown.x;
+	m_MouseUp.y = m_LookDown.y;
 }
