@@ -76,7 +76,8 @@ void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 
 float4 PS(GS_OUT pIn) : SV_Target
 {
-	return float4(pIn.color.x, pIn.color.y, pIn.color.z, transparency);
+	
+	return float4(pIn.pos.x/width, pIn.pos.x/width, pIn.pos.x/width, transparency);
 }
 
 RasterizerState NoCull

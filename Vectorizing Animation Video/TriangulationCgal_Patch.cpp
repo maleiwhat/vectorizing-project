@@ -1,5 +1,6 @@
 ﻿#include "TriangulationCgal_Patch.h"
 #include "algSpline2d.h"
+#include "math/Quaternion.h"
 
 void TriangulationCgal_Patch::AddPoint(double x, double y)
 {
@@ -29,39 +30,8 @@ void TriangulationCgal_Patch::Compute()
 	m_Triangulation.insert_constraint(v3, v4);
 	m_Triangulation.insert_constraint(v4, v1);
 	*/
-
-	if (!m_SeedPoints.empty())
-	{
-		for (int i = 0; i < m_SeedPoints.size() - 1; ++i)
-		{
-			m_Triangulation.insert(m_SeedPoints[i]);
-		}
-	}
-
-	for (int i = 0; i < m_Patch.size(); ++i)
-	{
-		Polygon poly;
-
-		for (auto it = m_Patch[i].Outer().begin(); it != m_Patch[i].Outer().end(); ++it)
-		{
-			poly.push_back(Point(it->x, it->y));
-		}
-
-		insert_polygon(m_Triangulation, poly, i);
-
-		for (auto it = m_Patch[i].Inter().begin(); it != m_Patch[i].Inter().end(); ++it)
-		{
-			Polygon poly2;
-
-			for (auto it2 = it->begin(); it2 != it->end(); it2++)
-			{
-				poly2.push_back(Point(it2->x, it2->y));
-			}
-
-			insert_polygon(m_Triangulation, poly2, TRIANGLE_NOT_INIT);
-		}
-	}
-
+	m_LineSegs.clear();
+	
 	for (int i = 0; i < m_ImageSpline.m_PatchSplines.size(); ++i)
 	{
 		insert_polygon(m_Triangulation, m_ImageSpline, i);
@@ -110,6 +80,8 @@ void TriangulationCgal_Patch::Compute()
 		}
 	}
 
+	LineSegs lineSegs;
+
 	for (auto e = m_Triangulation.finite_edges_begin(); e != m_Triangulation.finite_edges_end(); ++e)
 	{
 		Triangulation::Face_handle fn = e->first->neighbor(e->second);
@@ -132,12 +104,12 @@ void TriangulationCgal_Patch::Compute()
 					continue;
 				}
 
-				m_LineSegs.push_back(LineSeg(pp1, pp2));
+				lineSegs.push_back(LineSeg(pp1, pp2));
 			}
 		}
 	}
 
-	for (auto it = m_LineSegs.begin(); it != m_LineSegs.end(); ++it)
+	for (auto it = lineSegs.begin(); it != lineSegs.end(); ++it)
 	{
 		m_PositionGraph.AddNewLine(it->beg, it->end);
 	}
@@ -145,7 +117,7 @@ void TriangulationCgal_Patch::Compute()
 	m_PositionGraph.ComputeJoints();
 	m_PositionGraph.MakeGraphLines();
 	printf("joints: %d\n", m_PositionGraph.m_Joints.size());
-	m_Lines = m_PositionGraph.m_Lines;
+	m_Lines = m_PositionGraph.m_Lines;	
 }
 
 void TriangulationCgal_Patch::SetCriteria(float shapebound, float length)
@@ -183,7 +155,11 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 	for (auto it = ps.m_LineIndexs.begin(); it != ps.m_LineIndexs.end(); ++it)
 	{
 		Line pts = m_ImageSpline.m_LineFragments[it->m_id].m_Points;
-
+// 		for (int j = 1; j < pts.size(); ++j)
+// 		{
+// 			Vector2 right = Quaternion::GetRotation(pts[j] - pts[j - 1], 90);
+// 			m_LineSegs.push_back(LineSeg(pts[j], pts[j] + right*3));
+// 		}
 		if (it->m_Forward)
 		{
 			for (auto it2 = pts.begin(); it2 != pts.end(); ++it2)
@@ -262,7 +238,11 @@ void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt, ImageSpli
 	for (auto it = ps.m_LineIndexs.begin(); it != ps.m_LineIndexs.end(); ++it)
 	{
 		Line pts = is.m_LineFragments[it->m_id].m_Points;
-
+// 		for (int j = 1; j < pts.size(); ++j)
+// 		{
+// 			Vector2 right = Quaternion::GetRotation(pts[j] - pts[j - 1], 90);
+// 			m_LineSegs.push_back(LineSeg(pts[j], pts[j] + right*3));
+// 		}
 		if (it->m_Forward)
 		{
 			for (auto it2 = pts.begin(); it2 != pts.end(); ++it2)

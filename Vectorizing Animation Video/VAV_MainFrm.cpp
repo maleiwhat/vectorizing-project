@@ -594,8 +594,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles());
 	((VAV_View*)this->GetActiveView())->
 	m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles());
-//  	((VAV_View*)this->GetActiveView())->
-//  		m_D3DApp.AddLineSegs(cgal_voronoi.m_LineSegs);
+	((VAV_View*)this->GetActiveView())->
+	m_D3DApp.AddLineSegs(cgal_contour.m_LineSegs);
 	((VAV_View*)this->GetActiveView())->
 	m_D3DApp.AddLines(cgal_contour.m_Lines);
 // 	((VAV_View*)this->GetActiveView())->
@@ -609,7 +609,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 // 		color.y = 0.5 + 0.5 * rand() / (float)RAND_MAX;
 // 		color.z = 0.5 + 0.5 * rand() / (float)RAND_MAX;
 // 		Line& cps = cgal_voronoi.m_Controls[i];
-// 
+//
 // 		for (int j = 0; j < cps.size(); ++j)
 // 		{
 // 			((VAV_View*)this->GetActiveView())->
@@ -628,7 +628,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		for (int j = 0; j < cps.size(); ++j)
 		{
 			((VAV_View*)this->GetActiveView())->
-				m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
+			m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
 		}
 	}
 

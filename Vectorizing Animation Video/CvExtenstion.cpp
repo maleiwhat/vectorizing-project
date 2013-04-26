@@ -3397,7 +3397,7 @@ ImageSpline ComputeLines(cv::Mat img)
 {
 	cv::Mat image, mask, joint_image, mask2;
 	img.convertTo(image, CV_32FC3);
-	//Collect_Water(image, image, 3, 3);
+	Collect_Water(image, image, 3, 3);
 	joint_image.create(image.rows, image.cols, CV_8UC3);
 	joint_image = cv::Scalar::all(0);
 
@@ -3405,7 +3405,7 @@ ImageSpline ComputeLines(cv::Mat img)
 	{
 		for (int j = 0; j < joint_image.cols; j++)
 		{
-			if (image.at<cv::Vec3f>(i, j)[0] > 0)
+			if (image.at<float>(i, j) > 0)
 			{
 				cv::Vec3b& v = joint_image.at<cv::Vec3b>(i, j);
 				v[0] = 255;
