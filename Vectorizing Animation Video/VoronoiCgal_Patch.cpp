@@ -196,15 +196,13 @@ void VoronoiCgal_Patch::Compute()
 				{
 					continue;
 				}
-
-				m_LineSegs.push_back(LineSeg(pp1, pp2));
 				lineSegs.push_back(LineSeg(pp1, pp2));
 			}
 		}
 
 		for (auto it = lineSegs.begin(); it != lineSegs.end(); ++it)
 		{
-			m_PositionGraph.AddNewLine(it->beg, it->end);
+			//m_PositionGraph.AddNewLine(it->beg, it->end, );
 		}
 	}
 

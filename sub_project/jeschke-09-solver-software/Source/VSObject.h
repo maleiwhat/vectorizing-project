@@ -48,10 +48,12 @@ class VSObject
 {
 public:
 	CComPtr<ID3DX10Mesh> m_pMeshDiff;
+	CComPtr<ID3DX10Mesh> m_pMeshTexture;
 	CComPtr<ID3DX10Mesh> m_pMeshCurves;
 
 	ID3D10Texture2D* m_diffuseTexture[2];     // two textures used interleavedly for diffusion
 	ID3D10Texture2D* m_distDirTexture;    // two textures used interleavedly for diffusion (blurr texture)
+	ID3D10Texture2D* m_Texture;
 	ID3D10Texture2D* m_pDepthStencil;         // for z culling
 	ID3D10Texture2D* m_otherTexture;                // texture that keeps the color on the other side of a curve
 
@@ -60,6 +62,8 @@ public:
 	ID3D10RenderTargetView*   m_diffuseTextureTV[2];
 	ID3D10ShaderResourceView* m_distDirTextureRV;
 	ID3D10RenderTargetView*   m_distDirTextureTV;
+	ID3D10ShaderResourceView* m_TextureRV;
+	ID3D10RenderTargetView*   m_TextureTV;
 	ID3D10DepthStencilView*   m_pDepthStencilView;
 	ID3D10ShaderResourceView* m_otherTextureRV;
 	ID3D10RenderTargetView*   m_otherTextureTV;

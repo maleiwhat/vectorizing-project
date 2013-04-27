@@ -508,14 +508,21 @@ void VAV_MainFrame::OnButtonCanny()
 		a = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
 	}
 
-	m_cannyImage = m_vavImage;
+//	m_cannyImage = m_vavImage;
 	//cv::Mat ce = CannyEdge(m_vavImage, t1, t2, a);
 	//Lines lines1 = ComputeEdgeLine(ce);
-	Lines lines = m_vavImage.AnimaEdge(5, 0.01, 0.1);
-	lines = ComputeTrappedBallEdge(m_vavImage, lines, 5);
+//	Lines lines = m_vavImage.AnimaEdge(5, 0.01, 0.1);
+//	lines = ComputeTrappedBallEdge(m_vavImage, lines, 5);
 // 	cv::Mat lineImage = MakeLineImage(m_vavImage, lines);
 // 	lines = GetLines(GetSidelines(lineImage));
-	m_cannyImage.ShowEdgeLine(lines);
+//	m_cannyImage.ShowEdgeLine(lines);
+	m_cannyImage = m_vavImage;
+	//Skeleton(m_cannyImage);
+	cv::Mat cw, cw2;
+	cw2 = m_cannyImage;
+	cw2.convertTo(cw, CV_32FC3);
+	Collect_Water(cw, cw, 5, 5);
+	m_cannyImage = cw;
 	((VAV_View*)this->GetActiveView())->SetTexture(m_cannyImage.GetDx11Texture());
 }
 
@@ -597,25 +604,25 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	((VAV_View*)this->GetActiveView())->
 	m_D3DApp.AddLineSegs(cgal_contour.m_LineSegs);
 	((VAV_View*)this->GetActiveView())->
-	m_D3DApp.AddLines(cgal_contour.m_Lines);
+	m_D3DApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth);
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddLines(cgal_voronoi.m_OutLines);
 
 	// Control Points
-// 	for (int i = 0; i < cgal_voronoi.m_Controls.size(); ++i)
-// 	{
-// 		D3DXVECTOR3 color;
-// 		color.x = 0.5 + 0.5 * rand() / (float)RAND_MAX;
-// 		color.y = 0.5 + 0.5 * rand() / (float)RAND_MAX;
-// 		color.z = 0.5 + 0.5 * rand() / (float)RAND_MAX;
-// 		Line& cps = cgal_voronoi.m_Controls[i];
-//
-// 		for (int j = 0; j < cps.size(); ++j)
-// 		{
-// 			((VAV_View*)this->GetActiveView())->
-// 			m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
-// 		}
-// 	}
+	for (int i = 0; i < cgal_contour.m_Controls.size(); ++i)
+	{
+		D3DXVECTOR3 color;
+		color.x = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+		color.y = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+		color.z = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+		Line& cps = cgal_contour.m_Controls[i];
+
+		for (int j = 0; j < cps.size(); ++j)
+		{
+			((VAV_View*)this->GetActiveView())->
+			m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
+		}
+	}
 
 	for (int i = 0; i < is2.m_Controls.size(); ++i)
 	{
@@ -641,8 +648,11 @@ void VAV_MainFrame::OnButtonSkeleton()
 {
 	// TODO: 在此加入您的命令處理常式程式碼
 	m_cannyImage = m_vavImage;
-	Skeleton(m_cannyImage);
-	((VAV_View*)this->GetActiveView())->SetTexture(m_cannyImage.GetDx11Texture());
+	//Skeleton(m_cannyImage);
+// 	cv::Mat cw;
+// 	Collect_Water(m_cannyImage, cw, 5, 5);
+// 	m_cannyImage = cw;
+// 	((VAV_View*)this->GetActiveView())->SetTexture(m_cannyImage.GetDx11Texture());
 }
 
 

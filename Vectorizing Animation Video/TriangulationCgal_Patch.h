@@ -93,6 +93,8 @@ public:
 	PositionGraph	m_PositionGraph;
 	LineSegs	m_LineSegs;
 	Lines		m_Lines;
+	double_vector2d	m_LinesWidth;
+	Lines		m_Controls;
 };
 
 

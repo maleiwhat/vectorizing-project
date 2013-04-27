@@ -104,14 +104,16 @@ bool PositionGraph::AddJoint(const Vector2& joint, const Vector2& p1, const Vect
 	}
 }
 
-bool PositionGraph::AddNewLine(const Vector2& p1, const Vector2& p2)
+bool PositionGraph::AddNewLine(const Vector2& p1, const Vector2& p2, double width)
 {
 	if (m_AllNodes.empty())
 	{
 		PositionGraph_Node n1;
 		n1.m_Position = p1;
+		n1.m_Width = width;
 		PositionGraph_Node n2;
 		n2.m_Position = p2;
+		n2.m_Width = width;
 		AddNode(n1);
 		AddNode(n2);
 		m_AllNodeptrs[0]->m_Links.push_back(m_AllNodeptrs[1]);
@@ -136,6 +138,7 @@ bool PositionGraph::AddNewLine(const Vector2& p1, const Vector2& p2)
 				}
 				PositionGraph_Node n2;
 				n2.m_Position = p2;
+				n2.m_Width = width;
 				n2.m_Links.push_back(it);
 				AddNode(n2);
 				it->m_Links.push_back(m_AllNodeptrs.back());
@@ -155,6 +158,7 @@ bool PositionGraph::AddNewLine(const Vector2& p1, const Vector2& p2)
 				}
 				PositionGraph_Node n1;
 				n1.m_Position = p1;
+				n1.m_Width = width;
 				n1.m_Links.push_back(it);
 				AddNode(n1);
 				it->m_Links.push_back(m_AllNodeptrs.back());
@@ -164,8 +168,10 @@ bool PositionGraph::AddNewLine(const Vector2& p1, const Vector2& p2)
 
 		PositionGraph_Node n1;
 		n1.m_Position = p1;
+		n1.m_Width = width;
 		PositionGraph_Node n2;
 		n2.m_Position = p2;
+		n2.m_Width = width;
 		AddNode(n1);
 		AddNode(n2);
 		PositionGraph_Nodes::iterator last_1 = *(m_AllNodeptrs.end() - 1);
@@ -209,8 +215,10 @@ void PositionGraph::MakeGraphLines()
 	{
 		for (auto it2 = (**it).m_Links.begin(); it2 != (**it).m_Links.end(); ++it2)
 		{
+			double_vector now_width;
 			Line now_line;
 			now_line.push_back((**it).m_Position);
+			now_width.push_back((**it).m_Width);
 			auto last_it3 = *it;
 			auto it3 = *it2;
 
@@ -223,7 +231,7 @@ void PositionGraph::MakeGraphLines()
 			for (;;)
 			{
 				now_line.push_back(it3->m_Position);
-
+				now_width.push_back(it3->m_Width);
 				if (it3->m_line_id == PositionGraph_JOINT_ID)
 				{
 					break;
@@ -260,6 +268,7 @@ void PositionGraph::MakeGraphLines()
 			if (now_line.size() > 1)
 			{
 				m_Lines.push_back(now_line);
+				m_LinesWidth.push_back(now_width);
 			}
 		}
 	}

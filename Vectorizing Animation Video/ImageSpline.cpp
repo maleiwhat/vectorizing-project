@@ -164,6 +164,7 @@ void ImageSpline::SmoothingFragments()
 			cps = newcps;
 		}
 	}
+	
 	m_Controls.resize(m_LineFragments.size());
 	for (int i = 0; i < m_LineFragments.size(); ++i)
 	{
@@ -173,7 +174,7 @@ void ImageSpline::SmoothingFragments()
 
 		Vector2 beg = res.front(), end = res.back();
 
-		for (int j = 0; j < res.size(); ++j)
+		for (int j = 0; j < res.size(); j+=2)
 		{
 			hs.AddPointByDistance(res[j]);
 		}

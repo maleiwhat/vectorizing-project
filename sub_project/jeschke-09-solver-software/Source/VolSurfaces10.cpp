@@ -428,7 +428,7 @@ void CALLBACK OnD3D10FrameRender(ID3D10Device* pd3dDevice, double fTime, float f
 		g_Camera.m_vMouseDelta.y = 0;
 	}
 
-	g_vsObj->m_polySize = 0.3; //render each polygon in full screen size
+	g_vsObj->m_polySize = 2.1; //render each polygon in full screen size
 	g_vsObj->RenderDiffusion(pd3dDevice);
 	g_vsObj->Render(pd3dDevice);
 

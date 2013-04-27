@@ -1,6 +1,7 @@
 ﻿#include "TriangulationCgal_Patch.h"
 #include "algSpline2d.h"
 #include "math/Quaternion.h"
+#include "curve/HSplineCurve.h"
 
 void TriangulationCgal_Patch::AddPoint(double x, double y)
 {
@@ -81,7 +82,7 @@ void TriangulationCgal_Patch::Compute()
 	}
 
 	LineSegs lineSegs;
-
+	double_vector	LinesWidth;
 	for (auto e = m_Triangulation.finite_edges_begin(); e != m_Triangulation.finite_edges_end(); ++e)
 	{
 		Triangulation::Face_handle fn = e->first->neighbor(e->second);
@@ -94,30 +95,73 @@ void TriangulationCgal_Patch::Compute()
 				Triangulation::Segment s = m_Triangulation.geom_traits().construct_segment_2_object()
 				                           (m_Triangulation.circumcenter(e->first), m_Triangulation.circumcenter(e->first->neighbor(e->second)));
 				const K::Segment_2* seg = &s;
-				Point p1(seg->source().hx(), seg->source().hy());
-				Point p2(seg->target().hx(), seg->target().hy());
-				Vector2 pp1(p1.hx(), p1.hy());
-				Vector2 pp2(p2.hx(), p2.hy());
-
+				Vector2 pp1(seg->source().hx(), seg->source().hy());
+				Vector2 pp2(seg->target().hx(), seg->target().hy());
+				
 				if (pp1 == pp2)
 				{
 					continue;
 				}
-
+				Vector2 e1 (e->first->vertex( m_Triangulation.ccw(e->second))->point().hx(), e->first->vertex( m_Triangulation.ccw(e->second))->point().hy());
+				Vector2 e2 (e->first->vertex( m_Triangulation.cw(e->second))->point().hx(), e->first->vertex( m_Triangulation.cw(e->second))->point().hy());
+				LinesWidth.push_back(e1.distance(e2));
 				lineSegs.push_back(LineSeg(pp1, pp2));
+				//m_LineSegs.push_back(LineSeg(e1, e2));
 			}
 		}
 	}
-
-	for (auto it = lineSegs.begin(); it != lineSegs.end(); ++it)
+	int i=0;
+	for (auto it = lineSegs.begin(); it != lineSegs.end(); ++it, ++i)
 	{
-		m_PositionGraph.AddNewLine(it->beg, it->end);
+		m_PositionGraph.AddNewLine(it->beg, it->end, LinesWidth[i]);
 	}
 
 	m_PositionGraph.ComputeJoints();
 	m_PositionGraph.MakeGraphLines();
 	printf("joints: %d\n", m_PositionGraph.m_Joints.size());
-	m_Lines = m_PositionGraph.m_Lines;	
+	m_Lines = m_PositionGraph.m_Lines;
+	m_LinesWidth = m_PositionGraph.m_LinesWidth;
+	m_Controls.resize(m_Lines.size());
+	for (int i = 0; i < m_Lines.size(); ++i)
+	{
+		HSplineCurve hs;
+		Line& cps = m_Controls[i];
+		Line& res = m_Lines[i];
+
+		Vector2 beg = res.front(), end = res.back();
+
+		for (int j = 0; j < res.size(); ++j)
+		{
+			hs.AddPointByDistance(res[j]);
+		}
+
+		double dis = hs.GetDistance();
+		int step = dis / 3.0;
+		cps.push_back(beg);
+
+		for (int j = 1; j < step; ++j)
+		{
+			cps.push_back(hs.GetValue(j * 3));
+		}
+
+		cps.push_back(end);
+		// 		hs.Clear();
+		// 
+		// 		for (int j = 0; j < cps.size(); ++j)
+		// 		{
+		// 			hs.AddPointByDistance(cps[j]);
+		// 		}
+
+		// 		res.clear();
+		// 		res.push_back(beg);
+		// 
+		// 		for (int j = 1; j < dis-1; ++j)
+		// 		{
+		// 			res.push_back(hs.GetValue(j));
+		// 		}
+		// 
+		// 		res.push_back(end);
+	}
 }
 
 void TriangulationCgal_Patch::SetCriteria(float shapebound, float length)

@@ -3150,6 +3150,7 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 	RealMap.create(src.rows, src.cols, CV_32F);
 	ThresholdMap.create(src.rows, src.cols, CV_32F);
 	MaxCapacity2.create(src.rows, src.cols, CV_32F);
+	dst.create(src.rows, src.cols, CV_8UC3);
 	//WaterMap = cv::Scalar(1);
 
 	for (int y = 0; y < src.rows; ++y)
@@ -3294,7 +3295,7 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 	}
 
 	sum = sum / MaxCapacity.rows / MaxCapacity.cols;
-	sum *= 1.1;
+	sum *= 0.3;
 	std::cout << "sum: " << sum << std::endl;
 
 	for (int r = 0; r < MaxCapacity.rows; r++)
@@ -3318,7 +3319,19 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 	imshow("MaxCapacity", MaxCapacity);
 	imshow("MaxCapacity2", MaxCapacity2);
 	FillSmallHole(MaxCapacity2);
-	dst = MaxCapacity2.clone();
+	for (int i = 0; i < dst.rows; i++)
+	{
+		for (int j = 0; j < dst.cols; j++)
+		{
+			if (MaxCapacity2.at<float>(i, j) > 0)
+			{
+				cv::Vec3b& v = dst.at<cv::Vec3b>(i, j);
+				v[0] = 255;
+				v[1] = 255;
+				v[2] = 255;
+			}
+		}
+	}
 }
 
 void FillSmallHole(cv::Mat& patchImage)
@@ -3397,27 +3410,9 @@ ImageSpline ComputeLines(cv::Mat img)
 {
 	cv::Mat image, mask, joint_image, mask2;
 	img.convertTo(image, CV_32FC3);
-	Collect_Water(image, image, 3, 3);
-	joint_image.create(image.rows, image.cols, CV_8UC3);
-	joint_image = cv::Scalar::all(0);
+	Collect_Water(image, image, 5, 5);
 
-	for (int i = 0; i < joint_image.rows; i++)
-	{
-		for (int j = 0; j < joint_image.cols; j++)
-		{
-			if (image.at<float>(i, j) > 0)
-			{
-				cv::Vec3b& v = joint_image.at<cv::Vec3b>(i, j);
-				v[0] = 255;
-				v[1] = 255;
-				v[2] = 255;
-			}
-		}
-	}
-
-	cv::imshow("joint_image", joint_image);
-	//cv::waitKey();
-	ImageSpline is = S4GetPatchs(joint_image, 0, 0);
+	ImageSpline is = S4GetPatchs(image, 0, 0);
 	return is;
 }
 
