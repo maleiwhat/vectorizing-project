@@ -649,16 +649,28 @@ void VAV_MainFrame::OnButtonSkeleton()
 	// TODO: 在此加入您的命令處理常式程式碼
 	m_cannyImage = m_vavImage;
 	//Skeleton(m_cannyImage);
-// 	cv::Mat cw;
+ 	cv::Mat cw = m_cannyImage;
+	for (int i = 0; i < cw.rows; i++)
+	{
+		for (int j = 0; j < cw.cols; j++)
+		{
+			cv::Vec3b& v = cw.at<cv::Vec3b>(i, j);
+			v[0] = 255;
+			v[1] = 255;
+			v[2] = 255;
+		}
+	}
 // 	Collect_Water(m_cannyImage, cw, 5, 5);
 // 	m_cannyImage = cw;
-// 	((VAV_View*)this->GetActiveView())->SetTexture(m_cannyImage.GetDx11Texture());
+ 	((VAV_View*)this->GetActiveView())->SetTexture(m_cannyImage.GetDx11Texture());
 }
 
 
 void VAV_MainFrame::OnButtonSobel()
 {
 	// TODO: 在此加入您的命令處理常式程式碼
+	m_cannyImage = m_vavImage;
+	((VAV_View*)this->GetActiveView())->SetTexture(m_cannyImage.GetDx11Texture());
 }
 
 

@@ -3295,7 +3295,7 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 	}
 
 	sum = sum / MaxCapacity.rows / MaxCapacity.cols;
-	sum *= 0.3;
+	sum *= 1.2;
 	std::cout << "sum: " << sum << std::endl;
 
 	for (int r = 0; r < MaxCapacity.rows; r++)
@@ -3408,10 +3408,24 @@ void GetSkeletonLine(cv::Mat bmap, Lines& lines, double_vector2d& linewidths)
 
 ImageSpline ComputeLines(cv::Mat img)
 {
-	cv::Mat image, mask, joint_image, mask2;
-	img.convertTo(image, CV_32FC3);
-	Collect_Water(image, image, 5, 5);
-
+	cv::Mat image, dst, joint_image, mask2;
+ 	img.convertTo(image, CV_32FC3);
+ 	Collect_Water(image, image, 3, 3);
+// 	dst = img.clone();
+// 	dst = cv::Scalar(0);
+// 	for (int i = 0; i < dst.rows; i++)
+// 	{
+// 		for (int j = 0; j < dst.cols; j++)
+// 		{
+// 			if (img.at<cv::Vec3b>(i, j)[0] < 100)
+// 			{
+// 				cv::Vec3b& v = dst.at<cv::Vec3b>(i, j);
+// 				v[0] = 255;
+// 				v[1] = 255;
+// 				v[2] = 255;
+// 			}
+// 		}
+// 	}
 	ImageSpline is = S4GetPatchs(image, 0, 0);
 	return is;
 }
