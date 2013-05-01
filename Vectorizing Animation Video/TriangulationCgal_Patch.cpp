@@ -12,7 +12,6 @@ void TriangulationCgal_Patch::Compute()
 {
 	m_Triangulation.clear();
 	Vertex_handles vhs;
-
 	/* add 4 conner point
 	Point lu(-10, -10);
 	Point ld(-10, m_h+10);
@@ -32,7 +31,7 @@ void TriangulationCgal_Patch::Compute()
 	m_Triangulation.insert_constraint(v4, v1);
 	*/
 	m_LineSegs.clear();
-	
+
 	for (int i = 0; i < m_ImageSpline.m_PatchSplines.size(); ++i)
 	{
 		insert_polygon(m_Triangulation, m_ImageSpline, i);
@@ -83,34 +82,83 @@ void TriangulationCgal_Patch::Compute()
 
 	LineSegs lineSegs;
 	double_vector	LinesWidth;
-	for (auto e = m_Triangulation.finite_edges_begin(); e != m_Triangulation.finite_edges_end(); ++e)
-	{
-		Triangulation::Face_handle fn = e->first->neighbor(e->second);
 
-		//CGAL::Object o = m_Delaunay.dual(e);
-		if (fn->is_in_domain() && fc->info().in_domain() && fn->info().in_domain() && fn->info().nesting_level != TRIANGLE_TRANSPARENT)
+	for (fc = m_Triangulation.finite_faces_begin(); fc != m_Triangulation.finite_faces_end(); ++fc)
+	{
+		if (fc->is_in_domain() && fc->info().in_domain() && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
 		{
-			if (!m_Triangulation.is_constrained(*e) )//&& (!m_Triangulation.is_infinite(e->first)) && (!m_Triangulation.is_infinite(e->first->neighbor(e->second))))
+			Vector2s pts;
+			int constrained = 0;
+			double_vector widths;
+
+			for (int i = 0; i < 3; i++)
 			{
-				Triangulation::Segment s = m_Triangulation.geom_traits().construct_segment_2_object()
-				                           (m_Triangulation.circumcenter(e->first), m_Triangulation.circumcenter(e->first->neighbor(e->second)));
-				const K::Segment_2* seg = &s;
-				Vector2 pp1(seg->source().hx(), seg->source().hy());
-				Vector2 pp2(seg->target().hx(), seg->target().hy());
-				
-				if (pp1 == pp2)
+				Triangulation::Edge e(fc, i);
+
+				if (!m_Triangulation.is_constrained(e))
 				{
-					continue;
+					Vector2 e1(e.first->vertex(m_Triangulation.ccw(e.second))->point().hx(), e.first->vertex(m_Triangulation.ccw(e.second))->point().hy());
+					Vector2 e2(e.first->vertex(m_Triangulation.cw(e.second))->point().hx(), e.first->vertex(m_Triangulation.cw(e.second))->point().hy());
+					pts.push_back(e1.midPoint(e2));
+					widths.push_back(e1.distance(e2));
+					++constrained;
 				}
-				Vector2 e1 (e->first->vertex( m_Triangulation.ccw(e->second))->point().hx(), e->first->vertex( m_Triangulation.ccw(e->second))->point().hy());
-				Vector2 e2 (e->first->vertex( m_Triangulation.cw(e->second))->point().hx(), e->first->vertex( m_Triangulation.cw(e->second))->point().hy());
-				LinesWidth.push_back(e1.distance(e2));
-				lineSegs.push_back(LineSeg(pp1, pp2));
-				m_LineSegs.push_back(LineSeg(pp1, pp2));
+			}
+
+			// detect line
+			if (constrained == 2)
+			{
+				LinesWidth.insert(LinesWidth.end(), widths.begin(), widths.end());
+				lineSegs.push_back(LineSeg(pts[0], pts[1]));
+				m_LineSegs.push_back(LineSeg(pts[0], pts[1]));
+			}
+			// detect joint
+			else if (constrained == 3)
+			{
+				Vector2 mid = (pts[0] + pts[1] + pts[2]) / 3;
+				LinesWidth.insert(LinesWidth.end(), widths.begin(), widths.end());
+				lineSegs.push_back(LineSeg(pts[0], mid));
+				lineSegs.push_back(LineSeg(pts[1], mid));
+				lineSegs.push_back(LineSeg(pts[2], mid));
+				m_LineSegs.push_back(LineSeg(pts[0], mid));
+				m_LineSegs.push_back(LineSeg(pts[1], mid));
+				m_LineSegs.push_back(LineSeg(pts[2], mid));
 			}
 		}
 	}
-	int i=0;
+
+// 	for (auto e = m_Triangulation.finite_edges_begin(); e != m_Triangulation.finite_edges_end(); ++e)
+// 	{
+// 		Triangulation::Face_handle fn = e->first->neighbor(e->second);
+// 
+// 		//CGAL::Object o = m_Delaunay.dual(e);
+// 		if (fn->is_in_domain() && fn->info().in_domain() && fn->info().in_domain() && fn->info().nesting_level != TRIANGLE_TRANSPARENT)
+// 		{
+// 			if (!m_Triangulation.is_constrained(*e)) //&& (!m_Triangulation.is_infinite(e->first)) && (!m_Triangulation.is_infinite(e->first->neighbor(e->second))))
+// 			{
+// 				Triangulation::Segment s = m_Triangulation.geom_traits().construct_segment_2_object()
+// 				                           (m_Triangulation.circumcenter(e->first), m_Triangulation.circumcenter(e->first->neighbor(e->second)));
+// 				const K::Segment_2* seg = &s;
+// 				Vector2 pp1(seg->source().hx(), seg->source().hy());
+// 				Vector2 pp2(seg->target().hx(), seg->target().hy());
+// 
+// 				if (pp1 == pp2)
+// 				{
+// 					continue;
+// 				}
+// 
+// 				Vector2 e1(e->first->vertex(m_Triangulation.ccw(e->second))->point().hx(), e->first->vertex(m_Triangulation.ccw(e->second))->point().hy());
+// 				Vector2 e2(e->first->vertex(m_Triangulation.cw(e->second))->point().hx(), e->first->vertex(m_Triangulation.cw(e->second))->point().hy());
+// 				LinesWidth.push_back(e1.distance(e2));
+// 				lineSegs.push_back(LineSeg(pp1, pp2));
+// 				m_LineSegs.push_back(LineSeg(pp1, pp2));
+// 				m_LineSegs.push_back(LineSeg(e1, e2));
+// 			}
+// 		}
+// 	}
+
+	int i = 0;
+
 	for (auto it = lineSegs.begin(); it != lineSegs.end(); ++it, ++i)
 	{
 		m_PositionGraph.AddNewLine(it->beg, it->end, LinesWidth[i]);
@@ -122,12 +170,12 @@ void TriangulationCgal_Patch::Compute()
 	m_Lines = m_PositionGraph.m_Lines;
 	m_LinesWidth = m_PositionGraph.m_LinesWidth;
 	m_Controls.resize(m_Lines.size());
+
 	for (int i = 0; i < m_Lines.size(); ++i)
 	{
 		HSplineCurve hs;
 		Line& cps = m_Controls[i];
 		Line& res = m_Lines[i];
-
 		Vector2 beg = res.front(), end = res.back();
 
 		for (int j = 0; j < res.size(); ++j)
@@ -145,22 +193,21 @@ void TriangulationCgal_Patch::Compute()
 		}
 
 		cps.push_back(end);
-		// 		hs.Clear();
-		// 
-		// 		for (int j = 0; j < cps.size(); ++j)
-		// 		{
-		// 			hs.AddPointByDistance(cps[j]);
-		// 		}
-
-		// 		res.clear();
-		// 		res.push_back(beg);
-		// 
-		// 		for (int j = 1; j < dis-1; ++j)
-		// 		{
-		// 			res.push_back(hs.GetValue(j));
-		// 		}
-		// 
-		// 		res.push_back(end);
+// 		hs.Clear();
+//
+// 		for (int j = 0; j < cps.size(); ++j)
+// 		{
+// 			hs.AddPointByDistance(cps[j]);
+// 		}
+// 		res.clear();
+// 		res.push_back(beg);
+//
+// 		for (int j = 1; j < dis-1; ++j)
+// 		{
+// 			res.push_back(hs.GetValue(j));
+// 		}
+//
+// 		res.push_back(end);
 	}
 }
 
@@ -199,6 +246,7 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 	for (auto it = ps.m_LineIndexs.begin(); it != ps.m_LineIndexs.end(); ++it)
 	{
 		Line pts = m_ImageSpline.m_LineFragments[it->m_id].m_Points;
+
 // 		for (int j = 1; j < pts.size(); ++j)
 // 		{
 // 			Vector2 right = Quaternion::GetRotation(pts[j] - pts[j - 1], 90);
@@ -282,6 +330,7 @@ void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt, ImageSpli
 	for (auto it = ps.m_LineIndexs.begin(); it != ps.m_LineIndexs.end(); ++it)
 	{
 		Line pts = is.m_LineFragments[it->m_id].m_Points;
+
 // 		for (int j = 1; j < pts.size(); ++j)
 // 		{
 // 			Vector2 right = Quaternion::GetRotation(pts[j] - pts[j - 1], 90);

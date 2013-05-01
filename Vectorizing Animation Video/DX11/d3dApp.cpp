@@ -1016,8 +1016,8 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 		lv.p3.y = m_PicH - now_line[now_line.size() - 1].y;
 		lv.p4.x = now_line[now_line.size() - 1].x;
 		lv.p4.y = m_PicH - now_line[now_line.size() - 1].y;
-		lv.width.x = now_linewidth[0];
-		lv.width.y = now_linewidth[1];
+		lv.width.x = now_linewidth[now_line.size() - 2];
+		lv.width.y = now_linewidth[now_line.size() - 1];
 		m_LinesVertices.push_back(lv);
 		slv.p1.x = now_line[now_line.size() - 2].x;
 		slv.p1.y = m_PicH - now_line[now_line.size() - 2].y;
