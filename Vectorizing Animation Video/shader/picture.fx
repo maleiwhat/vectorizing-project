@@ -43,7 +43,7 @@ VS_OUT VS(VS_IN vIn)
 	vIn.position.x += centerX -vIn.size.x*0.5;
 	vIn.position.y -= centerY +vIn.size.y*0.5;
 	vIn.position.xy=(vIn.position.xy)/float2(width,height);
-	vOut.pos =float4(vIn.position*2-1,1);
+	vOut.pos =float4(vIn.position*2-1+float3(centerX/width,-centerY/height, 0)*scale,1);
 	// use local vertex position as cubemap lookup vector.
 	vOut.size = vIn.size;
 	return vOut;

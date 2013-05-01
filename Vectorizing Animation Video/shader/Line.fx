@@ -56,10 +56,10 @@ VS_OUT VS(VS_IN vIn)
 	vOut.p3 = p3 + p24;
 	vOut.p4 = p3 - p24;
 	float2 offset = float2(centerX/width*2, -centerY/height*2);
-	vOut.p1 = (vOut.p1/float2(width,height)*scale)*2-1;
-	vOut.p2 = (vOut.p2/float2(width,height)*scale)*2-1;
-	vOut.p3 = (vOut.p3/float2(width,height)*scale)*2-1;
-	vOut.p4 = (vOut.p4/float2(width,height)*scale)*2-1;
+	vOut.p1 = (vOut.p1/float2(width,height)*scale)*2-1+float3(centerX/width,-centerY/height, 0)*scale;
+	vOut.p2 = (vOut.p2/float2(width,height)*scale)*2-1+float3(centerX/width,-centerY/height, 0)*scale;
+	vOut.p3 = (vOut.p3/float2(width,height)*scale)*2-1+float3(centerX/width,-centerY/height, 0)*scale;
+	vOut.p4 = (vOut.p4/float2(width,height)*scale)*2-1+float3(centerX/width,-centerY/height, 0)*scale;
 	vOut.p1 += offset;
 	vOut.p2 += offset;
 	vOut.p3 += offset;
@@ -95,7 +95,7 @@ void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 float4 PS(GS_OUT pIn) : SV_Target
 {
 //discard;
-	return float4(0,0,0,0.7);
+//	return float4(0,0,0,0.7);
 	return float4(pIn.color.x, pIn.color.y, pIn.color.z, transparency);
 }
 

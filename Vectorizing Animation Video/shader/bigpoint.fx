@@ -32,7 +32,7 @@ struct GS_OUT
 VS_OUT VS(VS_IN vIn)
 {
 	VS_OUT vOut;
-	vOut.pos = (vIn.pos/float2(width,height)*scale)*2-1;
+	vOut.pos = (vIn.pos/float2(width,height)*scale)*2-1+float3(centerX/width,-centerY/height, 0)*scale;
 	vOut.pos.x += centerX/width*2;
 	vOut.pos.y -= centerY/height*2;
 	vOut.size = (vIn.size/float2(width,height)*scale);

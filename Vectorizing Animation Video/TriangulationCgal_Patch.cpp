@@ -88,9 +88,9 @@ void TriangulationCgal_Patch::Compute()
 		Triangulation::Face_handle fn = e->first->neighbor(e->second);
 
 		//CGAL::Object o = m_Delaunay.dual(e);
-		if (fn->is_in_domain() && fn->info().in_domain() && fn->info().nesting_level != TRIANGLE_TRANSPARENT)
+		if (fn->is_in_domain() && fc->info().in_domain() && fn->info().in_domain() && fn->info().nesting_level != TRIANGLE_TRANSPARENT)
 		{
-			if (!m_Triangulation.is_constrained(*e) && (!m_Triangulation.is_infinite(e->first)) && (!m_Triangulation.is_infinite(e->first->neighbor(e->second))))
+			if (!m_Triangulation.is_constrained(*e) )//&& (!m_Triangulation.is_infinite(e->first)) && (!m_Triangulation.is_infinite(e->first->neighbor(e->second))))
 			{
 				Triangulation::Segment s = m_Triangulation.geom_traits().construct_segment_2_object()
 				                           (m_Triangulation.circumcenter(e->first), m_Triangulation.circumcenter(e->first->neighbor(e->second)));
@@ -106,7 +106,7 @@ void TriangulationCgal_Patch::Compute()
 				Vector2 e2 (e->first->vertex( m_Triangulation.cw(e->second))->point().hx(), e->first->vertex( m_Triangulation.cw(e->second))->point().hy());
 				LinesWidth.push_back(e1.distance(e2));
 				lineSegs.push_back(LineSeg(pp1, pp2));
-				//m_LineSegs.push_back(LineSeg(e1, e2));
+				m_LineSegs.push_back(LineSeg(pp1, pp2));
 			}
 		}
 	}

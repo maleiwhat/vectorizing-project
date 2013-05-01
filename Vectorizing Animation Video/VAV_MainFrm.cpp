@@ -560,8 +560,9 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	//m_CvPatchs = S1GetPatchs(lineImage, 1, 10);
 	//m_CvPatchs = S2GetPatchs(m_vavImage, 0, 0);
 	//ImageSpline is = S3GetPatchs(m_vavImage, 0, 0);
+	
 	ImageSpline is2 = ComputeLines(m_vavImage);
-	//return;
+	
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddLines(line, linewidths, m_vavImage.GetHeight());
 	TriangulationCgal_Patch cgal_patch, cgal_contour;

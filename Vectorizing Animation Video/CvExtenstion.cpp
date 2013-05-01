@@ -1782,12 +1782,13 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	cv::Mat gap_image;
 	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
 	gap_image = cv::Scalar(0);
+	cv::imwrite("Color Region.png", image);
+	return ImageSpline();
 	image = image0.clone();
 	cv::imwrite("Original Picture.png", image);
 	//cv::imshow("Original Picture", image);
 	normalize(tmp_image, img2u, 0, 255, cv::NORM_MINMAX);
-	cv::imwrite("Color Region.png", img2u);
-
+	
 // 	cv::imshow("Color Region", img2u);
 // 	cv::waitKey();
 	// Find Boundary
@@ -2347,6 +2348,9 @@ void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int r
 	int b = cc % 255;
 	int g = cc / 255 ;
 	int r = cc / (255 * 255);
+// 	b = rand() % 255;
+// 	g = rand() % 255;
+// 	r = rand() % 255;
 	cc++;
 	cv::Scalar newVal(b, g, r);
 	int area;
@@ -2359,7 +2363,6 @@ void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int r
 	// get Contour line
 	cv::Mat mask2 = mask01.clone();
 	ClearEdge(mask2);
-
 	for (int i = 1; i < mask2.rows - 1; i++)
 	{
 		for (int j = 1; j < mask2.cols - 1; j++)
@@ -3164,106 +3167,9 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 		}
 	}
 
-	for (int y = 0; y < src.rows; ++y)
-	{
-		for (int x = 0; x < src.cols; ++x)
-		{
-			float& r = RealMap.at<float>(y, x);
-			cv::Vec3f& v = src.at<cv::Vec3f>(y, x);
-			float& w = WaterMap.at<float>(y, x);
-			float& wmax = MaxCapacity.at<float>(y, x);
-			w = 0.15;
-			r = w + GetLight(v);
-		}
-	}
 
 	normalize(MaxCapacity, MaxCapacity, 0, 1, cv::NORM_MINMAX);
-	floatptrs aryf(rectw * recth);
-	floatptrs aryr(rectw * recth);
-
-	for (int count = 0; count < 3; ++count)
-	{
-		int start1 = 0, step1 = 1, end1 = src.rows;
-		int start2 = 0, step2 = 1, end2 = src.cols;
-
-		if (count % 2 == 1)
-		{
-			start1 = src.rows - 1;
-			step1 = -1;
-			end1 = -1;
-			start2 = src.cols - 1;
-			step2 = -1;
-			end2 = -1;
-		}
-
-		for (int y = start1; y != end1; y += step1)
-		{
-			for (int x = start2; x != end2; x += step2)
-			{
-				float& wmax = MaxCapacity.at<float>(y, x);
-				float& w = WaterMap.at<float>(y, x);
-				float& r = RealMap.at<float>(y, x);
-
-				if (w == 0) { continue; }
-
-				GetMatrixf(rectw, recth, aryr, x, y, RealMap);
-				std::sort(aryr.begin(), aryr.end(), LightComparef);
-
-				for (int i = 0; i < recth * rectw; ++i)
-				{
-					if (r > aryr[i].value())
-					{
-						float wmax2 = MaxCapacity.at<float>(aryr[i].y, aryr[i].x);
-						float maxadd = wmax2 - aryr[i].value();
-
-						if (maxadd > 0)
-						{
-							if (maxadd >= w)
-							{
-								float& w2 = WaterMap.at<float>(aryr[i].y, aryr[i].x);
-								w2 += w;
-								float& r2 = RealMap.at<float>(aryr[i].y, aryr[i].x);
-								r2 += w;
-								r  -= w;
-								w   = 0;
-								break;
-							}
-							else
-							{
-								float add = w - maxadd;
-								float& w2 = WaterMap.at<float>(aryr[i].y, aryr[i].x);
-								w2 += add;
-								float& r2 = RealMap.at<float>(aryr[i].y, aryr[i].x);
-								r2 += add;
-								r  -= add;
-								w  -= add;
-							}
-						}
-						else if (maxadd < 0)
-						{
-							float newr = (r + aryr[i].value()) * 0.5;
-							float mover = r - newr;
-
-							if (mover > 0)
-							{
-								float& w2 = WaterMap.at<float>(aryr[i].y, aryr[i].x);
-								w2 += mover;
-								float& r2 = RealMap.at<float>(aryr[i].y, aryr[i].x);
-								r2 += mover;
-								r  -= mover;
-								w  -= mover;
-							}
-						}
-					}
-					else
-					{
-						break;
-					}
-				}
-			}
-		}
-	}
-
+	
 	// END
 	normalize(MaxCapacity, MaxCapacity, 0, 1, cv::NORM_MINMAX);
 
@@ -3295,7 +3201,7 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 	}
 
 	sum = sum / MaxCapacity.rows / MaxCapacity.cols;
-	sum *= 1.2;
+	sum *= 0.3;
 	std::cout << "sum: " << sum << std::endl;
 
 	for (int r = 0; r < MaxCapacity.rows; r++)
@@ -3410,7 +3316,7 @@ ImageSpline ComputeLines(cv::Mat img)
 {
 	cv::Mat image, dst, joint_image, mask2;
  	img.convertTo(image, CV_32FC3);
- 	Collect_Water(image, image, 3, 3);
+ 	Collect_Water(image, image, 5, 5);
 // 	dst = img.clone();
 // 	dst = cv::Scalar(0);
 // 	for (int i = 0; i < dst.rows; i++)

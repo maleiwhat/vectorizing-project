@@ -149,17 +149,16 @@ void ImageSpline::SmoothingFragments()
 			if (cps.size() < 4) { continue; }
 
 			newcps.push_back(cps.front());
+			newcps.push_back(*(cps.begin()+1));
 
-			for (int j = 1; j < cps.size() - 1; j ++)
+			for (int j = 2; j < cps.size() - 2; j ++)
 			{
-				Vector2 vec = (cps[j] * 1 + cps[j + 1] * 0.5 + cps[j - 1] * 0.5) / 2.0f;
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
 				newcps.push_back(vec);
 			}
 
-			if (cps.back() != newcps.back())
-			{
-				newcps.push_back(cps.back());
-			}
+			newcps.push_back(*(cps.end()-2));
+			newcps.push_back(cps.back());
 
 			cps = newcps;
 		}

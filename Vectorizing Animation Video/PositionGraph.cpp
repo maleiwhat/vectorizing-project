@@ -125,6 +125,7 @@ bool PositionGraph::AddNewLine(const Vector2& p1, const Vector2& p2, double widt
 		for (auto i = 0; i < m_LiveNodes.size(); ++i)
 		{
 			auto it = m_LiveNodes[i];
+
 			if (it->m_Position == p1 && it->m_Links.front()->m_Position != p2)
 			{
 				for (auto it2 = m_LiveNodes.begin(); it2 != m_LiveNodes.end(); ++it2)
@@ -136,13 +137,13 @@ bool PositionGraph::AddNewLine(const Vector2& p1, const Vector2& p2, double widt
 						return true;
 					}
 				}
+
 				PositionGraph_Node n2;
 				n2.m_Position = p2;
 				n2.m_Width = width;
 				n2.m_Links.push_back(it);
 				AddNode(n2);
 				it->m_Links.push_back(m_AllNodeptrs.back());
-				
 				return true;
 			}
 			else if (it->m_Position == p2 && it->m_Links.front()->m_Position != p1)
@@ -156,6 +157,7 @@ bool PositionGraph::AddNewLine(const Vector2& p1, const Vector2& p2, double widt
 						return true;
 					}
 				}
+
 				PositionGraph_Node n1;
 				n1.m_Position = p1;
 				n1.m_Width = width;
@@ -192,9 +194,10 @@ void PositionGraph::AddNode(const PositionGraph_Node& pgn)
 void PositionGraph::ComputeJoints()
 {
 	m_Joints.clear();
+
 	for (auto it = m_LiveNodes.begin(); it != m_LiveNodes.end(); ++it)
 	{
-		if ((**it).m_Links.size() > 2)
+		if ((**it).m_Links.size() > 2 || (**it).m_Links.size() == 1)
 		{
 			m_Joints.push_back(*it);
 		}
@@ -202,6 +205,104 @@ void PositionGraph::ComputeJoints()
 }
 
 void PositionGraph::MakeGraphLines()
+{
+	InterMakeGraphLines();
+	bool all_is_ok = false;
+	for (;!all_is_ok;)
+	{
+		all_is_ok = true;
+		for (auto it = m_LiveNodes.begin(); it != m_LiveNodes.end(); ++it)
+		{
+			if ((**it).m_line_id == PositionGraph_NOT_INIT)
+			{
+				all_is_ok = false;
+				m_Joints.clear();
+				m_Joints.push_back(*it);
+				InterMakeGraphLines();
+			}
+		}
+	}
+	for (int count = 0; count < 4; count++)
+	{
+		for (int i = 0; i < m_LinesWidth.size(); ++i)
+		{
+			double_vector& cps = m_LinesWidth[i];
+			double_vector newcps;
+
+			if (cps.size() < 4) { continue; }
+
+			newcps.push_back(*(cps.begin()+2));
+			newcps.push_back(*(cps.begin()+2));
+
+			for (int j = 2; j < cps.size() - 2; j ++)
+			{
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
+				newcps.push_back(vec);
+			}
+
+			newcps.push_back(*(cps.end()-3));
+			newcps.push_back(*(cps.end()-3));
+
+			cps = newcps;
+		}
+	}
+	for (int count = 0; count < 4; count++)
+	{
+		for (int i = 0; i < m_LinesWidth.size(); ++i)
+		{
+			double_vector& cps = m_LinesWidth[i];
+			double_vector newcps;
+
+			if (cps.size() < 4) { continue; }
+
+			newcps.push_back(*(cps.begin()+2));
+			newcps.push_back(*(cps.begin()+2));
+
+			for (int j = 2; j < cps.size() - 2; j ++)
+			{
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
+				newcps.push_back(vec);
+			}
+
+			newcps.push_back(*(cps.end()-3));
+			newcps.push_back(*(cps.end()-3));
+
+			cps = newcps;
+		}
+	}
+	for (int count = 0; count < 4; count++)
+	{
+		for (int i = 0; i < m_LinesWidth.size(); ++i)
+		{
+			Line& cps = m_Lines[i];
+			Line newcps;
+
+			if (cps.size() < 4) { continue; }
+
+			newcps.push_back(cps.front());
+			newcps.push_back(*(cps.begin()+1));
+
+			for (int j = 2; j < cps.size() - 2; j ++)
+			{
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
+				newcps.push_back(vec);
+			}
+
+			newcps.push_back(*(cps.end()-2));
+			newcps.push_back(cps.back());
+
+			cps = newcps;
+		}
+	}
+}
+
+void PositionGraph::CheckSize(int s)
+{
+	m_AllNodeptrs.reserve(s);
+	m_LiveNodes.reserve(s);
+}
+
+void PositionGraph::InterMakeGraphLines()
 {
 	const int PositionGraph_JOINT_ID = -99;
 	int now_id = 0;
@@ -215,10 +316,6 @@ void PositionGraph::MakeGraphLines()
 	{
 		for (auto it2 = (**it).m_Links.begin(); it2 != (**it).m_Links.end(); ++it2)
 		{
-			double_vector now_width;
-			Line now_line;
-			now_line.push_back((**it).m_Position);
-			now_width.push_back((**it).m_Width);
 			auto last_it3 = *it;
 			auto it3 = *it2;
 
@@ -228,15 +325,22 @@ void PositionGraph::MakeGraphLines()
 				continue;
 			}
 
+			double_vector now_width;
+			Line now_line;
+			now_line.push_back((**it).m_Position);
+			now_width.push_back((**it).m_Width);
+
 			for (;;)
 			{
 				now_line.push_back(it3->m_Position);
 				now_width.push_back(it3->m_Width);
+
 				if (it3->m_line_id == PositionGraph_JOINT_ID)
 				{
 					break;
 				}
-				// set walked 
+
+				// set walked
 				if (it3->m_line_id == PositionGraph_NOT_INIT)
 				{
 					it3->m_line_id = now_id;
@@ -250,8 +354,10 @@ void PositionGraph::MakeGraphLines()
 				{
 					break;
 				}
+
 				bool has_next = false;
 				assert(it3->m_Links.size() == 2);
+
 				for (auto it4 = it3->m_Links.begin(); it4 != it3->m_Links.end(); ++it4)
 				{
 					if ((**it4).m_line_id == PositionGraph_NOT_INIT || ((**it4).m_line_id == PositionGraph_JOINT_ID && *it4 != last_it3))
@@ -262,6 +368,7 @@ void PositionGraph::MakeGraphLines()
 						break;
 					}
 				}
+
 				assert(has_next);
 			}
 
@@ -272,10 +379,4 @@ void PositionGraph::MakeGraphLines()
 			}
 		}
 	}
-}
-
-void PositionGraph::CheckSize( int s )
-{
-	m_AllNodeptrs.reserve(s);
-	m_LiveNodes.reserve(s);
 }

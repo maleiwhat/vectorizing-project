@@ -38,9 +38,9 @@ struct GS_OUT
 VS_OUT VS(VS_IN vIn)
 {
 	VS_OUT vOut;
-	vOut.p1 = (vIn.p1/float2(width,height)*scale)*2-1;
-	vOut.p2 = (vIn.p2/float2(width,height)*scale)*2-1;
-	vOut.p3 = (vIn.p3/float2(width,height)*scale)*2-1;
+	vOut.p1 = (vIn.p1/float2(width,height)*scale)*2-1+float3(centerX/width,-centerY/height, 0)*scale;
+	vOut.p2 = (vIn.p2/float2(width,height)*scale)*2-1+float3(centerX/width,-centerY/height, 0)*scale;
+	vOut.p3 = (vIn.p3/float2(width,height)*scale)*2-1+float3(centerX/width,-centerY/height, 0)*scale;
 	vOut.p1.x += centerX/width*2;
 	vOut.p1.y -= centerY/height*2;
 	vOut.p2.x += centerX/width*2;

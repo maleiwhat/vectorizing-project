@@ -721,6 +721,7 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 			float& wmax = MaxCapacity.at<float>(y, x);
 			std::sort(ary.begin(), ary.end(), LightCompare);
 			wmax = GetLight(ary.back().c) - GetLight(src.at<cv::Vec3f>(y, x));
+			
 		}
 	}
 
@@ -732,7 +733,7 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 			cv::Vec3f& v = src.at<cv::Vec3f>(y, x);
 			float& w = WaterMap.at<float>(y, x);
 			float& wmax = MaxCapacity.at<float>(y, x);
-			w = wmax*0.5;
+			w = wmax*3;
 			r = w + GetLight(v);
 		}
 	}
@@ -741,7 +742,7 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 	floatptrs aryf(rectw * recth);
 	floatptrs aryr(rectw * recth);
 
-	for (int count = 0; count < 1; ++count)
+	for (int count = 0; count < 1000; ++count)
 	{
 // 		if (count % 3 == 0)
 // 		{
@@ -764,14 +765,14 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 // 			}
 // 		}
 		tmp = WaterMap.clone();
-		for (int y = 0; y < tmp.rows; ++y)
-		{
-			for (int x = 0; x < tmp.cols; ++x)
-			{
-				float& w = tmp.at<float>(y, x);
-				w = 0.5-w;
-			}
-		}
+// 		for (int y = 0; y < tmp.rows; ++y)
+// 		{
+// 			for (int x = 0; x < tmp.cols; ++x)
+// 			{
+// 				float& w = tmp.at<float>(y, x);
+// 				w = 0.5-w;
+// 			}
+// 		}
 		imshow("MaxCapacity", MaxCapacity);
 		imshow("WaterMap", tmp);
 		imshow("RealMap", RealMap);
@@ -779,15 +780,15 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 		int start1 = 0, step1 = 1, end1 = src.rows;
 		int start2 = 0, step2 = 1, end2 = src.cols;
 
-// 		if (count % 2 == 1)
-// 		{
-// 			start1 = src.rows - 1;
-// 			step1 = -1;
-// 			end1 = -1;
-// 			start2 = src.cols - 1;
-// 			step2 = -1;
-// 			end2 = -1;
-// 		}
+		if (count % 2 == 1)
+		{
+			start1 = src.rows - 1;
+			step1 = -1;
+			end1 = -1;
+			start2 = src.cols - 1;
+			step2 = -1;
+			end2 = -1;
+		}
 
 		for (int y = start1; y != end1; y += step1)
 		{
@@ -797,32 +798,42 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 				float& w = WaterMap.at<float>(y, x);
 				float& r = RealMap.at<float>(y, x);
 
-				if (w == 0) { continue; }
+				if (w == 0 ) { continue; }
 
 				GetMatrixf(rectw, recth, aryr, x, y, RealMap);
 				std::sort(aryr.begin(), aryr.end(), LightComparef);
 
+				int_vector can_add;
 				for (int i = 0; i < 9; ++i)
 				{
+					if (r > aryr[i].value())
+					{
+						can_add.push_back(i);
+					}
+				}
+				float ww = w / can_add.size();
+				for (auto it = can_add.begin();it!= can_add.end();++it)
+				{
+					int i = *it;
 					if (r > aryr[i].value())
 					{
 						float wmax2 = MaxCapacity.at<float>(aryr[i].y, aryr[i].x);
 						float maxadd = wmax2 - aryr[i].value();
 						if (maxadd > 0)
 						{
-							if (maxadd >= w)
+							if (maxadd >= ww)
 							{
 								float& w2 = WaterMap.at<float>(aryr[i].y, aryr[i].x);
-								w2 += w;
+								w2 += ww;
 								float& r2 = RealMap.at<float>(aryr[i].y, aryr[i].x);
-								r2 += w;
-								r  -= w;
-								w   = 0;
+								r2 += ww;
+								r  -= ww;
+								w  -= ww;
 								break;
 							}
 							else
 							{
-								float add = w - maxadd;
+								float add = ww - maxadd;
 								float& w2 = WaterMap.at<float>(aryr[i].y, aryr[i].x);
 								w2 += add;
 								float& r2 = RealMap.at<float>(aryr[i].y, aryr[i].x);
@@ -847,11 +858,8 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 							}
 						}
 					}
-					else
-					{
-						break;
-					}
 				}
+				
 			}
 		}
 	}
@@ -970,94 +978,11 @@ void Demo(const Mat& img1u)
 	namedWindow("Curv1", 0);
 	imshow("Curv1", show3u);
 	waitKey(0);
-// 	Mat srcImg1f2, show3u2 = Mat::zeros(img1u.size(), CV_8UC3)
-// 		, show3u3 = Mat::zeros(img1u.size()*2, CV_8UC3);
-// 	//img1u.convertTo(srcImg1f2, CV_32FC1, 1.0 / 255);
-// 	srcImg1f2 = img1u.clone();
-// 	CmCurveEx dEdge2(srcImg1f2);
-//  	dEdge2.CalSecDer(5);
-// 	dEdge2.Link();
-// 	const vector<CmEdge>& edges2 = dEdge2.GetEdges();
-// 	widths theWidths;
-// 	Weights wm = wm_init;
-//
-// 	for (size_t i = 0; i < edges2.size(); i++)
-// 	{
-// 		theWidths.push_back(floats());
-// 		floats& now = theWidths.back();
-// 		Vec3b color(rand() % 155 + 100, rand() % 155 + 100, rand() % 155 + 100);
-// 		const vector<Point>& pnts = edges2[i].pnts;
-//
-// 		for (size_t j = 0; j < pnts.size() - 1; j++)
-// 		{
-// 			show3u2.at<Vec3b>(pnts[j]) = color;
-// 			//////////////////////////////////////////////////////////////////////////
-// 			Vector2 v(pnts[j].x, pnts[j].y);
-// 			Vector2 v2(pnts[j + 1].x, pnts[j + 1].y);
-// 			Vector2 dir = (v2 - v);
-// 			dir.normalise();
-// 			Vector2 right = Quaternion::GetRotation(dir, 90);
-// 			Vector2 left = -right;
-// 			float maxlen = 2;
-//
-// 			for (int i = 6; i <= 10; i++)
-// 			{
-// 				int x;
-// 				int y;
-//
-// 				if (i % 2 == 0)
-// 				{
-// 					x = v.x + left.x;
-// 					y = v.y + left.y;
-// 				}
-// 				else
-// 				{
-// 					x = v.x + right.x;
-// 					y = v.y + right.y;
-// 					right.normalise();
-// 					left.normalise();
-// 					right *= i / 2;
-// 					left *= i / 2;
-// 				}
-//
-// 				if (y < 0) { y = 0; }
-//
-// 				if (y >= show3u2.rows) { y = show3u2.rows - 1; }
-//
-// 				if (x < 0) { x = 0; }
-//
-// 				if (x >= show3u2.cols) { x = show3u2.cols - 1; }
-//
-// 				float& intensity = srcImg1f2.at<float>(y, x);
-//
-// 				if (intensity < 30/255.0)
-// 				{
-// 					maxlen = i / 2;
-// 				}
-// 			}
-//
-// 			now.push_back(maxlen / 2);
-//
-// 			//////////////////////////////////////////////////////////////////////////
-// 			if (j < pnts.size() - 1)
-// 			{
-// 				line(show3u3, pnts[j]*2, pnts[j + 1]*2, cv::Scalar(color), maxlen, 8, 0);
-// 			}
-// 		}
-// 	}
-//
-// 	imshow("Derivativs", dEdge2.GetDer());
-// 	imshow("Image", img1u);
-// 	namedWindow("Curv", 0);
-// 	imshow("Curv", show3u2);
-// 	namedWindow("Curv2", 0);
-// 	imshow("Curv2", show3u3);
-// 	waitKey(0);
 }
 
 int main(int argc, char* argv[])
 {
-	cv::Mat cImg = cv::imread("data\\seed.png"), cImg2;
+	cv::Mat cImg = cv::imread("data\\Cartoon1.png"), cImg2;
 	//CmCurveEx::Demo( cImg, 1 );
 	//cv::namedWindow("cImg", 0);
 	cImg.convertTo(cImg, CV_32FC3, 1.0 / 255);
