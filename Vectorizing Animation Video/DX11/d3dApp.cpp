@@ -950,17 +950,35 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		Line& now_line = lines[i];
-
-		if (now_line.size() < 3)
-		{
-			continue;
-		}
-
 		double_vector& now_linewidth = linewidths[i];
 		float r, g, b;
 		r = (rand() % 155 + 100) / 255.0f;
 		g = (rand() % 155 + 100) / 255.0f;
 		b = (rand() % 155 + 100) / 255.0f;
+
+		if (now_line.size() < 3)
+		{
+			if (now_line.size() == 2)
+			{
+				LineVertex lv;
+				lv.color.x = r;
+				lv.color.y = g;
+				lv.color.z = b;
+				lv.p1.x = now_line[0].x;
+				lv.p1.y = m_PicH - now_line[0].y;
+				lv.p2.x = now_line[0].x;
+				lv.p2.y = m_PicH - now_line[0].y;
+				lv.p3.x = now_line[1].x;
+				lv.p3.y = m_PicH - now_line[1].y;
+				lv.p4.x = now_line[1].x;
+				lv.p4.y = m_PicH - now_line[1].y;
+				lv.width.x = now_linewidth[0];
+				lv.width.y = now_linewidth[1];
+				m_LinesVertices.push_back(lv);
+			}
+			continue;
+		}
+
 		LineVertex lv;
 		lv.color.x = r;
 		lv.color.y = g;
@@ -986,7 +1004,7 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 		slv.p2.x = now_line[1].x;
 		slv.p2.y = m_PicH - now_line[1].y;
 		m_SkeletonLinesVertices.push_back(slv);
-
+		
 		for (int j = 1; j < now_line.size() - 2; ++j)
 		{
 			lv.p1.x = now_line[j - 1].x;
@@ -1007,7 +1025,6 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 			slv.p2.y = m_PicH - now_line[j+1].y;
 			m_SkeletonLinesVertices.push_back(slv);
 		}
-
 		lv.p1.x = now_line[now_line.size() - 3].x;
 		lv.p1.y = m_PicH - now_line[now_line.size() - 3].y;
 		lv.p2.x = now_line[now_line.size() - 2].x;

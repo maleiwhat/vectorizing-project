@@ -108,7 +108,7 @@ void TriangulationCgal_Patch::Compute()
 			// detect line
 			if (constrained == 2)
 			{
-				LinesWidth.insert(LinesWidth.end(), widths.begin(), widths.end());
+				LinesWidth.push_back((widths[0] + widths[1]) * 0.5);
 				lineSegs.push_back(LineSeg(pts[0], pts[1]));
 				m_LineSegs.push_back(LineSeg(pts[0], pts[1]));
 			}
@@ -130,7 +130,7 @@ void TriangulationCgal_Patch::Compute()
 // 	for (auto e = m_Triangulation.finite_edges_begin(); e != m_Triangulation.finite_edges_end(); ++e)
 // 	{
 // 		Triangulation::Face_handle fn = e->first->neighbor(e->second);
-// 
+//
 // 		//CGAL::Object o = m_Delaunay.dual(e);
 // 		if (fn->is_in_domain() && fn->info().in_domain() && fn->info().in_domain() && fn->info().nesting_level != TRIANGLE_TRANSPARENT)
 // 		{
@@ -141,12 +141,12 @@ void TriangulationCgal_Patch::Compute()
 // 				const K::Segment_2* seg = &s;
 // 				Vector2 pp1(seg->source().hx(), seg->source().hy());
 // 				Vector2 pp2(seg->target().hx(), seg->target().hy());
-// 
+//
 // 				if (pp1 == pp2)
 // 				{
 // 					continue;
 // 				}
-// 
+//
 // 				Vector2 e1(e->first->vertex(m_Triangulation.ccw(e->second))->point().hx(), e->first->vertex(m_Triangulation.ccw(e->second))->point().hy());
 // 				Vector2 e2(e->first->vertex(m_Triangulation.cw(e->second))->point().hx(), e->first->vertex(m_Triangulation.cw(e->second))->point().hy());
 // 				LinesWidth.push_back(e1.distance(e2));
@@ -156,7 +156,6 @@ void TriangulationCgal_Patch::Compute()
 // 			}
 // 		}
 // 	}
-
 	int i = 0;
 
 	for (auto it = lineSegs.begin(); it != lineSegs.end(); ++it, ++i)

@@ -33,6 +33,7 @@ public:
 	vavImage	m_cannyImage;
 	int		m_PatchTransparency;
 	int		m_SelectPatchTransparency;
+	int		m_BlackRegionThreshold;
 	int		m_LineTransparency;
 	int		m_PictureTransparency;
 	CvPatchs	m_CvPatchs;
@@ -100,6 +101,8 @@ public:
 	afx_msg void OnUpdateSpinTransparencyline(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateSpinTransparencypicture(CCmdUI *pCmdUI);
 	afx_msg void OnSpinTransparencypicture();
+	afx_msg void OnSpinBlackregionthreshold();
+	afx_msg void OnUpdateSpinBlackregionthreshold(CCmdUI *pCmdUI);
 };
 
 

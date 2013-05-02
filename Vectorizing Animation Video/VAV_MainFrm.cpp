@@ -63,6 +63,8 @@ BEGIN_MESSAGE_MAP(VAV_MainFrame, CFrameWndEx)
 	ON_UPDATE_COMMAND_UI(ID_SPIN_TransparencyLine, &VAV_MainFrame::OnUpdateSpinTransparencyline)
 	ON_UPDATE_COMMAND_UI(ID_SPIN_TransparencyPicture, &VAV_MainFrame::OnUpdateSpinTransparencypicture)
 	ON_COMMAND(ID_SPIN_TransparencyPicture, &VAV_MainFrame::OnSpinTransparencypicture)
+	ON_COMMAND(ID_SPIN_BlackRegionThreshold, &VAV_MainFrame::OnSpinBlackregionthreshold)
+	ON_UPDATE_COMMAND_UI(ID_SPIN_BlackRegionThreshold, &VAV_MainFrame::OnUpdateSpinBlackregionthreshold)
 END_MESSAGE_MAP()
 
 // VAV_MainFrame 建構/解構
@@ -507,7 +509,7 @@ void VAV_MainFrame::OnButtonCanny()
 	{
 		a = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
 	}
-
+	
 //	m_cannyImage = m_vavImage;
 	//cv::Mat ce = CannyEdge(m_vavImage, t1, t2, a);
 	//Lines lines1 = ComputeEdgeLine(ce);
@@ -521,7 +523,7 @@ void VAV_MainFrame::OnButtonCanny()
 	cv::Mat cw, cw2;
 	cw2 = m_cannyImage;
 	cw2.convertTo(cw, CV_32FC3);
-	Collect_Water(cw, cw, 5, 5);
+	Collect_Water(cw, cw, 5, 5, m_BlackRegionThreshold * 0.01);
 	m_cannyImage = cw;
 	((VAV_View*)this->GetActiveView())->SetTexture(m_cannyImage.GetDx11Texture());
 }
@@ -553,35 +555,31 @@ void VAV_MainFrame::OnButtonControlPointInitialize()
 void VAV_MainFrame::OnButtonCGALTriangulation()
 {
 	// TODO: 在此加入您的命令處理常式程式碼
-	TriangulationCgal_Sideline tcgal;
+	
 	//Lines lines1 = m_vavImage.AnimaEdge(5, 0.01, 0.1);
 	//Lines lines = ComputeTrappedBallEdge(m_vavImage, lines1, 5);
 	//cv::Mat lineImage = MakeLineImage(m_vavImage, lines);
 	//m_CvPatchs = S1GetPatchs(lineImage, 1, 10);
 	//m_CvPatchs = S2GetPatchs(m_vavImage, 0, 0);
-	//ImageSpline is = S3GetPatchs(m_vavImage, 0, 0);
-	
-	ImageSpline is2 = ComputeLines(m_vavImage);
-	
+	ImageSpline is = S3GetPatchs(m_vavImage, 0, 0);
+	ImageSpline is2 = ComputeLines(m_vavImage, m_BlackRegionThreshold * 0.01);
 // 	((VAV_View*)this->GetActiveView())->
 // 		m_D3DApp.AddLines(line, linewidths, m_vavImage.GetHeight());
 	TriangulationCgal_Patch cgal_patch, cgal_contour;
-	VoronoiCgal_Patch cgal_voronoi;
-//	cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-//	cgal_patch.AddImageSpline(is);
+	cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+	cgal_patch.AddImageSpline(is);
 	cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
 	cgal_contour.AddImageSpline(is2);
-	cgal_voronoi.AddImageSpline(is2);
 
-// 	for (int i = 0; i < is.m_CvPatchs.size(); ++i)
-// 	{
-// 		is.m_CvPatchs[i].SetImage(m_vavImage);
-// 		ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint();
-// 		//ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
-// 		cgal_patch.AddColorConstraint(constraint_sptr);
-// 	}
-// 	cgal_patch.SetCriteria(0.001, 4000);
-// 	cgal_patch.Compute();
+	for (int i = 0; i < is.m_CvPatchs.size(); ++i)
+	{
+		is.m_CvPatchs[i].SetImage(m_vavImage);
+		ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint();
+		//ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
+		cgal_patch.AddColorConstraint(constraint_sptr);
+	}
+	cgal_patch.SetCriteria(0.001, 4000);
+	cgal_patch.Compute();
 	for (int i = 0; i < is2.m_CvPatchs.size(); ++i)
 	{
 		ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
@@ -594,10 +592,10 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	cgal_contour.SetCriteria(0.001, 4000);
 	cgal_contour.Compute();
 	//cgal_voronoi.Compute();
-// 	((VAV_View*)this->GetActiveView())->
-// 		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
-// 	((VAV_View*)this->GetActiveView())->
-// 		m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
+ 	((VAV_View*)this->GetActiveView())->
+ 		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
+ 	((VAV_View*)this->GetActiveView())->
+ 		m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
 	((VAV_View*)this->GetActiveView())->
 	m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles());
 	((VAV_View*)this->GetActiveView())->
@@ -650,7 +648,8 @@ void VAV_MainFrame::OnButtonSkeleton()
 	// TODO: 在此加入您的命令處理常式程式碼
 	m_cannyImage = m_vavImage;
 	//Skeleton(m_cannyImage);
- 	cv::Mat cw = m_cannyImage;
+	cv::Mat cw = cv::Mat(m_cannyImage).clone();
+
 	for (int i = 0; i < cw.rows; i++)
 	{
 		for (int j = 0; j < cw.cols; j++)
@@ -661,9 +660,9 @@ void VAV_MainFrame::OnButtonSkeleton()
 			v[2] = 255;
 		}
 	}
-// 	Collect_Water(m_cannyImage, cw, 5, 5);
-// 	m_cannyImage = cw;
- 	((VAV_View*)this->GetActiveView())->SetTexture(m_cannyImage.GetDx11Texture());
+
+	m_cannyImage = cw;
+	((VAV_View*)this->GetActiveView())->SetTexture(m_cannyImage.GetDx11Texture());
 }
 
 
@@ -683,14 +682,7 @@ void VAV_MainFrame::OnButtonLaplace()
 
 void VAV_MainFrame::OnSpinTransparencySelectPatch()
 {
-	CMFCRibbonEdit* re;
-	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencySelectPatch);
-	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
-
-	if (NULL != re)
-	{
-		m_SelectPatchTransparency = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
-	}
+	
 
 	((VAV_View*)this->GetActiveView())->m_D3DApp.SetSelectPatchTransparency((100 - m_SelectPatchTransparency) * 0.01);
 }
@@ -764,7 +756,7 @@ void VAV_MainFrame::OnUpdateSpinTransparencyPatch(CCmdUI* pCmdUI)
 void VAV_MainFrame::OnSpinTransparencyline()
 {
 	CMFCRibbonEdit* re;
-	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyLine);
+	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyTriangleLine);
 	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
 
 	if (NULL != re)
@@ -778,7 +770,7 @@ void VAV_MainFrame::OnSpinTransparencyline()
 void VAV_MainFrame::OnUpdateSpinTransparencyline(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
-	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyLine);
+	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyTriangleLine);
 	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
 
 	if (NULL != re)
@@ -817,4 +809,30 @@ void VAV_MainFrame::OnSpinTransparencypicture()
 	}
 
 	((VAV_View*)this->GetActiveView())->m_D3DApp.SetPictureTransparency((100 - m_PictureTransparency) * 0.01);
+}
+
+
+void VAV_MainFrame::OnSpinBlackregionthreshold()
+{
+	CMFCRibbonEdit* re;
+	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_BlackRegionThreshold);
+	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
+
+	if (NULL != re)
+	{
+		m_BlackRegionThreshold = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
+	}
+}
+
+
+void VAV_MainFrame::OnUpdateSpinBlackregionthreshold(CCmdUI *pCmdUI)
+{
+	CMFCRibbonEdit* re;
+	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_BlackRegionThreshold);
+	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
+
+	if (NULL != re)
+	{
+		m_BlackRegionThreshold = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
+	}
 }

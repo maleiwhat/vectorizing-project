@@ -114,9 +114,11 @@ void PositionGraph::MakeGraphLines()
 {
 	InterMakeGraphLines();
 	bool all_is_ok = false;
-	for (;!all_is_ok;)
+
+	for (; !all_is_ok;)
 	{
 		all_is_ok = true;
+
 		for (auto it = m_LiveNodes.begin(); it != m_LiveNodes.end(); ++it)
 		{
 			if ((**it).m_line_id == PositionGraph_NOT_INIT)
@@ -128,19 +130,19 @@ void PositionGraph::MakeGraphLines()
 			}
 		}
 	}
-	for (int count = 0; count < 4; count++)
+
+	for (int repeatCount = 0; repeatCount < 3; repeatCount++)
 	{
 		for (int i = 0; i < m_LinesWidth.size(); ++i)
 		{
 			double_vector& cps = m_LinesWidth[i];
 			double_vector newcps;
+			newcps.reserve(cps.size());
 
 			if (cps.size() < 4) { continue; }
 
-// 			newcps.push_back(*(cps.begin()+2));
-// 			newcps.push_back(*(cps.begin()+2));
 			newcps.push_back(cps.front());
-			newcps.push_back(*(cps.begin()+1));
+			newcps.push_back(*(cps.begin() + 1));
 
 			for (int j = 2; j < cps.size() - 2; j ++)
 			{
@@ -148,15 +150,13 @@ void PositionGraph::MakeGraphLines()
 				newcps.push_back(vec);
 			}
 
-// 			newcps.push_back(*(cps.end()-3));
-// 			newcps.push_back(*(cps.end()-3));
-			newcps.push_back(*(cps.end()-2));
+			newcps.push_back(*(cps.end() - 2));
 			newcps.push_back(cps.back());
-
 			cps = newcps;
 		}
 	}
-	for (int count = 0; count < 4; count++)
+
+	for (int repeatCount = 0; repeatCount < 3; repeatCount++)
 	{
 		for (int i = 0; i < m_Lines.size(); ++i)
 		{
@@ -166,17 +166,103 @@ void PositionGraph::MakeGraphLines()
 			if (cps.size() < 4) { continue; }
 
 			newcps.push_back(cps.front());
-			newcps.push_back(*(cps.begin()+1));
 
-			for (int j = 2; j < cps.size() - 2; j ++)
+			for (int j = 1; j < cps.size() - 1; j ++)
 			{
-				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1]) / 4.0f;
 				newcps.push_back(vec);
 			}
 
-			newcps.push_back(*(cps.end()-2));
 			newcps.push_back(cps.back());
+			cps = newcps;
+		}
+	}
 
+	for (int i = 0; i < m_LinesWidth.size(); ++i)
+	{
+		double_vector& cps = m_LinesWidth[i];
+
+		if (cps.size() > 2)
+		{
+			double_vector addcps;
+			double front = cps.front();
+			double back = cps.back();
+			addcps.push_back(front * 0.4);
+			addcps.push_back(front * 0.6);
+			addcps.push_back(front * 0.8);
+			addcps.push_back(front * 1);
+			cps.insert(cps.begin(), addcps.begin(), addcps.end());
+			cps.push_back(back * 1);
+			cps.push_back(back * 0.8);
+			cps.push_back(back * 0.6);
+			cps.push_back(back * 0.4);
+		}
+	}
+
+	for (int i = 0; i < m_Lines.size(); ++i)
+	{
+		Line& cps = m_Lines[i];
+
+		if (cps.size() > 2)
+		{
+			Line addcps;
+			Vector2 frontV = (cps[0] - cps[1]) * 0.5;
+			Vector2 backV = (cps[cps.size() - 1] - cps[cps.size() - 2]) * 0.5;
+			Vector2 front = cps.front();
+			Vector2 back = cps.back();
+			addcps.push_back(front + frontV * 4);
+			addcps.push_back(front + frontV * 3);
+			addcps.push_back(front + frontV * 2);
+			addcps.push_back(front + frontV * 1);
+			cps.insert(cps.begin(), addcps.begin(), addcps.end());
+			cps.push_back(back + backV * 1);
+			cps.push_back(back + backV * 2);
+			cps.push_back(back + backV * 3);
+			cps.push_back(back + backV * 4);
+		}
+	}
+
+	for (int repeatCount = 0; repeatCount < 3; repeatCount++)
+	{
+		for (int i = 0; i < m_LinesWidth.size(); ++i)
+		{
+			double_vector& cps = m_LinesWidth[i];
+			double_vector newcps;
+			newcps.reserve(cps.size());
+
+			if (cps.size() < 4) { continue; }
+
+			newcps.push_back(cps.front());
+
+			for (int j = 1; j < cps.size() - 1; j ++)
+			{
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1]) / 4.0f;
+				newcps.push_back(vec);
+			}
+
+			newcps.push_back(cps.back());
+			cps = newcps;
+		}
+	}
+
+	for (int repeatCount = 0; repeatCount < 3; repeatCount++)
+	{
+		for (int i = 0; i < m_Lines.size(); ++i)
+		{
+			Line& cps = m_Lines[i];
+			Line newcps;
+
+			if (cps.size() < 4) { continue; }
+
+			newcps.push_back(cps.front());
+
+			for (int j = 1; j < cps.size() - 1; j ++)
+			{
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1]) / 4.0f;
+				newcps.push_back(vec);
+			}
+
+			newcps.push_back(cps.back());
 			cps = newcps;
 		}
 	}
