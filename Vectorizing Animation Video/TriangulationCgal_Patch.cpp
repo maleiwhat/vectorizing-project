@@ -43,9 +43,9 @@ void TriangulationCgal_Patch::Compute()
 	}
 
 	Mesher mesher(m_Triangulation);
-	Criteria	criteria(0, 4000);
-	mesher.set_criteria(criteria);
-	mesher.refine_mesh();
+	mesher.set_criteria(m_Criteria);
+	//mesher.refine_mesh();
+	mesher.mark_facets();
 	mark_domains(m_Triangulation);
 	m_Triangles.clear();
 	Triangle t;
@@ -127,35 +127,6 @@ void TriangulationCgal_Patch::Compute()
 		}
 	}
 
-// 	for (auto e = m_Triangulation.finite_edges_begin(); e != m_Triangulation.finite_edges_end(); ++e)
-// 	{
-// 		Triangulation::Face_handle fn = e->first->neighbor(e->second);
-//
-// 		//CGAL::Object o = m_Delaunay.dual(e);
-// 		if (fn->is_in_domain() && fn->info().in_domain() && fn->info().in_domain() && fn->info().nesting_level != TRIANGLE_TRANSPARENT)
-// 		{
-// 			if (!m_Triangulation.is_constrained(*e)) //&& (!m_Triangulation.is_infinite(e->first)) && (!m_Triangulation.is_infinite(e->first->neighbor(e->second))))
-// 			{
-// 				Triangulation::Segment s = m_Triangulation.geom_traits().construct_segment_2_object()
-// 				                           (m_Triangulation.circumcenter(e->first), m_Triangulation.circumcenter(e->first->neighbor(e->second)));
-// 				const K::Segment_2* seg = &s;
-// 				Vector2 pp1(seg->source().hx(), seg->source().hy());
-// 				Vector2 pp2(seg->target().hx(), seg->target().hy());
-//
-// 				if (pp1 == pp2)
-// 				{
-// 					continue;
-// 				}
-//
-// 				Vector2 e1(e->first->vertex(m_Triangulation.ccw(e->second))->point().hx(), e->first->vertex(m_Triangulation.ccw(e->second))->point().hy());
-// 				Vector2 e2(e->first->vertex(m_Triangulation.cw(e->second))->point().hx(), e->first->vertex(m_Triangulation.cw(e->second))->point().hy());
-// 				LinesWidth.push_back(e1.distance(e2));
-// 				lineSegs.push_back(LineSeg(pp1, pp2));
-// 				m_LineSegs.push_back(LineSeg(pp1, pp2));
-// 				m_LineSegs.push_back(LineSeg(e1, e2));
-// 			}
-// 		}
-// 	}
 	int i = 0;
 
 	for (auto it = lineSegs.begin(); it != lineSegs.end(); ++it, ++i)
@@ -265,7 +236,12 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 					if (vh->info().nesting_level == -1 || vh->info().nesting_level == idx)
 					{
 						vh->info().nesting_level = idx;
-						m_Triangulation.insert_constraint(v_prev, vh);
+
+						if (abs(last.hx() - now.hx()) < 5 && abs(last.hy() - now.hy()) < 5)
+						{
+							m_Triangulation.insert_constraint(v_prev, vh);
+						}
+
 						v_prev = vh;
 						last = now;
 					}
@@ -286,7 +262,12 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 					if (vh->info().nesting_level == -1 || vh->info().nesting_level == idx)
 					{
 						vh->info().nesting_level = idx;
-						m_Triangulation.insert_constraint(v_prev, vh);
+
+						if (abs(last.hx() - now.hx()) < 5 && abs(last.hy() - now.hy()) < 5)
+						{
+							m_Triangulation.insert_constraint(v_prev, vh);
+						}
+
 						v_prev = vh;
 						last = now;
 					}
@@ -329,12 +310,6 @@ void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt, ImageSpli
 	for (auto it = ps.m_LineIndexs.begin(); it != ps.m_LineIndexs.end(); ++it)
 	{
 		Line pts = is.m_LineFragments[it->m_id].m_Points;
-
-// 		for (int j = 1; j < pts.size(); ++j)
-// 		{
-// 			Vector2 right = Quaternion::GetRotation(pts[j] - pts[j - 1], 90);
-// 			m_LineSegs.push_back(LineSeg(pts[j], pts[j] + right*3));
-// 		}
 		if (it->m_Forward)
 		{
 			for (auto it2 = pts.begin(); it2 != pts.end(); ++it2)
@@ -348,7 +323,12 @@ void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt, ImageSpli
 					if (vh->info().nesting_level == -1 || vh->info().nesting_level == NESTING_LEVEL)
 					{
 						vh->info().nesting_level = NESTING_LEVEL;
-						m_Triangulation.insert_constraint(v_prev, vh);
+
+						if (abs(last.hx() - now.hx()) < 5 && abs(last.hy() - now.hy()) < 5)
+						{
+							m_Triangulation.insert_constraint(v_prev, vh);
+						}
+
 						v_prev = vh;
 						last = now;
 					}
@@ -368,7 +348,12 @@ void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt, ImageSpli
 					if (vh->info().nesting_level == -1 || vh->info().nesting_level == NESTING_LEVEL)
 					{
 						vh->info().nesting_level = NESTING_LEVEL;
-						m_Triangulation.insert_constraint(v_prev, vh);
+
+						if (abs(last.hx() - now.hx()) < 5 && abs(last.hy() - now.hy()) < 5)
+						{
+							m_Triangulation.insert_constraint(v_prev, vh);
+						}
+
 						v_prev = vh;
 						last = now;
 					}

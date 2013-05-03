@@ -1718,7 +1718,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	CmCurveEx dEdge(srcImg1f);
 	dEdge.CalSecDer(3, 0.01f, 0.2f);
 	cv::Mat Der2 = dEdge.GetDer2();
-	//Dilation(Der2, 1, 1);
+	Dilation(Der2, 1, 1);
 	cv::Mat mask, image, joint_mask, tmp_image, joint_image;
 	image0.copyTo(image);
 	joint_mask.create(image.rows * 2 + 1, image.cols * 2 + 1, CV_8UC1);
@@ -1754,10 +1754,10 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 
 	//imshow("Image2", image);
 	FixHole(image);
-	//imshow("Image", image);
+	imshow("Image", image);
 	//cv::waitKey();
 	mask = cv::Scalar::all(0);
-	Der2 = cv::Scalar::all(0);
+	//Der2 = cv::Scalar::all(0);
 	int cc = 1;
 
 	for (int i = 1; i < image.rows - 1; i++)
@@ -1767,7 +1767,8 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			S2FloodFill(cc, image, mask, Der2, 0, j, i, cvps, dilation, erosion);
 		}
 	}
-
+	imshow("Der2", Der2);
+	//cv::waitKey();
 	// create bigger image to fix border problem
 	tmp_image = cv::Scalar::all(0);
 
@@ -1783,7 +1784,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
 	gap_image = cv::Scalar(0);
 	cv::imwrite("Color Region.png", image);
-	return ImageSpline();
+
 	image = image0.clone();
 	cv::imwrite("Original Picture.png", image);
 	//cv::imshow("Original Picture", image);
@@ -1973,7 +1974,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			it2->y -= 1;
 		}
 
-		for (auto it2 = it->Inter().begin(); it2 != it->Inter().end(); ++it2)
+		for (auto it2 = it->Inter2().begin(); it2 != it->Inter2().end(); ++it2)
 		{
 			for (auto it3 = it2->begin(); it3 != it2->end(); ++it3)
 			{
@@ -1987,7 +1988,6 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	DrawCvPatchs(tmp_cvps, tmp_image2);
 	tmp_image = cv::Scalar::all(0);
 	int count = 1;
-	gap_image = tmp_image.clone();
 
 	for (auto it = lines.begin(); it != lines.end(); ++it)
 	{
@@ -2009,10 +2009,10 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 
 		count++;
 	}
-
+	imshow("tmp_image2", tmp_image2);
+	AddCathetus(lines);
 	ImageSpline  is = GetImageSpline(tmp_cvps, lines, tmp_image);
-	//is.ComputeToLineFragments();
-	//is.ComputeToSplineFragments();
+	is.SmoothingFragments();
 	return is;
 }
 
@@ -2147,7 +2147,7 @@ ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines, cv::Mat lineIma
 		}
 
 		PatchSplines patchInter;
-
+		last_lineidx = -1;
 		for (auto it2 = it->Inter2().begin(); it2 != it->Inter2().end(); ++it2)
 		{
 			if (it2->size() < 4)
@@ -3315,23 +3315,23 @@ void GetSkeletonLine(cv::Mat bmap, Lines& lines, double_vector2d& linewidths)
 ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold)
 {
 	cv::Mat image;
-//  	img.convertTo(image, CV_32FC3);
-//  	Collect_Water(image, image, 5, 5, BlackRegionThreshold);
-	image = img.clone();
-	image = cv::Scalar(0);
-	for (int i = 0; i < image.rows; i++)
-	{
-		for (int j = 0; j < image.cols; j++)
-		{
-			if (img.at<cv::Vec3b>(i, j)[0] < 100)
-			{
-				cv::Vec3b& v = image.at<cv::Vec3b>(i, j);
-				v[0] = 255;
-				v[1] = 255;
-				v[2] = 255;
-			}
-		}
-	}
+ 	img.convertTo(image, CV_32FC3);
+ 	Collect_Water(image, image, 5, 5, BlackRegionThreshold);
+// 	image = img.clone();
+// 	image = cv::Scalar(0);
+// 	for (int i = 0; i < image.rows; i++)
+// 	{
+// 		for (int j = 0; j < image.cols; j++)
+// 		{
+// 			if (img.at<cv::Vec3b>(i, j)[0] < 100)
+// 			{
+// 				cv::Vec3b& v = image.at<cv::Vec3b>(i, j);
+// 				v[0] = 255;
+// 				v[1] = 255;
+// 				v[2] = 255;
+// 			}
+// 		}
+// 	}
 	ImageSpline is = S4GetPatchs(image, 0, 0);
 	return is;
 }
@@ -3593,13 +3593,12 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		count++;
 	}
 
-	imshow("tmp_image2", tmp_image2);
+	//imshow("tmp_image2", tmp_image2);
 	//cv::waitKey();
 	AddCathetus(lines);
 	ImageSpline is = GetImageSpline(tmp_cvps, lines, tmp_image);
 	//is.m_Lines = lines;
 	//is.ComputeToLineFragments();
 	is.SmoothingFragments();
-	imshow("tmp_image2", tmp_image2);
 	return is;
 }
