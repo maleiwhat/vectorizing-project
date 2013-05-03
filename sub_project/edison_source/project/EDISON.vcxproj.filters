@@ -1,0 +1,275 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{c4c7156a-6a8d-46a8-89e4-40c62863c49b}</UniqueIdentifier>
+      <Extensions>*.h</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{6f48cb5e-3309-40e3-9da4-bec215d92ea5}</UniqueIdentifier>
+      <Extensions>*.cpp</Extensions>
+    </Filter>
+    <Filter Include="Bitmaps">
+      <UniqueIdentifier>{081bf961-7fe0-4f22-b961-ae5bfa634067}</UniqueIdentifier>
+      <Extensions>*.bmp</Extensions>
+    </Filter>
+    <Filter Include="Icons">
+      <UniqueIdentifier>{6fb18e24-0fcb-454d-b061-c0531df04e95}</UniqueIdentifier>
+      <Extensions>*.ico</Extensions>
+    </Filter>
+    <Filter Include="Cursors">
+      <UniqueIdentifier>{20877eff-485d-4054-99e5-799e5b4f4c2e}</UniqueIdentifier>
+      <Extensions>*.cur</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\edge\BgDefaults.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\edge\BgEdge.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\edge\BgEdgeDetect.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\edge\BgEdgeList.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\edge\BgImage.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GUI\BgImagPGM.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GUI\BgImagPNM.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GUI\bgimsystem.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\segm\ms.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\segm\msImageProcessor.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\segm\msSys.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\segm\RAList.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\segm\rlist.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\segm\tdef.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\edge\BgEdge.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\edge\BgEdgeDetect.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\edge\BgEdgeList.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\edge\BgGlobalFc.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\edge\BgImage.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GUI\BgImagPGM.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GUI\BgImagPNM.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GUI\bgimsystem.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\segm\ms.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\segm\msImageProcessor.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\segm\msSys.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\segm\RAList.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\segm\rlist.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\GUI\icons\arrow.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\caip_logo.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\copy.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\cross.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\cut.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\down_arrow.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\h.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\help.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\new.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\new_e.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\new_s.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\open.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\p.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\paste.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\print.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\riul_logo.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\rotated_h.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\rotated_p.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\rutgers_logo.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\save.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\zoom_in.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\zoom_out.bmp">
+      <Filter>Bitmaps</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\bgimsystem.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\cdrom.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\chart.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\computer.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\drive.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\error.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\file1.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\floppy.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\folder1.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\folder2.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\info.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="..\GUI\icons\mondrian.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\question.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\removble.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\tip.ico">
+      <Filter>Icons</Filter>
+    </Image>
+    <Image Include="wx\msw\warning.ico">
+      <Filter>Icons</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="edison.rc">
+      <Filter>Cursors</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="wx\msw\blank.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\bullseye.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\hand.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\magnif1.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\noentry.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\pbrush.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\pencil.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\pntleft.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\pntright.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\query.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\rightarr.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\roller.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\size.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wx\msw\watch1.cur">
+      <Filter>Cursors</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>
