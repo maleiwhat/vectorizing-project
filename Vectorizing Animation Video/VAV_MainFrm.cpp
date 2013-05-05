@@ -65,6 +65,10 @@ BEGIN_MESSAGE_MAP(VAV_MainFrame, CFrameWndEx)
 	ON_COMMAND(ID_SPIN_TransparencyPicture, &VAV_MainFrame::OnSpinTransparencypicture)
 	ON_COMMAND(ID_SPIN_BlackRegionThreshold, &VAV_MainFrame::OnSpinBlackregionthreshold)
 	ON_UPDATE_COMMAND_UI(ID_SPIN_BlackRegionThreshold, &VAV_MainFrame::OnUpdateSpinBlackregionthreshold)
+	ON_COMMAND(ID_SPIN_TransparencyTriangleLine, &VAV_MainFrame::OnSpinTransparencytriangleline)
+	ON_UPDATE_COMMAND_UI(ID_SPIN_TransparencyTriangleLine, &VAV_MainFrame::OnUpdateSpinTransparencytriangleline)
+	ON_COMMAND(ID_SPIN_TransparencyLineSkeleton, &VAV_MainFrame::OnSpinTransparencylineskeleton)
+	ON_UPDATE_COMMAND_UI(ID_SPIN_TransparencyLineSkeleton, &VAV_MainFrame::OnUpdateSpinTransparencylineskeleton)
 END_MESSAGE_MAP()
 
 // VAV_MainFrame «Øºc/¸Ñºc
@@ -452,15 +456,15 @@ void VAV_MainFrame::OnFileOpenPicture()
 				}
 
 				((VAV_View*)this->GetActiveView())->m_D3DApp.SetSelectPatchTransparency((100 - m_PatchTransparency) * 0.01);
-				tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyLine);
+				tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyTriangleLine);
 				re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
 
 				if (NULL != re)
 				{
-					m_LineTransparency = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
+					m_TriangleLineTransparency = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
 				}
 
-				((VAV_View*)this->GetActiveView())->m_D3DApp.SetSelectPatchTransparency((100 - m_LineTransparency) * 0.01);
+				((VAV_View*)this->GetActiveView())->m_D3DApp.SetSelectPatchTransparency((100 - m_TriangleLineTransparency) * 0.01);
 				tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyPicture);
 				re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
 
@@ -561,48 +565,96 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	//m_CvPatchs = S1GetPatchs(lineImage, 1, 10);
 	//m_CvPatchs = S2GetPatchs(m_vavImage, 0, 0);
 	ImageSpline is = S3GetPatchs(m_vavImage, 0, 0);
-	ImageSpline is2 = ComputeLines(m_vavImage, m_BlackRegionThreshold * 0.01);
-
-	TriangulationCgal_Patch cgal_contour;
-	cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-	cgal_contour.AddImageSpline(is2);
-	TriangulationCgal_Patch cgal_patch;
-	cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-	cgal_patch.AddImageSpline(is);
+// 	TriangulationCgal_Patch cgal_patch;
+// 	cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+// 	cgal_patch.AddImageSpline(is);
 
 	for (int i = 0; i < is.m_CvPatchs.size(); ++i)
 	{
+		TriangulationCgal_Patch cgal_patch;
+		cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+		Patch t_patch = ToPatch(is.m_CvPatchs[i]);
+		t_patch.SmoothPatch();
+		cgal_patch.AddPatch(t_patch);
 		is.m_CvPatchs[i].SetImage(m_vavImage);
 		ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint();
-		//ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
 		cgal_patch.AddColorConstraint(constraint_sptr);
+		cgal_patch.SetCriteria(0.0, 4000);
+		cgal_patch.Compute();
+		((VAV_View*)this->GetActiveView())->
+			m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
+		((VAV_View*)this->GetActiveView())->
+			m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
 	}
 
-	cgal_patch.SetCriteria(0.0, 4000);
-	cgal_patch.Compute();
-	((VAV_View*)this->GetActiveView())->
-	m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
-	((VAV_View*)this->GetActiveView())->
-	m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
+// 	cgal_patch.SetCriteria(0.0, 4000);
+// 	cgal_patch.Compute();
+// 	((VAV_View*)this->GetActiveView())->
+// 		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
+// 	((VAV_View*)this->GetActiveView())->
+// 		m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
 
-	for (int i = 0; i < is2.m_CvPatchs.size(); ++i)
-	{
-		ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
-		cgal_contour.AddColorConstraint(constraint_sptr);
-	}
-	ColorConstraint_sptr constraint_sptr = ColorConstraint_sptr(new ColorConstraint);
-	constraint_sptr->AddPoint(0, 0, Vector3(255, 0, 0));
-	cgal_contour.AddColorConstraint(constraint_sptr);
-	cgal_contour.SetCriteria(0.001, 4000);
-	cgal_contour.Compute();
-	((VAV_View*)this->GetActiveView())->
-	m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles());
-	((VAV_View*)this->GetActiveView())->
-	m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles());
-	((VAV_View*)this->GetActiveView())->
-	m_D3DApp.AddLineSegs(cgal_contour.m_LineSegs);
-	((VAV_View*)this->GetActiveView())->
-	m_D3DApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth);
+// 	ImageSpline is2 = ComputeLines(m_vavImage, m_BlackRegionThreshold * 0.01);
+// 	TriangulationCgal_Patch cgal_contour;
+// 	cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+// 	cgal_contour.AddImageSpline(is2);
+// 	cgal_contour.SetCriteria(0.001, 4000);
+// 	cgal_contour.Compute();
+// 	Vector3s2d colors = GetLinesColor(m_vavImage, cgal_contour.m_OriginLines);
+// 
+// 	// add begin end line
+// 	for (int i = 0; i < colors.size(); ++i)
+// 	{
+// 		Vector3s& cps = colors[i];
+// 
+// 		if (cps.size() > 2)
+// 		{
+// 			Vector3s addcps;
+// 			Vector3 front = cps.front();
+// 			Vector3 back = cps.back();
+// 			addcps.push_back(front);
+// 			addcps.push_back(front);
+// 			addcps.push_back(front);
+// 			cps.insert(cps.begin(), addcps.begin(), addcps.end());
+// 			cps.push_back(back);
+// 			cps.push_back(back);
+// 			cps.push_back(back);
+// 		}
+// 	}
+// 
+// 	for (int count = 0; count < 4; count++)
+// 	{
+// 		for (int i = 0; i < colors.size(); ++i)
+// 		{
+// 			Vector3s& cps = colors[i];
+// 			Vector3s newcps;
+// 
+// 			if (cps.size() < 4) { continue; }
+// 
+// 			newcps.push_back(cps.front());
+// 			newcps.push_back(*(cps.begin()+1));
+// 
+// 			for (int j = 2; j < cps.size() - 2; j ++)
+// 			{
+// 				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
+// 				newcps.push_back(vec);
+// 			}
+// 
+// 			newcps.push_back(*(cps.end()-2));
+// 			newcps.push_back(cps.back());
+// 
+// 			cps = newcps;
+// 		}
+// 	}
+// 	((VAV_View*)this->GetActiveView())->
+// 	m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles());
+// 	((VAV_View*)this->GetActiveView())->
+// 	m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles());
+// 	((VAV_View*)this->GetActiveView())->
+// 	m_D3DApp.AddLineSegs(cgal_contour.m_LineSegs);
+// 	((VAV_View*)this->GetActiveView())->
+// 	m_D3DApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth, colors);
+
 	// Control Points
 // 	for (int i = 0; i < cgal_contour.m_Controls.size(); ++i)
 // 	{
@@ -749,7 +801,7 @@ void VAV_MainFrame::OnUpdateSpinTransparencyPatch(CCmdUI* pCmdUI)
 void VAV_MainFrame::OnSpinTransparencyline()
 {
 	CMFCRibbonEdit* re;
-	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyTriangleLine);
+	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyLine);
 	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
 
 	if (NULL != re)
@@ -763,7 +815,7 @@ void VAV_MainFrame::OnSpinTransparencyline()
 void VAV_MainFrame::OnUpdateSpinTransparencyline(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
-	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyTriangleLine);
+	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyLine);
 	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
 
 	if (NULL != re)
@@ -828,4 +880,63 @@ void VAV_MainFrame::OnUpdateSpinBlackregionthreshold(CCmdUI* pCmdUI)
 	{
 		m_BlackRegionThreshold = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
 	}
+}
+
+
+void VAV_MainFrame::OnSpinTransparencytriangleline()
+{
+	CMFCRibbonEdit* re;
+	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyTriangleLine);
+	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
+
+	if (NULL != re)
+	{
+		m_TriangleLineTransparency = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
+	}
+
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTriangleLineTransparency((100 - m_TriangleLineTransparency) * 0.01);
+}
+
+
+void VAV_MainFrame::OnUpdateSpinTransparencytriangleline(CCmdUI *pCmdUI)
+{
+	CMFCRibbonEdit* re;
+	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyTriangleLine);
+	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
+
+	if (NULL != re)
+	{
+		m_TriangleLineTransparency = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
+	}
+
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTriangleLineTransparency((100 - m_TriangleLineTransparency) * 0.01);
+}
+
+
+void VAV_MainFrame::OnSpinTransparencylineskeleton()
+{
+	CMFCRibbonEdit* re;
+	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyLineSkeleton);
+	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
+
+	if (NULL != re)
+	{
+		m_LineSkeletonTransparency = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
+	}
+
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetLineSkeletonTransparency((100 - m_LineSkeletonTransparency) * 0.01);
+}
+
+void VAV_MainFrame::OnUpdateSpinTransparencylineskeleton(CCmdUI *pCmdUI)
+{
+	CMFCRibbonEdit* re;
+	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyLineSkeleton);
+	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
+
+	if (NULL != re)
+	{
+		m_LineSkeletonTransparency = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
+	}
+
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetLineSkeletonTransparency((100 - m_LineSkeletonTransparency) * 0.01);
 }

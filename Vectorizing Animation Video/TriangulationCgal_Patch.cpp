@@ -13,10 +13,10 @@ void TriangulationCgal_Patch::Compute()
 	m_Triangulation.clear();
 	Vertex_handles vhs;
 	/* add 4 conner point
-	Point lu(-10, -10);
-	Point ld(-10, m_h+10);
-	Point ru(m_w+10, m_h+10);
-	Point rd(m_w+10, -10);
+	Point lu(0, 0);
+	Point ld(0, m_h);
+	Point ru(m_w, m_h);
+	Point rd(m_w, 0);
 	Triangulation::Vertex_handle v1 = m_Triangulation.insert(lu);
 	Triangulation::Vertex_handle v2 = m_Triangulation.insert(ld);
 	Triangulation::Vertex_handle v3 = m_Triangulation.insert(ru);
@@ -30,6 +30,30 @@ void TriangulationCgal_Patch::Compute()
 	m_Triangulation.insert_constraint(v3, v4);
 	m_Triangulation.insert_constraint(v4, v1);
 	*/
+	for (int i = 0; i < m_Patch.size(); ++i)
+	{
+		Polygon poly;
+
+		for (auto it = m_Patch[i].Outer().begin(); it != m_Patch[i].Outer().end(); ++it)
+		{
+			poly.push_back(Point(it->x, it->y));
+		}
+
+		insert_polygon(m_Triangulation, poly, i);
+
+		for (auto it = m_Patch[i].Inter().begin(); it != m_Patch[i].Inter().end(); ++it)
+		{
+			Polygon poly2;
+
+			for (auto it2 = it->begin(); it2 != it->end(); it2++)
+			{
+				poly2.push_back(Point(it2->x, it2->y));
+			}
+
+			insert_polygon(m_Triangulation, poly2, TRIANGLE_NOT_INIT);
+		}
+	}
+
 	m_LineSegs.clear();
 
 	for (int i = 0; i < m_ImageSpline.m_PatchSplines.size(); ++i)
@@ -137,6 +161,8 @@ void TriangulationCgal_Patch::Compute()
 	m_PositionGraph.ComputeJoints();
 	m_PositionGraph.MakeGraphLines();
 	printf("joints: %d\n", m_PositionGraph.m_Joints.size());
+	m_OriginLines = m_PositionGraph.m_Lines;
+	m_PositionGraph.SmoothGraphLines();
 	m_Lines = m_PositionGraph.m_Lines;
 	m_LinesWidth = m_PositionGraph.m_LinesWidth;
 	m_Controls.resize(m_Lines.size());
@@ -210,13 +236,18 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 
 	Point start = last;
 	Triangulation::Vertex_handle v_prev  = cdt.insert(last);
+
 	//assert(v_prev->info().nesting_level == -1);
-	v_prev->info().nesting_level = idx;
+	if (v_prev->info().nesting_level == -1)
+	{
+		v_prev->info().nesting_level = idx;
+	}
 
 	for (auto it = ps.m_LineIndexs.begin(); it != ps.m_LineIndexs.end(); ++it)
 	{
 		Line pts = m_ImageSpline.m_LineFragments[it->m_id].m_Points;
 
+		// show normal
 // 		for (int j = 1; j < pts.size(); ++j)
 // 		{
 // 			Vector2 right = Quaternion::GetRotation(pts[j] - pts[j - 1], 90);
@@ -310,6 +341,7 @@ void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt, ImageSpli
 	for (auto it = ps.m_LineIndexs.begin(); it != ps.m_LineIndexs.end(); ++it)
 	{
 		Line pts = is.m_LineFragments[it->m_id].m_Points;
+
 		if (it->m_Forward)
 		{
 			for (auto it2 = pts.begin(); it2 != pts.end(); ++it2)

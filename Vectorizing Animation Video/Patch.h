@@ -46,6 +46,7 @@ public:
 	void	Inflate(double len);
 	void	Deflate(double len);
 	ColorConstraint_sptr GetColorConstraint();
+	void	SmoothPatch();
 private:
 	Vector2s	m_Outer;
 	Vector3s	m_OuterColor;

@@ -17,6 +17,7 @@ public:
 	PositionGraph(void);
 	~PositionGraph(void);
 	void MakeGraphLines();	
+	void SmoothGraphLines();
 private:
 	void InterMakeGraphLines();
 	void AddNode(const PositionGraph_Node& pgn);

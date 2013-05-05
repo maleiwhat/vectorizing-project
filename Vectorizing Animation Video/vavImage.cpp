@@ -261,19 +261,13 @@ void vavImage::Threshold( int v )
 	}
 }
 
-
-
-
 void vavImage::ShowEdgeLine( const Lines& li )
 {
-	Lines lines = ComputeTrappedBallEdge( m_Image, li, 5 );
-	m_Image = cv::Mat( m_Image.size(), m_Image.type(), cv::Scalar( 0 ) );
-
-	for ( Lines::iterator it = lines.begin(); it != lines.end(); ++it )
+	for ( Lines::const_iterator it = li.begin(); it != li.end(); ++it )
 	{
 		int R = 255, B = 255, G = 255;
 
-		for ( Line::iterator it2 = it->begin(); it2 != it->end(); ++it2 )
+		for ( Line::const_iterator it2 = it->begin(); it2 != it->end(); ++it2 )
 		{
 			cv::Vec3b& intensity = m_Image.at<cv::Vec3b>( it2->y, it2->x );
 			intensity[0] = R;
@@ -345,3 +339,4 @@ Lines vavImage::SobelEdge( int kSize, float linkEndBound, float linkStartBound )
 	dEdge.Link();
 	return GetLines( dEdge.GetEdges() );
 }
+

@@ -117,25 +117,6 @@ SplineFragments& ImageSpline::GetSplineFragments()
 
 void ImageSpline::SmoothingFragments()
 {
-	// 還原圖的大小
-	
-	for (int i = 0; i < m_LineFragments.size(); ++i)
-	{
-		Line& cps = m_LineFragments[i].m_Points;
-		Line newcps;
-
-		for (int j = 0; j < cps.size(); j ++)
-		{
-			if (int(cps[j].x) % 2 == 0 && int(cps[j].y) % 2 == 0)
-			{
-				newcps.push_back(cps[j] / 2);
-			}
-		}
-
-		cps = newcps;
-	}
-
-	
 	m_SplineFragments.clear();
 
 	// 平均各點

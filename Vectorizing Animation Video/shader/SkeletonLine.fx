@@ -33,8 +33,8 @@ VS_OUT VS(VS_IN vIn)
 {
 	VS_OUT vOut;
 	float2 offset = float2(centerX/width*2, -centerY/height*2);
-	vOut.p1 = (vIn.p1/float2(width,height)*scale)*2-1;
-	vOut.p2 = (vIn.p2/float2(width,height)*scale)*2-1;
+	vOut.p1 = (vIn.p1/float2(width,height)*scale)*2-1+float2(centerX/width,-centerY/height)*scale;
+	vOut.p2 = (vIn.p2/float2(width,height)*scale)*2-1+float2(centerX/width,-centerY/height)*scale;
 	vOut.p1 += offset;
 	vOut.p2 += offset;
 	vOut.c1 = vIn.c1;
@@ -59,7 +59,7 @@ void gs_main(point VS_OUT input[1], inout LineStream<GS_OUT> triStream)
 
 float4 PS(GS_OUT pIn) : SV_Target
 {
-discard;
+//discard;
 	return float4(pIn.color.x, pIn.color.y, pIn.color.z, transparency);
 }
 

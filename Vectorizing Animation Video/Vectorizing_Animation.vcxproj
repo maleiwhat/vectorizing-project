@@ -203,6 +203,7 @@
     <ClInclude Include="curve\PathInterpolater.h" />
     <ClInclude Include="curve_fit.h" />
     <ClInclude Include="CvExtenstion.h" />
+    <ClInclude Include="CvExtenstion0.h" />
     <ClInclude Include="CvExtenstion2.h" />
     <ClInclude Include="DX11\d3dApp.h" />
     <ClInclude Include="DX11\DXUTUI.h" />
@@ -291,6 +292,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcv.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcv.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="CvExtenstion0.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcv.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcv.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="CvExtenstion2.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>

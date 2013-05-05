@@ -36,6 +36,7 @@ void Patch::SplinePoints(double scale)
 		{
 			ss.AddPoint(it->x, it->y);
 		}
+
 		for (auto it = m_OuterColor.begin(); it != m_OuterColor.end(); ++it)
 		{
 			sr.AddPoint(it->x);
@@ -47,6 +48,7 @@ void Patch::SplinePoints(double scale)
 		float	step = 1.f /  new_size;
 		m_Outer.clear();
 		m_OuterColor.clear();
+
 		for (int i = 0; i <= new_size; ++i)
 		{
 			float t = step * i;
@@ -66,6 +68,7 @@ void Patch::SplinePoints(double scale)
 		{
 			ss.AddPoint(it2->x, it2->y);
 		}
+
 		int	new_size = it->size() * scale;
 
 		if (new_size < 5) { continue; }
@@ -160,6 +163,54 @@ ColorConstraint_sptr Patch::GetColorConstraint()
 	return res;
 }
 
+void Patch::SmoothPatch()
+{
+	for (int count = 0; count < 4; count++)
+	{
+		Vector2s& cps = m_Outer;
+		Vector2s newcps;
+
+		if (cps.size() < 4) { continue; }
+
+		newcps.push_back(cps.front());
+		newcps.push_back(*(cps.begin() + 1));
+
+		for (int j = 2; j < cps.size() - 2; j ++)
+		{
+			auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
+			newcps.push_back(vec);
+		}
+
+		newcps.push_back(*(cps.end() - 2));
+		newcps.push_back(cps.back());
+		cps = newcps;
+	}
+	for (int count = 0; count < 4; count++)
+	{
+		for (int i = 0; i < m_Inter.size(); ++i)
+		{
+			Vector2s& cps = m_Inter[i];
+			Vector2s newcps;
+
+			if (cps.size() < 4) { continue; }
+
+			newcps.push_back(cps.front());
+			newcps.push_back(*(cps.begin()+1));
+
+			for (int j = 2; j < cps.size() - 2; j ++)
+			{
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
+				newcps.push_back(vec);
+			}
+
+			newcps.push_back(*(cps.end()-2));
+			newcps.push_back(cps.back());
+
+			cps = newcps;
+		}
+	}
+}
+
 void CvPatch::AddOuterPoint(double x, double y)
 {
 	m_Outer.push_back(cv::Point(x, y));
@@ -189,7 +240,7 @@ void CvPatch::SetImage(cv::Mat& image)
 
 	for (auto it = m_Outer2.begin(); it != m_Outer2.end(); ++it)
 	{
-		cv::Vec3b& c = GetColor(image, it->x/2, it->y/2);
+		cv::Vec3b& c = GetColor(image, it->x / 2, it->y / 2);
 		m_OuterColor.push_back(c);
 	}
 
@@ -199,7 +250,7 @@ void CvPatch::SetImage(cv::Mat& image)
 
 		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
 		{
-			cv::Vec3b& c = GetColor(image, it2->x/2, it2->y/2);
+			cv::Vec3b& c = GetColor(image, it2->x / 2, it2->y / 2);
 			data.push_back(c);
 		}
 
@@ -228,7 +279,7 @@ ColorConstraint_sptr CvPatch::GetColorConstraint()
 		{
 			if (Inside(i, j))
 			{
-				res->AddPoint(i/2, j/2, m_refImage->at<cv::Vec3b>(j/2, i/2));
+				res->AddPoint(i / 2, j / 2, m_refImage->at<cv::Vec3b>(j / 2, i / 2));
 			}
 		}
 	}
@@ -280,9 +331,9 @@ Patch ToPatch(CvPatch& cvp)
 {
 	Patch p;
 
-	for (auto it = cvp.Outer().begin(); it != cvp.Outer().end(); ++it)
+	for (auto it = cvp.Outer2().begin(); it != cvp.Outer2().end(); ++it)
 	{
-		p.Outer().push_back(Vector2(it->x - 0.5, it->y - 0.5));
+		p.Outer().push_back(Vector2(it->x, it->y));
 	}
 
 	for (auto it = cvp.OuterColor().begin(); it != cvp.OuterColor().end(); ++it)
@@ -290,13 +341,13 @@ Patch ToPatch(CvPatch& cvp)
 		p.OuterColor().push_back(Vector3((*it)[0], (*it)[1], (*it)[2]));
 	}
 
-	for (auto it = cvp.Inter().begin(); it != cvp.Inter().end(); ++it)
+	for (auto it = cvp.Inter2().begin(); it != cvp.Inter2().end(); ++it)
 	{
 		Vector2s data;
 
 		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
 		{
-			data.push_back(Vector2(it2->x - 0.5, it2->y - 0.5));
+			data.push_back(Vector2(it2->x, it2->y));
 		}
 
 		p.Inter().push_back(data);

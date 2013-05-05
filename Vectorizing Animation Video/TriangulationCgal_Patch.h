@@ -92,6 +92,7 @@ public:
 	ImageSpline	m_ImageSpline;
 	PositionGraph	m_PositionGraph;
 	LineSegs	m_LineSegs;
+	Lines		m_OriginLines;
 	Lines		m_Lines;
 	double_vector2d	m_LinesWidth;
 	Lines		m_Controls;

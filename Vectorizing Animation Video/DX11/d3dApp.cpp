@@ -299,7 +299,6 @@ void D3DApp::DrawScene()
 
 	if (m_LinesVertices.size() > 0)
 	{
-		m_Lines_Transparency->SetFloat(0.5);
 		UINT offset = 0;
 		UINT stride2 = sizeof(LineVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
@@ -311,7 +310,6 @@ void D3DApp::DrawScene()
 
 	if (m_SkeletonLinesVertices.size() > 0)
 	{
-		m_SkeletonLines_Transparency->SetFloat(0.9);
 		UINT offset = 0;
 		UINT stride2 = sizeof(SkeletonLineVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
@@ -685,15 +683,15 @@ void special_normal(Vector2& v)
 	if (v.y < -1) { v.y = -1; }
 }
 
-void D3DApp::AddTriangles( Triangles& tris, const vavImage& vimage )
+void D3DApp::AddTriangles(const Triangles& tris, const vavImage& vimage)
 {
 	TriangleVertex tv;
 
 	for (int i = 0; i < tris.size(); ++i)
 	{
-		Vector2& v1 = tris[i].m_Points[0];
-		Vector2& v2 = tris[i].m_Points[1];
-		Vector2& v3 = tris[i].m_Points[2];
+		const Vector2& v1 = tris[i].m_Points[0];
+		const Vector2& v2 = tris[i].m_Points[1];
+		const Vector2& v3 = tris[i].m_Points[2];
 		Vector2 vmove;
 		vmove = v2 - v1 + v3 - v1;
 		special_normal(vmove);
@@ -726,7 +724,7 @@ void D3DApp::AddTriangles( Triangles& tris, const vavImage& vimage )
 	}
 }
 
-void D3DApp::AddPatchTriangles( Triangles& tris )
+void D3DApp::AddPatchTriangles(const Triangles& tris)
 {
 	TriangleVertex tv;
 	float r, g, b;
@@ -736,9 +734,9 @@ void D3DApp::AddPatchTriangles( Triangles& tris )
 
 	for (int i = 0; i < tris.size(); ++i)
 	{
-		Vector2& v1 = tris[i].m_Points[0];
-		Vector2& v2 = tris[i].m_Points[1];
-		Vector2& v3 = tris[i].m_Points[2];
+		const Vector2& v1 = tris[i].m_Points[0];
+		const Vector2& v2 = tris[i].m_Points[1];
+		const Vector2& v3 = tris[i].m_Points[2];
 		tv.p1.x = tris[i].m_Points[0].x;
 		tv.p1.y = m_PicH - tris[i].m_Points[0].y;
 		tv.c1.x = r;
@@ -758,15 +756,15 @@ void D3DApp::AddPatchTriangles( Triangles& tris )
 	}
 }
 
-void D3DApp::AddColorTriangles( Triangles& tris )
+void D3DApp::AddColorTriangles(const Triangles& tris)
 {
 	TriangleVertex tv;
 
 	for (int i = 0; i < tris.size(); ++i)
 	{
-		Vector2& v1 = tris[i].m_Points[0];
-		Vector2& v2 = tris[i].m_Points[1];
-		Vector2& v3 = tris[i].m_Points[2];
+		const Vector2& v1 = tris[i].m_Points[0];
+		const Vector2& v2 = tris[i].m_Points[1];
+		const Vector2& v3 = tris[i].m_Points[2];
 		tv.p1.x = tris[i].m_Points[0].x;
 		tv.p1.y = m_PicH - tris[i].m_Points[0].y;
 		tv.c1.x = tris[i].m_Colors[0][2] / 255.0f;
@@ -786,7 +784,7 @@ void D3DApp::AddColorTriangles( Triangles& tris )
 	}
 }
 
-void D3DApp::AddTrianglesLine( Triangles& tris )
+void D3DApp::AddTrianglesLine(const Triangles& tris)
 {
 	TriangleVertex tv;
 	float r, g, b;
@@ -796,9 +794,9 @@ void D3DApp::AddTrianglesLine( Triangles& tris )
 
 	for (int i = 0; i < tris.size(); ++i)
 	{
-		Vector2& v1 = tris[i].m_Points[0];
-		Vector2& v2 = tris[i].m_Points[1];
-		Vector2& v3 = tris[i].m_Points[2];
+		const Vector2& v1 = tris[i].m_Points[0];
+		const Vector2& v2 = tris[i].m_Points[1];
+		const Vector2& v3 = tris[i].m_Points[2];
 		tv.p1.x = tris[i].m_Points[0].x;
 		tv.p1.y = m_PicH - tris[i].m_Points[0].y;
 		tv.c1.x = r;
@@ -924,7 +922,7 @@ void D3DApp::SetSelectPatchTransparency(float t)
 	m_Patch_Transparency->SetFloat(t);
 }
 
-void D3DApp::SetLineTransparency(float t)
+void D3DApp::SetTriangleLineTransparency(float t)
 {
 	m_TriangleLine_Transparency->SetFloat(t);
 }
@@ -932,6 +930,16 @@ void D3DApp::SetLineTransparency(float t)
 void D3DApp::SetPictureTransparency(float t)
 {
 	m_Pics_Transparency->SetFloat(t);
+}
+
+void D3DApp::SetLineTransparency( float t )
+{
+	m_Lines_Transparency->SetFloat(t);
+}
+
+void D3DApp::SetLineSkeletonTransparency( float t )
+{
+	m_SkeletonLines_Transparency->SetFloat(t);
 }
 
 void D3DApp::AddBigPoint(float x, float y, D3DXVECTOR3 color)
@@ -945,12 +953,118 @@ void D3DApp::AddBigPoint(float x, float y, D3DXVECTOR3 color)
 	m_PointsVertices.push_back(pv);
 }
 
-void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
+void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths, const Vector3s2d& colors)
 {
 	for (int i = 0; i < lines.size(); ++i)
 	{
-		Line& now_line = lines[i];
-		double_vector& now_linewidth = linewidths[i];
+		const Line& now_line = lines[i];
+		const double_vector& now_linewidth = linewidths[i];
+		const Vector3s& now_color = colors[i];
+		float r, g, b;
+		r = (rand() % 155 + 100) / 255.0f;
+		g = (rand() % 155 + 100) / 255.0f;
+		b = (rand() % 155 + 100) / 255.0f;
+
+		if (now_line.size() < 3)
+		{
+			if (now_line.size() == 2)
+			{
+				LineVertex lv;
+				lv.color.x = now_color[0][0];
+				lv.color.y = now_color[0][1];
+				lv.color.z = now_color[0][2];
+				lv.p1.x = now_line[0].x;
+				lv.p1.y = m_PicH - now_line[0].y;
+				lv.p2.x = now_line[0].x;
+				lv.p2.y = m_PicH - now_line[0].y;
+				lv.p3.x = now_line[1].x;
+				lv.p3.y = m_PicH - now_line[1].y;
+				lv.p4.x = now_line[1].x;
+				lv.p4.y = m_PicH - now_line[1].y;
+				lv.width.x = now_linewidth[0];
+				lv.width.y = now_linewidth[1];
+				m_LinesVertices.push_back(lv);
+			}
+
+			continue;
+		}
+
+		LineVertex lv;
+		lv.color.x = now_color[0][0];
+		lv.color.y = now_color[0][1];
+		lv.color.z = now_color[0][2];
+		lv.p1.x = now_line[0].x;
+		lv.p1.y = m_PicH - now_line[0].y;
+		lv.p2.x = now_line[0].x;
+		lv.p2.y = m_PicH - now_line[0].y;
+		lv.p3.x = now_line[1].x;
+		lv.p3.y = m_PicH - now_line[1].y;
+		lv.p4.x = now_line[2].x;
+		lv.p4.y = m_PicH - now_line[2].y;
+		lv.width.x = now_linewidth[0];
+		lv.width.y = now_linewidth[1];
+		m_LinesVertices.push_back(lv);
+		SkeletonLineVertex slv;
+		slv.color.x = r;
+		slv.color.y = g;
+		slv.color.z = b;
+		slv.p1.x = now_line[0].x;
+		slv.p1.y = m_PicH - now_line[0].y;
+		slv.p2.x = now_line[1].x;
+		slv.p2.y = m_PicH - now_line[1].y;
+		m_SkeletonLinesVertices.push_back(slv);
+
+		for (int j = 1; j < now_line.size() - 2; ++j)
+		{
+			lv.color.x = now_color[j][0];
+			lv.color.y = now_color[j][1];
+			lv.color.z = now_color[j][2];
+			lv.p1.x = now_line[j - 1].x;
+			lv.p1.y = m_PicH - now_line[j - 1].y;
+			lv.p2.x = now_line[j].x;
+			lv.p2.y = m_PicH - now_line[j].y;
+			lv.p3.x = now_line[j + 1].x;
+			lv.p3.y = m_PicH - now_line[j + 1].y;
+			lv.p4.x = now_line[j + 2].x;
+			lv.p4.y = m_PicH - now_line[j + 2].y;
+			lv.width.x = now_linewidth[j];
+			lv.width.y = now_linewidth[j + 1];
+			m_LinesVertices.push_back(lv);
+			slv.p1.x = now_line[j].x;
+			slv.p1.y = m_PicH - now_line[j].y;
+			slv.p2.x = now_line[j + 1].x;
+			slv.p2.y = m_PicH - now_line[j + 1].y;
+			m_SkeletonLinesVertices.push_back(slv);
+		}
+
+		lv.color.x = now_color[now_line.size() - 1][0];
+		lv.color.y = now_color[now_line.size() - 1][1];
+		lv.color.z = now_color[now_line.size() - 1][2];
+		lv.p1.x = now_line[now_line.size() - 3].x;
+		lv.p1.y = m_PicH - now_line[now_line.size() - 3].y;
+		lv.p2.x = now_line[now_line.size() - 2].x;
+		lv.p2.y = m_PicH - now_line[now_line.size() - 2].y;
+		lv.p3.x = now_line[now_line.size() - 1].x;
+		lv.p3.y = m_PicH - now_line[now_line.size() - 1].y;
+		lv.p4.x = now_line[now_line.size() - 1].x;
+		lv.p4.y = m_PicH - now_line[now_line.size() - 1].y;
+		lv.width.x = now_linewidth[now_line.size() - 2];
+		lv.width.y = now_linewidth[now_line.size() - 1];
+		m_LinesVertices.push_back(lv);
+		slv.p1.x = now_line[now_line.size() - 2].x;
+		slv.p1.y = m_PicH - now_line[now_line.size() - 2].y;
+		slv.p2.x = now_line[now_line.size() - 1].x;
+		slv.p2.y = m_PicH - now_line[now_line.size() - 1].y;
+		m_SkeletonLinesVertices.push_back(slv);
+	}
+}
+
+void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths)
+{
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		const Line& now_line = lines[i];
+		const double_vector& now_linewidth = linewidths[i];
 		float r, g, b;
 		r = (rand() % 155 + 100) / 255.0f;
 		g = (rand() % 155 + 100) / 255.0f;
@@ -976,6 +1090,7 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 				lv.width.y = now_linewidth[1];
 				m_LinesVertices.push_back(lv);
 			}
+
 			continue;
 		}
 
@@ -994,7 +1109,6 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 		lv.width.x = now_linewidth[0];
 		lv.width.y = now_linewidth[1];
 		m_LinesVertices.push_back(lv);
-
 		SkeletonLineVertex slv;
 		slv.color.x = r;
 		slv.color.y = g;
@@ -1004,7 +1118,7 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 		slv.p2.x = now_line[1].x;
 		slv.p2.y = m_PicH - now_line[1].y;
 		m_SkeletonLinesVertices.push_back(slv);
-		
+
 		for (int j = 1; j < now_line.size() - 2; ++j)
 		{
 			lv.p1.x = now_line[j - 1].x;
@@ -1018,13 +1132,13 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 			lv.width.x = now_linewidth[j];
 			lv.width.y = now_linewidth[j + 1];
 			m_LinesVertices.push_back(lv);
-
 			slv.p1.x = now_line[j].x;
 			slv.p1.y = m_PicH - now_line[j].y;
-			slv.p2.x = now_line[j+1].x;
-			slv.p2.y = m_PicH - now_line[j+1].y;
+			slv.p2.x = now_line[j + 1].x;
+			slv.p2.y = m_PicH - now_line[j + 1].y;
 			m_SkeletonLinesVertices.push_back(slv);
 		}
+
 		lv.p1.x = now_line[now_line.size() - 3].x;
 		lv.p1.y = m_PicH - now_line[now_line.size() - 3].y;
 		lv.p2.x = now_line[now_line.size() - 2].x;
@@ -1044,13 +1158,14 @@ void D3DApp::AddLines(Lines& lines, double_vector2d& linewidths)
 	}
 }
 
-void D3DApp::AddLines(Lines& lines)
+void D3DApp::AddLines(const Lines& lines)
 {
 	static int ii = 0;
 	ii ++;
+
 	for (int i = 0; i < lines.size() /*&& i < ii*/; ++i)
 	{
-		Line& now_line = lines[i];
+		const Line& now_line = lines[i];
 
 		if (now_line.size() < 2)
 		{
@@ -1070,18 +1185,18 @@ void D3DApp::AddLines(Lines& lines)
 		{
 			slv.p1.x = now_line[j].x;
 			slv.p1.y = m_PicH - now_line[j].y;
-			slv.p2.x = now_line[j-1].x;
-			slv.p2.y = m_PicH - now_line[j-1].y;
+			slv.p2.x = now_line[j - 1].x;
+			slv.p2.y = m_PicH - now_line[j - 1].y;
 			m_SkeletonLinesVertices.push_back(slv);
 		}
 	}
 }
 
-void D3DApp::AddLines( Points2d& lines )
+void D3DApp::AddLines(const Points2d& lines)
 {
 	for (int i = 0; i < lines.size(); ++i)
 	{
-		Points& now_line = lines[i];
+		const Points& now_line = lines[i];
 
 		if (now_line.size() < 2)
 		{
@@ -1101,26 +1216,24 @@ void D3DApp::AddLines( Points2d& lines )
 		{
 			slv.p1.x = now_line[j].hx();
 			slv.p1.y = m_PicH - now_line[j].hy();
-			slv.p2.x = now_line[j-1].hx();
-			slv.p2.y = m_PicH - now_line[j-1].hy();
+			slv.p2.x = now_line[j - 1].hx();
+			slv.p2.y = m_PicH - now_line[j - 1].hy();
 			m_SkeletonLinesVertices.push_back(slv);
 		}
 	}
 }
 
-void D3DApp::AddLineSegs( LineSegs& lines )
+void D3DApp::AddLineSegs(const LineSegs& lines)
 {
 	for (int i = 0; i < lines.size(); ++i)
 	{
-		LineSeg& now_line = lines[i];
-		
+		const LineSeg& now_line = lines[i];
 		float r, g, b;
 		r = (rand() % 155 + 100) / 255.0f;
 		g = (rand() % 155 + 100) / 255.0f;
 		b = (rand() % 155 + 100) / 255.0f;
 		g = 1;
 		r = b = 0;
-		
 		SkeletonLineVertex slv;
 		slv.color.x = r;
 		slv.color.y = g;

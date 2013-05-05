@@ -34,8 +34,10 @@ public:
 	int		m_PatchTransparency;
 	int		m_SelectPatchTransparency;
 	int		m_BlackRegionThreshold;
-	int		m_LineTransparency;
+	int		m_TriangleLineTransparency;
 	int		m_PictureTransparency;
+	int		m_LineTransparency;
+	int		m_LineSkeletonTransparency;
 	CvPatchs	m_CvPatchs;
 	void	ShowPatch(double x, double y);
 // §@·~
@@ -103,6 +105,10 @@ public:
 	afx_msg void OnSpinTransparencypicture();
 	afx_msg void OnSpinBlackregionthreshold();
 	afx_msg void OnUpdateSpinBlackregionthreshold(CCmdUI *pCmdUI);
+	afx_msg void OnSpinTransparencytriangleline();
+	afx_msg void OnUpdateSpinTransparencytriangleline(CCmdUI *pCmdUI);
+	afx_msg void OnSpinTransparencylineskeleton();
+	afx_msg void OnUpdateSpinTransparencylineskeleton(CCmdUI *pCmdUI);
 };
 
 

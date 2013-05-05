@@ -19,40 +19,43 @@ public:
 	HINSTANCE	getAppInst();
 	HWND		getMainWnd();
 
-	void initApp( HWND hWnd, int w, int h );
-	void OnResize( int w, int h ); // reset projection/etc
-	void SetPictureSize( int w, int h );
-	void SetLookCenter( float x, float y );
-	void SetScale( float s );
+	void initApp(HWND hWnd, int w, int h);
+	void OnResize(int w, int h);   // reset projection/etc
+	void SetPictureSize(int w, int h);
+	void SetLookCenter(float x, float y);
+	void SetScale(float s);
 	void DrawScene();
 	void LoadBlend();
 	void BuildShaderFX();
 	void BuildPoint();
-	void AddTriangles( Triangles& tris, const vavImage& vimage );
-	void AddColorTriangles( Triangles& tris );
-	void AddTrianglesLine( Triangles& tris);
-	void AddPatchTriangles( Triangles& tris );
+	void AddTriangles(const Triangles& tris, const vavImage& vimage);
+	void AddColorTriangles(const Triangles& tris);
+	void AddTrianglesLine(const Triangles& tris);
+	void AddPatchTriangles(const Triangles& tris);
 	void AddBigPoint(float x, float y, D3DXVECTOR3 color);
-	void AddLines(Lines& lines, double_vector2d& linewidths);
-	void AddLines(Lines& lines);
-	void AddLineSegs(LineSegs& lines);
-	void AddLines(Points2d& lines);
+	void AddLines(const Lines& lines, const double_vector2d& linewidths, const Vector3s2d& colors);
+	void AddLines(const Lines& lines, const double_vector2d& linewidths);
+	void AddLines(const Lines& lines);
+	void AddLineSegs(const LineSegs& lines);
+	void AddLines(const Points2d& lines);
 	void ClearPatchs();
 	void SetPatchTransparency(float t);
 	void SetSelectPatchTransparency(float t);
+	void SetTriangleLineTransparency(float t);
 	void SetLineTransparency(float t);
+	void SetLineSkeletonTransparency(float t);
 	void SetPictureTransparency(float t);
 	void ClearTriangles();
 	int  Width() { return mClientWidth;}
 	int  Height() {return mClientHeight;};
-	void SetTexture( ID3D11ShaderResourceView* tex );
+	void SetTexture(ID3D11ShaderResourceView* tex);
 	ID3D11Device* GetDevice()
 	{
 		return m_d3dDevice;
 	}
 protected:
 	void initDirect3D();
-	
+
 protected:
 	int		m_PicW;
 	int		m_PicH;
@@ -176,7 +179,7 @@ protected:
 struct CD3D11_BLEND_DESCX : public D3D11_BLEND_DESC
 {
 	CD3D11_BLEND_DESCX() {}
-	explicit CD3D11_BLEND_DESCX( const D3D11_BLEND_DESC& o ) : D3D11_BLEND_DESC( o ) {}
+	explicit CD3D11_BLEND_DESCX(const D3D11_BLEND_DESC& o) : D3D11_BLEND_DESC(o) {}
 	explicit CD3D11_BLEND_DESCX(
 	        BOOL AlphaToCoverageEnable,
 	        BOOL IndependentBlendEnable,
@@ -187,7 +190,7 @@ struct CD3D11_BLEND_DESCX : public D3D11_BLEND_DESC
 	        D3D11_BLEND SrcBlendAlpha0,
 	        D3D11_BLEND DestBlendAlpha0,
 	        D3D11_BLEND_OP BlendOpAlpha0,
-	        UINT8 RenderTargetWriteMask0 )
+	        UINT8 RenderTargetWriteMask0)
 	{
 		this->AlphaToCoverageEnable = AlphaToCoverageEnable;
 		this->IndependentBlendEnable = IndependentBlendEnable;
