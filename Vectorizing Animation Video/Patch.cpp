@@ -169,11 +169,12 @@ void Patch::SmoothPatch()
 	{
 		Vector2s& cps = m_Outer;
 		Vector2s newcps;
+		int last = cps.size() - 1;
 
-		if (cps.size() < 4) { continue; }
+		if (cps.size() < 5) { continue; }
 
-		newcps.push_back(cps.front());
-		newcps.push_back(*(cps.begin() + 1));
+		newcps.push_back((cps[last-1] + cps[last] + cps[0]*2 + cps[1] + cps[2]) / 6.0f);
+		newcps.push_back((cps[last] + cps[0] + cps[1]*2 + cps[2] + cps[3]) / 6.0f);
 
 		for (int j = 2; j < cps.size() - 2; j ++)
 		{
@@ -181,21 +182,23 @@ void Patch::SmoothPatch()
 			newcps.push_back(vec);
 		}
 
-		newcps.push_back(*(cps.end() - 2));
-		newcps.push_back(cps.back());
+		newcps.push_back((cps[last-3] + cps[last-2] + cps[last-1]*2 + cps[last] + cps[0]) / 6.0f);
+		newcps.push_back((cps[last-2] + cps[last-1] + cps[last]*2 + cps[0] + cps[1]) / 6.0f);
 		cps = newcps;
 	}
+
 	for (int count = 0; count < 4; count++)
 	{
 		for (int i = 0; i < m_Inter.size(); ++i)
 		{
 			Vector2s& cps = m_Inter[i];
 			Vector2s newcps;
+			int last = cps.size() - 1;
 
-			if (cps.size() < 4) { continue; }
+			if (cps.size() < 5) { continue; }
 
-			newcps.push_back(cps.front());
-			newcps.push_back(*(cps.begin()+1));
+			newcps.push_back((cps[last-1] + cps[last] + cps[0]*2 + cps[1] + cps[2]) / 6.0f);
+			newcps.push_back((cps[last] + cps[0] + cps[1]*2 + cps[2] + cps[3]) / 6.0f);
 
 			for (int j = 2; j < cps.size() - 2; j ++)
 			{
@@ -203,9 +206,8 @@ void Patch::SmoothPatch()
 				newcps.push_back(vec);
 			}
 
-			newcps.push_back(*(cps.end()-2));
-			newcps.push_back(cps.back());
-
+			newcps.push_back((cps[last-3] + cps[last-2] + cps[last-1]*2 + cps[last] + cps[0]) / 6.0f);
+			newcps.push_back((cps[last-2] + cps[last-1] + cps[last]*2 + cps[0] + cps[1]) / 6.0f);
 			cps = newcps;
 		}
 	}
