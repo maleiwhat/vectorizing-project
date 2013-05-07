@@ -19,26 +19,25 @@
 #include "PositionGraph.h"
 #include "Line.h"
 
-struct FaceInfo2
-{
-	FaceInfo2() {}
-	int nesting_level;
-	bool in_domain()
-	{
-		//return nesting_level %3 == 1;
-		return nesting_level >= 0;
-	}
-};
-
-struct VertexInfo2
-{
-	VertexInfo2(): nesting_level(-1) {}
-	int nesting_level;
-};
-
 class TriangulationCgal_Patch : public TriangulationBase
 {
 public:
+	struct FaceInfo2
+	{
+		FaceInfo2() {}
+		int nesting_level;
+		bool in_domain()
+		{
+			//return nesting_level %3 == 1;
+			return nesting_level >= 0;
+		}
+	};
+
+	struct VertexInfo2
+	{
+		VertexInfo2(): nesting_level(-1) {}
+		int nesting_level;
+	};
 	typedef CGAL::Exact_predicates_inexact_constructions_kernel	K;
 	//typedef CGAL::Triangulation_vertex_base_2<K>                    Vb;
 	typedef CGAL::Triangulation_vertex_base_with_info_2<VertexInfo2, K> Vb;
@@ -81,7 +80,7 @@ public:
 	static const int TRIANGLE_NOT_INIT = -1;
 	static const int TRIANGLE_TRANSPARENT = -2;
 
-	
+
 	Triangulation	m_Triangulation;
 	Criteria	m_Criteria;
 	Points		m_SeedPoints;

@@ -21,35 +21,32 @@
 #include "CgalPatch.h"
 #include "PositionGraph.h"
 
-
-
-static const int TRIANGLE_NOT_INIT = -1;
-static const int TRIANGLE_TRANSPARENT = -2;
-
-struct VFaceInfo2
-{
-	VFaceInfo2():nesting_level(TRIANGLE_NOT_INIT) 
-	{
-	}
-	int nesting_level;
-	bool in_domain()
-	{
-		//return nesting_level %3 == 1;
-		return nesting_level >= 0;
-	}
-};
-
-struct VVertexInfo2
-{
-	VVertexInfo2(): nesting_level(TRIANGLE_NOT_INIT) {}
-	int nesting_level;
-};
-
 class VoronoiCgal_Patch : public TriangulationBase
 {
 public:
-	typedef CGAL::Triangulation_vertex_base_with_info_2<VVertexInfo2, K> Vb;
-	typedef CGAL::Triangulation_face_base_with_info_2<VFaceInfo2, K> Fbbb;
+	static const int TRIANGLE_NOT_INIT = -1;
+	static const int TRIANGLE_TRANSPARENT = -2;
+
+	struct FaceInfo2
+	{
+		FaceInfo2():nesting_level(TRIANGLE_NOT_INIT) 
+		{
+		}
+		int nesting_level;
+		bool in_domain()
+		{
+			//return nesting_level %3 == 1;
+			return nesting_level >= 0;
+		}
+	};
+
+	struct VertexInfo2
+	{
+		VertexInfo2(): nesting_level(TRIANGLE_NOT_INIT) {}
+		int nesting_level;
+	};
+	typedef CGAL::Triangulation_vertex_base_with_info_2<VertexInfo2, K> Vb;
+	typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo2, K> Fbbb;
 	typedef CGAL::Constrained_triangulation_face_base_2<K, Fbbb>	Fbb;
 	typedef CGAL::Delaunay_mesh_face_base_2<K, Fbb>			Fb;
 	typedef CGAL::Triangulation_data_structure_2<Vb, Fb>            TDS;

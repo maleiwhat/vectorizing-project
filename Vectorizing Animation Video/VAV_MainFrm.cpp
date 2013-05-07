@@ -17,7 +17,6 @@
 #include "VAV_MainFrm.h"
 #include "VAV_View.h"
 #include "ConvStr.h"
-#include "TriangulationCgal_SeedPoint.h"
 #include "TriangulationCgal_Sideline.h"
 #include "TriangulationCgal_Patch.h"
 #include "VoronoiCgal_Patch.h"
@@ -558,133 +557,171 @@ void VAV_MainFrame::OnButtonControlPointInitialize()
 
 void VAV_MainFrame::OnButtonCGALTriangulation()
 {
+	const bool DRAW_PATCH = true;
+	const bool DRAW_SEPARATE_PATCH = false;
+	const bool DRAW_CONTOUR = false;
+	const bool DRAW_CONTOUR_CONTROL_POINT = false;
+	const bool DRAW_CONTOUR_SKELETON_POINT = false;
 	// TODO: 在此加入您的命令處理常式程式碼
 	//Lines lines1 = m_vavImage.AnimaEdge(5, 0.01, 0.1);
 	//Lines lines = ComputeTrappedBallEdge(m_vavImage, lines1, 5);
 	//cv::Mat lineImage = MakeLineImage(m_vavImage, lines);
 	//m_CvPatchs = S1GetPatchs(lineImage, 1, 10);
 	//m_CvPatchs = S2GetPatchs(m_vavImage, 0, 0);
-	ImageSpline is = S3GetPatchs(m_vavImage, 0, 0);
-// 	TriangulationCgal_Patch cgal_patch;
-// 	cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-// 	cgal_patch.AddImageSpline(is);
+	ImageSpline is;
 
-	for (int i = 0; i < is.m_CvPatchs.size(); ++i)
+	if (DRAW_PATCH || DRAW_SEPARATE_PATCH)
+	{
+		is = S3GetPatchs(m_vavImage, 0, 0);
+	}
+
+	if (DRAW_PATCH)
 	{
 		TriangulationCgal_Patch cgal_patch;
 		cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-		Patch t_patch = ToPatch(is.m_CvPatchs[i]);
-		t_patch.SmoothPatch();
-		cgal_patch.AddPatch(t_patch);
-		is.m_CvPatchs[i].SetImage(m_vavImage);
-		ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint();
-		cgal_patch.AddColorConstraint(constraint_sptr);
+		cgal_patch.AddImageSpline(is);
+
+		for (int i = 0; i < is.m_CvPatchs.size(); ++i)
+		{
+			is.m_CvPatchs[i].SetImage(m_vavImage);
+			ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint();
+			cgal_patch.AddColorConstraint(constraint_sptr);
+		}
+
 		cgal_patch.SetCriteria(0.0, 4000);
 		cgal_patch.Compute();
 		((VAV_View*)this->GetActiveView())->
-			m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
+		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
 		((VAV_View*)this->GetActiveView())->
-			m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
+		m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
 	}
 
-// 	cgal_patch.SetCriteria(0.0, 4000);
-// 	cgal_patch.Compute();
-// 	((VAV_View*)this->GetActiveView())->
-// 		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
-// 	((VAV_View*)this->GetActiveView())->
-// 		m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
+	// separate patch
+	if (DRAW_SEPARATE_PATCH)
+	{
+		for (int i = 0; i < is.m_CvPatchs.size(); ++i)
+		{
+			TriangulationCgal_Patch cgal_patch;
+			cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+			Patch t_patch = ToPatch(is.m_CvPatchs[i]);
+			t_patch.SmoothPatch();
+			cgal_patch.AddPatch(t_patch);
+			is.m_CvPatchs[i].SetImage(m_vavImage);
+			ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint();
+			cgal_patch.AddColorConstraint(constraint_sptr);
+			cgal_patch.SetCriteria(0.0, 4000);
+			cgal_patch.Compute();
+			((VAV_View*)this->GetActiveView())->
+			m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
+			((VAV_View*)this->GetActiveView())->
+			m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
+		}
+	}
 
-// 	ImageSpline is2 = ComputeLines(m_vavImage, m_BlackRegionThreshold * 0.01);
-// 	TriangulationCgal_Patch cgal_contour;
-// 	cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-// 	cgal_contour.AddImageSpline(is2);
-// 	cgal_contour.SetCriteria(0.001, 4000);
-// 	cgal_contour.Compute();
-// 	Vector3s2d colors = GetLinesColor(m_vavImage, cgal_contour.m_OriginLines);
-// 
-// 	// add begin end line
-// 	for (int i = 0; i < colors.size(); ++i)
-// 	{
-// 		Vector3s& cps = colors[i];
-// 
-// 		if (cps.size() > 2)
-// 		{
-// 			Vector3s addcps;
-// 			Vector3 front = cps.front();
-// 			Vector3 back = cps.back();
-// 			addcps.push_back(front);
-// 			addcps.push_back(front);
-// 			addcps.push_back(front);
-// 			cps.insert(cps.begin(), addcps.begin(), addcps.end());
-// 			cps.push_back(back);
-// 			cps.push_back(back);
-// 			cps.push_back(back);
-// 		}
-// 	}
-// 
-// 	for (int count = 0; count < 4; count++)
-// 	{
-// 		for (int i = 0; i < colors.size(); ++i)
-// 		{
-// 			Vector3s& cps = colors[i];
-// 			Vector3s newcps;
-// 
-// 			if (cps.size() < 4) { continue; }
-// 
-// 			newcps.push_back(cps.front());
-// 			newcps.push_back(*(cps.begin()+1));
-// 
-// 			for (int j = 2; j < cps.size() - 2; j ++)
-// 			{
-// 				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
-// 				newcps.push_back(vec);
-// 			}
-// 
-// 			newcps.push_back(*(cps.end()-2));
-// 			newcps.push_back(cps.back());
-// 
-// 			cps = newcps;
-// 		}
-// 	}
-// 	((VAV_View*)this->GetActiveView())->
-// 	m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles());
-// 	((VAV_View*)this->GetActiveView())->
-// 	m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles());
-// 	((VAV_View*)this->GetActiveView())->
-// 	m_D3DApp.AddLineSegs(cgal_contour.m_LineSegs);
-// 	((VAV_View*)this->GetActiveView())->
-// 	m_D3DApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth, colors);
+	TriangulationCgal_Sideline cgal_contour;
+	ImageSpline is2;
 
-	// Control Points
-// 	for (int i = 0; i < cgal_contour.m_Controls.size(); ++i)
-// 	{
-// 		D3DXVECTOR3 color;
-// 		color.x = 0.5 + 0.5 * rand() / (float)RAND_MAX;
-// 		color.y = 0.5 + 0.5 * rand() / (float)RAND_MAX;
-// 		color.z = 0.5 + 0.5 * rand() / (float)RAND_MAX;
-// 		Line& cps = cgal_contour.m_Controls[i];
-//
-// 		for (int j = 0; j < cps.size(); ++j)
-// 		{
-// 			((VAV_View*)this->GetActiveView())->
-// 			m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
-// 		}
-// 	}
-//
-// 	for (int i = 0; i < is2.m_Controls.size(); ++i)
-// 	{
-// 		D3DXVECTOR3 color;
-// 		color.x = 0.5 + 0.5 * rand() / (float)RAND_MAX;
-// 		color.y = 0.5 + 0.5 * rand() / (float)RAND_MAX;
-// 		color.z = 0.5 + 0.5 * rand() / (float)RAND_MAX;
-// 		Line& cps = is2.m_Controls[i];
-//
-// 		for (int j = 0; j < cps.size(); ++j)
-// 		{
-// 			((VAV_View*)this->GetActiveView())->
-// 			m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
-// 		}
-// 	}
+	if (DRAW_CONTOUR)
+	{
+		is2 = ComputeLines(m_vavImage, m_BlackRegionThreshold * 0.01);
+	}
+
+	// contour
+	if (DRAW_CONTOUR)
+	{
+		cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+		cgal_contour.AddImageSpline(is2);
+		cgal_contour.SetCriteria(0.001, 4000);
+		cgal_contour.Compute();
+		Vector3s2d colors = GetLinesColor(m_vavImage, cgal_contour.m_OriginLines);
+
+		// add begin end line
+		for (int i = 0; i < colors.size(); ++i)
+		{
+			Vector3s& cps = colors[i];
+
+			if (cps.size() > 2)
+			{
+				Vector3s addcps;
+				Vector3 front = cps.front();
+				Vector3 back = cps.back();
+				addcps.push_back(front);
+				addcps.push_back(front);
+				addcps.push_back(front);
+				cps.insert(cps.begin(), addcps.begin(), addcps.end());
+				cps.push_back(back);
+				cps.push_back(back);
+				cps.push_back(back);
+			}
+		}
+
+		for (int count = 0; count < 4; count++)
+		{
+			for (int i = 0; i < colors.size(); ++i)
+			{
+				Vector3s& cps = colors[i];
+				Vector3s newcps;
+
+				if (cps.size() < 4) { continue; }
+
+				newcps.push_back(cps.front());
+				newcps.push_back(*(cps.begin() + 1));
+
+				for (int j = 2; j < cps.size() - 2; j ++)
+				{
+					auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
+					newcps.push_back(vec);
+				}
+
+				newcps.push_back(*(cps.end() - 2));
+				newcps.push_back(cps.back());
+				cps = newcps;
+			}
+		}
+
+		((VAV_View*)this->GetActiveView())->
+		m_D3DApp.AddLineSegs(cgal_contour.m_LineSegs);
+		((VAV_View*)this->GetActiveView())->
+		m_D3DApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth, colors);
+
+		if (DRAW_CONTOUR_CONTROL_POINT)
+		{
+			// Control Points
+			for (int i = 0; i < cgal_contour.m_Controls.size(); ++i)
+			{
+				D3DXVECTOR3 color;
+				color.x = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+				color.y = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+				color.z = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+				Line& cps = cgal_contour.m_Controls[i];
+
+				for (int j = 0; j < cps.size(); ++j)
+				{
+					((VAV_View*)this->GetActiveView())->
+					m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
+				}
+			}
+		}
+
+		if (DRAW_CONTOUR_SKELETON_POINT)
+		{
+			for (int i = 0; i < is2.m_Controls.size(); ++i)
+			{
+				D3DXVECTOR3 color;
+				color.x = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+				color.y = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+				color.z = 0.5 + 0.5 * rand() / (float)RAND_MAX;
+				Line& cps = is2.m_Controls[i];
+
+				for (int j = 0; j < cps.size(); ++j)
+				{
+					((VAV_View*)this->GetActiveView())->
+					m_D3DApp.AddBigPoint(cps[j].x, cps[j].y, color);
+				}
+			}
+		}
+	}
+
 	((VAV_View*)this->GetActiveView())->m_D3DApp.BuildPoint();
 	((VAV_View*)this->GetActiveView())->m_D3DApp.DrawScene();
 }
@@ -898,7 +935,7 @@ void VAV_MainFrame::OnSpinTransparencytriangleline()
 }
 
 
-void VAV_MainFrame::OnUpdateSpinTransparencytriangleline(CCmdUI *pCmdUI)
+void VAV_MainFrame::OnUpdateSpinTransparencytriangleline(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyTriangleLine);
@@ -927,7 +964,7 @@ void VAV_MainFrame::OnSpinTransparencylineskeleton()
 	((VAV_View*)this->GetActiveView())->m_D3DApp.SetLineSkeletonTransparency((100 - m_LineSkeletonTransparency) * 0.01);
 }
 
-void VAV_MainFrame::OnUpdateSpinTransparencylineskeleton(CCmdUI *pCmdUI)
+void VAV_MainFrame::OnUpdateSpinTransparencylineskeleton(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyLineSkeleton);

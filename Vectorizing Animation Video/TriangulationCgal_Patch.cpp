@@ -189,21 +189,21 @@ void TriangulationCgal_Patch::Compute()
 		}
 
 		cps.push_back(end);
-// 		hs.Clear();
-//
-// 		for (int j = 0; j < cps.size(); ++j)
-// 		{
-// 			hs.AddPointByDistance(cps[j]);
-// 		}
-// 		res.clear();
-// 		res.push_back(beg);
-//
-// 		for (int j = 1; j < dis-1; ++j)
-// 		{
-// 			res.push_back(hs.GetValue(j));
-// 		}
-//
-// 		res.push_back(end);
+		hs.Clear();
+
+		for (int j = 0; j < cps.size(); ++j)
+		{
+			hs.AddPointByDistance(cps[j]);
+		}
+		res.clear();
+		res.push_back(beg);
+
+		for (int j = 1; j < dis-1; ++j)
+		{
+			res.push_back(hs.GetValue(j));
+		}
+
+		res.push_back(end);
 	}
 }
 
@@ -312,7 +312,8 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 
 void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt, ImageSpline& is, PatchSpline& ps)
 {
-	const int NESTING_LEVEL = TRIANGLE_TRANSPARENT;
+	const int NESTING_LEVEL = 0;
+	//const int NESTING_LEVEL = TRIANGLE_TRANSPARENT;
 
 	if (ps.m_LineIndexs.empty())
 	{

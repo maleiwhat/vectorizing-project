@@ -1183,7 +1183,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		cps = newcps;
 	}
 
-	//is.SmoothingFragments();
+	is.SmoothingFragments();
 	return is;
 }
 
@@ -2241,24 +2241,24 @@ void FillSmallHole(cv::Mat& patchImage)
 ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold)
 {
 	cv::Mat image;
-// 	img.convertTo(image, CV_32FC3);
-// 	Collect_Water(image, image, 5, 5, BlackRegionThreshold);
-	image = img.clone();
-	image = cv::Scalar(0);
-
-	for (int i = 0; i < image.rows; i++)
-	{
-		for (int j = 0; j < image.cols; j++)
-		{
-			if (img.at<cv::Vec3b>(i, j)[0] < 50)
-			{
-				cv::Vec3b& v = image.at<cv::Vec3b>(i, j);
-				v[0] = 255;
-				v[1] = 255;
-				v[2] = 255;
-			}
-		}
-	}
+	img.convertTo(image, CV_32FC3);
+	Collect_Water(image, image, 5, 5, BlackRegionThreshold);
+// 	image = img.clone();
+// 	image = cv::Scalar(0);
+// 
+// 	for (int i = 0; i < image.rows; i++)
+// 	{
+// 		for (int j = 0; j < image.cols; j++)
+// 		{
+// 			if (img.at<cv::Vec3b>(i, j)[0] < 50)
+// 			{
+// 				cv::Vec3b& v = image.at<cv::Vec3b>(i, j);
+// 				v[0] = 255;
+// 				v[1] = 255;
+// 				v[2] = 255;
+// 			}
+// 		}
+// 	}
 
 	ImageSpline is = S4GetPatchs(image, 0, 0);
 	return is;
@@ -2525,8 +2525,25 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	//cv::waitKey();
 	AddCathetus(lines);
 	ImageSpline is = GetImageSpline(tmp_cvps, lines, tmp_image);
-	//is.m_Lines = lines;
-	//is.ComputeToLineFragments();
+	
+	// 還原圖的大小
+
+	for (int i = 0; i < is.m_LineFragments.size(); ++i)
+	{
+		Line& cps = is.m_LineFragments[i].m_Points;
+		Line newcps;
+
+		for (int j = 0; j < cps.size(); j ++)
+		{
+			if (int(cps[j].x) % 2 == 0 && int(cps[j].y) % 2 == 0)
+			{
+				newcps.push_back(cps[j] / 2);
+			}
+		}
+
+		cps = newcps;
+	}
+
 	is.SmoothingFragments();
 	return is;
 }
