@@ -1,7 +1,31 @@
 #include "PositionGraph.h"
 #include "math\Quaternion.h"
 
+#define CGAL_NO_AUTOLINK
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Polygon_2.h>
+#include <CGAL/Polygon_with_holes_2.h>
+#include <CGAL/Polygon_set_2.h>
 
+
+typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef K::Point_2                                   Point_2;
+typedef CGAL::Polygon_2<K>                           Polygon_2;
+typedef CGAL::Polygon_with_holes_2<K>                Polygon_with_holes_2;
+typedef CGAL::Polygon_set_2<K>                       Polygon_set_2;
+
+#include <boost/polygon/polygon.hpp>
+#include <cassert>
+namespace gtl = boost::polygon;
+using namespace boost::polygon::operators;
+typedef gtl::polygon_data<double> gPolygon;
+typedef gtl::polygon_traits<gPolygon>::point_type gPoint;
+typedef std::vector<gPoint> gPoints;
+
+using namespace gtl; //because of operators
+typedef std::vector<gPolygon> PolygonSet;
+
+#include "clipper.hpp"
 PositionGraph::PositionGraph(void)
 {
 }
@@ -448,6 +472,8 @@ void PositionGraph::SmoothGraphLines()
 
 void PositionGraph::MakeContourLines()
 {
+	using namespace ClipperLib;
+
 	for (int i = 0; i < m_Lines.size(); ++i)
 	{
 		Line now_line = m_Lines[i];
@@ -461,6 +487,7 @@ void PositionGraph::MakeContourLines()
 		for (int j = 1; j < now_line.size(); ++j)
 		{
 			rights[j] = Quaternion::GetRotation(now_line[j] - now_line[j - 1], 90);
+			rights[j].normalise();
 		}
 
 		//lineSegs.push_back(now_line.front() + rights.front()*now_linewidth.front() * 0.5);
@@ -492,7 +519,7 @@ void PositionGraph::MakeContourLines()
 		{
 			Vector2& now = cps[j];
 
-			if (last.distance(now) > 0.1)
+			if (last.distance(now) > 0.5)
 			{
 				newcps.push_back(now);
 				last = now;
@@ -502,6 +529,70 @@ void PositionGraph::MakeContourLines()
 		cps = newcps;
 	}
 
+	Clipper c;
+
+	for (int i = 0; i < m_ContourLines.size(); ++i)
+	{
+		Polygons Qx;
+		Qx.resize(1);
+		const Line& now_line = m_ContourLines[i];
+		Qx[0].resize(now_line.size());
+
+		for (int j = 0; j < now_line.size(); j ++)
+		{
+			Qx[0][j].X = now_line[j].x*1000;
+			Qx[0][j].Y = now_line[j].y*1000;
+		}
+
+		c.AddPolygons(Qx, ptSubject);
+	}
+
+	Polygons sol;
+	m_ContourLines.clear();
+	c.Execute(ctUnion, sol, pftPositive, pftPositive);
+
+	for (Polygons::size_type i = 0; i < sol.size(); ++i)
+	{
+		m_ContourLines.push_back(Line());
+		Line& cps = m_ContourLines.back();
+
+		for (ClipperLib::Polygon::size_type j = 0; j < sol[i].size(); ++j)
+		{
+			cps.push_back(Vector2(sol[i][j].X*0.001, sol[i][j].Y*0.001));
+		}
+	}
+
+	/*
+	PolygonSet ps;
+
+	for (int i = 0; i < m_ContourLines.size(); ++i)
+	{
+		gPoints Qx;
+		const Line& now_line = m_ContourLines[i];
+
+		for (int j = 0; j < now_line.size(); j ++)
+		{
+			Qx.push_back(gPoint(now_line[j].x, now_line[j].y));
+		}
+
+		gPolygon Qxx(Qx.begin(), Qx.end());
+		ps += Qxx;
+	}
+
+	m_ContourLines.clear();
+
+	for (auto itx = ps.begin(); itx != ps.end(); ++itx)
+	{
+		m_ContourLines.push_back(Line());
+		Line& cps = m_ContourLines.back();
+
+		for (auto vit = itx->begin(); vit != itx->end(); ++vit)
+		{
+			cps.push_back(now);
+		}
+	}
+
+	/*
 	Polygon_set_2 S;
 	Polygon_2 P;
 
@@ -572,4 +663,5 @@ void PositionGraph::MakeContourLines()
 			lineSegs.push_back(lineSegs.front());
 		}
 	}
+	*/
 }

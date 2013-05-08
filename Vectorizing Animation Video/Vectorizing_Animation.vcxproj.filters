@@ -28,6 +28,9 @@
     <Filter Include="shader">
       <UniqueIdentifier>{471c4c4c-8f05-4b76-a47d-b3fc0ab8eee1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="clipper">
+      <UniqueIdentifier>{c44de3d1-5038-4777-aa6e-a00cdacec628}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -282,6 +285,9 @@
     <ClInclude Include="CvExtenstion0.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="clipper.hpp">
+      <Filter>clipper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="algSpline.cpp">
@@ -493,6 +499,9 @@
     </ClCompile>
     <ClCompile Include="CvExtenstion0.cpp">
       <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="clipper.cpp">
+      <Filter>clipper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
