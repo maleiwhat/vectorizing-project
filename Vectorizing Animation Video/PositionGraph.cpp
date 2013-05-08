@@ -1,4 +1,5 @@
 #include "PositionGraph.h"
+#include "math\Quaternion.h"
 
 
 PositionGraph::PositionGraph(void)
@@ -339,6 +340,7 @@ void PositionGraph::SmoothGraphLines()
 			cps = newcps;
 		}
 	}
+
 	// smooth line
 	for (int repeatCount = 0; repeatCount < 3; repeatCount++)
 	{
@@ -361,6 +363,7 @@ void PositionGraph::SmoothGraphLines()
 			cps = newcps;
 		}
 	}
+
 	// add begin end line width
 	for (int i = 0; i < m_LinesWidth.size(); ++i)
 	{
@@ -380,6 +383,7 @@ void PositionGraph::SmoothGraphLines()
 			cps.push_back(back * 0.6);
 		}
 	}
+
 	// add begin end line
 	for (int i = 0; i < m_Lines.size(); ++i)
 	{
@@ -439,5 +443,133 @@ void PositionGraph::SmoothGraphLines()
 
 		newcps.push_back(cps.back());
 		cps = newcps;
+	}
+}
+
+void PositionGraph::MakeContourLines()
+{
+	for (int i = 0; i < m_Lines.size(); ++i)
+	{
+		Line now_line = m_Lines[i];
+		Line rights;
+		m_ContourLines.push_back(Line());
+		Line& lineSegs = m_ContourLines.back();
+		rights.resize(now_line.size());
+		const double_vector& now_linewidth = m_LinesWidth[i];
+		rights[0] = Quaternion::GetRotation(now_line[1] - now_line[0], 90);
+
+		for (int j = 1; j < now_line.size(); ++j)
+		{
+			rights[j] = Quaternion::GetRotation(now_line[j] - now_line[j - 1], 90);
+		}
+
+		//lineSegs.push_back(now_line.front() + rights.front()*now_linewidth.front() * 0.5);
+
+		for (int j = 0; j < now_line.size(); ++j)
+		{
+			lineSegs.push_back(now_line[j] + rights[j]*now_linewidth[j] * 0.5);
+		}
+
+		//lineSegs.push_back(now_line.back() + rights.back()*now_linewidth.back() * 0.5);
+
+		for (int j = now_line.size() - 1; j >= 0; --j)
+		{
+			lineSegs.push_back(now_line[j] - rights[j]*now_linewidth[j] * 0.5);
+		}
+	}
+
+	for (int i = 0; i < m_ContourLines.size(); ++i)
+	{
+		Line& cps = m_ContourLines[i];
+		Line newcps;
+
+		if (cps.size() < 4) { continue; }
+
+		newcps.push_back(cps.front());
+		Vector2 last = cps.front();
+
+		for (int j = 1; j < cps.size(); j ++)
+		{
+			Vector2& now = cps[j];
+
+			if (last.distance(now) > 0.1)
+			{
+				newcps.push_back(now);
+				last = now;
+			}
+		}
+
+		cps = newcps;
+	}
+
+	Polygon_set_2 S;
+	Polygon_2 P;
+
+	for (int i = 0; i < m_ContourLines[0].size(); ++i)
+	{
+		const Line& now_line = m_ContourLines[0];
+		P.push_back(Point_2(now_line[i].x, now_line[i].y));
+	}
+
+	if (P.is_clockwise_oriented())
+	{
+		P.reverse_orientation();
+	}
+
+	S.insert(P);
+
+	for (int i = 1; i < m_ContourLines.size(); ++i)
+	{
+		Polygon_2 Q;
+		const Line& now_line = m_ContourLines[i];
+
+		for (int j = 0; j < now_line.size(); j ++)
+		{
+			Q.push_back(Point_2(now_line[j].x, now_line[j].y));
+		}
+
+		if (Q.is_simple())
+		{
+			if (Q.is_clockwise_oriented())
+			{
+				Q.reverse_orientation();
+			}
+
+			S.join(Q);
+		}
+	}
+
+	std::vector<Polygon_with_holes_2> res;
+	std::vector<Polygon_with_holes_2>::const_iterator it;
+	S.polygons_with_holes(std::back_inserter(res));
+	m_ContourLines.clear();
+
+	for (it = res.begin(); it != res.end(); ++it)
+	{
+		if (it->outer_boundary().size() > 0)
+		{
+			m_ContourLines.push_back(Line());
+			Line& lineSegs = m_ContourLines.back();
+
+			for (auto vit = it->outer_boundary().vertices_begin(); vit != it->outer_boundary().vertices_end(); ++vit)
+			{
+				lineSegs.push_back(Vector2(vit->x(), vit->y()));
+			}
+
+			lineSegs.push_back(lineSegs.front());
+		}
+
+		if (it->has_holes())
+		{
+			m_ContourLines.push_back(Line());
+			Line& lineSegs = m_ContourLines.back();
+
+			for (auto vit = it->holes_begin()->vertices_begin(); vit != it->holes_begin()->vertices_end(); ++vit)
+			{
+				lineSegs.push_back(Vector2(vit->x(), vit->y()));
+			}
+
+			lineSegs.push_back(lineSegs.front());
+		}
 	}
 }

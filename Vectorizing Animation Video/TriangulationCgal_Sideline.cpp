@@ -121,8 +121,10 @@ void TriangulationCgal_Sideline::Compute()
 
 				if (!m_Triangulation.is_constrained(e))
 				{
-					Vector2 e1(e.first->vertex(m_Triangulation.ccw(e.second))->point().hx(), e.first->vertex(m_Triangulation.ccw(e.second))->point().hy());
-					Vector2 e2(e.first->vertex(m_Triangulation.cw(e.second))->point().hx(), e.first->vertex(m_Triangulation.cw(e.second))->point().hy());
+					Vector2 e1(e.first->vertex(m_Triangulation.ccw(e.second))->point().hx(), 
+						e.first->vertex(m_Triangulation.ccw(e.second))->point().hy());
+					Vector2 e2(e.first->vertex(m_Triangulation.cw(e.second))->point().hx(), 
+						e.first->vertex(m_Triangulation.cw(e.second))->point().hy());
 					pts.push_back(e1.midPoint(e2));
 					widths.push_back(e1.distance(e2));
 					++constrained;
@@ -164,6 +166,8 @@ void TriangulationCgal_Sideline::Compute()
 	m_OriginLines = m_PositionGraph.m_Lines;
 	m_PositionGraph.SmoothGraphLines();
 	m_Lines = m_PositionGraph.m_Lines;
+	m_PositionGraph.MakeContourLines();
+	m_ContourLines = m_PositionGraph.m_ContourLines;
 	m_LinesWidth = m_PositionGraph.m_LinesWidth;
 	m_Controls.resize(m_Lines.size());
 

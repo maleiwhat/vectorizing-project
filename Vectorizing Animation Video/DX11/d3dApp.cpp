@@ -3,6 +3,7 @@
 #include "dxut/DXUT.h"
 #include "SplineShape.h"
 #include <auto_link_effect11.hpp>
+#include "math/Quaternion.h"
 
 D3DApp::D3DApp()
 {
@@ -932,12 +933,12 @@ void D3DApp::SetPictureTransparency(float t)
 	m_Pics_Transparency->SetFloat(t);
 }
 
-void D3DApp::SetLineTransparency( float t )
+void D3DApp::SetLineTransparency(float t)
 {
 	m_Lines_Transparency->SetFloat(t);
 }
 
-void D3DApp::SetLineSkeletonTransparency( float t )
+void D3DApp::SetLineSkeletonTransparency(float t)
 {
 	m_SkeletonLines_Transparency->SetFloat(t);
 }
@@ -1244,5 +1245,42 @@ void D3DApp::AddLineSegs(const LineSegs& lines)
 		slv.p2.y = m_PicH - now_line.end.y;
 		m_SkeletonLinesVertices.push_back(slv);
 	}
+}
+
+void D3DApp::AddLinesLine(const Lines& lines, const double_vector2d& linewidths)
+{
+	LineSegs lineSegs;
+
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		Line now_line = lines[i];
+		Line rights;
+		rights.resize(now_line.size());
+		const double_vector& now_linewidth = linewidths[i];
+		rights[0] = Quaternion::GetRotation(now_line[1] - now_line[0], 90);
+
+		for (int j = 1; j < now_line.size(); ++j)
+		{
+			rights[j] = Quaternion::GetRotation(now_line[j] - now_line[j - 1], 90);
+		}
+
+		lineSegs.push_back(LineSeg(now_line.front() - rights.front()*now_linewidth.front() * 0.5,
+		                           now_line.front() + rights.front()*now_linewidth.front() * 0.5));
+
+		for (int j = 1; j < now_line.size(); ++j)
+		{
+			lineSegs.push_back(LineSeg(now_line[j] + rights[j]*now_linewidth[j] * 0.5, now_line[j - 1] + rights[j - 1]*now_linewidth[j - 1] * 0.5));
+		}
+
+		lineSegs.push_back(LineSeg(now_line.back() - rights.back()*now_linewidth.back() * 0.5,
+		                           now_line.back() + rights.back()*now_linewidth.back() * 0.5));
+
+		for (int j = now_line.size() - 1; j > 0; --j)
+		{
+			lineSegs.push_back(LineSeg(now_line[j] - rights[j]*now_linewidth[j] * 0.5, now_line[j - 1] - rights[j - 1]*now_linewidth[j - 1] * 0.5));
+		}
+	}
+
+	AddLineSegs(lineSegs);
 }
 

@@ -35,6 +35,7 @@ public:
 	void AddBigPoint(float x, float y, D3DXVECTOR3 color);
 	void AddLines(const Lines& lines, const double_vector2d& linewidths, const Vector3s2d& colors);
 	void AddLines(const Lines& lines, const double_vector2d& linewidths);
+	void AddLinesLine(const Lines& lines, const double_vector2d& linewidths);
 	void AddLines(const Lines& lines);
 	void AddLineSegs(const LineSegs& lines);
 	void AddLines(const Points2d& lines);

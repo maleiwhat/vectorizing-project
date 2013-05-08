@@ -32,7 +32,7 @@ public:
 	}
 	vavImage& operator = (const cv::Mat& mat)
 	{
-		m_Image = mat;
+		m_Image = mat.clone();
 		return *this;
 	}
 private:

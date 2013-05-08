@@ -622,5 +622,6 @@
     <None Include="res\ribbon.mfcribbon-ms">
       <Filter>資源檔</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

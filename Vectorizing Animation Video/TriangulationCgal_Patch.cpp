@@ -121,8 +121,10 @@ void TriangulationCgal_Patch::Compute()
 
 				if (!m_Triangulation.is_constrained(e))
 				{
-					Vector2 e1(e.first->vertex(m_Triangulation.ccw(e.second))->point().hx(), e.first->vertex(m_Triangulation.ccw(e.second))->point().hy());
-					Vector2 e2(e.first->vertex(m_Triangulation.cw(e.second))->point().hx(), e.first->vertex(m_Triangulation.cw(e.second))->point().hy());
+					Vector2 e1(e.first->vertex(m_Triangulation.ccw(e.second))->point().hx(), 
+						e.first->vertex(m_Triangulation.ccw(e.second))->point().hy());
+					Vector2 e2(e.first->vertex(m_Triangulation.cw(e.second))->point().hx(), 
+						e.first->vertex(m_Triangulation.cw(e.second))->point().hy());
 					pts.push_back(e1.midPoint(e2));
 					widths.push_back(e1.distance(e2));
 					++constrained;

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\openssl.1.0.1.18\build\native\openssl.props" Condition="Exists('..\packages\openssl.1.0.1.18\build\native\openssl.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -461,10 +462,15 @@
     <Image Include="res\writesmall.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="res\ribbon.mfcribbon-ms" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\zlib.redist.1.2.7.34\build\native\zlib.redist.targets" Condition="Exists('..\packages\zlib.redist.1.2.7.34\build\native\zlib.redist.targets')" />
+    <Import Project="..\packages\zlib.1.2.7.34\build\native\zlib.targets" Condition="Exists('..\packages\zlib.1.2.7.34\build\native\zlib.targets')" />
+    <Import Project="..\packages\openssl.redist.1.0.1.18\build\native\openssl.redist.targets" Condition="Exists('..\packages\openssl.redist.1.0.1.18\build\native\openssl.redist.targets')" />
+    <Import Project="..\packages\openssl.1.0.1.18\build\native\openssl.targets" Condition="Exists('..\packages\openssl.1.0.1.18\build\native\openssl.targets')" />
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>

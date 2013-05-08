@@ -1073,9 +1073,6 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		}
 	}
 
-	//cv::namedWindow("joint_image", 0);
-	imshow("joint_image", joint_image);
-	//cv::waitKey();
 	cv::Mat tmp_image2 = gap_image.clone();
 	tmp_image2.create(gap_image.size(), CV_8UC3);
 	DrawCvPatchs(tmp_cvps, tmp_image2);
@@ -2118,15 +2115,15 @@ bool LightComparef(const ColorPtrf& lhs, const ColorPtrf& rhs)
 
 void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth, double BlackRegionThreshold)
 {
-	cv::Mat MaxCapacity, MaxCapacity2, WaterMap, RealMap, ThresholdMap;
+	cv::Mat MaxCapacity, MaxCapacity2, WaterMap, RealMap, ThresholdMap, ans;
 	Vec3fptrs ary(rectw * recth);
 	MaxCapacity.create(src.rows, src.cols, CV_32F);
 	WaterMap.create(src.rows, src.cols, CV_32F);
 	RealMap.create(src.rows, src.cols, CV_32F);
 	ThresholdMap.create(src.rows, src.cols, CV_32F);
 	MaxCapacity2.create(src.rows, src.cols, CV_32F);
-	dst.create(src.rows, src.cols, CV_8UC3);
-	//WaterMap = cv::Scalar(1);
+	ans.create(src.rows, src.cols, CV_8UC3);
+	ans = cv::Scalar(0);
 
 	for (int y = 0; y < src.rows; ++y)
 	{
@@ -2139,7 +2136,6 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth, double Black
 		}
 	}
 
-	normalize(MaxCapacity, MaxCapacity, 0, 1, cv::NORM_MINMAX);
 	// END
 	normalize(MaxCapacity, MaxCapacity, 0, 1, cv::NORM_MINMAX);
 
@@ -2192,23 +2188,25 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth, double Black
 		}
 	}
 
-	imshow("MaxCapacity", MaxCapacity);
-	imshow("MaxCapacity2", MaxCapacity2);
+// 	imshow("MaxCapacity", MaxCapacity);
+// 	imshow("MaxCapacity2", MaxCapacity2);
 	FillSmallHole(MaxCapacity2);
 
-	for (int i = 0; i < dst.rows; i++)
+	for (int i = 0; i < ans.rows; i++)
 	{
-		for (int j = 0; j < dst.cols; j++)
+		for (int j = 0; j < ans.cols; j++)
 		{
 			if (MaxCapacity2.at<float>(i, j) > 0)
 			{
-				cv::Vec3b& v = dst.at<cv::Vec3b>(i, j);
+				cv::Vec3b& v = ans.at<cv::Vec3b>(i, j);
 				v[0] = 255;
 				v[1] = 255;
 				v[2] = 255;
 			}
 		}
 	}
+
+	dst = ans;
 }
 
 void FillSmallHole(cv::Mat& patchImage)
@@ -2241,11 +2239,11 @@ void FillSmallHole(cv::Mat& patchImage)
 ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold)
 {
 	cv::Mat image;
-	img.convertTo(image, CV_32FC3);
+	img.convertTo(image, CV_32FC3, 1 / 255.0);
 	Collect_Water(image, image, 5, 5, BlackRegionThreshold);
 // 	image = img.clone();
 // 	image = cv::Scalar(0);
-// 
+//
 // 	for (int i = 0; i < image.rows; i++)
 // 	{
 // 		for (int j = 0; j < image.cols; j++)
@@ -2259,7 +2257,6 @@ ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold)
 // 			}
 // 		}
 // 	}
-
 	ImageSpline is = S4GetPatchs(image, 0, 0);
 	return is;
 }
@@ -2304,6 +2301,8 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		}
 	}
 
+	imshow("tmp_image", tmp_image);
+	//cv::waitKey();
 	cv::Mat gap_image;
 	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
 	gap_image = cv::Scalar(0);
@@ -2380,11 +2379,12 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		}
 	}
 
+	imshow("joint_mask", joint_mask);
+	//cv::waitKey();
+	imshow("gap_image", gap_image);
+	//cv::waitKey();
 	mask.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
 	mask = cv::Scalar::all(0);
-	// create smaller image to fix border problem
-	joint_image.create(joint_mask.rows , joint_mask.cols , CV_8UC3);
-	joint_image = cv::Scalar::all(0);
 
 	// show joint
 	for (int i = 0; i < joint_mask.rows ; i++)
@@ -2402,8 +2402,9 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		}
 	}
 
-	// 	// delete gap
-	// 	gap_image = cv::Scalar::all(0);
+	// create smaller image to fix border problem
+	joint_image.create(joint_mask.rows , joint_mask.cols , CV_8UC3);
+	joint_image = cv::Scalar::all(0);
 	tmp_image = joint_image.clone();
 
 	for (int i = 0; i < joint_image.rows ; i++)
@@ -2469,7 +2470,6 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		}
 	}
 
-	imshow("joint_image", joint_image);
 	//cv::waitKey();
 	cv::Mat tmp_image2 = gap_image.clone();
 	tmp_image2.create(gap_image.size(), CV_8UC3);
@@ -2525,7 +2525,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	//cv::waitKey();
 	AddCathetus(lines);
 	ImageSpline is = GetImageSpline(tmp_cvps, lines, tmp_image);
-	
+
 	// 還原圖的大小
 
 	for (int i = 0; i < is.m_LineFragments.size(); ++i)

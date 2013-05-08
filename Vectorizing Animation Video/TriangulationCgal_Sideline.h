@@ -97,6 +97,7 @@ public:
 	Lines		m_Lines;
 	double_vector2d	m_LinesWidth;
 	Lines		m_Controls;
+	Lines		m_ContourLines;
 };
 
 

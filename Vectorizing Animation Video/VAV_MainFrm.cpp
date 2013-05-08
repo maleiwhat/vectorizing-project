@@ -513,14 +513,14 @@ void VAV_MainFrame::OnButtonCanny()
 		a = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
 	}
 
-//	m_cannyImage = m_vavImage;
+	//	m_cannyImage = m_vavImage;
 	//cv::Mat ce = CannyEdge(m_vavImage, t1, t2, a);
 	//Lines lines1 = ComputeEdgeLine(ce);
-//	Lines lines = m_vavImage.AnimaEdge(5, 0.01, 0.1);
-//	lines = ComputeTrappedBallEdge(m_vavImage, lines, 5);
-// 	cv::Mat lineImage = MakeLineImage(m_vavImage, lines);
-// 	lines = GetLines(GetSidelines(lineImage));
-//	m_cannyImage.ShowEdgeLine(lines);
+	//	Lines lines = m_vavImage.AnimaEdge(5, 0.01, 0.1);
+	//	lines = ComputeTrappedBallEdge(m_vavImage, lines, 5);
+	// 	cv::Mat lineImage = MakeLineImage(m_vavImage, lines);
+	// 	lines = GetLines(GetSidelines(lineImage));
+	//	m_cannyImage.ShowEdgeLine(lines);
 	m_cannyImage = m_vavImage;
 	//Skeleton(m_cannyImage);
 	cv::Mat cw, cw2;
@@ -557,12 +557,12 @@ void VAV_MainFrame::OnButtonControlPointInitialize()
 
 void VAV_MainFrame::OnButtonCGALTriangulation()
 {
-	const bool DRAW_PATCH = true;
+	const bool DRAW_PATCH = false;
 	const bool DRAW_SEPARATE_PATCH = false;
-	const bool DRAW_CONTOUR = false;
+	const bool DRAW_CONTOUR = true;
 	const bool DRAW_CONTOUR_CONTROL_POINT = false;
 	const bool DRAW_CONTOUR_SKELETON_POINT = false;
-	// TODO: 在此加入您的命令處理常式程式碼
+
 	//Lines lines1 = m_vavImage.AnimaEdge(5, 0.01, 0.1);
 	//Lines lines = ComputeTrappedBallEdge(m_vavImage, lines1, 5);
 	//cv::Mat lineImage = MakeLineImage(m_vavImage, lines);
@@ -681,9 +681,10 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 
 		((VAV_View*)this->GetActiveView())->
 		m_D3DApp.AddLineSegs(cgal_contour.m_LineSegs);
+// 		((VAV_View*)this->GetActiveView())->
+// 		m_D3DApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth, colors);
 		((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth, colors);
-
+			m_D3DApp.AddLines(cgal_contour.m_ContourLines);
 		if (DRAW_CONTOUR_CONTROL_POINT)
 		{
 			// Control Points
@@ -766,7 +767,8 @@ void VAV_MainFrame::OnButtonLaplace()
 
 void VAV_MainFrame::OnSpinTransparencySelectPatch()
 {
-	((VAV_View*)this->GetActiveView())->m_D3DApp.SetSelectPatchTransparency((100 - m_SelectPatchTransparency) * 0.01);
+	((VAV_View*)this->GetActiveView())->
+	m_D3DApp.SetSelectPatchTransparency((100 - m_SelectPatchTransparency) * 0.01);
 }
 
 
@@ -781,7 +783,8 @@ void VAV_MainFrame::OnUpdateSpinTransparencySelectPatch(CCmdUI* pCmdUI)
 		m_SelectPatchTransparency = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
 	}
 
-	((VAV_View*)this->GetActiveView())->m_D3DApp.SetSelectPatchTransparency((100 - m_SelectPatchTransparency) * 0.01);
+	((VAV_View*)this->GetActiveView())->
+	m_D3DApp.SetSelectPatchTransparency((100 - m_SelectPatchTransparency) * 0.01);
 }
 
 void VAV_MainFrame::ShowPatch(double x, double y)
