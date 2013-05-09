@@ -11,7 +11,7 @@ typedef K::Point_2 Point;
 typedef std::vector<Point> Points;
 typedef std::vector<Points> Points2d;
 
-typedef std::deque<Vector2> Line;
+typedef std::vector<Vector2> Line;
 typedef std::vector<Line> Lines;
 typedef std::vector<cv::Point> CvPoints;
 typedef std::vector<CvPoints> CvPoints2d;

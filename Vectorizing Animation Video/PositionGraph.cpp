@@ -494,14 +494,14 @@ void PositionGraph::MakeContourLines()
 
 		for (int j = 0; j < now_line.size(); ++j)
 		{
-			lineSegs.push_back(now_line[j] + rights[j]*now_linewidth[j] * 0.5);
+			lineSegs.push_back(now_line[j] + rights[j]*(now_linewidth[j]-0.2) * 0.5);
 		}
 
 		//lineSegs.push_back(now_line.back() + rights.back()*now_linewidth.back() * 0.5);
 
 		for (int j = now_line.size() - 1; j >= 0; --j)
 		{
-			lineSegs.push_back(now_line[j] - rights[j]*now_linewidth[j] * 0.5);
+			lineSegs.push_back(now_line[j] - rights[j]*(now_linewidth[j]-0.2) * 0.5);
 		}
 	}
 
@@ -540,8 +540,8 @@ void PositionGraph::MakeContourLines()
 
 		for (int j = 0; j < now_line.size(); j ++)
 		{
-			Qx[0][j].X = now_line[j].x*1000;
-			Qx[0][j].Y = now_line[j].y*1000;
+			Qx[0][j].X = now_line[j].x * 10000;
+			Qx[0][j].Y = now_line[j].y * 10000;
 		}
 
 		c.AddPolygons(Qx, ptSubject);
@@ -558,7 +558,7 @@ void PositionGraph::MakeContourLines()
 
 		for (ClipperLib::Polygon::size_type j = 0; j < sol[i].size(); ++j)
 		{
-			cps.push_back(Vector2(sol[i][j].X*0.001, sol[i][j].Y*0.001));
+			cps.push_back(Vector2(sol[i][j].X * 0.0001, sol[i][j].Y * 0.0001));
 		}
 	}
 
@@ -664,4 +664,18 @@ void PositionGraph::MakeContourLines()
 		}
 	}
 	*/
+}
+
+Patch PositionGraph::MakePatch()
+{
+	Patch p;
+
+	if (m_ContourLines.size() > 0)
+	{
+		p.Outer() = m_ContourLines[0];
+		p.Inter().insert(p.Inter().begin(),
+		                 m_ContourLines.begin() + 1, m_ContourLines.end());
+	}
+
+	return p;
 }

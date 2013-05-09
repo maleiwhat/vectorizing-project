@@ -26,13 +26,18 @@ class TriangulationCgal_Sideline : public TriangulationBase
 public:
 	struct FaceInfo2
 	{
-		FaceInfo2() {}
+		FaceInfo2():nesting_level(-1), color_label(0) {}
 		int nesting_level;
+		int color_label;
 		bool in_domain()
 		{
-			//return nesting_level %3 == 1;
 			return nesting_level >= 0;
 		}
+		bool in_domain2()
+		{
+			return nesting_level %2 == 1;
+		}
+
 	};
 
 	struct VertexInfo2
@@ -76,6 +81,8 @@ public:
 
 	void mark_domains(Triangulation& ct, Triangulation::Face_handle start, int index, std::list<Triangulation::Edge>& border);
 	void mark_domains(Triangulation& cdt);
+	void mark_domains2(Triangulation& ct, Triangulation::Face_handle start, int index, std::list<Triangulation::Edge>& border, int color_label);
+	void mark_domains2(Triangulation& cdt);
 	void insert_polygon(Triangulation& cdt, ImageSpline& is, int i);
 	void insert_polygonInter(Triangulation& cdt, ImageSpline& is, int idx);
 	void insert_polygonInter2(Triangulation& cdt, ImageSpline& is, PatchSpline& ps);

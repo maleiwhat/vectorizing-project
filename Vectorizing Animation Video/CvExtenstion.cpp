@@ -1782,6 +1782,62 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int r
 	out_array.push_back(cvp);
 }
 
+void S3FloodFill( int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int x, int y, int dilation /*= 0*/, int erosion /*= 0*/ )
+{
+	if (mask01.at<uchar>(y + 1, x + 1) > 0
+		|| mask02.at<uchar>(y , x) > 0)
+	{
+		return;
+	}
+
+	cv::Vec3b v = image.at<cv::Vec3b>(y, x);
+	int b = cc % 255;
+	int g = cc / 255 ;
+	int r = cc / (255 * 255);
+
+	if (v[0] == 0 && v[1] == 0 && v[2] == 0)
+	{
+		return;
+		b = 0;
+		g = 0;
+		r = 0;
+		cc--;
+	}
+
+	cv::Point seed(x, y);
+	cv::Rect ccomp;
+	printf("bcc %d\n", cc);
+	cc++;
+	cv::Scalar newVal(b, g, r);
+	int area;
+	int lo = range;
+	int up = range;
+	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
+	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
+	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
+		cv::Scalar(up, up, up), flags);
+	// get Contour line
+	cv::Mat mask2 = mask01.clone();
+	ClearEdge(mask2);
+
+	for (int i = 1; i < mask2.rows - 1; i++)
+	{
+		for (int j = 1; j < mask2.cols - 1; j++)
+		{
+			uchar& v = mask2.at<uchar>(i, j);
+
+			if (v > 128)
+			{
+				v = 255;
+			}
+			else
+			{
+				v = 0;
+			}
+		}
+	}
+}
+
 void LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y)
 {
 	if (image.at<cv::Vec3b>(y, x)[0] != 60
@@ -2276,8 +2332,6 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	tmp_image.create(image.rows + 2, image.cols + 2, CV_8UC3);
 	joint_mask = cv::Scalar::all(0);
 	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
-	mask = cv::Scalar::all(0);
-	CvPatchs cvps;
 	image0.copyTo(image);
 	mask = cv::Scalar::all(0);
 	int cc = 1;
@@ -2286,7 +2340,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	{
 		for (int j = 1; j < image.cols - 1; j++)
 		{
-			S3FloodFill(cc, image, mask, joint_mask, 0, j, i, cvps, dilation, erosion);
+			S3FloodFill(cc, image, mask, joint_mask, 0, j, i, dilation, erosion);
 		}
 	}
 

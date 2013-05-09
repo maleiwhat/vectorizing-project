@@ -67,6 +67,7 @@ public:
 
 	void mark_domains( Triangulation& ct, Triangulation::Face_handle start, int index, std::list<Triangulation::Edge>& border );
 	void mark_domains( Triangulation& cdt );
+
 	Triangulation	m_Triangulation;
 	Criteria	m_Criteria;
 	Points		m_Points;

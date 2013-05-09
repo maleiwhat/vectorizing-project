@@ -1,5 +1,6 @@
 #pragma once
 #include "PositionGraph_Node.h"
+#include "Patch.h"
 
 class PositionGraph
 {
@@ -19,7 +20,8 @@ public:
 	~PositionGraph(void);
 	void MakeGraphLines();	
 	void SmoothGraphLines();
-	void MakeContourLines();	
+	void MakeContourLines();
+	Patch MakePatch();
 private:
 	void InterMakeGraphLines();
 	void AddNode(const PositionGraph_Node& pgn);
