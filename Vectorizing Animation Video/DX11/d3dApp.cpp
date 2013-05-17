@@ -12,6 +12,8 @@ D3DApp::D3DApp()
 	m_SwapChain = NULL;
 	m_DepthStencilBuffer = NULL;
 	m_DrawTexture = NULL;
+	m_distDirTextureRV = NULL;
+	m_distDirTextureTV = NULL;
 	m_DepthStencilView2 = NULL;
 	m_RenderTargetView = NULL;
 	m_DepthStencilView = NULL;
@@ -119,6 +121,8 @@ D3DApp::~D3DApp()
 	ReleaseCOM(m_Pics_Effect);
 	ReleaseCOM(m_Pics_PLayout);
 	ReleaseCOM(m_BackBuffer);
+	ReleaseCOM(m_distDirTextureRV);
+	ReleaseCOM(m_distDirTextureTV);
 
 	if (m_DXUT_UI)
 	{
@@ -173,6 +177,8 @@ void D3DApp::OnResize(int w, int h)
 
 	if (m_Pics_Width)
 	{
+		mClientWidth = m_PicW;
+		mClientHeight = m_PicH;
 		m_Pics_Width->SetFloat(mClientWidth);
 		m_Pics_Height->SetFloat(mClientHeight);
 		m_Triangle_Width->SetFloat(mClientWidth);
@@ -194,8 +200,10 @@ void D3DApp::OnResize(int w, int h)
 	ReleaseCOM(m_RenderTargetView);
 	ReleaseCOM(m_DepthStencilView);
 	ReleaseCOM(m_DepthStencilBuffer);
-	ReleaseCOM(m_DrawTexture);
 	ReleaseCOM(m_BackBuffer);
+	ReleaseCOM(m_DrawTexture);
+	ReleaseCOM(m_distDirTextureRV);
+	ReleaseCOM(m_distDirTextureTV);
 	DXUTResizeDXGIBuffers(mClientWidth, mClientHeight, 0);
 	// Resize the swap chain and recreate the render target view.
 	//HR(mSwapChain->ResizeBuffers(2, mClientWidth, mClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, 0));
@@ -216,10 +224,20 @@ void D3DApp::OnResize(int w, int h)
 	depthStencilDesc.CPUAccessFlags = 0;
 	depthStencilDesc.MiscFlags      = 0;
 	HR(m_d3dDevice->CreateTexture2D(&depthStencilDesc, 0, &m_DepthStencilBuffer));
+	HR(m_d3dDevice->CreateDepthStencilView(m_DepthStencilBuffer, 0,
+	                                       &m_DepthStencilView));
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
-	texDesc.Width     = mClientWidth;
-	texDesc.Height    = mClientHeight;
+//  if (m_PicW > 0)
+//  {
+//      texDesc.Width     = m_PicW;
+//      texDesc.Height    = m_PicH;
+//  }
+//  else
+	{
+		texDesc.Width     = mClientWidth;
+		texDesc.Height    = mClientHeight;
+	}
 	texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	texDesc.MipLevels = 1;
 	texDesc.ArraySize = 1;
@@ -232,8 +250,6 @@ void D3DApp::OnResize(int w, int h)
 	HR(m_d3dDevice->CreateTexture2D(&texDesc, 0, &m_DrawTexture));
 	m_d3dDevice->CreateRenderTargetView(m_DrawTexture, NULL, &m_distDirTextureTV);
 	m_d3dDevice->CreateShaderResourceView(m_DrawTexture, NULL, &m_distDirTextureRV);
-	HR(m_d3dDevice->CreateDepthStencilView(m_DepthStencilBuffer, 0,
-	                                       &m_DepthStencilView));
 	// Bind the render target view and depth/stencil view to the pipeline.
 	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	// Set the viewport transform.
@@ -258,10 +274,19 @@ void D3DApp::DrawScene()
 	if (!m_DXUT_UI) { return; }
 
 	m_DXUT_UI->UpdataUI(0.1f);
+
+	ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
+	ID3D11DepthStencilView* old_pDSV = DXUTGetD3D11DepthStencilView();
+	UINT NumViewports = 1;
+	D3D11_VIEWPORT pViewports[100];
+	m_DeviceContext->RSGetViewports(&NumViewports, &pViewports[0]);
+
+	if (1)
 	{
-		m_DeviceContext->OMSetRenderTargets(1, &m_distDirTextureTV, m_DepthStencilView);
-		m_DeviceContext->ClearRenderTargetView(m_distDirTextureTV, m_ClearColor);
+ 		m_DeviceContext->OMSetRenderTargets(1, &m_distDirTextureTV, m_DepthStencilView);
+ 		m_DeviceContext->ClearRenderTargetView(m_distDirTextureTV, m_ClearColor);
 	}
+	
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, m_ClearColor);
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView,
 	                                       D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -269,6 +294,7 @@ void D3DApp::DrawScene()
 	//Draw Picture
 	if (m_PicsVertices.size() > 0)
 	{
+		m_Pics_PMap->SetResource(m_Pics_Texture);
 		UINT offset = 0;
 		UINT stride2 = sizeof(PictureVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
@@ -351,13 +377,18 @@ void D3DApp::DrawScene()
 		m_DeviceContext->Draw((UINT)m_SkeletonLinesVertices.size(), 0);
 	}
 
-	m_SwapChain->Present(0, 0);
+	const int TexWidth = mClientWidth;
+	const int TexHeight = mClientHeight;
+// 	const int TexWidth = m_PicW;
+// 	const int TexHeight = m_PicH;
+
+	if (TexWidth > 0)
 	{
 		ID3D11Texture2D* pTextureRead;
 		D3D11_TEXTURE2D_DESC texDescCV;
 		ZeroMemory(&texDescCV, sizeof(texDescCV));
-		texDescCV.Width     = mClientWidth;
-		texDescCV.Height    = mClientHeight;
+		texDescCV.Width     = TexWidth;
+		texDescCV.Height    = TexHeight;
 		texDescCV.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		texDescCV.MipLevels = 1;
 		texDescCV.ArraySize = 1;
@@ -367,10 +398,10 @@ void D3DApp::DrawScene()
 		texDescCV.Usage = D3D11_USAGE_STAGING;
 		texDescCV.BindFlags = 0;
 		texDescCV.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-		float* nothingImages = new float[mClientWidth * mClientHeight * 4];
+		float* nothingImages = new float[TexWidth * TexHeight * 4];
 		D3D11_SUBRESOURCE_DATA sSubDataCV;
-		sSubDataCV.SysMemPitch = (UINT)(mClientWidth * 4 * 4);
-		sSubDataCV.SysMemSlicePitch = (UINT)(mClientWidth * mClientHeight * 4 * 4);
+		sSubDataCV.SysMemPitch = (UINT)(TexWidth * 4 * 4);
+		sSubDataCV.SysMemSlicePitch = (UINT)(TexWidth * TexHeight * 4 * 4);
 		sSubDataCV.pSysMem = nothingImages;
 		HR(m_d3dDevice->CreateTexture2D(&texDescCV, &sSubDataCV, &pTextureRead));
 		m_DeviceContext->CopyResource(pTextureRead, m_DrawTexture);
@@ -381,9 +412,9 @@ void D3DApp::DrawScene()
 		                        &MappedResource));
 		pimg = (float*)MappedResource.pData;
 		cv::Mat simg;
-		simg.create(mClientHeight, mClientWidth, CV_8UC3);
+		simg.create(TexHeight, TexWidth, CV_8UC3);
 		simg = cv::Scalar(0);
-		int addoffset = (8 - (mClientWidth - (mClientWidth / 8 * 8))) % 8;
+		int addoffset = (8 - (TexWidth - (TexWidth / 8 * 8))) % 8;
 
 		for (int j = 0; j < simg.cols; ++j)
 		{
@@ -399,7 +430,23 @@ void D3DApp::DrawScene()
 
 		cv::imshow("gimg", simg);
 		delete [] nothingImages;
+		m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
+		m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
+
+		if (m_PicsVertices.size() > 0)
+		{
+			m_Pics_PMap->SetResource(m_distDirTextureRV);
+			UINT offset = 0;
+			UINT stride2 = sizeof(PictureVertex);
+			m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+			m_DeviceContext->IASetInputLayout(m_Pics_PLayout);
+			m_DeviceContext->IASetVertexBuffers(0, 1, &m_Pics_Buffer, &stride2, &offset);
+			m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+			m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
+		}
 	}
+
+	m_SwapChain->Present(0, 0);
 }
 
 void D3DApp::BuildShaderFX()
@@ -791,6 +838,25 @@ void D3DApp::SetPictureSize(int w, int h)
 	{
 		m_PicW = w;
 		m_PicH = h;
+//      ReleaseCOM(m_DrawTexture);
+//      ReleaseCOM(m_distDirTextureRV);
+//      ReleaseCOM(m_distDirTextureTV);
+//      D3D11_TEXTURE2D_DESC texDesc;
+//      ZeroMemory(&texDesc, sizeof(texDesc));
+//      texDesc.Width     = m_PicW;
+//      texDesc.Height    = m_PicH;
+//      texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+//      texDesc.MipLevels = 1;
+//      texDesc.ArraySize = 1;
+//      texDesc.SampleDesc.Quality = 0;
+//      texDesc.SampleDesc.Count = 1;
+//      texDesc.Usage = D3D11_USAGE_DEFAULT;
+//      texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+//      texDesc.CPUAccessFlags = 0;
+//      texDesc.MiscFlags = 0;
+//      HR(m_d3dDevice->CreateTexture2D(&texDesc, 0, &m_DrawTexture));
+//      m_d3dDevice->CreateRenderTargetView(m_DrawTexture, NULL, &m_distDirTextureTV);
+//      m_d3dDevice->CreateShaderResourceView(m_DrawTexture, NULL, &m_distDirTextureRV);
 	}
 }
 
