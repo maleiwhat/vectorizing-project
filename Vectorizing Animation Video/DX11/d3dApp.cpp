@@ -177,6 +177,13 @@ void D3DApp::OnResize(int w, int h)
 	m_ClientWidth = w;
 	m_ClientHeight = h;
 	printf("w: %d h:%d\n", m_ClientWidth, m_ClientHeight);
+
+	if (m_Pics_Width)
+	{
+// 		m_ClientWidth = m_PicW;
+// 		m_ClientHeight = m_PicH;
+	}
+
 	// Release the old views, as they hold references to the buffers we
 	// will be destroying.  Also release the old depth/stencil buffer.
 	ReleaseCOM(m_RenderTargetView);
@@ -186,7 +193,7 @@ void D3DApp::OnResize(int w, int h)
 	ReleaseCOM(m_DrawTexture);
 	ReleaseCOM(m_distDirTextureRV);
 	ReleaseCOM(m_distDirTextureTV);
-	DXUTResizeDXGIBuffers(m_ClientWidth, m_ClientHeight, 0);
+	DXUTResizeDXGIBuffers(w, h, 0);
 	// Resize the swap chain and recreate the render target view.
 	//HR(mSwapChain->ResizeBuffers(2, mClientWidth, mClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, 0));
 	HR(m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
@@ -194,8 +201,8 @@ void D3DApp::OnResize(int w, int h)
 	HR(m_d3dDevice->CreateRenderTargetView(m_BackBuffer, 0, &m_RenderTargetView));
 	// Create the depth/stencil buffer and view.
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
-	depthStencilDesc.Width     = m_ClientWidth;
-	depthStencilDesc.Height    = m_ClientHeight;
+	depthStencilDesc.Width     = w;
+	depthStencilDesc.Height    = h;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
 	depthStencilDesc.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -208,6 +215,17 @@ void D3DApp::OnResize(int w, int h)
 	HR(m_d3dDevice->CreateTexture2D(&depthStencilDesc, 0, &m_DepthStencilBuffer));
 	HR(m_d3dDevice->CreateDepthStencilView(m_DepthStencilBuffer, 0,
 	                                       &m_DepthStencilView));
+
+	if (m_PicW > 0)
+	{
+		depthStencilDesc.Width     = m_PicW;
+		depthStencilDesc.Height    = m_PicH;
+	}
+
+	HR(m_d3dDevice->CreateTexture2D(&depthStencilDesc, 0,
+	                                &m_DrawTextureDepthStencilBuffer));
+	HR(m_d3dDevice->CreateDepthStencilView(m_DrawTextureDepthStencilBuffer, 0,
+	                                       &m_DrawTextureDepthStencilView));
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
 
@@ -252,27 +270,36 @@ void D3DApp::DrawScene()
 	if (!m_DXUT_UI) { return; }
 
 	m_DXUT_UI->UpdataUI(0.1f);
-	// save old RenderTargetView
 	ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
 	ID3D11DepthStencilView* old_pDSV = DXUTGetD3D11DepthStencilView();
 	UINT NumViewports = 1;
 	D3D11_VIEWPORT pViewports[1];
 	m_DeviceContext->RSGetViewports(&NumViewports, &pViewports[0]);
-	// save old RenderTargetView end
+
+	if (1)
+	{
+		m_DeviceContext->OMSetRenderTargets(1, &m_distDirTextureTV,
+		                                    m_DrawTextureDepthStencilView);
+		m_DeviceContext->ClearRenderTargetView(m_distDirTextureTV, m_ClearColor);
+		D3D11_VIEWPORT vp;
+		vp.TopLeftX = 0;
+		vp.TopLeftY = 0;
+		vp.Width    = (float)m_PicW;
+		vp.Height   = (float)m_PicH;
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+		m_DeviceContext->RSSetViewports(1, &vp);
+	}
+
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, m_ClearColor);
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView,
 	                                       D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	m_DeviceContext->ClearRenderTargetView(m_distDirTextureTV, m_ClearColor);
-	m_DeviceContext->OMSetRenderTargets(1, &m_distDirTextureTV, m_DepthStencilView);
 	InterSetScale(1);
 	InterSetLookCenter(0, 0);
-
-	if (m_Pics_Width)
-	{
-		InterSetSize(m_PicW, m_PicH);
-	}
-
+	InterSetSize(m_PicW, m_PicH);
 	InterDraw();
+//  const int TexWidth = m_ClientWidth;
+//  const int TexHeight = m_ClientHeight;
 	const int TexWidth = m_PicW;
 	const int TexHeight = m_PicH;
 
@@ -324,14 +351,14 @@ void D3DApp::DrawScene()
 
 		cv::imshow("gimg", simg);
 		delete [] nothingImages;
+		m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
+		m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
+		InterSetSize(m_ClientWidth, m_ClientHeight);
+		InterSetLookCenter(m_LookCenterX, m_LookCenterY);
+		InterSetScale(m_Scale);
+		InterDraw();
 	}
 
-	m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
-	m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
-	InterSetLookCenter(m_LookCenterX, m_LookCenterY);
-	InterSetScale(m_Scale);
-	InterSetSize(m_ClientWidth, m_ClientHeight);
-	InterDraw();
 	m_SwapChain->Present(0, 0);
 }
 
@@ -565,20 +592,7 @@ void D3DApp::BuildShaderFX()
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_SkeletonLineVertex, 3,
 	                                  PassDescTri6.pIAInputSignature,
 	                                  PassDescTri6.IAInputSignatureSize, &m_SkeletonLines_PLayout));
-	m_Pics_Width->SetFloat(m_ClientWidth);
-	m_Pics_Height->SetFloat(m_ClientHeight);
-	m_Triangle_Width->SetFloat(m_ClientWidth);
-	m_Triangle_Height->SetFloat(m_ClientHeight);
-	m_TriangleLine_Width->SetFloat(m_ClientWidth);
-	m_TriangleLine_Height->SetFloat(m_ClientHeight);
-	m_Patch_Width->SetFloat(m_ClientWidth);
-	m_Patch_Height->SetFloat(m_ClientHeight);
-	m_Points_Width->SetFloat(m_ClientWidth);
-	m_Points_Height->SetFloat(m_ClientHeight);
-	m_Lines_Width->SetFloat(m_ClientWidth);
-	m_Lines_Height->SetFloat(m_ClientHeight);
-	m_SkeletonLines_Width->SetFloat(m_ClientWidth);
-	m_SkeletonLines_Height->SetFloat(m_ClientHeight);
+	InterSetSize(m_ClientWidth, m_ClientHeight);
 }
 
 void D3DApp::SetTexture(ID3D11ShaderResourceView* tex)
@@ -587,20 +601,7 @@ void D3DApp::SetTexture(ID3D11ShaderResourceView* tex)
 
 	ReleaseCOM(m_Pics_Texture);
 	m_Pics_PMap->SetResource(tex);
-	m_Pics_Width->SetFloat(m_ClientWidth);
-	m_Pics_Height->SetFloat(m_ClientHeight);
-	m_Triangle_Width->SetFloat(m_ClientWidth);
-	m_Triangle_Height->SetFloat(m_ClientHeight);
-	m_TriangleLine_Width->SetFloat(m_ClientWidth);
-	m_TriangleLine_Height->SetFloat(m_ClientHeight);
-	m_Patch_Width->SetFloat(m_ClientWidth);
-	m_Patch_Height->SetFloat(m_ClientHeight);
-	m_Points_Width->SetFloat(m_ClientWidth);
-	m_Points_Height->SetFloat(m_ClientHeight);
-	m_Lines_Width->SetFloat(m_ClientWidth);
-	m_Lines_Height->SetFloat(m_ClientHeight);
-	m_SkeletonLines_Width->SetFloat(m_ClientWidth);
-	m_SkeletonLines_Height->SetFloat(m_ClientHeight);
+	InterSetSize(m_ClientWidth, m_ClientHeight);
 	m_Pics_Texture = tex;
 }
 
@@ -645,18 +646,6 @@ void D3DApp::BuildPoint()
 		pv.size.y = m_PicH;
 		m_PicsVertices.push_back(pv);
 	}
-
-	PictureVertex pv;
-	pv.position.x = m_ClientHeight * 0.5;
-	pv.position.y = m_ClientWidth * 0.5;
-	pv.position.z = 0;
-	pv.size.x = m_ClientWidth;
-	pv.size.y = m_ClientHeight;
-	m_vbd.ByteWidth = (UINT)sizeof(PictureVertex);
-	m_vbd.StructureByteStride = sizeof(PictureVertex);
-	D3D11_SUBRESOURCE_DATA tvinitData;
-	tvinitData.pSysMem = &pv;
-	HR(m_d3dDevice->CreateBuffer(&m_vbd, &tvinitData, &m_Backup_Buffer));
 
 	if (!m_PicsVertices.empty())
 	{
@@ -1463,22 +1452,19 @@ void D3DApp::InterSetLookCenter(float x, float y)
 
 void D3DApp::InterSetSize(float w, float h)
 {
-	if (m_Pics_Width && m_SkeletonLines_Height)
-	{
-		m_Pics_Width->SetFloat(w);
-		m_Pics_Height->SetFloat(h);
-		m_Triangle_Width->SetFloat(w);
-		m_Triangle_Height->SetFloat(h);
-		m_TriangleLine_Width->SetFloat(w);
-		m_TriangleLine_Height->SetFloat(h);
-		m_Patch_Width->SetFloat(w);
-		m_Patch_Height->SetFloat(h);
-		m_Points_Width->SetFloat(w);
-		m_Points_Height->SetFloat(h);
-		m_Lines_Width->SetFloat(w);
-		m_Lines_Height->SetFloat(h);
-		m_SkeletonLines_Width->SetFloat(w);
-		m_SkeletonLines_Height->SetFloat(h);
-	}
+	m_Pics_Width->SetFloat(w);
+	m_Pics_Height->SetFloat(h);
+	m_Triangle_Width->SetFloat(w);
+	m_Triangle_Height->SetFloat(h);
+	m_TriangleLine_Width->SetFloat(w);
+	m_TriangleLine_Height->SetFloat(h);
+	m_Patch_Width->SetFloat(w);
+	m_Patch_Height->SetFloat(h);
+	m_Points_Width->SetFloat(w);
+	m_Points_Height->SetFloat(h);
+	m_Lines_Width->SetFloat(w);
+	m_Lines_Height->SetFloat(h);
+	m_SkeletonLines_Width->SetFloat(w);
+	m_SkeletonLines_Height->SetFloat(h);
 }
 

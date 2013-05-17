@@ -85,12 +85,14 @@ protected:
 	ID3D11Device*       m_d3dDevice;
 	IDXGISwapChain*     m_SwapChain;
 	ID3D11Texture2D*    m_DepthStencilBuffer;
+	ID3D11Texture2D*    m_DrawTextureDepthStencilBuffer;
 	ID3D11Texture2D*    m_DrawTexture;
 	ID3D11DepthStencilView* m_DepthStencilView2;
 	ID3D11RenderTargetView* m_RenderTargetView;
 	ID3D11RenderTargetView* m_distDirTextureTV;
 	ID3D11ShaderResourceView* m_distDirTextureRV;
 	ID3D11DepthStencilView* m_DepthStencilView;
+	ID3D11DepthStencilView* m_DrawTextureDepthStencilView;
 	ID3D11DeviceContext*    m_DeviceContext;
 
 	ID3D11BlendState*   m_pBlendState_ADD;
