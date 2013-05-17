@@ -24,33 +24,33 @@ class BgEdgeList
 
 public:
 
-   int nEdges_;
+	int nEdges_;
 
-   BgEdge* edgelist_;
+	BgEdge* edgelist_;
 
-   BgEdge* crtedge_;
+	BgEdge* crtedge_;
 
-   
 
-   BgEdgeList();
 
-   ~BgEdgeList();
+	BgEdgeList();
 
-   void AddEdge(float*, int);
+	~BgEdgeList();
 
-   void AddEdge(int*, int nPoints);
+	void AddEdge(float*, int);
 
-   void RemoveShortEdges(int);
+	void AddEdge(int*, int nPoints);
 
-   void SetBinImage(BgImage*);
+	void RemoveShortEdges(int);
 
-   bool SaveEdgeList(char*);
+	void SetBinImage(BgImage*);
 
-   void SetGradient(float*, float*, float*, int);
+	bool SaveEdgeList(char*);
 
-   void SetNoMark(void);
+	void SetGradient(float*, float*, float*, int);
 
-   void GetAllEdgePoints(int*, int*, int*);
+	void SetNoMark(void);
+
+	void GetAllEdgePoints(int*, int*, int*);
 
 
 

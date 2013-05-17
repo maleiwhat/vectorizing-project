@@ -1,28 +1,28 @@
 /*******************************************************
 
                  Mean Shift Analysis Library
-	=============================================
+    =============================================
 
-	The mean shift library is a collection of routines
-	that use the mean shift algorithm. Using this algorithm,
-	the necessary output will be generated needed
-	to analyze a given input set of data.
+    The mean shift library is a collection of routines
+    that use the mean shift algorithm. Using this algorithm,
+    the necessary output will be generated needed
+    to analyze a given input set of data.
 
   Region Adjacency List:
   =====================
 
-	The Region Adjacency List class is used by the Image 
-	Processor class in the construction of a Region Adjacency
-	Matrix, used by	this class to applying transitive closure
-	and to prune spurious regions during image segmentation.
+    The Region Adjacency List class is used by the Image
+    Processor class in the construction of a Region Adjacency
+    Matrix, used by this class to applying transitive closure
+    and to prune spurious regions during image segmentation.
 
-	The definition of the RAList class is provided below. Its
-	prototype is provided in "RAList.h".
+    The definition of the RAList class is provided below. Its
+    prototype is provided in "RAList.h".
 
 The theory is described in the papers:
 
   D. Comaniciu, P. Meer: Mean Shift: A robust approach toward feature
-									 space analysis.
+                                     space analysis.
 
   C. Christoudias, B. Georgescu, P. Meer: Synergism in low level vision.
 
@@ -32,12 +32,12 @@ and they are is available at:
 Implemented by Chris M. Christoudias, Bogdan Georgescu
 ********************************************************/
 //include Region Adjacency List class prototype
-#include	"RAList.h"
+#include    "RAList.h"
 
 //include needed libraries
-#include	<stdio.h>
-#include	<assert.h>
-#include	<stdlib.h>
+#include    <stdio.h>
+#include    <assert.h>
+#include    <stdlib.h>
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
@@ -45,9 +45,9 @@ Implemented by Chris M. Christoudias, Bogdan Georgescu
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 
-	/*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
-	/* Class Constructor and Destructor */
-	/*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+/*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+/* Class Constructor and Destructor */
+/*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
 
 /*******************************************************/
 /*Class Constructor                                    */
@@ -59,15 +59,14 @@ Implemented by Chris M. Christoudias, Bogdan Georgescu
 /*        cted.                                        */
 /*******************************************************/
 
-RAList::RAList( void )
+RAList::RAList(void)
 {
 	//initialize label and link
-	label			= -1;
-	next			= NULL;
-
+	label           = -1;
+	next            = NULL;
 	//initialize edge strenght weight and count
-	edgeStrength	= 0;
-	edgePixelCount	= 0;
+	edgeStrength    = 0;
+	edgePixelCount  = 0;
 }
 
 /*******************************************************/
@@ -80,7 +79,7 @@ RAList::RAList( void )
 /*        ructed.                                      */
 /*******************************************************/
 
-RAList::~RAList( void )
+RAList::~RAList(void)
 {
 	//do nothing
 }
@@ -102,17 +101,15 @@ RAList::~RAList( void )
 /*        returned.                                    */
 /*******************************************************/
 
-int RAList::Insert(RAList *entry)
+int RAList::Insert(RAList* entry)
 {
-
 	//if the list contains only one element
 	//then insert this element into next
-	if(!next)
+	if (!next)
 	{
 		//insert entry
-		next		= entry;
+		next        = entry;
 		entry->next = NULL;
-
 		//done
 		return 0;
 	}
@@ -125,32 +122,32 @@ int RAList::Insert(RAList *entry)
 	//    at this location
 
 	//check first entry
-	if(next->label > entry->label)
+	if (next->label > entry->label)
 	{
 		//insert entry into the list at this location
-		entry->next	= next;
-		next		= entry;
-
+		entry->next = next;
+		next        = entry;
 		//done
 		return 0;
 	}
 
 	//check the rest of the list...
-	exists	= 0;
-	cur		= next;
-	while(cur)
+	exists  = 0;
+	cur     = next;
+
+	while (cur)
 	{
-		if(entry->label == cur->label)
+		if (entry->label == cur->label)
 		{
 			//node already exists
 			exists = 1;
 			break;
 		}
-		else if((!(cur->next))||(cur->next->label > entry->label))
+		else if ((!(cur->next)) || (cur->next->label > entry->label))
 		{
 			//insert entry into the list at this location
-			entry->next	= cur->next;
-			cur->next	= entry;
+			entry->next = cur->next;
+			cur->next   = entry;
 			break;
 		}
 
@@ -161,7 +158,6 @@ int RAList::Insert(RAList *entry)
 	//done. Return exists indicating whether or not a new node was
 	//      actually inserted into the region adjacency list.
 	return (int)(exists);
-
 }
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/

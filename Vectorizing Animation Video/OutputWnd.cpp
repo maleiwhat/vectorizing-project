@@ -3,7 +3,7 @@
 // MFC 參考及 MFC C++ 程式庫軟體
 // 隨附相關電子文件的補充。
 // 關於 Fluent UI 之複製、使用或散發的授權條款則分別提供。
-// 如需 Fluent UI 授權計劃的詳細資訊，請造訪 
+// 如需 Fluent UI 授權計劃的詳細資訊，請造訪
 // http://msdn.microsoft.com/officeui。
 //
 // Copyright (C) Microsoft Corporation
@@ -40,7 +40,9 @@ END_MESSAGE_MAP()
 int COutputWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CDockablePane::OnCreate(lpCreateStruct) == -1)
+	{
 		return -1;
+	}
 
 	CRect rectDummy;
 	rectDummy.SetRectEmpty();
@@ -53,21 +55,20 @@ int COutputWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 
 	// 建立輸出窗格:
-	const DWORD dwStyle = LBS_NOINTEGRALHEIGHT | WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL;
+	const DWORD dwStyle = LBS_NOINTEGRALHEIGHT | WS_CHILD | WS_VISIBLE | WS_HSCROLL
+	                      | WS_VSCROLL;
 
 	if (!m_wndOutputBuild.Create(dwStyle, rectDummy, &m_wndTabs, 2) ||
-		!m_wndOutputDebug.Create(dwStyle, rectDummy, &m_wndTabs, 3) ||
-		!m_wndOutputFind.Create(dwStyle, rectDummy, &m_wndTabs, 4))
+	        !m_wndOutputDebug.Create(dwStyle, rectDummy, &m_wndTabs, 3) ||
+	        !m_wndOutputFind.Create(dwStyle, rectDummy, &m_wndTabs, 4))
 	{
 		TRACE0("無法建立輸出視窗\n");
 		return -1;      // 無法建立
 	}
 
 	UpdateFonts();
-
 	CString strTabName;
 	BOOL bNameValid;
-
 	// 附加清單視窗到索引標籤:
 	bNameValid = strTabName.LoadString(IDS_BUILD_TAB);
 	ASSERT(bNameValid);
@@ -78,36 +79,36 @@ int COutputWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	bNameValid = strTabName.LoadString(IDS_FIND_TAB);
 	ASSERT(bNameValid);
 	m_wndTabs.AddTab(&m_wndOutputFind, strTabName, (UINT)2);
-
 	// 在輸出索引標籤中填入一些假文字 (不需要什麼特別的內容)
 	FillBuildWindow();
 	FillDebugWindow();
 	FillFindWindow();
-
 	return 0;
 }
 
 void COutputWnd::OnSize(UINT nType, int cx, int cy)
 {
 	CDockablePane::OnSize(nType, cx, cy);
-
 	// 索引標籤控制項應涵蓋整個工作區:
-	m_wndTabs.SetWindowPos (NULL, -1, -1, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
+	m_wndTabs.SetWindowPos(NULL, -1, -1, cx, cy,
+	                       SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
 void COutputWnd::AdjustHorzScroll(CListBox& wndListBox)
 {
 	CClientDC dc(this);
 	CFont* pOldFont = dc.SelectObject(&afxGlobalData.fontRegular);
-
 	int cxExtentMax = 0;
 
 	for (int i = 0; i < wndListBox.GetCount(); i ++)
 	{
 		CString strItem;
 		wndListBox.GetText(i, strItem);
+
 		if (dc.GetTextExtent(strItem).cx > cxExtentMax)
+		{
 			cxExtentMax = dc.GetTextExtent(strItem).cx;
+		}
 	}
 
 	wndListBox.SetHorizontalExtent(cxExtentMax);
@@ -167,15 +168,17 @@ void COutputList::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 {
 	CMenu menu;
 	menu.LoadMenu(IDR_OUTPUT_POPUP);
-
 	CMenu* pSumMenu = menu.GetSubMenu(0);
 
 	if (AfxGetMainWnd()->IsKindOf(RUNTIME_CLASS(CMDIFrameWndEx)))
 	{
 		CMFCPopupMenu* pPopupMenu = new CMFCPopupMenu;
 
-		if (!pPopupMenu->Create(this, point.x, point.y, (HMENU)pSumMenu->m_hMenu, FALSE, TRUE))
+		if (!pPopupMenu->Create(this, point.x, point.y, (HMENU)pSumMenu->m_hMenu, FALSE,
+		                        TRUE))
+		{
 			return;
+		}
 
 		((CMDIFrameWndEx*)AfxGetMainWnd())->OnShowPopupMenu(pPopupMenu);
 		UpdateDialogControls(this, FALSE);
@@ -197,13 +200,13 @@ void COutputList::OnEditClear()
 void COutputList::OnViewOutput()
 {
 	CDockablePane* pParentBar = DYNAMIC_DOWNCAST(CDockablePane, GetOwner());
-	CMDIFrameWndEx* pMainFrame = DYNAMIC_DOWNCAST(CMDIFrameWndEx, GetTopLevelFrame());
+	CMDIFrameWndEx* pMainFrame = DYNAMIC_DOWNCAST(CMDIFrameWndEx,
+	                             GetTopLevelFrame());
 
 	if (pMainFrame != NULL && pParentBar != NULL)
 	{
 		pMainFrame->SetFocus();
 		pMainFrame->ShowPane(pParentBar, FALSE, FALSE, FALSE);
 		pMainFrame->RecalcLayout();
-
 	}
 }

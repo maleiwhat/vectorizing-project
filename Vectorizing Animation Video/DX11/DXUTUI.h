@@ -18,28 +18,28 @@
 
 enum CommandType
 {
-	COMMAND_NULL=0,
-	COMMAND_BUTTON,
-	COMMAND_TEXT,
-	COMMAND_COMBO_BOX,
-	COMMAND_SLIDER
+    COMMAND_NULL = 0,
+    COMMAND_BUTTON,
+    COMMAND_TEXT,
+    COMMAND_COMBO_BOX,
+    COMMAND_SLIDER
 };
 
 struct CmdState
 {
 	int id;
 	CommandType type;
-	int state;		//-1=no event
+	int state;      //-1=no event
 };
-// 		--		cmd1={cid=id編號(數字), ctext=控制項的字, ctype=控制項類型(數字), cpx=控制項x座標, cpy=控制項y座標, 
-// 			--		cw=控制項寬度, ch=控制項長度}
+//      --      cmd1={cid=id編號(數字), ctext=控制項的字, ctype=控制項類型(數字), cpx=控制項x座標, cpy=控制項y座標,
+//          --      cw=控制項寬度, ch=控制項長度}
 struct KTSGCommand
 {
-	int id;			//command id
-	char text[128];		//command static text
-	CommandType type;	//type
-	float px,py;		//x,y coordinate
-	int w,h;		//command width, height
+	int id;         //command id
+	char text[128];     //command static text
+	CommandType type;   //type
+	float px, py;       //x,y coordinate
+	int w, h;       //command width, height
 };
 
 class UIDialog
@@ -47,24 +47,25 @@ class UIDialog
 private:
 	bool m_isopen;
 	int m_id;
-	std::vector<KTSGCommand>	m_comset;
-	CDXUTDialog*	m_uidig;
+	std::vector<KTSGCommand>    m_comset;
+	CDXUTDialog*    m_uidig;
 public:
-	UIDialog(){m_uidig=NULL; m_isopen=true;}
-	~UIDialog(){if (m_uidig) delete m_uidig;}
+	UIDialog() {m_uidig = NULL; m_isopen = true;}
+	~UIDialog() {if (m_uidig) { delete m_uidig; }}
 
-	void init(){m_uidig = new CDXUTDialog;}
+	void init() {m_uidig = new CDXUTDialog;}
 
-	void SetID(int id){m_id = id;}
-	void SetCmd(int no, int id, const char* text, CommandType type, float px, float py, int w, int h);	//'no' is number of cmd in this dialog
+	void SetID(int id) {m_id = id;}
+	void SetCmd(int no, int id, const char* text, CommandType type, float px,
+	            float py, int w, int h);  //'no' is number of cmd in this dialog
 
-	int GetID(){return m_id;}
-	CDXUTDialog* GetDialog(){return m_uidig;}
+	int GetID() {return m_id;}
+	CDXUTDialog* GetDialog() {return m_uidig;}
 	CommandType GetCmdType(int id);
-	bool GetIsOpen(){return m_isopen;}
+	bool GetIsOpen() {return m_isopen;}
 	CommandType CmdIdIsExist(int id);
 
-	void ResizeCmdState(int num){m_comset.resize(num);}
+	void ResizeCmdState(int num) {m_comset.resize(num);}
 	void close();
 	void open();
 	void Updata(float dt);
@@ -73,11 +74,12 @@ public:
 class DXUTUI
 {
 public:
-	int	m_NextUIid;
-	std::vector<CmdState>		m_CmdStateSet;
-	std::vector<UIDialog>		m_DialogSet;
-	CDXUTDialogResourceManager	m_DialogResourceManager;    // Manager for shared resources of dialogs
-	CD3DSettingsDlg			m_D3DSettingsDlg;           // Device settings dialog
+	int m_NextUIid;
+	std::vector<CmdState>       m_CmdStateSet;
+	std::vector<UIDialog>       m_DialogSet;
+	CDXUTDialogResourceManager
+	m_DialogResourceManager;    // Manager for shared resources of dialogs
+	CD3DSettingsDlg         m_D3DSettingsDlg;           // Device settings dialog
 	//CDXUTDialog                 m_SampleUI;                 // Dialog for sample specific controls
 	//CDXUTTextHelper*            m_pTxtHelper;
 
@@ -88,9 +90,9 @@ public:
 	//init fun, must call when app start
 	void SetWindow(HWND hWndFocus, bool bHandleMessages = TRUE);
 	void CreateDevice(int winWidth, int winHeight);
-	ID3D11Device* GetDevice(){ return DXUTGetD3D11Device();}
-	ID3D11DeviceContext* GetDeviceContext(){ return DXUTGetD3D11DeviceContext();}
-	IDXGISwapChain* GetSwapChaine(){ return DXUTGetDXGISwapChain();}
+	ID3D11Device* GetDevice() { return DXUTGetD3D11Device();}
+	ID3D11DeviceContext* GetDeviceContext() { return DXUTGetD3D11DeviceContext();}
+	IDXGISwapChain* GetSwapChaine() { return DXUTGetDXGISwapChain();}
 	bool InitDXUT();
 
 	void UpdataUI(float dt);
@@ -100,14 +102,14 @@ public:
 	void OpenUI(int id);
 	void CloseUI(int id);
 	void CloseAllUI();
-	int GetCurrencyUI();		//return a UI's id that is open
+	int GetCurrencyUI();        //return a UI's id that is open
 	void SetStatic(int id, const char* text);
 	void SetStatic(int id, const wchar_t* text);
 	int GetComboBoxSel(int id);
 	int GetSliderNum(int id);
 	void ChengeCmdState(int id);
 	void ClearCmdState();
-	std::vector<CmdState> GetCmdState(){return m_CmdStateSet;}
+	std::vector<CmdState> GetCmdState() {return m_CmdStateSet;}
 
 	void AddNewUI(const char* path);
 	void AddNewUI(const wchar_t* path);

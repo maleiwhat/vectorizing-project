@@ -37,13 +37,9 @@
 BgEdgeList::BgEdgeList()
 
 {
-
-   nEdges_ = 0;
-
-   edgelist_ = 0;
-
-   crtedge_ = 0;
-
+	nEdges_ = 0;
+	edgelist_ = 0;
+	crtedge_ = 0;
 }
 
 
@@ -51,27 +47,17 @@ BgEdgeList::BgEdgeList()
 BgEdgeList::~BgEdgeList()
 
 {
+	if (nEdges_ > 0)
+	{
+		BgEdge* edge;
 
-   if (nEdges_>0)
-
-   {
-
-      BgEdge* edge;
-
-      for (int i=0; i<nEdges_; i++)
-
-      {
-
-         edge = edgelist_->next_;
-
-         delete edgelist_;
-
-         edgelist_=edge;
-
-      }
-
-   }
-
+		for (int i = 0; i < nEdges_; i++)
+		{
+			edge = edgelist_->next_;
+			delete edgelist_;
+			edgelist_ = edge;
+		}
+	}
 }
 
 
@@ -79,37 +65,22 @@ BgEdgeList::~BgEdgeList()
 void BgEdgeList::AddEdge(float* edge, int nPoints)
 
 {
+	BgEdge* tedge;
+	tedge = new BgEdge();
+	tedge->SetPoints(edge, nPoints);
 
-   BgEdge* tedge;
-
-   tedge = new BgEdge();
-
-   tedge->SetPoints(edge, nPoints);
-
-   if (nEdges_==0)
-
-   {
-
-      nEdges_ = 1;
-
-      edgelist_ = tedge;
-
-      crtedge_ = tedge;
-
-   }
-
-   else
-
-   {
-
-      nEdges_++;
-
-      crtedge_->next_ = tedge;
-
-      crtedge_ = tedge;
-
-   }
-
+	if (nEdges_ == 0)
+	{
+		nEdges_ = 1;
+		edgelist_ = tedge;
+		crtedge_ = tedge;
+	}
+	else
+	{
+		nEdges_++;
+		crtedge_->next_ = tedge;
+		crtedge_ = tedge;
+	}
 }
 
 
@@ -117,37 +88,22 @@ void BgEdgeList::AddEdge(float* edge, int nPoints)
 void BgEdgeList::AddEdge(int* edge, int nPoints)
 
 {
+	BgEdge* tedge;
+	tedge = new BgEdge();
+	tedge->SetPoints(edge, nPoints);
 
-   BgEdge* tedge;
-
-   tedge = new BgEdge();
-
-   tedge->SetPoints(edge, nPoints);
-
-   if (nEdges_==0)
-
-   {
-
-      nEdges_ = 1;
-
-      edgelist_ = tedge;
-
-      crtedge_ = tedge;
-
-   }
-
-   else
-
-   {
-
-      nEdges_++;
-
-      crtedge_->next_ = tedge;
-
-      crtedge_ = tedge;
-
-   }
-
+	if (nEdges_ == 0)
+	{
+		nEdges_ = 1;
+		edgelist_ = tedge;
+		crtedge_ = tedge;
+	}
+	else
+	{
+		nEdges_++;
+		crtedge_->next_ = tedge;
+		crtedge_ = tedge;
+	}
 }
 
 
@@ -155,25 +111,15 @@ void BgEdgeList::AddEdge(int* edge, int nPoints)
 void BgEdgeList::SetGradient(float* grx, float* gry, float* mark, int ncol)
 
 {
+	BgEdge* it;
+	int i;
+	it = edgelist_;
 
-   BgEdge* it;
-
-   int i;
-
-
-
-   it=edgelist_;
-
-   for (i=0; i<nEdges_; i++)
-
-   {
-
-      it->SetGradient(grx, gry, mark, ncol);
-
-      it = it->next_;
-
-   }
-
+	for (i = 0; i < nEdges_; i++)
+	{
+		it->SetGradient(grx, gry, mark, ncol);
+		it = it->next_;
+	}
 }
 
 
@@ -181,73 +127,42 @@ void BgEdgeList::SetGradient(float* grx, float* gry, float* mark, int ncol)
 void BgEdgeList::RemoveShortEdges(int minp)
 
 {
+	if (nEdges_ == 0)
+	{
+		return;
+	}
 
-   if (nEdges_==0)
+	int nEdges = nEdges_;
+	BgEdge* it1;
+	BgEdge* it2;
+	it1 = edgelist_;
+	it2 = it1->next_;
 
-      return;
+	for (int i = 1; i < nEdges_; i++)
+	{
+		if (it2->nPoints_ < minp)
+		{
+			it1->next_ = it2->next_;
+			delete it2;
+			it2 = it1->next_;
+			nEdges--;
+		}
+		else
+		{
+			it1 = it2;
+			it2 = it1->next_;
+		}
+	}
 
+	if (edgelist_->nPoints_ < minp)
+	{
+		it1 = edgelist_;
+		edgelist_ = edgelist_->next_;
+		delete it1;
+		nEdges--;
+	}
 
-
-   int nEdges=nEdges_;
-
-   BgEdge* it1;
-
-   BgEdge* it2;
-
-   it1 = edgelist_;
-
-   it2 = it1->next_;
-
-
-
-   for (int i=1; i<nEdges_; i++)
-
-   {
-
-      if (it2->nPoints_ < minp)
-
-      {
-
-         it1->next_ = it2->next_;
-
-         delete it2;
-
-         it2 = it1->next_;
-
-         nEdges--;
-
-      }
-
-      else
-
-      {
-
-         it1 = it2;
-
-         it2 = it1->next_;
-
-      }
-
-   }
-
-
-
-   if (edgelist_->nPoints_ < minp)
-
-   {
-
-      it1 = edgelist_;
-
-      edgelist_ = edgelist_->next_;
-
-      delete it1;
-
-      nEdges--;
-
-   }
-
-   nEdges_=nEdges;
-
+	nEdges_ = nEdges;
 }
 
 
@@ -255,67 +170,38 @@ void BgEdgeList::RemoveShortEdges(int minp)
 void BgEdgeList::SetBinImage(BgImage* image)
 
 {
+	int i, j;
+	int ix, iy;
+	int x, y;
+	x = image->x_;
+	y = image->y_;
+	unsigned char* im = image->im_;
 
-   int i, j;
+	for (i = 0; i < x; i++)
+	{
+		for (j = 0; j < y; j++)
+		{
+			*(im++) = 0;
+		}
+	}
 
-   int ix, iy;
+	im = image->im_;
+	int* ite;
+	crtedge_ = edgelist_;
 
-   int x, y;
+	for (i = 0; i < nEdges_; i++)
+	{
+		ite = crtedge_->edge_;
 
-   
+		for (j = 0; j < crtedge_->nPoints_; j++)
+		{
+			ix = *(ite++);
+			iy = *(ite++);
+			*(im + iy * x + ix) = 255;
+		}
 
-   x = image->x_;
-
-   y = image->y_;
-
-   unsigned char* im=image->im_;
-
-   
-
-   for (i=0; i<x; i++)
-
-   {
-
-      for (j=0;j<y;j++)
-
-      {
-
-         *(im++) = 0;
-
-      }
-
-   }
-
-   
-
-   im = image->im_;
-
-   int* ite;
-
-   crtedge_=edgelist_;
-
-   for (i=0; i<nEdges_; i++)
-
-   {
-
-      ite = crtedge_->edge_;
-
-      for (j=0; j<crtedge_->nPoints_; j++)
-
-      {
-
-         ix = *(ite++);
-
-         iy = *(ite++);
-
-         *(im+iy*x+ix) = 255;
-
-      }
-
-      crtedge_=crtedge_->next_;
-
-   }
-
+		crtedge_ = crtedge_->next_;
+	}
 }
 
 
@@ -323,43 +209,28 @@ void BgEdgeList::SetBinImage(BgImage* image)
 bool BgEdgeList::SaveEdgeList(char* edgeFile)
 
 {
+	int length;
+	int i, j;
+	BgEdge* crtedge;
+	FILE* fp;
+	fp = fopen(edgeFile, "wb");
+	crtedge = edgelist_;
 
-   int length;
+	for (i = 0; i < nEdges_; i++)
+	{
+		length = crtedge->nPoints_;
 
-   int i,j;
+		for (j = 0; j < length; j++)
+		{
+			fprintf(fp, "%d %d %d\n", *((crtedge->edge_) + 2 * j),
+			        *((crtedge->edge_) + 2 * j + 1), i);
+		}
 
-   BgEdge *crtedge;
+		crtedge = crtedge->next_;
+	}
 
-   
-
-   FILE* fp;
-
-   fp=fopen(edgeFile,"wb");
-
-   crtedge = edgelist_;
-
-   for (i=0; i<nEdges_; i++)
-
-   {
-
-      length = crtedge->nPoints_;
-
-      for (j=0; j<length; j++)
-
-      {
-
-         fprintf(fp, "%d %d %d\n", *((crtedge->edge_)+2*j), *((crtedge->edge_)+2*j+1), i);
-
-      }
-
-      crtedge = crtedge->next_;
-
-   }
-
-   fclose(fp);
-
-   return true;
-
+	fclose(fp);
+	return true;
 }
 
 
@@ -367,45 +238,27 @@ bool BgEdgeList::SaveEdgeList(char* edgeFile)
 void BgEdgeList::GetAllEdgePoints(int* x, int* y, int* n)
 
 {
+	int length;
+	int i, j;
+	BgEdge* crtedge;
+	int* edgep;
+	crtedge = edgelist_;
+	*n = 0;
 
-   int length;
+	for (i = 0; i < nEdges_; i++)
+	{
+		length = crtedge->nPoints_;
+		edgep = crtedge->edge_;
 
-   int i,j;
+		for (j = 0; j < length; j++)
+		{
+			x[*n] = edgep[2 * j];
+			y[*n] = edgep[2 * j + 1];
+			(*n)++;
+		}
 
-   BgEdge *crtedge;
-
-   int *edgep;
-
-   
-
-   crtedge = edgelist_;
-
-   *n = 0;
-
-   for (i=0; i<nEdges_; i++)
-
-   {
-
-      length = crtedge->nPoints_;
-
-      edgep = crtedge->edge_;
-
-      for (j=0; j<length; j++)
-
-      {
-
-         x[*n] = edgep[2*j];
-
-         y[*n] = edgep[2*j+1];
-
-         (*n)++;
-
-      }
-
-      crtedge = crtedge->next_;
-
-   }
-
+		crtedge = crtedge->next_;
+	}
 }
 
 
@@ -413,38 +266,24 @@ void BgEdgeList::GetAllEdgePoints(int* x, int* y, int* n)
 void BgEdgeList::SetNoMark(void)
 
 {
+	int length;
+	int i, j;
+	BgEdge* crtedge;
+	unsigned char* mark;
+	crtedge = edgelist_;
 
-   int length;
+	for (i = 0; i < nEdges_; i++)
+	{
+		length = crtedge->nPoints_;
+		mark = crtedge->mark_ = new unsigned char[length];
+		crtedge->isMarkSet_ = true;
 
-   int i,j;
+		for (j = 0; j < length; j++)
+		{
+			*(mark + j) = 0;
+		}
 
-   BgEdge* crtedge;
-
-   unsigned char* mark;
-
-   crtedge = edgelist_;
-
-   for (i=0; i<nEdges_; i++)
-
-   {
-
-      length = crtedge->nPoints_;
-
-      mark = crtedge->mark_ = new unsigned char[length];
-
-      crtedge->isMarkSet_ = true;
-
-      for (j=0; j<length; j++)
-
-      {
-
-         *(mark+j) = 0;
-
-      }
-
-      crtedge = crtedge->next_;
-
-   }
-
+		crtedge = crtedge->next_;
+	}
 }
 

@@ -6,11 +6,11 @@
 #include <vector>
 
 
-class Polygon2D 
+class Polygon2D
 {
 public:
 	Polygon2D()
-		:m_angle(0){}
+		: m_angle(0) {}
 	Vec2s& Points()
 	{
 		m_needBuildEdges = true;
@@ -38,20 +38,25 @@ private:
 	void BuildEdges();
 	// Calculate the distance between [minA, maxA] and [minB, maxB]
 	// The distance will be negative if the intervals overlap
-	inline double IntervalDistance(double minA, double maxA, double minB, double maxB)
+	inline double IntervalDistance(double minA, double maxA, double minB,
+	                               double maxB)
 	{
-		if (minA < minB) {
+		if (minA < minB)
+		{
 			return minB - maxA;
-		} else {
+		}
+		else
+		{
 			return minA - maxB;
 		}
 	}
 	// Calculate the projection of a polygon on an axis and returns it as a [min, max] interval
-	void ProjectPolygon(const Vec2& axis, const Polygon2D& polygon, double* min, double* max);
+	void ProjectPolygon(const Vec2& axis, const Polygon2D& polygon, double* min,
+	                    double* max);
 private:
-	double	m_angle;
+	double  m_angle;
 	Vec2s m_points, m_edges;
-	bool	m_needBuildEdges;
-	
+	bool    m_needBuildEdges;
+
 };
 typedef std::vector<Polygon2D> Polygon2Ds;

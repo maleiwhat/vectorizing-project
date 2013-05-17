@@ -14,11 +14,13 @@ bool CgalPatch::CheckInside(double x, double y)
 {
 	Point pt(x, y);
 
-	if (CGAL::ON_BOUNDED_SIDE == CGAL::bounded_side_2(m_Outer.begin(), m_Outer.end(), pt, K()))
+	if (CGAL::ON_BOUNDED_SIDE == CGAL::bounded_side_2(m_Outer.begin(),
+	        m_Outer.end(), pt, K()))
 	{
 		for (auto it = m_Inter.begin(); it != m_Inter.end(); ++it)
 		{
-			if (CGAL::ON_BOUNDED_SIDE == CGAL::bounded_side_2(it->begin(), it->end(), pt, K()))
+			if (CGAL::ON_BOUNDED_SIDE == CGAL::bounded_side_2(it->begin(), it->end(), pt,
+			        K()))
 			{
 				return false;
 			}

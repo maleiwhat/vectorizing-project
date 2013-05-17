@@ -23,12 +23,14 @@
 //--------------------------------------------------------------------------------------
 // Global variables
 //--------------------------------------------------------------------------------------
-CDXUTDialogResourceManager g_DialogResourceManager; // manager for shared resources of dialogs
+CDXUTDialogResourceManager
+g_DialogResourceManager; // manager for shared resources of dialogs
 CModelViewerCamera      g_Camera;               // A model viewing camera
 CDXUTDirectionWidget    g_LightControl;
 CD3DSettingsDlg         g_D3DSettingsDlg;       // Device settings dialog
 CDXUTDialog             g_HUD;                  // manages the 3D
-CDXUTDialog             g_SampleUI;             // dialog for sample specific controls
+CDXUTDialog
+g_SampleUI;             // dialog for sample specific controls
 float                                   g_showMenue = true;
 bool                                    g_mouseLButtonDown = false;
 
@@ -56,17 +58,29 @@ ID3D10Effect*           g_pEffect10 = NULL;
 //--------------------------------------------------------------------------------------
 // Forward declarations
 //--------------------------------------------------------------------------------------
-bool    CALLBACK ModifyDeviceSettings(DXUTDeviceSettings* pDeviceSettings, void* pUserContext);
-void    CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext);
-LRESULT CALLBACK MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing, void* pUserContext);
-void    CALLBACK OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserContext);
-void    CALLBACK OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl, void* pUserContext);
-bool    CALLBACK IsD3D10DeviceAcceptable(UINT Adapter, UINT Output, D3D10_DRIVER_TYPE DeviceType, DXGI_FORMAT BackBufferFormat, bool bWindowed, void* pUserContext);
-HRESULT CALLBACK OnD3D10CreateDevice(ID3D10Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext);
-HRESULT CALLBACK OnD3D10ResizedSwapChain(ID3D10Device* pd3dDevice, IDXGISwapChain* pSwapChain, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext);
+bool    CALLBACK ModifyDeviceSettings(DXUTDeviceSettings* pDeviceSettings,
+                                      void* pUserContext);
+void    CALLBACK OnFrameMove(double fTime, float fElapsedTime,
+                             void* pUserContext);
+LRESULT CALLBACK MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
+                         bool* pbNoFurtherProcessing, void* pUserContext);
+void    CALLBACK OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown,
+                            void* pUserContext);
+void    CALLBACK OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl,
+                            void* pUserContext);
+bool    CALLBACK IsD3D10DeviceAcceptable(UINT Adapter, UINT Output,
+        D3D10_DRIVER_TYPE DeviceType,
+        DXGI_FORMAT BackBufferFormat, bool bWindowed, void* pUserContext);
+HRESULT CALLBACK OnD3D10CreateDevice(ID3D10Device* pd3dDevice,
+                                     const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext);
+HRESULT CALLBACK OnD3D10ResizedSwapChain(ID3D10Device* pd3dDevice,
+        IDXGISwapChain* pSwapChain,
+        const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext);
 void    CALLBACK OnD3D10ReleasingSwapChain(void* pUserContext);
 void    CALLBACK OnD3D10DestroyDevice(void* pUserContext);
-void    CALLBACK OnD3D10FrameRender(ID3D10Device* pd3dDevice, double fTime, float fElapsedTime, void* pUserContext);
+void    CALLBACK OnD3D10FrameRender(ID3D10Device* pd3dDevice, double fTime,
+                                    float fElapsedTime,
+                                    void* pUserContext);
 void    InitApp();
 void    RenderText();
 
@@ -74,7 +88,8 @@ void    RenderText();
 // Entry point to the program. Initializes everything and goes into a message processing
 // loop. Idle time is used to render the scene.
 //--------------------------------------------------------------------------------------
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+                    LPWSTR lpCmdLine, int nCmdShow)
 {
 	// Enable run-time memory check for debug builds.
 #if defined(DEBUG) | defined(_DEBUG)
@@ -94,8 +109,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	DXUTSetCallbackD3D10SwapChainReleasing(OnD3D10ReleasingSwapChain);
 	DXUTSetCallbackD3D10DeviceDestroyed(OnD3D10DestroyDevice);
 	InitApp();
-	DXUTInit(true, true, NULL);   // Parse the command line, show msgboxes on error, no extra command line params
-	DXUTSetCursorSettings(true, true);   // Show the cursor and clip it when in full screen
+	DXUTInit(true, true,
+	         NULL);   // Parse the command line, show msgboxes on error, no extra command line params
+	DXUTSetCursorSettings(true,
+	                      true);   // Show the cursor and clip it when in full screen
 	DXUTCreateWindow(L"Diffusion Curve Viewer");
 	DXUTCreateDevice(true, 800, 800);
 	DXUTMainLoop(); // Enter into the DXUT render loop
@@ -126,7 +143,8 @@ void InitApp()
 //--------------------------------------------------------------------------------------
 // Called right before creating a D3D9 or D3D10 device, allowing the app to modify the device settings as needed
 //--------------------------------------------------------------------------------------
-bool CALLBACK ModifyDeviceSettings(DXUTDeviceSettings* pDeviceSettings, void* pUserContext)
+bool CALLBACK ModifyDeviceSettings(DXUTDeviceSettings* pDeviceSettings,
+                                   void* pUserContext)
 {
 	pDeviceSettings->d3d10.sd.SampleDesc.Count = 1;
 	pDeviceSettings->d3d10.sd.SampleDesc.Quality = 0;
@@ -135,12 +153,13 @@ bool CALLBACK ModifyDeviceSettings(DXUTDeviceSettings* pDeviceSettings, void* pU
 	{
 		D3DCAPS9 Caps;
 		IDirect3D9* pD3D = DXUTGetD3D9Object();
-		pD3D->GetDeviceCaps(pDeviceSettings->d3d9.AdapterOrdinal, pDeviceSettings->d3d9.DeviceType, &Caps);
+		pD3D->GetDeviceCaps(pDeviceSettings->d3d9.AdapterOrdinal,
+		                    pDeviceSettings->d3d9.DeviceType, &Caps);
 
 		// If device doesn't support HW T&L or doesn't support 1.1 vertex shaders in HW
 		// then switch to SWVP.
 		if ((Caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT) == 0 ||
-		                Caps.VertexShaderVersion < D3DVS_VERSION(1, 1))
+		        Caps.VertexShaderVersion < D3DVS_VERSION(1, 1))
 		{
 			pDeviceSettings->d3d9.BehaviorFlags = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 		}
@@ -174,8 +193,10 @@ bool CALLBACK ModifyDeviceSettings(DXUTDeviceSettings* pDeviceSettings, void* pU
 	{
 		s_bFirstTime = false;
 
-		if ((DXUT_D3D9_DEVICE == pDeviceSettings->ver && pDeviceSettings->d3d9.DeviceType == D3DDEVTYPE_REF) ||
-		                (DXUT_D3D10_DEVICE == pDeviceSettings->ver && pDeviceSettings->d3d10.DriverType == D3D10_DRIVER_TYPE_REFERENCE))
+		if ((DXUT_D3D9_DEVICE == pDeviceSettings->ver
+		        && pDeviceSettings->d3d9.DeviceType == D3DDEVTYPE_REF) ||
+		        (DXUT_D3D10_DEVICE == pDeviceSettings->ver
+		         && pDeviceSettings->d3d10.DriverType == D3D10_DRIVER_TYPE_REFERENCE))
 		{
 			DXUTDisplaySwitchingToREFWarning(pDeviceSettings->ver);
 		}
@@ -203,7 +224,7 @@ void RenderText()
 	g_pTxtHelper->SetInsertionPos(2, 0);
 	g_pTxtHelper->SetForegroundColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 	g_pTxtHelper->DrawTextLine(DXUTGetFrameStats(true));
-//    g_pTxtHelper->DrawTextLine( DXUTGetDeviceStats() );
+//  g_pTxtHelper->DrawTextLine( DXUTGetDeviceStats() );
 //	g_pTxtHelper->DrawFormattedTextLine( L"Pixel fill ratio: %f", g_vsObj->m_fillRatio );
 	g_pTxtHelper->End();
 }
@@ -212,10 +233,12 @@ void RenderText()
 //--------------------------------------------------------------------------------------
 // Handle messages to the application
 //--------------------------------------------------------------------------------------
-LRESULT CALLBACK MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing, void* pUserContext)
+LRESULT CALLBACK MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
+                         bool* pbNoFurtherProcessing, void* pUserContext)
 {
 	// Pass messages to dialog resource manager calls so GUI state is updated correctly
-	*pbNoFurtherProcessing = g_DialogResourceManager.MsgProc(hWnd, uMsg, wParam, lParam);
+	*pbNoFurtherProcessing = g_DialogResourceManager.MsgProc(hWnd, uMsg, wParam,
+	                         lParam);
 
 	if (*pbNoFurtherProcessing)
 	{
@@ -254,7 +277,8 @@ LRESULT CALLBACK MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, boo
 //--------------------------------------------------------------------------------------
 // Handle key presses
 //--------------------------------------------------------------------------------------
-void CALLBACK OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserContext)
+void CALLBACK OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown,
+                         void* pUserContext)
 {
 	static int cVertex = 0;
 
@@ -262,7 +286,7 @@ void CALLBACK OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserCo
 	{
 		switch (nChar)
 		{
-			case 'M': g_showMenue = !g_showMenue; break;
+		case 'M': g_showMenue = !g_showMenue; break;
 		}
 	}
 }
@@ -271,22 +295,24 @@ void CALLBACK OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserCo
 //--------------------------------------------------------------------------------------
 // Handles the GUI events
 //--------------------------------------------------------------------------------------
-void CALLBACK OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl, void* pUserContext)
+void CALLBACK OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl,
+                         void* pUserContext)
 {
 	switch (nControlID)
 	{
-		case IDC_TOGGLEFULLSCREEN: DXUTToggleFullScreen(); break;
+	case IDC_TOGGLEFULLSCREEN: DXUTToggleFullScreen(); break;
 
-		case IDC_TOGGLEREF:        DXUTToggleREF(); break;
+	case IDC_TOGGLEREF:        DXUTToggleREF(); break;
 
-		case IDC_CHANGEDEVICE:     g_D3DSettingsDlg.SetActive(!g_D3DSettingsDlg.IsActive()); break;
+	case IDC_CHANGEDEVICE:     g_D3DSettingsDlg.SetActive(
+		    !g_D3DSettingsDlg.IsActive()); break;
 
-		case IDC_DIFF_STEPS:
-			g_vsObj->diffSteps = g_SampleUI.GetSlider(IDC_DIFF_STEPS)->GetValue();
-			WCHAR sz[100];
-			StringCchPrintf(sz, 100, L"Diffusion steps: %d", g_vsObj->diffSteps);
-			g_SampleUI.GetStatic(IDC_DIFF_STEPS_STATIC)->SetText(sz);
-			break;
+	case IDC_DIFF_STEPS:
+		g_vsObj->diffSteps = g_SampleUI.GetSlider(IDC_DIFF_STEPS)->GetValue();
+		WCHAR sz[100];
+		StringCchPrintf(sz, 100, L"Diffusion steps: %d", g_vsObj->diffSteps);
+		g_SampleUI.GetStatic(IDC_DIFF_STEPS_STATIC)->SetText(sz);
+		break;
 	}
 }
 
@@ -294,7 +320,9 @@ void CALLBACK OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl, vo
 //--------------------------------------------------------------------------------------
 // Reject any D3D10 devices that aren't acceptable by returning false
 //--------------------------------------------------------------------------------------
-bool CALLBACK IsD3D10DeviceAcceptable(UINT Adapter, UINT Output, D3D10_DRIVER_TYPE DeviceType, DXGI_FORMAT BackBufferFormat, bool bWindowed, void* pUserContext)
+bool CALLBACK IsD3D10DeviceAcceptable(UINT Adapter, UINT Output,
+                                      D3D10_DRIVER_TYPE DeviceType,
+                                      DXGI_FORMAT BackBufferFormat, bool bWindowed, void* pUserContext)
 {
 	return true;
 }
@@ -304,7 +332,8 @@ bool CALLBACK IsD3D10DeviceAcceptable(UINT Adapter, UINT Output, D3D10_DRIVER_TY
 //--------------------------------------------------------------------------------------
 // Create any D3D10 resources that aren't dependant on the back buffer
 //--------------------------------------------------------------------------------------
-HRESULT CALLBACK OnD3D10CreateDevice(ID3D10Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext)
+HRESULT CALLBACK OnD3D10CreateDevice(ID3D10Device* pd3dDevice,
+                                     const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext)
 {
 	HRESULT hr;
 	g_device = pd3dDevice;
@@ -320,20 +349,28 @@ HRESULT CALLBACK OnD3D10CreateDevice(ID3D10Device* pd3dDevice, const DXGI_SURFAC
 	WCHAR str[MAX_PATH];
 	ID3D10Blob* pErrBlob = NULL;
 	V_RETURN(DXUTFindDXSDKMediaFileCch(str, MAX_PATH, L"Effect_Undistort.fx"));
-	hr = D3DX10CreateEffectFromFile(str, NULL, NULL, "fx_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, pd3dDevice, NULL, NULL, &g_pEffect10, &pErrBlob, NULL);
+	hr = D3DX10CreateEffectFromFile(str, NULL, NULL, "fx_4_0",
+	                                D3D10_SHADER_ENABLE_STRICTNESS, 0,
+	                                pd3dDevice, NULL, NULL, &g_pEffect10, &pErrBlob, NULL);
 
 	if (FAILED(hr))
 	{
-		std::string errStr((LPCSTR)pErrBlob->GetBufferPointer(), pErrBlob->GetBufferSize());
+		std::string errStr((LPCSTR)pErrBlob->GetBufferPointer(),
+		                   pErrBlob->GetBufferSize());
 		WCHAR err[256];
-		MultiByteToWideChar(CP_ACP, 0, errStr.c_str(), (int)errStr.size(), err, errStr.size());
+		MultiByteToWideChar(CP_ACP, 0, errStr.c_str(), (int)errStr.size(), err,
+		                    errStr.size());
 		MessageBox(NULL, (LPCWSTR)err, L"Error", MB_OK);
 		return hr;
 	}
 
 	// Setup the vector image and the display
-	UINT width = (DXUTIsAppRenderingWithD3D9()) ? DXUTGetD3D9BackBufferSurfaceDesc()->Width : DXUTGetDXGIBackBufferSurfaceDesc()->Width;
-	UINT height = (DXUTIsAppRenderingWithD3D9()) ? DXUTGetD3D9BackBufferSurfaceDesc()->Height : DXUTGetDXGIBackBufferSurfaceDesc()->Height;
+	UINT width = (DXUTIsAppRenderingWithD3D9()) ?
+	             DXUTGetD3D9BackBufferSurfaceDesc()->Width :
+	             DXUTGetDXGIBackBufferSurfaceDesc()->Width;
+	UINT height = (DXUTIsAppRenderingWithD3D9()) ?
+	              DXUTGetD3D9BackBufferSurfaceDesc()->Height :
+	              DXUTGetDXGIBackBufferSurfaceDesc()->Height;
 	g_vsObj = new VSObject(pd3dDevice);
 	D3D10_RASTERIZER_DESC rasterizerState;
 	rasterizerState.FillMode = D3D10_FILL_SOLID;
@@ -354,23 +391,34 @@ HRESULT CALLBACK OnD3D10CreateDevice(ID3D10Device* pd3dDevice, const DXGI_SURFAC
 //--------------------------------------------------------------------------------------
 // Create any D3D10 resources that depend on the back buffer
 //--------------------------------------------------------------------------------------
-HRESULT CALLBACK OnD3D10ResizedSwapChain(ID3D10Device* pd3dDevice, IDXGISwapChain* pSwapChain, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext)
+HRESULT CALLBACK OnD3D10ResizedSwapChain(ID3D10Device* pd3dDevice,
+        IDXGISwapChain* pSwapChain,
+        const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext)
 {
 	HRESULT hr;
-	V_RETURN(g_DialogResourceManager.OnD3D10ResizedSwapChain(pd3dDevice, pBackBufferSurfaceDesc));
-	V_RETURN(g_D3DSettingsDlg.OnD3D10ResizedSwapChain(pd3dDevice, pBackBufferSurfaceDesc));
+	V_RETURN(g_DialogResourceManager.OnD3D10ResizedSwapChain(pd3dDevice,
+	         pBackBufferSurfaceDesc));
+	V_RETURN(g_D3DSettingsDlg.OnD3D10ResizedSwapChain(pd3dDevice,
+	         pBackBufferSurfaceDesc));
 	// Setup the camera's projection parameters
-	float fAspectRatio = 1.0;//pBackBufferSurfaceDesc->Width / (FLOAT)pBackBufferSurfaceDesc->Height;
+	float fAspectRatio =
+	    1.0;//pBackBufferSurfaceDesc->Width / (FLOAT)pBackBufferSurfaceDesc->Height;
 	g_Camera.SetProjParams(D3DX_PI / 4, fAspectRatio, 0.1f, 10.0f);
-	g_Camera.SetWindow(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height);
+	g_Camera.SetWindow(pBackBufferSurfaceDesc->Width,
+	                   pBackBufferSurfaceDesc->Height);
 	g_Camera.SetButtonMasks(MOUSE_RIGHT_BUTTON, MOUSE_WHEEL, MOUSE_MIDDLE_BUTTON);
 	g_HUD.SetLocation(pBackBufferSurfaceDesc->Width - 170, 0);
 	g_HUD.SetSize(170, 170);
-	g_SampleUI.SetLocation(pBackBufferSurfaceDesc->Width - 170, pBackBufferSurfaceDesc->Height - 300);
+	g_SampleUI.SetLocation(pBackBufferSurfaceDesc->Width - 170,
+	                       pBackBufferSurfaceDesc->Height - 300);
 	g_SampleUI.SetSize(170, 300);
 	// resize the texture so that it fits to the current screen size
-	UINT width = (DXUTIsAppRenderingWithD3D9()) ? DXUTGetD3D9BackBufferSurfaceDesc()->Width : DXUTGetDXGIBackBufferSurfaceDesc()->Width;
-	UINT height = (DXUTIsAppRenderingWithD3D9()) ? DXUTGetD3D9BackBufferSurfaceDesc()->Height : DXUTGetDXGIBackBufferSurfaceDesc()->Height;
+	UINT width = (DXUTIsAppRenderingWithD3D9()) ?
+	             DXUTGetD3D9BackBufferSurfaceDesc()->Width :
+	             DXUTGetDXGIBackBufferSurfaceDesc()->Width;
+	UINT height = (DXUTIsAppRenderingWithD3D9()) ?
+	              DXUTGetD3D9BackBufferSurfaceDesc()->Height :
+	              DXUTGetDXGIBackBufferSurfaceDesc()->Height;
 	g_vsObj->SetupTextures(pd3dDevice, g_pEffect10, width, height);
 	return S_OK;
 }
@@ -379,7 +427,9 @@ HRESULT CALLBACK OnD3D10ResizedSwapChain(ID3D10Device* pd3dDevice, IDXGISwapChai
 //--------------------------------------------------------------------------------------
 // Render the scene using the D3D10 device
 //--------------------------------------------------------------------------------------
-void CALLBACK OnD3D10FrameRender(ID3D10Device* pd3dDevice, double fTime, float fElapsedTime, void* pUserContext)
+void CALLBACK OnD3D10FrameRender(ID3D10Device* pd3dDevice, double fTime,
+                                 float fElapsedTime,
+                                 void* pUserContext)
 {
 	HRESULT hr;
 
@@ -423,7 +473,8 @@ void CALLBACK OnD3D10FrameRender(ID3D10Device* pd3dDevice, double fTime, float f
 
 		float xFac = ff * 4.0f / g_vsObj->m_sizeX;
 		float yFac = ff * 4.0f / g_vsObj->m_sizeY;
-		g_vsObj->m_pan += D3DXVECTOR2(xFac * g_Camera.m_vMouseDelta.x, -yFac * g_Camera.m_vMouseDelta.y);
+		g_vsObj->m_pan += D3DXVECTOR2(xFac * g_Camera.m_vMouseDelta.x,
+		                              -yFac * g_Camera.m_vMouseDelta.y);
 		g_Camera.m_vMouseDelta.x = 0;
 		g_Camera.m_vMouseDelta.y = 0;
 	}

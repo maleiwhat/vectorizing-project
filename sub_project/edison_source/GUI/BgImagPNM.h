@@ -24,21 +24,23 @@
 
 class bgPNMHandler : public wxImageHandler
 {
-  DECLARE_DYNAMIC_CLASS(bgPNMHandler)
+	DECLARE_DYNAMIC_CLASS(bgPNMHandler)
 public:
-  inline bgPNMHandler()
-  {
-      m_name = "PNM file";
-      m_extension = "pnm";
-      m_type = wxBITMAP_TYPE_PNM;
-      m_mime = "image/pnm";
-  };
+	inline bgPNMHandler()
+	{
+		m_name = "PNM file";
+		m_extension = "pnm";
+		m_type = wxBITMAP_TYPE_PNM;
+		m_mime = "image/pnm";
+	};
 
-  virtual bool LoadFile( wxImage *image, wxInputStream& stream, bool verbose=TRUE, int index=0 );
-  virtual bool SaveFile( wxImage *image, wxOutputStream& stream, bool verbose=TRUE );
-  virtual bool DoCanRead( wxInputStream& stream );
+	virtual bool LoadFile(wxImage* image, wxInputStream& stream,
+	                      bool verbose = TRUE, int index = 0);
+	virtual bool SaveFile(wxImage* image, wxOutputStream& stream,
+	                      bool verbose = TRUE);
+	virtual bool DoCanRead(wxInputStream& stream);
 
-  void Skip_Comment(wxInputStream &stream);
+	void Skip_Comment(wxInputStream& stream);
 };
 
 #endif

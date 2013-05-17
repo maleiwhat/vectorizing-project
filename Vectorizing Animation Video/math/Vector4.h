@@ -43,24 +43,25 @@ public:
 	double x, y, z, w;
 
 public:
-	inline Vector4():x(0), y(0), z(0), w(0)
+	inline Vector4(): x(0), y(0), z(0), w(0)
 	{
 	}
 
-	inline Vector4( const double fX, const double fY, const double fZ, const double fW )
-		: x( fX ), y( fY ), z( fZ ), w( fW)
+	inline Vector4(const double fX, const double fY, const double fZ,
+	               const double fW)
+		: x(fX), y(fY), z(fZ), w(fW)
 	{
 	}
 
-	inline explicit Vector4( const double afCoordinate[4] )
-		: x( afCoordinate[0] ),
-		y( afCoordinate[1] ),
-		z( afCoordinate[2] ),
-		w( afCoordinate[3] )
+	inline explicit Vector4(const double afCoordinate[4])
+		: x(afCoordinate[0]),
+		  y(afCoordinate[1]),
+		  z(afCoordinate[2]),
+		  w(afCoordinate[3])
 	{
 	}
 
-	inline explicit Vector4( const int afCoordinate[4] )
+	inline explicit Vector4(const int afCoordinate[4])
 	{
 		x = (double)afCoordinate[0];
 		y = (double)afCoordinate[1];
@@ -68,16 +69,16 @@ public:
 		w = (double)afCoordinate[3];
 	}
 
-	inline explicit Vector4( double* const r )
-		: x( r[0] ), y( r[1] ), z( r[2] ), w( r[3] )
+	inline explicit Vector4(double* const r)
+		: x(r[0]), y(r[1]), z(r[2]), w(r[3])
 	{
 	}
 
-	inline explicit Vector4( const double scaler )
-		: x( scaler )
-		, y( scaler )
-		, z( scaler )
-		, w( scaler )
+	inline explicit Vector4(const double scaler)
+		: x(scaler)
+		, y(scaler)
+		, z(scaler)
+		, w(scaler)
 	{
 	}
 
@@ -86,7 +87,7 @@ public:
 	{
 	}
 
-	/** Exchange the contents of this vector with another. 
+	/** Exchange the contents of this vector with another.
 	*/
 	inline void swap(Vector4& other)
 	{
@@ -96,18 +97,16 @@ public:
 		std::swap(w, other.w);
 	}
 
-	inline double operator [] ( const size_t i ) const
+	inline double operator [](const size_t i) const
 	{
-		assert( i < 4 );
-
-		return *(&x+i);
+		assert(i < 4);
+		return *(&x + i);
 	}
 
-	inline double& operator [] ( const size_t i )
+	inline double& operator [](const size_t i)
 	{
-		assert( i < 4 );
-
-		return *(&x+i);
+		assert(i < 4);
+		return *(&x + i);
 	}
 
 	/// Pointer accessor for direct copying
@@ -125,17 +124,16 @@ public:
 	@param
 	rkVector The other vector
 	*/
-	inline Vector4& operator = ( const Vector4& rkVector )
+	inline Vector4& operator = (const Vector4& rkVector)
 	{
 		x = rkVector.x;
 		y = rkVector.y;
 		z = rkVector.z;
 		w = rkVector.w;
-
 		return *this;
 	}
 
-	inline Vector4& operator = ( const double fScalar)
+	inline Vector4& operator = (const double fScalar)
 	{
 		x = fScalar;
 		y = fScalar;
@@ -144,20 +142,20 @@ public:
 		return *this;
 	}
 
-	inline bool operator == ( const Vector4& rkVector ) const
+	inline bool operator == (const Vector4& rkVector) const
 	{
-		return ( x == rkVector.x &&
-			y == rkVector.y &&
-			z == rkVector.z &&
-			w == rkVector.w );
+		return (x == rkVector.x &&
+		        y == rkVector.y &&
+		        z == rkVector.z &&
+		        w == rkVector.w);
 	}
 
-	inline bool operator != ( const Vector4& rkVector ) const
+	inline bool operator != (const Vector4& rkVector) const
 	{
-		return ( x != rkVector.x ||
-			y != rkVector.y ||
-			z != rkVector.z ||
-			w != rkVector.w );
+		return (x != rkVector.x ||
+		        y != rkVector.y ||
+		        z != rkVector.z ||
+		        w != rkVector.w);
 	}
 
 	inline Vector4& operator = (const Vector3& rhs)
@@ -170,62 +168,60 @@ public:
 	}
 
 	// arithmetic operations
-	inline Vector4 operator + ( const Vector4& rkVector ) const
+	inline Vector4 operator + (const Vector4& rkVector) const
 	{
 		return Vector4(
-			x + rkVector.x,
-			y + rkVector.y,
-			z + rkVector.z,
-			w + rkVector.w);
+		           x + rkVector.x,
+		           y + rkVector.y,
+		           z + rkVector.z,
+		           w + rkVector.w);
 	}
 
-	inline Vector4 operator - ( const Vector4& rkVector ) const
+	inline Vector4 operator - (const Vector4& rkVector) const
 	{
 		return Vector4(
-			x - rkVector.x,
-			y - rkVector.y,
-			z - rkVector.z,
-			w - rkVector.w);
+		           x - rkVector.x,
+		           y - rkVector.y,
+		           z - rkVector.z,
+		           w - rkVector.w);
 	}
 
-	inline Vector4 operator * ( const double fScalar ) const
+	inline Vector4 operator * (const double fScalar) const
 	{
 		return Vector4(
-			x * fScalar,
-			y * fScalar,
-			z * fScalar,
-			w * fScalar);
+		           x * fScalar,
+		           y * fScalar,
+		           z * fScalar,
+		           w * fScalar);
 	}
 
-	inline Vector4 operator * ( const Vector4& rhs) const
+	inline Vector4 operator * (const Vector4& rhs) const
 	{
 		return Vector4(
-			rhs.x * x,
-			rhs.y * y,
-			rhs.z * z,
-			rhs.w * w);
+		           rhs.x * x,
+		           rhs.y * y,
+		           rhs.z * z,
+		           rhs.w * w);
 	}
 
-	inline Vector4 operator / ( const double fScalar ) const
+	inline Vector4 operator / (const double fScalar) const
 	{
-		assert( fScalar != 0.0 );
-
+		assert(fScalar != 0.0);
 		double fInv = 1.0f / fScalar;
-
 		return Vector4(
-			x * fInv,
-			y * fInv,
-			z * fInv,
-			w * fInv);
+		           x * fInv,
+		           y * fInv,
+		           z * fInv,
+		           w * fInv);
 	}
 
-	inline Vector4 operator / ( const Vector4& rhs) const
+	inline Vector4 operator / (const Vector4& rhs) const
 	{
 		return Vector4(
-			x / rhs.x,
-			y / rhs.y,
-			z / rhs.z,
-			w / rhs.w);
+		           x / rhs.x,
+		           y / rhs.y,
+		           z / rhs.z,
+		           w / rhs.w);
 	}
 
 	inline const Vector4& operator + () const
@@ -238,82 +234,80 @@ public:
 		return Vector4(-x, -y, -z, -w);
 	}
 
-	inline friend Vector4 operator * ( const double fScalar, const Vector4& rkVector )
+	inline friend Vector4 operator * (const double fScalar, const Vector4& rkVector)
 	{
 		return Vector4(
-			fScalar * rkVector.x,
-			fScalar * rkVector.y,
-			fScalar * rkVector.z,
-			fScalar * rkVector.w);
+		           fScalar * rkVector.x,
+		           fScalar * rkVector.y,
+		           fScalar * rkVector.z,
+		           fScalar * rkVector.w);
 	}
 
-	inline friend Vector4 operator / ( const double fScalar, const Vector4& rkVector )
+	inline friend Vector4 operator / (const double fScalar, const Vector4& rkVector)
 	{
 		return Vector4(
-			fScalar / rkVector.x,
-			fScalar / rkVector.y,
-			fScalar / rkVector.z,
-			fScalar / rkVector.w);
+		           fScalar / rkVector.x,
+		           fScalar / rkVector.y,
+		           fScalar / rkVector.z,
+		           fScalar / rkVector.w);
 	}
 
 	inline friend Vector4 operator + (const Vector4& lhs, const double rhs)
 	{
 		return Vector4(
-			lhs.x + rhs,
-			lhs.y + rhs,
-			lhs.z + rhs,
-			lhs.w + rhs);
+		           lhs.x + rhs,
+		           lhs.y + rhs,
+		           lhs.z + rhs,
+		           lhs.w + rhs);
 	}
 
 	inline friend Vector4 operator + (const double lhs, const Vector4& rhs)
 	{
 		return Vector4(
-			lhs + rhs.x,
-			lhs + rhs.y,
-			lhs + rhs.z,
-			lhs + rhs.w);
+		           lhs + rhs.x,
+		           lhs + rhs.y,
+		           lhs + rhs.z,
+		           lhs + rhs.w);
 	}
 
 	inline friend Vector4 operator - (const Vector4& lhs, double rhs)
 	{
 		return Vector4(
-			lhs.x - rhs,
-			lhs.y - rhs,
-			lhs.z - rhs,
-			lhs.w - rhs);
+		           lhs.x - rhs,
+		           lhs.y - rhs,
+		           lhs.z - rhs,
+		           lhs.w - rhs);
 	}
 
 	inline friend Vector4 operator - (const double lhs, const Vector4& rhs)
 	{
 		return Vector4(
-			lhs - rhs.x,
-			lhs - rhs.y,
-			lhs - rhs.z,
-			lhs - rhs.w);
+		           lhs - rhs.x,
+		           lhs - rhs.y,
+		           lhs - rhs.z,
+		           lhs - rhs.w);
 	}
 
 	// arithmetic updates
-	inline Vector4& operator += ( const Vector4& rkVector )
+	inline Vector4& operator += (const Vector4& rkVector)
 	{
 		x += rkVector.x;
 		y += rkVector.y;
 		z += rkVector.z;
 		w += rkVector.w;
-
 		return *this;
 	}
 
-	inline Vector4& operator -= ( const Vector4& rkVector )
+	inline Vector4& operator -= (const Vector4& rkVector)
 	{
 		x -= rkVector.x;
 		y -= rkVector.y;
 		z -= rkVector.z;
 		w -= rkVector.w;
-
 		return *this;
 	}
 
-	inline Vector4& operator *= ( const double fScalar )
+	inline Vector4& operator *= (const double fScalar)
 	{
 		x *= fScalar;
 		y *= fScalar;
@@ -322,7 +316,7 @@ public:
 		return *this;
 	}
 
-	inline Vector4& operator += ( const double fScalar )
+	inline Vector4& operator += (const double fScalar)
 	{
 		x += fScalar;
 		y += fScalar;
@@ -331,7 +325,7 @@ public:
 		return *this;
 	}
 
-	inline Vector4& operator -= ( const double fScalar )
+	inline Vector4& operator -= (const double fScalar)
 	{
 		x -= fScalar;
 		y -= fScalar;
@@ -340,37 +334,32 @@ public:
 		return *this;
 	}
 
-	inline Vector4& operator *= ( const Vector4& rkVector )
+	inline Vector4& operator *= (const Vector4& rkVector)
 	{
 		x *= rkVector.x;
 		y *= rkVector.y;
 		z *= rkVector.z;
 		w *= rkVector.w;
-
 		return *this;
 	}
 
-	inline Vector4& operator /= ( const double fScalar )
+	inline Vector4& operator /= (const double fScalar)
 	{
-		assert( fScalar != 0.0 );
-
+		assert(fScalar != 0.0);
 		double fInv = 1.0f / fScalar;
-
 		x *= fInv;
 		y *= fInv;
 		z *= fInv;
 		w *= fInv;
-
 		return *this;
 	}
 
-	inline Vector4& operator /= ( const Vector4& rkVector )
+	inline Vector4& operator /= (const Vector4& rkVector)
 	{
 		x /= rkVector.x;
 		y /= rkVector.y;
 		z /= rkVector.z;
 		w /= rkVector.w;
-
 		return *this;
 	}
 
@@ -393,7 +382,7 @@ public:
 	/** Function for writing to a stream.
 	*/
 	inline friend std::ostream& operator <<
-		( std::ostream& o, const Vector4& v )
+	(std::ostream& o, const Vector4& v)
 	{
 		o << "Vector4(" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")";
 		return o;

@@ -108,14 +108,18 @@ bool Orientation(const Polygon& poly);
 double Area(const Polygon& poly);
 
 void OffsetPolygons(const Polygons& in_polys, Polygons& out_polys,
-                    double delta, JoinType jointype = jtSquare, double limit = 0, bool autoFix = true);
+                    double delta, JoinType jointype = jtSquare, double limit = 0,
+                    bool autoFix = true);
 
-void SimplifyPolygon(const Polygon& in_poly, Polygons& out_polys, PolyFillType fillType = pftEvenOdd);
-void SimplifyPolygons(const Polygons& in_polys, Polygons& out_polys, PolyFillType fillType = pftEvenOdd);
+void SimplifyPolygon(const Polygon& in_poly, Polygons& out_polys,
+                     PolyFillType fillType = pftEvenOdd);
+void SimplifyPolygons(const Polygons& in_polys, Polygons& out_polys,
+                      PolyFillType fillType = pftEvenOdd);
 void SimplifyPolygons(Polygons& polys, PolyFillType fillType = pftEvenOdd);
 
 void CleanPolygon(Polygon& in_poly, Polygon& out_poly, double distance = 1.415);
-void CleanPolygons(Polygons& in_polys, Polygons& out_polys, double distance = 1.415);
+void CleanPolygons(Polygons& in_polys, Polygons& out_polys,
+                   double distance = 1.415);
 
 void PolyTreeToPolygons(PolyTree& polytree, Polygons& polygons);
 

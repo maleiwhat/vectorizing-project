@@ -5,7 +5,7 @@
 //  @ Project : Untitled
 //  @ File Name : PathInterpolater.h
 //  @ Date : 2011/9/3
-//  @ Author : 
+//  @ Author :
 //
 //
 
@@ -18,13 +18,13 @@
 
 struct PathPoint
 {
-	PathPoint(){}
+	PathPoint() {}
 	PathPoint(double _time, Vector2 _pos)
-		:time(_time), pos(_pos)
+		: time(_time), pos(_pos)
 	{}
 	double time;
 	Vector2 pos;
-	bool operator < (const PathPoint&rhs) const
+	bool operator < (const PathPoint& rhs) const
 	{
 		return time < rhs.time;
 	}
@@ -34,14 +34,14 @@ typedef std::vector<PathPoint> PathPoints;
 class PathInterpolater
 {
 public:
-	PathInterpolater():m_needsort(true), m_RefenceDistance(0){}
+	PathInterpolater(): m_needsort(true), m_RefenceDistance(0) {}
 	Vector2 m_position;
 	void AddPoint(double time, const Vector2& p);
 	void AddPointByDistance(const Vector2& p);
 	double GetDistance();
-	virtual Vector2 GetValue(double time)=0;
+	virtual Vector2 GetValue(double time) = 0;
 	void Clear();
-	virtual ~PathInterpolater(){}
+	virtual ~PathInterpolater() {}
 protected:
 	void CheckSort();
 	bool m_needsort;

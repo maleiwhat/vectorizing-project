@@ -14,7 +14,7 @@ private:
 	int m_OriginPointSize;
 	algSpline m_sx, m_sy;
 public:
-	SplineFragment():m_OriginPointSize(0)
+	SplineFragment(): m_OriginPointSize(0)
 	{}
 	void SetPatchId(int i1, int i2);
 	int  PatchId1();

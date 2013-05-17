@@ -43,7 +43,8 @@
 #define AUGMENT_LINE_STEP 10
 
 extern double bgSign(double);
-extern int bgSolveCubic(double, double, double, double, double&, double&, double&);
+extern int bgSolveCubic(double, double, double, double, double&, double&,
+                        double&);
 extern inline int bgRound(double);
 extern inline int bgRoundSign(double);
 extern double bgMedian(double*, int, double);
@@ -59,12 +60,16 @@ extern void BgAddExtension(char**, char*);
 
 extern void bgLog(const char*, ...);
 extern void bgLogFile(const char*, ...);
-extern int write_pgm_image(const char *outfilename, unsigned char *image, int rows,
-    int cols, char *comment, int maxval);
-extern void write_MATLAB_ASCII(char *filename, float *data, int rows, int cols);
-extern "C" int lmdif(int m, int n,double x[], double fvec[] , double ftol, double xtol, double gtol, int maxfev,
-						 double epsfcn,double diag[],int mode, double factor, int nprint, int *info, int *nfev,
-						 double fjac[],int ldfjac, int ipvt[], double qtf[], double wa1[], double wa2[] ,
-						 double wa3[], double wa4[]);
+extern int write_pgm_image(const char* outfilename, unsigned char* image,
+                           int rows,
+                           int cols, char* comment, int maxval);
+extern void write_MATLAB_ASCII(char* filename, float* data, int rows, int cols);
+extern "C" int lmdif(int m, int n, double x[], double fvec[] , double ftol,
+                     double xtol, double gtol, int maxfev,
+                     double epsfcn, double diag[], int mode, double factor, int nprint, int* info,
+                     int* nfev,
+                     double fjac[], int ldfjac, int ipvt[], double qtf[], double wa1[],
+                     double wa2[] ,
+                     double wa3[], double wa4[]);
 extern void timer_start();
 extern void timer_stop();

@@ -2,26 +2,34 @@
 #include "math\Vector2.h"
 #include "math\Polygon2D.h"
 
-class Centroid 
+class Centroid
 {
 public:
-	Centroid(){}
+	Centroid() {}
 	Centroid(const Polygon2D& poly)
 	{
 		m_centroid = Vector2::ZERO;
 		int psize = (int)poly.const_Points().size();
-		for (int i = 0; i < psize; i++) 
+
+		for (int i = 0; i < psize; i++)
+		{
 			m_centroid += poly.const_Points()[i];
+		}
+
 		m_centroid /= (double)psize;
 		m_radius = 0;
-		for (int i = 0; i < psize; i++) 
-		{		
+
+		for (int i = 0; i < psize; i++)
+		{
 			double tmp = m_centroid.dotProduct(poly.const_Points()[i]);
-			if (tmp>m_radius)
+
+			if (tmp > m_radius)
+			{
 				m_radius = tmp;
+			}
 		}
 	}
 	Vector2 m_centroid;
-	double	m_radius;
+	double  m_radius;
 };
 

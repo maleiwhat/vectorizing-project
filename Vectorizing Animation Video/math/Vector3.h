@@ -42,43 +42,43 @@ public:
 	double x, y, z;
 
 public:
-	inline Vector3():x(0), y(0), z(0)
+	inline Vector3(): x(0), y(0), z(0)
 	{
 	}
 
-	inline Vector3( const double fX, const double fY, const double fZ )
-		: x( fX ), y( fY ), z( fZ )
+	inline Vector3(const double fX, const double fY, const double fZ)
+		: x(fX), y(fY), z(fZ)
 	{
 	}
 
-	inline explicit Vector3( const double afCoordinate[3] )
-		: x( afCoordinate[0] ),
-		y( afCoordinate[1] ),
-		z( afCoordinate[2] )
+	inline explicit Vector3(const double afCoordinate[3])
+		: x(afCoordinate[0]),
+		  y(afCoordinate[1]),
+		  z(afCoordinate[2])
 	{
 	}
 
-	inline explicit Vector3( const int afCoordinate[3] )
+	inline explicit Vector3(const int afCoordinate[3])
 	{
 		x = (double)afCoordinate[0];
 		y = (double)afCoordinate[1];
 		z = (double)afCoordinate[2];
 	}
 
-	inline explicit Vector3( double* const r )
-		: x( r[0] ), y( r[1] ), z( r[2] )
+	inline explicit Vector3(double* const r)
+		: x(r[0]), y(r[1]), z(r[2])
 	{
 	}
 
-	inline explicit Vector3( const double scaler )
-		: x( scaler )
-		, y( scaler )
-		, z( scaler )
+	inline explicit Vector3(const double scaler)
+		: x(scaler)
+		, y(scaler)
+		, z(scaler)
 	{
 	}
 
 
-	/** Exchange the contents of this vector with another. 
+	/** Exchange the contents of this vector with another.
 	*/
 	inline void swap(Vector3& other)
 	{
@@ -87,18 +87,16 @@ public:
 		std::swap(z, other.z);
 	}
 
-	inline double operator [] ( const size_t i ) const
+	inline double operator [](const size_t i) const
 	{
-		assert( i < 3 );
-
-		return *(&x+i);
+		assert(i < 3);
+		return *(&x + i);
 	}
 
-	inline double& operator [] ( const size_t i )
+	inline double& operator [](const size_t i)
 	{
-		assert( i < 3 );
-
-		return *(&x+i);
+		assert(i < 3);
+		return *(&x + i);
 	}
 	/// Pointer accessor for direct copying
 	inline double* ptr()
@@ -115,85 +113,81 @@ public:
 	@param
 	rkVector The other vector
 	*/
-	inline Vector3& operator = ( const Vector3& rkVector )
+	inline Vector3& operator = (const Vector3& rkVector)
 	{
 		x = rkVector.x;
 		y = rkVector.y;
 		z = rkVector.z;
-
 		return *this;
 	}
 
-	inline Vector3& operator = ( const double fScaler )
+	inline Vector3& operator = (const double fScaler)
 	{
 		x = fScaler;
 		y = fScaler;
 		z = fScaler;
-
 		return *this;
 	}
 
-	inline bool operator == ( const Vector3& rkVector ) const
+	inline bool operator == (const Vector3& rkVector) const
 	{
-		return ( x == rkVector.x && y == rkVector.y && z == rkVector.z );
+		return (x == rkVector.x && y == rkVector.y && z == rkVector.z);
 	}
 
-	inline bool operator != ( const Vector3& rkVector ) const
+	inline bool operator != (const Vector3& rkVector) const
 	{
-		return ( x != rkVector.x || y != rkVector.y || z != rkVector.z );
+		return (x != rkVector.x || y != rkVector.y || z != rkVector.z);
 	}
 
 	// arithmetic operations
-	inline Vector3 operator + ( const Vector3& rkVector ) const
+	inline Vector3 operator + (const Vector3& rkVector) const
 	{
 		return Vector3(
-			x + rkVector.x,
-			y + rkVector.y,
-			z + rkVector.z);
+		           x + rkVector.x,
+		           y + rkVector.y,
+		           z + rkVector.z);
 	}
 
-	inline Vector3 operator - ( const Vector3& rkVector ) const
+	inline Vector3 operator - (const Vector3& rkVector) const
 	{
 		return Vector3(
-			x - rkVector.x,
-			y - rkVector.y,
-			z - rkVector.z);
+		           x - rkVector.x,
+		           y - rkVector.y,
+		           z - rkVector.z);
 	}
 
-	inline Vector3 operator * ( const double fScalar ) const
+	inline Vector3 operator * (const double fScalar) const
 	{
 		return Vector3(
-			x * fScalar,
-			y * fScalar,
-			z * fScalar);
+		           x * fScalar,
+		           y * fScalar,
+		           z * fScalar);
 	}
 
-	inline Vector3 operator * ( const Vector3& rhs) const
+	inline Vector3 operator * (const Vector3& rhs) const
 	{
 		return Vector3(
-			x * rhs.x,
-			y * rhs.y,
-			z * rhs.z);
+		           x * rhs.x,
+		           y * rhs.y,
+		           z * rhs.z);
 	}
 
-	inline Vector3 operator / ( const double fScalar ) const
+	inline Vector3 operator / (const double fScalar) const
 	{
-		assert( fScalar != 0.0f );
-
+		assert(fScalar != 0.0f);
 		double fInv = 1.0f / fScalar;
-
 		return Vector3(
-			x * fInv,
-			y * fInv,
-			z * fInv);
+		           x * fInv,
+		           y * fInv,
+		           z * fInv);
 	}
 
-	inline Vector3 operator / ( const Vector3& rhs) const
+	inline Vector3 operator / (const Vector3& rhs) const
 	{
 		return Vector3(
-			x / rhs.x,
-			y / rhs.y,
-			z / rhs.z);
+		           x / rhs.x,
+		           y / rhs.y,
+		           z / rhs.z);
 	}
 
 	inline const Vector3& operator + () const
@@ -207,65 +201,64 @@ public:
 	}
 
 	// overloaded operators to help Vector3
-	inline friend Vector3 operator * ( const double fScalar, const Vector3& rkVector )
+	inline friend Vector3 operator * (const double fScalar, const Vector3& rkVector)
 	{
 		return Vector3(
-			fScalar * rkVector.x,
-			fScalar * rkVector.y,
-			fScalar * rkVector.z);
+		           fScalar * rkVector.x,
+		           fScalar * rkVector.y,
+		           fScalar * rkVector.z);
 	}
 
-	inline friend Vector3 operator / ( const double fScalar, const Vector3& rkVector )
+	inline friend Vector3 operator / (const double fScalar, const Vector3& rkVector)
 	{
 		return Vector3(
-			fScalar / rkVector.x,
-			fScalar / rkVector.y,
-			fScalar / rkVector.z);
+		           fScalar / rkVector.x,
+		           fScalar / rkVector.y,
+		           fScalar / rkVector.z);
 	}
 
 	inline friend Vector3 operator + (const Vector3& lhs, const double rhs)
 	{
 		return Vector3(
-			lhs.x + rhs,
-			lhs.y + rhs,
-			lhs.z + rhs);
+		           lhs.x + rhs,
+		           lhs.y + rhs,
+		           lhs.z + rhs);
 	}
 
 	inline friend Vector3 operator + (const double lhs, const Vector3& rhs)
 	{
 		return Vector3(
-			lhs + rhs.x,
-			lhs + rhs.y,
-			lhs + rhs.z);
+		           lhs + rhs.x,
+		           lhs + rhs.y,
+		           lhs + rhs.z);
 	}
 
 	inline friend Vector3 operator - (const Vector3& lhs, const double rhs)
 	{
 		return Vector3(
-			lhs.x - rhs,
-			lhs.y - rhs,
-			lhs.z - rhs);
+		           lhs.x - rhs,
+		           lhs.y - rhs,
+		           lhs.z - rhs);
 	}
 
 	inline friend Vector3 operator - (const double lhs, const Vector3& rhs)
 	{
 		return Vector3(
-			lhs - rhs.x,
-			lhs - rhs.y,
-			lhs - rhs.z);
+		           lhs - rhs.x,
+		           lhs - rhs.y,
+		           lhs - rhs.z);
 	}
 
 	// arithmetic updates
-	inline Vector3& operator += ( const Vector3& rkVector )
+	inline Vector3& operator += (const Vector3& rkVector)
 	{
 		x += rkVector.x;
 		y += rkVector.y;
 		z += rkVector.z;
-
 		return *this;
 	}
 
-	inline Vector3& operator += ( const double fScalar )
+	inline Vector3& operator += (const double fScalar)
 	{
 		x += fScalar;
 		y += fScalar;
@@ -273,16 +266,15 @@ public:
 		return *this;
 	}
 
-	inline Vector3& operator -= ( const Vector3& rkVector )
+	inline Vector3& operator -= (const Vector3& rkVector)
 	{
 		x -= rkVector.x;
 		y -= rkVector.y;
 		z -= rkVector.z;
-
 		return *this;
 	}
 
-	inline Vector3& operator -= ( const double fScalar )
+	inline Vector3& operator -= (const double fScalar)
 	{
 		x -= fScalar;
 		y -= fScalar;
@@ -290,7 +282,7 @@ public:
 		return *this;
 	}
 
-	inline Vector3& operator *= ( const double fScalar )
+	inline Vector3& operator *= (const double fScalar)
 	{
 		x *= fScalar;
 		y *= fScalar;
@@ -298,37 +290,32 @@ public:
 		return *this;
 	}
 
-	inline Vector3& operator *= ( const Vector3& rkVector )
+	inline Vector3& operator *= (const Vector3& rkVector)
 	{
 		x *= rkVector.x;
 		y *= rkVector.y;
 		z *= rkVector.z;
-
 		return *this;
 	}
 
-	inline Vector3& operator /= ( const double fScalar )
+	inline Vector3& operator /= (const double fScalar)
 	{
-		assert( fScalar != 0.0 );
-
+		assert(fScalar != 0.0);
 		double fInv = 1.0f / fScalar;
-
 		x *= fInv;
 		y *= fInv;
 		z *= fInv;
-
 		return *this;
 	}
 
-	inline Vector3& operator /= ( const Vector3& rkVector )
+	inline Vector3& operator /= (const Vector3& rkVector)
 	{
 		x /= rkVector.x;
 		y /= rkVector.y;
 		z /= rkVector.z;
-
 		return *this;
 	}
-	
+
 	/** Returns the length (magnitude) of the vector.
 	@warning
 	This operation requires a square root and is expensive in
@@ -336,9 +323,9 @@ public:
 	length (e.g. for just comparing lengths) use squaredLength()
 	instead.
 	*/
-	inline double length () const
+	inline double length() const
 	{
-		return sqrt( x * x + y * y + z * z );
+		return sqrt(x * x + y * y + z * z);
 	}
 
 	/** Returns the square of the length(magnitude) of the vector.
@@ -351,7 +338,7 @@ public:
 	want to find the longest / shortest vector without incurring
 	the square root.
 	*/
-	inline double squaredLength () const
+	inline double squaredLength() const
 	{
 		return x * x + y * y + z * z;
 	}
@@ -428,10 +415,10 @@ public:
 	*/
 	inline double normalise()
 	{
-		double fLength = Math::Sqrt( x * x + y * y + z * z );
+		double fLength = Math::Sqrt(x * x + y * y + z * z);
 
 		// Will also work for zero-sized vectors, but will change nothing
-		if ( fLength > 1e-08 )
+		if (fLength > 1e-08)
 		{
 			double fInvLength = 1.0f / fLength;
 			x *= fInvLength;
@@ -470,42 +457,48 @@ public:
 	and will go <i>inside</i> the screen, towards the cathode tube
 	(assuming you're using a CRT monitor, of course).
 	*/
-	inline Vector3 crossProduct( const Vector3& rkVector ) const
+	inline Vector3 crossProduct(const Vector3& rkVector) const
 	{
 		return Vector3(
-			y * rkVector.z - z * rkVector.y,
-			z * rkVector.x - x * rkVector.z,
-			x * rkVector.y - y * rkVector.x);
+		           y * rkVector.z - z * rkVector.y,
+		           z * rkVector.x - x * rkVector.z,
+		           x * rkVector.y - y * rkVector.x);
 	}
 
 	/** Returns a vector at a point half way between this and the passed
 	in vector.
 	*/
-	inline Vector3 midPoint( const Vector3& vec ) const
+	inline Vector3 midPoint(const Vector3& vec) const
 	{
 		return Vector3(
-			( x + vec.x ) * 0.5f,
-			( y + vec.y ) * 0.5f,
-			( z + vec.z ) * 0.5f );
+		           (x + vec.x) * 0.5f,
+		           (y + vec.y) * 0.5f,
+		           (z + vec.z) * 0.5f);
 	}
 
 	/** Returns true if the vector's scalar components are all greater
 	that the ones of the vector it is compared against.
 	*/
-	inline bool operator < ( const Vector3& rhs ) const
+	inline bool operator < (const Vector3& rhs) const
 	{
-		if( x < rhs.x && y < rhs.y && z < rhs.z )
+		if (x < rhs.x && y < rhs.y && z < rhs.z)
+		{
 			return true;
+		}
+
 		return false;
 	}
 
 	/** Returns true if the vector's scalar components are all smaller
 	that the ones of the vector it is compared against.
 	*/
-	inline bool operator > ( const Vector3& rhs ) const
+	inline bool operator > (const Vector3& rhs) const
 	{
-		if( x > rhs.x && y > rhs.y && z > rhs.z )
+		if (x > rhs.x && y > rhs.y && z > rhs.z)
+		{
 			return true;
+		}
+
 		return false;
 	}
 
@@ -516,11 +509,13 @@ public:
 	value of x, y and z from both vectors. Lowest is taken just
 	numerically, not magnitude, so -1 < 0.
 	*/
-	inline void makeFloor( const Vector3& cmp )
+	inline void makeFloor(const Vector3& cmp)
 	{
-		if( cmp.x < x ) x = cmp.x;
-		if( cmp.y < y ) y = cmp.y;
-		if( cmp.z < z ) z = cmp.z;
+		if (cmp.x < x) { x = cmp.x; }
+
+		if (cmp.y < y) { y = cmp.y; }
+
+		if (cmp.z < z) { z = cmp.z; }
 	}
 
 	/** Sets this vector's components to the maximum of its own and the
@@ -530,11 +525,13 @@ public:
 	value of x, y and z from both vectors. Highest is taken just
 	numerically, not magnitude, so 1 > -3.
 	*/
-	inline void makeCeil( const Vector3& cmp )
+	inline void makeCeil(const Vector3& cmp)
 	{
-		if( cmp.x > x ) x = cmp.x;
-		if( cmp.y > y ) y = cmp.y;
-		if( cmp.z > z ) z = cmp.z;
+		if (cmp.x > x) { x = cmp.x; }
+
+		if (cmp.y > y) { y = cmp.y; }
+
+		if (cmp.z > z) { z = cmp.z; }
 	}
 
 	/** Generates a vector perpendicular to this vector (eg an 'up' vector).
@@ -547,19 +544,18 @@ public:
 	inline Vector3 perpendicular(void) const
 	{
 		static const double fSquareZero = (double)(1e-06 * 1e-06);
-
-		Vector3 perp = this->crossProduct( Vector3::UNIT_X );
+		Vector3 perp = this->crossProduct(Vector3::UNIT_X);
 
 		// Check length
-		if( perp.squaredLength() < fSquareZero )
+		if (perp.squaredLength() < fSquareZero)
 		{
 			/* This vector is the Y axis multiplied by a scalar, so we have
 			to use another axis.
 			*/
-			perp = this->crossProduct( Vector3::UNIT_Y );
+			perp = this->crossProduct(Vector3::UNIT_Y);
 		}
-		perp.normalise();
 
+		perp.normalise();
 		return perp;
 	}
 	/** Gets the angle between 2 vectors.
@@ -571,22 +567,21 @@ public:
 		double lenProduct = length() * dest.length();
 
 		// Divide by zero check
-		if(lenProduct < 1e-6f)
+		if (lenProduct < 1e-6f)
+		{
 			lenProduct = 1e-6f;
+		}
 
 		double f = dotProduct(dest) / lenProduct;
-
-		f = Math::Clamp(f, (double)-1.0f, (double)1.0f);
+		f = Math::Clamp(f, (double) - 1.0f, (double)1.0f);
 		return Math::ACos(f);
-
 	}
-	
+
 	/** Returns true if this vector is zero length. */
 	inline bool isZeroLength(void) const
 	{
 		double sqlen = (x * x) + (y * y) + (z * z);
 		return (sqlen < (1e-06 * 1e-06));
-
 	}
 
 	/** As normalise, except that this vector is unaffected and the
@@ -603,7 +598,7 @@ public:
 	*/
 	inline Vector3 reflect(const Vector3& normal) const
 	{
-		return Vector3( *this - ( 2 * this->dotProduct(normal) * normal ) );
+		return Vector3(*this - (2 * this->dotProduct(normal) * normal));
 	}
 
 	/** Returns whether this vector is within a positional tolerance
@@ -615,9 +610,8 @@ public:
 	inline bool positionEquals(const Vector3& rhs, double tolerance = 1e-03) const
 	{
 		return Math::RealEqual(x, rhs.x, tolerance) &&
-			Math::RealEqual(y, rhs.y, tolerance) &&
-			Math::RealEqual(z, rhs.z, tolerance);
-
+		       Math::RealEqual(y, rhs.y, tolerance) &&
+		       Math::RealEqual(z, rhs.z, tolerance);
 	}
 
 	/** Returns whether this vector is within a positional tolerance
@@ -629,7 +623,7 @@ public:
 	inline bool positionCloses(const Vector3& rhs, double tolerance = 1e-03f) const
 	{
 		return squaredDistance(rhs) <=
-			(squaredLength() + rhs.squaredLength()) * tolerance;
+		       (squaredLength() + rhs.squaredLength()) * tolerance;
 	}
 
 	/** Returns whether this vector is within a directional tolerance
@@ -640,13 +634,11 @@ public:
 	@note Both vectors should be normalised.
 	*/
 	inline bool directionEquals(const Vector3& rhs,
-		const Radian& tolerance) const
+	                            const Radian& tolerance) const
 	{
 		double dot = dotProduct(rhs);
 		Radian angle = Math::ACos(dot);
-
 		return Math::Abs(angle.valueRadians()) <= tolerance.valueRadians();
-
 	}
 
 	/// Check whether this vector contains valid values
@@ -655,7 +647,7 @@ public:
 		return _isnan(x) || _isnan(y) || _isnan(z);
 	}
 
-	
+
 
 	// special points
 	static const Vector3 ZERO;
@@ -670,7 +662,7 @@ public:
 	/** Function for writing to a stream.
 	*/
 	inline friend std::ostream& operator <<
-		( std::ostream& o, const Vector3& v )
+	(std::ostream& o, const Vector3& v)
 	{
 		o << "Vector3(" << v.x << ", " << v.y << ", " << v.z << ")";
 		return o;

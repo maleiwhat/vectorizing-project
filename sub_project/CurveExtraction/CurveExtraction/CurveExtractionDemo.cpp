@@ -1,11 +1,11 @@
 /************************************************************************/
-/*  This software is developed by Ming-Ming Cheng.				        */
+/*  This software is developed by Ming-Ming Cheng.                      */
 /*       Url: http://cg.cs.tsinghua.edu.cn/people/~cmm/                 */
-/*  This software is free fro non-commercial use. In order to use this	*/
-/*  software for academic use, you must cite the corresponding paper:	*/
+/*  This software is free fro non-commercial use. In order to use this  */
+/*  software for academic use, you must cite the corresponding paper:   */
 /*      Ming-Ming Cheng, Curve Structure Extraction for Cartoon Images, */
-/*      in The 5th Joint Conference on Harmonious Human Machine			*/
-/*      Environment (HHME), 2009, pp. 13-20.							*/
+/*      in The 5th Joint Conference on Harmonious Human Machine         */
+/*      Environment (HHME), 2009, pp. 13-20.                            */
 /************************************************************************/
 
 #include "stdafx.h"
@@ -188,7 +188,8 @@ void UnsharpMask0(cv::Mat& img, float amount, long  radius, float thresh)
 void UnsharpMask1(cv::Mat& img, double amount, double radius, double threshold)
 {
 	// create blurred img
-	cv::Mat img32F, imgBlur32F, imgHighContrast32F, imgDiff32F, unsharpMas32F, colDelta32F, compRes, compRes32F, prod;
+	cv::Mat img32F, imgBlur32F, imgHighContrast32F, imgDiff32F, unsharpMas32F,
+	colDelta32F, compRes, compRes32F, prod;
 	double r = 1.5;
 	img.convertTo(img32F, CV_32F);
 	cv::GaussianBlur(img32F, imgBlur32F, cv::Size(0, 0), radius);
@@ -379,7 +380,7 @@ typedef Vector2s Line;
 typedef std::vector<Line> Lines;
 struct WeightData
 {
-	WeightData(Vector2& p, int w): pos(p), weight(w)	{}
+	WeightData(Vector2& p, int w): pos(p), weight(w)    {}
 	Vector2 pos;
 	int  weight;
 	bool operator<(const WeightData& wd)
@@ -429,7 +430,7 @@ struct _tmp_function
 
 void EdgeLink2(cv::Mat& image, Line& now_line)
 {
-	bool	edgefail = false;
+	bool    edgefail = false;
 
 	for (; !edgefail;)
 	{
@@ -606,7 +607,7 @@ void EdgeLink2(cv::Mat& image, Line& now_line)
 Lines ComputeEdgeLine2(const cv::Mat& image)
 {
 	cv::Mat tImage = image;
-	Lines	res;
+	Lines   res;
 
 	for (int i = 0; i < tImage.rows; ++i)
 	{
@@ -652,52 +653,57 @@ void SmoothThreshold(cv::Mat src, cv::Mat& dst)
 		}
 	}
 
-	
 	cv::Mat skeleton;
 	dst.convertTo(skeleton, CV_8U, 1);
 	dst.convertTo(dst, CV_8U, 255);
 	cvThin(skeleton, skeleton, 5);
- 	//normalize(skeleton, skeleton, 0, 255, cv::NORM_MINMAX);
-// 	Lines lines = ComputeEdgeLine2(skeleton);
-// 	cv::RNG rng(12345);
-// 	cv::Mat drawing = cv::Mat::zeros( skeleton.size(), CV_8UC3 );
-// 	for (auto it = lines.begin();it!= lines.end();++it)
-// 	{
-// 		cv::Vec3b color( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-// 		for (auto it2 = it->begin();it2!=it->end();++it2)
-// 		{
-// 			drawing.at<cv::Vec3b>(it2->y, it2->x) = color;
-// 		}
-// 	}
-// 	imshow("drawing", drawing);
-// 	cv::waitKey();
+	//normalize(skeleton, skeleton, 0, 255, cv::NORM_MINMAX);
+//  Lines lines = ComputeEdgeLine2(skeleton);
+//  cv::RNG rng(12345);
+//  cv::Mat drawing = cv::Mat::zeros( skeleton.size(), CV_8UC3 );
+//  for (auto it = lines.begin();it!= lines.end();++it)
+//  {
+//      cv::Vec3b color( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+//      for (auto it2 = it->begin();it2!=it->end();++it2)
+//      {
+//          drawing.at<cv::Vec3b>(it2->y, it2->x) = color;
+//      }
+//  }
+//  imshow("drawing", drawing);
+//  cv::waitKey();
 //	imshow("skeleton", skeleton);
 //	imshow("dst", dst);
 	std::vector<cv::Vec4i> hierarchy;
 	std::vector<std::vector<cv::Point>> contours;
-	findContours( dst, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
-
-	cv::Mat drawing = cv::Mat::zeros( dst.size(), CV_8UC3 );
+	findContours(dst, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE,
+	             cv::Point(0, 0));
+	cv::Mat drawing = cv::Mat::zeros(dst.size(), CV_8UC3);
 	cv::RNG rng(12345);
-	for( int i = 0; i< contours.size(); i++ )
+
+	for (int i = 0; i < contours.size(); i++)
 	{
-		cv::Scalar color = cv::Scalar( rng.uniform(50, 255), rng.uniform(50,255), rng.uniform(50,255) );
+		cv::Scalar color = cv::Scalar(rng.uniform(50, 255), rng.uniform(50, 255),
+		                              rng.uniform(50, 255));
 		//drawContours( drawing, contours, i, color, 1, 8, hierarchy, 0, cv::Point() );
 		//if ( hierarchy[i][3] != -1 ) {
-			drawContours( drawing, contours, i, color, -1 );
+		drawContours(drawing, contours, i, color, -1);
 		//}
 	}
-	imshow( "FillContours", drawing );
+
+	imshow("FillContours", drawing);
 	drawing = cv::Scalar(0);
-	for( int i = 0; i< contours.size(); i++ )
+
+	for (int i = 0; i < contours.size(); i++)
 	{
-		cv::Scalar color = cv::Scalar( rng.uniform(50, 255), rng.uniform(50,255), rng.uniform(50,255) );
+		cv::Scalar color = cv::Scalar(rng.uniform(50, 255), rng.uniform(50, 255),
+		                              rng.uniform(50, 255));
 		//drawContours( drawing, contours, i, color, 1, 8, hierarchy, 0, cv::Point() );
 		//if ( hierarchy[i][3] != -1 ) {
-		drawContours( drawing, contours, i, color, 1 );
+		drawContours(drawing, contours, i, color, 1);
 		//}
 	}
-	imshow( "Contours",  drawing );
+
+	imshow("Contours",  drawing);
 	imwrite("Contours.png", drawing);
 	cv::waitKey();
 }
@@ -721,7 +727,6 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 			float& wmax = MaxCapacity.at<float>(y, x);
 			std::sort(ary.begin(), ary.end(), LightCompare);
 			wmax = GetLight(ary.back().c) - GetLight(src.at<cv::Vec3f>(y, x));
-			
 		}
 	}
 
@@ -733,7 +738,7 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 			cv::Vec3f& v = src.at<cv::Vec3f>(y, x);
 			float& w = WaterMap.at<float>(y, x);
 			float& wmax = MaxCapacity.at<float>(y, x);
-			w = wmax*3;
+			w = wmax * 3;
 			r = w + GetLight(v);
 		}
 	}
@@ -744,35 +749,35 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 
 	for (int count = 0; count < 1000; ++count)
 	{
-// 		if (count % 3 == 0)
-// 		{
-// 			for (int y = 0; y < src.rows; ++y)
-// 			{
-// 				for (int x = 0; x < src.cols; ++x)
-// 				{
-// 					float& w = WaterMap.at<float>(y, x);
-// 					float& t = ThresholdMap.at<float>(y, x);
+//      if (count % 3 == 0)
+//      {
+//          for (int y = 0; y < src.rows; ++y)
+//          {
+//              for (int x = 0; x < src.cols; ++x)
+//              {
+//                  float& w = WaterMap.at<float>(y, x);
+//                  float& t = ThresholdMap.at<float>(y, x);
 //
-// 					if (w > 0.1)
-// 					{
-// 						t = w;
-// 					}
-// 					else
-// 					{
-// 						t = 0;
-// 					}
-// 				}
-// 			}
-// 		}
+//                  if (w > 0.1)
+//                  {
+//                      t = w;
+//                  }
+//                  else
+//                  {
+//                      t = 0;
+//                  }
+//              }
+//          }
+//      }
 		tmp = WaterMap.clone();
-// 		for (int y = 0; y < tmp.rows; ++y)
-// 		{
-// 			for (int x = 0; x < tmp.cols; ++x)
-// 			{
-// 				float& w = tmp.at<float>(y, x);
-// 				w = 0.5-w;
-// 			}
-// 		}
+//      for (int y = 0; y < tmp.rows; ++y)
+//      {
+//          for (int x = 0; x < tmp.cols; ++x)
+//          {
+//              float& w = tmp.at<float>(y, x);
+//              w = 0.5-w;
+//          }
+//      }
 		imshow("MaxCapacity", MaxCapacity);
 		imshow("WaterMap", tmp);
 		imshow("RealMap", RealMap);
@@ -798,12 +803,12 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 				float& w = WaterMap.at<float>(y, x);
 				float& r = RealMap.at<float>(y, x);
 
-				if (w == 0 ) { continue; }
+				if (w == 0) { continue; }
 
 				GetMatrixf(rectw, recth, aryr, x, y, RealMap);
 				std::sort(aryr.begin(), aryr.end(), LightComparef);
-
 				int_vector can_add;
+
 				for (int i = 0; i < 9; ++i)
 				{
 					if (r > aryr[i].value())
@@ -811,14 +816,18 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 						can_add.push_back(i);
 					}
 				}
+
 				float ww = w / can_add.size();
-				for (auto it = can_add.begin();it!= can_add.end();++it)
+
+				for (auto it = can_add.begin(); it != can_add.end(); ++it)
 				{
 					int i = *it;
+
 					if (r > aryr[i].value())
 					{
 						float wmax2 = MaxCapacity.at<float>(aryr[i].y, aryr[i].x);
 						float maxadd = wmax2 - aryr[i].value();
+
 						if (maxadd > 0)
 						{
 							if (maxadd >= ww)
@@ -859,13 +868,13 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 						}
 					}
 				}
-				
 			}
 		}
 	}
 
 	// END
 	normalize(MaxCapacity, MaxCapacity, 0, 1, cv::NORM_MINMAX);
+
 	for (int r = 0; r < MaxCapacity.rows; r++)
 	{
 		for (int c = 0; c < MaxCapacity.cols; c++)
@@ -876,42 +885,43 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 			{
 				s = 0.4;
 			}
+
 			s = pow(s, 0.9f);
 		}
 	}
 
 	normalize(MaxCapacity, MaxCapacity, 0, 1, cv::NORM_MINMAX);
 	SmoothThreshold(MaxCapacity, MaxCapacity2);
-// 	float garma = 2;
+//  float garma = 2;
 //
-// 	for (int r = 0; r < MaxCapacity.rows; r++)
-// 	{
-// 		for (int c = 0; c < MaxCapacity.cols; c++)
-// 		{
-// 			float& s = MaxCapacity.at<float>(r, c);
-// 			s = pow(s, garma);
-// 			//s *= 30;
-// 			cv::Vec3f& v = dst.at<cv::Vec3f>(r, c);
-// 			v[0] -= s;
-// 			v[1] -= s;
-// 			v[2] -= s;
+//  for (int r = 0; r < MaxCapacity.rows; r++)
+//  {
+//      for (int c = 0; c < MaxCapacity.cols; c++)
+//      {
+//          float& s = MaxCapacity.at<float>(r, c);
+//          s = pow(s, garma);
+//          //s *= 30;
+//          cv::Vec3f& v = dst.at<cv::Vec3f>(r, c);
+//          v[0] -= s;
+//          v[1] -= s;
+//          v[2] -= s;
 //
-// 			if (v[0] < 0) { v[0] = 0; }
+//          if (v[0] < 0) { v[0] = 0; }
 //
-// 			if (v[1] < 0) { v[1] = 0; }
+//          if (v[1] < 0) { v[1] = 0; }
 //
-// 			if (v[2] < 0) { v[2] = 0; }
+//          if (v[2] < 0) { v[2] = 0; }
 //
-// 			if (s > 0.5)
-// 			{
-// 				//s = 1;
-// 			}
-// 			else
-// 			{
-// 				//s = 0;
-// 			}
-// 		}
-// 	}
+//          if (s > 0.5)
+//          {
+//              //s = 1;
+//          }
+//          else
+//          {
+//              //s = 0;
+//          }
+//      }
+//  }
 	cv::namedWindow("MaxCapacity", 0);
 	cv::namedWindow("WaterMap", 0);
 	cv::namedWindow("RealMap", 0);
@@ -924,7 +934,7 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 	cv::Mat outimg;
 	dst.convertTo(outimg, CV_8U, 255);
 	imwrite("girl.png", outimg);
-// 	imshow("src", src);
+//  imshow("src", src);
 	imshow("dst", dst);
 	cv::waitKey(0);
 }
@@ -939,16 +949,16 @@ typedef std::vector<WeightData> Weights;
 // Weights wm_init;
 // struct _tmp_function2
 // {
-// 	_tmp_function2()
-// 	{
-// 		for (int i = -5; i <= 5; ++i)
-// 		{
-// 			for (int j = -5; j <= 5; ++j)
-// 			{
-// 				wm_init.push_back(WeightData(Vector2(i, j), sqrtf(i * i + j * j)));
-// 			}
-// 		}
-// 	}
+//  _tmp_function2()
+//  {
+//      for (int i = -5; i <= 5; ++i)
+//      {
+//          for (int j = -5; j <= 5; ++j)
+//          {
+//              wm_init.push_back(WeightData(Vector2(i, j), sqrtf(i * i + j * j)));
+//          }
+//      }
+//  }
 // } __tmp_function2;
 
 void Demo(const Mat& img1u)
@@ -990,62 +1000,62 @@ int main(int argc, char* argv[])
 	cvtColor(cImg, cImg, CV_BGR2GRAY);
 //	cv::waitKey();
 	Demo(cImg);
-// 	for (int k = 0; k < 9; k++)
-// 	{
-// 		printf("%d\n", k);
-// 		cv::Mat simg = cImg.clone();
-// 		cv::Mat simg2;
-// 		UnsharpMask2(simg, 500, 5, 3);
-// 		imshow("cImg", simg);
-// 		cv::waitKey(0);
-// 	}
-// 	float garma = 3;
+//  for (int k = 0; k < 9; k++)
+//  {
+//      printf("%d\n", k);
+//      cv::Mat simg = cImg.clone();
+//      cv::Mat simg2;
+//      UnsharpMask2(simg, 500, 5, 3);
+//      imshow("cImg", simg);
+//      cv::waitKey(0);
+//  }
+//  float garma = 3;
 //
-// 	for (int r = 0; r < MaxCapacity.rows; r++)
-// 	{
-// 		for (int c = 0; c < MaxCapacity.cols; c++)
-// 		{
-// 			cv::Vec3f& s = MaxCapacity.at<cv::Vec3f>(r, c);
-// 			s[0] = pow(s[0], garma);
-// 			s[1] = pow(s[1], garma);
-// 			s[2] = pow(s[2], garma);
-// 		}
-// 	}
-// 	cv::Mat sft, slc;
-// 	cv::Mat dft, dlc, img, dst;
-// 	slc = cImg.clone();
-// 	//cvtColor(cImg, slc, CV_BGR2HLS);
-// 	dst.create(cImg.rows, cImg.cols, CV_32FC1);
-// 	slc.convertTo(img, CV_32FC3, 1.0);
-// 	cImg.convertTo(dlc, CV_32FC3, 1.0);
-// 	imshow("cImg", dlc);
-// 	cv::namedWindow("img", 0);
-// 	imshow("img", img);
+//  for (int r = 0; r < MaxCapacity.rows; r++)
+//  {
+//      for (int c = 0; c < MaxCapacity.cols; c++)
+//      {
+//          cv::Vec3f& s = MaxCapacity.at<cv::Vec3f>(r, c);
+//          s[0] = pow(s[0], garma);
+//          s[1] = pow(s[1], garma);
+//          s[2] = pow(s[2], garma);
+//      }
+//  }
+//  cv::Mat sft, slc;
+//  cv::Mat dft, dlc, img, dst;
+//  slc = cImg.clone();
+//  //cvtColor(cImg, slc, CV_BGR2HLS);
+//  dst.create(cImg.rows, cImg.cols, CV_32FC1);
+//  slc.convertTo(img, CV_32FC3, 1.0);
+//  cImg.convertTo(dlc, CV_32FC3, 1.0);
+//  imshow("cImg", dlc);
+//  cv::namedWindow("img", 0);
+//  imshow("img", img);
 //
-// 	for (int k = 0; k < 9; k++)
-// 	{
-// 		{ g_rect += 2; }
-// 		dst = cv::Scalar(0);
-// 		RarePixel(img, dst, g_rect, g_rect);
-// 		normalize(dst, dst, 0, 1, cv::NORM_MINMAX);
-// 		imshow("Img", dst);
-// 		g_channel = (g_channel + 1) % 3;
-// 		cv::waitKey(0);
-// 	}
+//  for (int k = 0; k < 9; k++)
+//  {
+//      { g_rect += 2; }
+//      dst = cv::Scalar(0);
+//      RarePixel(img, dst, g_rect, g_rect);
+//      normalize(dst, dst, 0, 1, cv::NORM_MINMAX);
+//      imshow("Img", dst);
+//      g_channel = (g_channel + 1) % 3;
+//      cv::waitKey(0);
+//  }
 	return 0;
 }
 
 
-// 	cv::Mat kern = (cv::Mat_<float>(6,3) <<
-// 		1,  0, 0,
-// 		1,  0, 0,
-// 		0,  1, 0,
-// 		0,  1, 0,
-// 		0, 0,  1,
-// 		0, 0,  1);
-// 	filter2D(img, dst, img.depth(), kern );
+//  cv::Mat kern = (cv::Mat_<float>(6,3) <<
+//      1,  0, 0,
+//      1,  0, 0,
+//      0,  1, 0,
+//      0,  1, 0,
+//      0, 0,  1,
+//      0, 0,  1);
+//  filter2D(img, dst, img.depth(), kern );
 
 //
-// 	normalize(img, img, 0, 1, cv::NORM_MINMAX);
+//  normalize(img, img, 0, 1, cv::NORM_MINMAX);
 
 

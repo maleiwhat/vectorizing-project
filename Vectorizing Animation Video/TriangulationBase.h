@@ -6,23 +6,23 @@
 
 struct Triangle
 {
-	Vector2	m_Points[3];
-	Vector3	m_Colors[3];
+	Vector2 m_Points[3];
+	Vector3 m_Colors[3];
 };
 typedef std::vector<Triangle> Triangles;
 
 class TriangulationBase
 {
 public:
-	virtual ~TriangulationBase(){}
-	virtual void AddPoint(double x, double y)=0;
-	virtual void Compute()=0;
-	virtual void Clear()=0;
+	virtual ~TriangulationBase() {}
+	virtual void AddPoint(double x, double y) = 0;
+	virtual void Compute() = 0;
+	virtual void Clear() = 0;
 	Triangles& GetTriangles()
 	{
 		return m_Triangles;
 	}
 protected:
-	Triangles	m_Triangles;
+	Triangles   m_Triangles;
 };
 

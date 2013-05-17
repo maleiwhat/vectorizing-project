@@ -3,7 +3,7 @@
 // MFC 參考及 MFC C++ 程式庫軟體
 // 隨附相關電子文件的補充。
 // 關於 Fluent UI 之複製、使用或散發的授權條款則分別提供。
-// 如需 Fluent UI 授權計劃的詳細資訊，請造訪 
+// 如需 Fluent UI 授權計劃的詳細資訊，請造訪
 // http://msdn.microsoft.com/officeui。
 //
 // Copyright (C) Microsoft Corporation
@@ -38,13 +38,13 @@ END_MESSAGE_MAP()
 BOOL CViewTree::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 {
 	BOOL bRes = CTreeCtrl::OnNotify(wParam, lParam, pResult);
-
 	NMHDR* pNMHDR = (NMHDR*)lParam;
 	ASSERT(pNMHDR != NULL);
 
 	if (pNMHDR && pNMHDR->code == TTN_SHOW && GetToolTips() != NULL)
 	{
-		GetToolTips()->SetWindowPos(&wndTop, -1, -1, -1, -1, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOSIZE);
+		GetToolTips()->SetWindowPos(&wndTop, -1, -1, -1, -1,
+		                            SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOSIZE);
 	}
 
 	return bRes;

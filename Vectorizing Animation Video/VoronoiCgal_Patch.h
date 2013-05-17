@@ -29,7 +29,7 @@ public:
 
 	struct FaceInfo2
 	{
-		FaceInfo2():nesting_level(TRIANGLE_NOT_INIT) 
+		FaceInfo2(): nesting_level(TRIANGLE_NOT_INIT)
 		{
 		}
 		int nesting_level;
@@ -47,37 +47,38 @@ public:
 	};
 	typedef CGAL::Triangulation_vertex_base_with_info_2<VertexInfo2, K> Vb;
 	typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo2, K> Fbbb;
-	typedef CGAL::Constrained_triangulation_face_base_2<K, Fbbb>	Fbb;
-	typedef CGAL::Delaunay_mesh_face_base_2<K, Fbb>			Fb;
+	typedef CGAL::Constrained_triangulation_face_base_2<K, Fbbb>    Fbb;
+	typedef CGAL::Delaunay_mesh_face_base_2<K, Fbb>         Fb;
 	typedef CGAL::Triangulation_data_structure_2<Vb, Fb>            TDS;
 	typedef CGAL::Exact_predicates_tag                              Itag;
 	typedef CGAL::Constrained_Delaunay_triangulation_2<K, TDS, Itag> Delaunay;
 
-// 	typedef CGAL::Triangulation_data_structure_2< CGAL::Triangulation_vertex_base_2<K>, CGAL::Triangulation_face_base_with_info_2<VFaceInfo2, K> > myface;
-// 	typedef CGAL::Constrained_Delaunay_triangulation_2<K, myface> Delaunay;
+//  typedef CGAL::Triangulation_data_structure_2< CGAL::Triangulation_vertex_base_2<K>, CGAL::Triangulation_face_base_with_info_2<VFaceInfo2, K> > myface;
+//  typedef CGAL::Constrained_Delaunay_triangulation_2<K, myface> Delaunay;
 	typedef Delaunay::Vertex_handle Vertex_handle;
-	typedef CGAL::Delaunay_mesh_size_criteria_2<Delaunay>	Criteria;
-	typedef CGAL::Delaunay_mesher_2<Delaunay, Criteria>	Mesher;
+	typedef CGAL::Delaunay_mesh_size_criteria_2<Delaunay>   Criteria;
+	typedef CGAL::Delaunay_mesher_2<Delaunay, Criteria> Mesher;
 
-	//typedef std::vector<Site>		Sites;
-	typedef std::vector<Vertex_handle>	Vertex_handles;
+	//typedef std::vector<Site>     Sites;
+	typedef std::vector<Vertex_handle>  Vertex_handles;
 
-	LineSegs	m_LineSegs;
-	Lines		m_Lines;
-	Lines		m_Controls;
-	Points		m_Points;
-	Delaunay	m_Delaunay;
-	ImageSpline	m_ImageSpline;
-	CgalPatchs	m_CgalPatchs;
-	Points2d	m_OutLines;
-	PositionGraph	m_PositionGraph;
+	LineSegs    m_LineSegs;
+	Lines       m_Lines;
+	Lines       m_Controls;
+	Points      m_Points;
+	Delaunay    m_Delaunay;
+	ImageSpline m_ImageSpline;
+	CgalPatchs  m_CgalPatchs;
+	Points2d    m_OutLines;
+	PositionGraph   m_PositionGraph;
 
 	void MakeGraphLines();
 
 	void insert_polygon(Delaunay& cdt, ImageSpline& m_ImageSpline, int idx);
 
 	void insert_polygonInter(Delaunay& cdt, ImageSpline& m_ImageSpline, int idx);
-	void insert_polygonInter2(Delaunay& cdt, ImageSpline& m_ImageSpline, PatchSpline& ps);
+	void insert_polygonInter2(Delaunay& cdt, ImageSpline& m_ImageSpline,
+	                          PatchSpline& ps);
 
 	void AddImageSpline(ImageSpline& is)
 	{
@@ -90,10 +91,10 @@ public:
 	void Compute();
 	void Clear() {}
 
-	void	mark_domains(Delaunay& ct, Delaunay::Face_handle start, int index,
-		std::list<Delaunay::Edge>& border);
-	
-	void	mark_domains(Delaunay& cdt);
+	void    mark_domains(Delaunay& ct, Delaunay::Face_handle start, int index,
+	                     std::list<Delaunay::Edge>& border);
+
+	void    mark_domains(Delaunay& cdt);
 
 };
 

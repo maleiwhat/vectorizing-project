@@ -53,7 +53,7 @@ struct _tmp_function
 
 void EdgeLink_LineFragment(cv::Mat& image, Line& now_line, int now_value)
 {
-	bool	edgefail = false;
+	bool    edgefail = false;
 
 	for (; !edgefail;)
 	{
@@ -103,9 +103,9 @@ void EdgeLink_LineFragment(cv::Mat& image, Line& now_line, int now_value)
 			cv::Vec3b& intensity = image.at<cv::Vec3b>(y, x);
 
 			if (Vector2(x, y) != v
-			                && intensity[0] == (now_value % 255)
-			                && intensity[1] == (now_value / 255) % 255
-			                && intensity[2] == (now_value / (255 * 255)))
+			        && intensity[0] == (now_value % 255)
+			        && intensity[1] == (now_value / 255) % 255
+			        && intensity[2] == (now_value / (255 * 255)))
 			{
 				now_line.push_back(Vector2(x, y));
 				intensity[0] = 0;
@@ -141,8 +141,8 @@ void EdgeLink_LineFragment(cv::Mat& image, Line& now_line, int now_value)
 			cv::Vec3b& intensity = image.at<cv::Vec3b>(y, x);
 
 			if (intensity[0] == 255
-			                && intensity[1] == 255
-			                && intensity[2] == 255)
+			        && intensity[1] == 255
+			        && intensity[2] == 255)
 			{
 				now_line.push_back(Vector2(x, y));
 				getjoint = true;
@@ -232,9 +232,9 @@ void EdgeLink_LineFragment(cv::Mat& image, Line& now_line, int now_value)
 			cv::Vec3b& intensity = image.at<cv::Vec3b>(y, x);
 
 			if (Vector2(x, y) != v
-			                && intensity[0] == (now_value % 255)
-			                && intensity[1] == (now_value / 255) % 255
-			                && intensity[2] == (now_value / (255 * 255)))
+			        && intensity[0] == (now_value % 255)
+			        && intensity[1] == (now_value / 255) % 255
+			        && intensity[2] == (now_value / (255 * 255)))
 			{
 				now_line.push_back(Vector2(x, y));
 				intensity[0] = 0;
@@ -270,8 +270,8 @@ void EdgeLink_LineFragment(cv::Mat& image, Line& now_line, int now_value)
 			cv::Vec3b& intensity = image.at<cv::Vec3b>(y, x);
 
 			if (intensity[0] == 255
-			                && intensity[1] == 255
-			                && intensity[2] == 255)
+			        && intensity[1] == 255
+			        && intensity[2] == 255)
 			{
 				now_line.push_back(Vector2(x, y));
 				getjoint = true;
@@ -906,8 +906,8 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	//cv::imshow("Original Picture", image);
 	normalize(tmp_image, img2u, 0, 255, cv::NORM_MINMAX);
 
-// 	cv::imshow("Color Region", img2u);
-// 	cv::waitKey();
+//  cv::imshow("Color Region", img2u);
+//  cv::waitKey();
 	// Find Boundary
 	for (int i = 0; i < joint_mask.rows ; i++)
 	{
@@ -1009,8 +1009,8 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	cv::imwrite("Joint Image.png", joint_mask);
 	cv::imshow("Joint Image", joint_mask);
 	//cv::waitKey();
-// 	// delete gap
-// 	gap_image = cv::Scalar::all(0);
+//  // delete gap
+//  gap_image = cv::Scalar::all(0);
 	tmp_image = joint_image.clone();
 
 	for (int i = 0; i < joint_image.rows ; i++)
@@ -1184,7 +1184,8 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	return is;
 }
 
-ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines, cv::Mat lineImage)
+ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
+                           cv::Mat lineImage)
 {
 	ImageSpline is;
 	LineFragments& lfs = is.m_LineFragments;
@@ -1418,16 +1419,16 @@ ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines, cv::Mat lineIma
 			LineIndex li1 = ps.m_LineIndexs.front();
 			Vector2 start, end;
 
-// 			if (lines[li1.m_id].front() == lines[li2.m_id].front())
-// 			{
-// 				start = lines[li1.m_id].front();
-// 				end = lines[li2.m_id].front();
-// 			}
-// 			if (lines[li1.m_id].front() == lines[li2.m_id].front())
-// 			{
-// 				start = lines[li1.m_id].front();
-// 				end = lines[li2.m_id].front();
-// 			}
+//          if (lines[li1.m_id].front() == lines[li2.m_id].front())
+//          {
+//              start = lines[li1.m_id].front();
+//              end = lines[li2.m_id].front();
+//          }
+//          if (lines[li1.m_id].front() == lines[li2.m_id].front())
+//          {
+//              start = lines[li1.m_id].front();
+//              end = lines[li2.m_id].front();
+//          }
 			if (li1.m_Forward)
 			{
 				start = lines[li1.m_id].front();
@@ -1503,10 +1504,11 @@ void ClearEdge(cv::Mat& mask2)
 	}
 }
 
-void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int x, int y, CvPatchs& out_array, int dilation, int erosion)
+void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
+                 int range, int x, int y, CvPatchs& out_array, int dilation, int erosion)
 {
 	if (mask01.at<uchar>(y + 1, x + 1) > 0
-	                || mask02.at<uchar>(y , x) > 0
+	        || mask02.at<uchar>(y , x) > 0
 	   )
 	{
 		return;
@@ -1518,9 +1520,9 @@ void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int r
 	int b = cc % 255;
 	int g = cc / 255 ;
 	int r = cc / (255 * 255);
-// 	b = rand() % 255;
-// 	g = rand() % 255;
-// 	r = rand() % 255;
+//  b = rand() % 255;
+//  g = rand() % 255;
+//  r = rand() % 255;
 	cc++;
 	cv::Scalar newVal(b, g, r);
 	int area;
@@ -1601,10 +1603,11 @@ void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int r
 	out_array.push_back(cvp);
 }
 
-void S2FloodFill(cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int x, int y, int dilation/*=0*/, int erosion/*=0*/)
+void S2FloodFill(cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range,
+                 int x, int y, int dilation/*=0*/, int erosion/*=0*/)
 {
 	if (mask01.at<uchar>(y + 1, x + 1) > 0
-	                || mask02.at<uchar>(y , x) > 0
+	        || mask02.at<uchar>(y , x) > 0
 	   )
 	{
 		return;
@@ -1678,10 +1681,11 @@ void S2FloodFill(cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int
 	}
 }
 
-void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int x, int y, CvPatchs& out_array, int dilation, int erosion)
+void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
+                 int range, int x, int y, CvPatchs& out_array, int dilation, int erosion)
 {
 	if (mask01.at<uchar>(y + 1, x + 1) > 0
-	                || mask02.at<uchar>(y , x) > 0)
+	        || mask02.at<uchar>(y , x) > 0)
 	{
 		return;
 	}
@@ -1782,10 +1786,11 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int r
 	out_array.push_back(cvp);
 }
 
-void S3FloodFill( int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int x, int y, int dilation /*= 0*/, int erosion /*= 0*/ )
+void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
+                 int range, int x, int y, int dilation /*= 0*/, int erosion /*= 0*/)
 {
 	if (mask01.at<uchar>(y + 1, x + 1) > 0
-		|| mask02.at<uchar>(y , x) > 0)
+	        || mask02.at<uchar>(y , x) > 0)
 	{
 		return;
 	}
@@ -1815,7 +1820,7 @@ void S3FloodFill( int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int 
 	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
 	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
 	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
-		cv::Scalar(up, up, up), flags);
+	                 cv::Scalar(up, up, up), flags);
 	// get Contour line
 	cv::Mat mask2 = mask01.clone();
 	ClearEdge(mask2);
@@ -1841,16 +1846,16 @@ void S3FloodFill( int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int 
 void LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y)
 {
 	if (image.at<cv::Vec3b>(y, x)[0] != 60
-	                || image.at<cv::Vec3b>(y, x)[1] != 60
-	                || image.at<cv::Vec3b>(y, x)[2] != 60
+	        || image.at<cv::Vec3b>(y, x)[1] != 60
+	        || image.at<cv::Vec3b>(y, x)[2] != 60
 	   )
 	{
 		return;
 	}
 
-// 	int b = cc % 255;
-// 	int g = cc / 255 ;
-// 	int r = cc / (255 * 255);
+//  int b = cc % 255;
+//  int g = cc / 255 ;
+//  int r = cc / (255 * 255);
 	cc++;
 	int b = rand() % 255;
 	int g = rand() % 255;
@@ -1968,7 +1973,8 @@ PatchLines GetPatchSplines(CvPatchs& patchs, cv::Mat& patchImage)
 			// find new Neighbor
 			if (!has_old_near)
 			{
-				if (cps[j].x - 1 == 0 || cps[j].y - 1 == 0 || cps[j].x == patchImage.cols || cps[j].y == patchImage.rows)
+				if (cps[j].x - 1 == 0 || cps[j].y - 1 == 0 || cps[j].x == patchImage.cols
+				        || cps[j].y == patchImage.rows)
 				{
 					if (last_near != i)
 					{
@@ -2016,7 +2022,8 @@ PatchLines GetPatchSplines(CvPatchs& patchs, cv::Mat& patchImage)
 			}
 		}
 
-		if (!ps.m_LineFragments.empty() && lf.m_id_near == ps.m_LineFragments.front().m_id_near)
+		if (!ps.m_LineFragments.empty()
+		        && lf.m_id_near == ps.m_LineFragments.front().m_id_near)
 		{
 			std::copy(ps.m_LineFragments.front().m_Points.begin(),
 			          ps.m_LineFragments.front().m_Points.end(), std::back_inserter(lf.m_Points));
@@ -2047,7 +2054,7 @@ Lines GetAllLineFromLineImage(cv::Mat& image)
 			cv::Vec3b& intensity = tImage.at<cv::Vec3b>(i, j);
 
 			if ((intensity[0] != 0 || intensity[1] != 0 || intensity[2] != 0)
-			                && (intensity[0] != 255 && intensity[1] != 255 && intensity[2] != 255))
+			        && (intensity[0] != 255 && intensity[1] != 255 && intensity[2] != 255))
 			{
 				int cc = intensity[0] + intensity[1] * 255 + intensity[2] * 255 * 255;
 				Line line;
@@ -2122,30 +2129,30 @@ void FixHole(cv::Mat& patchImage)
 		}
 	}
 
-// 	for (int y =0; y < patchImage.rows; y++)
-// 	{
-// 			for (int x = 0; x < patchImage.cols; x++)
-// 			{
-// 				cv::Vec3b& color = patchImage.at<cv::Vec3b>(y, x);
+//  for (int y =0; y < patchImage.rows; y++)
+//  {
+//          for (int x = 0; x < patchImage.cols; x++)
+//          {
+//              cv::Vec3b& color = patchImage.at<cv::Vec3b>(y, x);
 //
-// 				if (color[0] == 0 && color[1] == 0 && color[2] == 0)
-// 				{
-// 					GetMatrix(3, 3, ary, x, y, patchImage);
+//              if (color[0] == 0 && color[1] == 0 && color[2] == 0)
+//              {
+//                  GetMatrix(3, 3, ary, x, y, patchImage);
 //
-// 					for (int i = 0; i < 9; i += 1)
-// 					{
-// 						cv::Vec3b& v = *ary[i].c;
-// 						int sum = v[0] + v[1] + v[2];
+//                  for (int i = 0; i < 9; i += 1)
+//                  {
+//                      cv::Vec3b& v = *ary[i].c;
+//                      int sum = v[0] + v[1] + v[2];
 //
-// 						if (sum > 0)
-// 						{
-// 							color = v;
-// 							break;
-// 						}
-// 					}
-// 				}
-// 			}
-// 	}
+//                      if (sum > 0)
+//                      {
+//                          color = v;
+//                          break;
+//                      }
+//                  }
+//              }
+//          }
+//  }
 }
 
 
@@ -2169,7 +2176,8 @@ bool LightComparef(const ColorPtrf& lhs, const ColorPtrf& rhs)
 	return lhs.value() < rhs.value();
 }
 
-void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth, double BlackRegionThreshold)
+void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
+                   double BlackRegionThreshold)
 {
 	cv::Mat MaxCapacity, MaxCapacity2, WaterMap, RealMap, ThresholdMap, ans;
 	Vec3fptrs ary(rectw * recth);
@@ -2244,8 +2252,8 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth, double Black
 		}
 	}
 
-// 	imshow("MaxCapacity", MaxCapacity);
-// 	imshow("MaxCapacity2", MaxCapacity2);
+//  imshow("MaxCapacity", MaxCapacity);
+//  imshow("MaxCapacity2", MaxCapacity2);
 	FillSmallHole(MaxCapacity2);
 
 	for (int i = 0; i < ans.rows; i++)
@@ -2274,7 +2282,8 @@ void FillSmallHole(cv::Mat& patchImage)
 	Der2 = mask.clone();
 	std::vector<cv::Vec4i> hierarchy;
 	std::vector<std::vector<cv::Point>> contours;
-	findContours(image, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+	findContours(image, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE,
+	             cv::Point(0, 0));
 
 	for (int i = 0; i < contours.size(); i++)
 	{
@@ -2297,22 +2306,22 @@ ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold)
 	cv::Mat image;
 	img.convertTo(image, CV_32FC3, 1 / 255.0);
 	Collect_Water(image, image, 5, 5, BlackRegionThreshold);
-// 	image = img.clone();
-// 	image = cv::Scalar(0);
+//  image = img.clone();
+//  image = cv::Scalar(0);
 //
-// 	for (int i = 0; i < image.rows; i++)
-// 	{
-// 		for (int j = 0; j < image.cols; j++)
-// 		{
-// 			if (img.at<cv::Vec3b>(i, j)[0] < 50)
-// 			{
-// 				cv::Vec3b& v = image.at<cv::Vec3b>(i, j);
-// 				v[0] = 255;
-// 				v[1] = 255;
-// 				v[2] = 255;
-// 			}
-// 		}
-// 	}
+//  for (int i = 0; i < image.rows; i++)
+//  {
+//      for (int j = 0; j < image.cols; j++)
+//      {
+//          if (img.at<cv::Vec3b>(i, j)[0] < 50)
+//          {
+//              cv::Vec3b& v = image.at<cv::Vec3b>(i, j);
+//              v[0] = 255;
+//              v[1] = 255;
+//              v[2] = 255;
+//          }
+//      }
+//  }
 	ImageSpline is = S4GetPatchs(image, 0, 0);
 	return is;
 }
@@ -2510,8 +2519,8 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	cc = 1;
 	CvPatchs tmp_cvps;
 //	cv::namedWindow("gap_image", 0);
-// 	imshow("gap_image", gap_image);
-// 	cv::waitKey();
+//  imshow("gap_image", gap_image);
+//  cv::waitKey();
 	// don't floodfill gap
 	//gap_image = cv::Scalar::all(0);
 	mask = cv::Scalar::all(0);

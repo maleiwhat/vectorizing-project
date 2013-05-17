@@ -51,11 +51,14 @@ public:
 	CComPtr<ID3DX10Mesh> m_pMeshTexture;
 	CComPtr<ID3DX10Mesh> m_pMeshCurves;
 
-	ID3D10Texture2D* m_diffuseTexture[2];     // two textures used interleavedly for diffusion
-	ID3D10Texture2D* m_distDirTexture;    // two textures used interleavedly for diffusion (blurr texture)
+	ID3D10Texture2D*
+	m_diffuseTexture[2];     // two textures used interleavedly for diffusion
+	ID3D10Texture2D*
+	m_distDirTexture;    // two textures used interleavedly for diffusion (blurr texture)
 	ID3D10Texture2D* m_Texture;
 	ID3D10Texture2D* m_pDepthStencil;         // for z culling
-	ID3D10Texture2D* m_otherTexture;                // texture that keeps the color on the other side of a curve
+	ID3D10Texture2D*
+	m_otherTexture;                // texture that keeps the color on the other side of a curve
 
 public:
 	ID3D10ShaderResourceView* m_diffuseTextureRV[2];
@@ -113,7 +116,8 @@ public:
 	BOOL CreateIndexBuffer(ID3D10Device* pd3dDevice);
 	void Render(ID3D10Device* pd3dDevice);
 	void RenderDiffusion(ID3D10Device* pd3dDevice);
-	void SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* g_pEffect10, int sizeX, int sizeY);
+	void SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* g_pEffect10,
+	                   int sizeX, int sizeY);
 	void ReadVectorFile(char* s);
 	void ConstructCurves(ID3D10Device* pd3dDevice);
 };

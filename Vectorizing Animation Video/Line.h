@@ -17,9 +17,9 @@ typedef std::vector<cv::Point> CvPoints;
 typedef std::vector<CvPoints> CvPoints2d;
 struct LineSeg
 {
-	
+
 	Vector2 beg, end;
-	LineSeg(){}
-	LineSeg(Vector2& b, Vector2& e):beg(b), end(e){}
+	LineSeg() {}
+	LineSeg(Vector2& b, Vector2& e): beg(b), end(e) {}
 };
 typedef std::deque<LineSeg> LineSegs;

@@ -3,7 +3,7 @@
 // MFC 參考及 MFC C++ 程式庫軟體
 // 隨附相關電子文件的補充。
 // 關於 Fluent UI 之複製、使用或散發的授權條款則分別提供。
-// 如需 Fluent UI 授權計劃的詳細資訊，請造訪 
+// 如需 Fluent UI 授權計劃的詳細資訊，請造訪
 // http://msdn.microsoft.com/officeui。
 //
 // Copyright (C) Microsoft Corporation
@@ -33,31 +33,31 @@ public:
 public:
 	enum ViewState
 	{
-		VIEW_NORMAL_SELECT = 999,
-		VIEW_CREATE_WALL,
-		VIEW_CREATE_FLOOR,
-		VIEW_MOUSE_DOWN,
-		VIEW_MOUSE_UP,
-		VIEW_MOVE_START
+	    VIEW_NORMAL_SELECT = 999,
+	    VIEW_CREATE_WALL,
+	    VIEW_CREATE_FLOOR,
+	    VIEW_MOUSE_DOWN,
+	    VIEW_MOUSE_UP,
+	    VIEW_MOVE_START
 	};
-	CPalette	m_cPalette;
-	CPalette*	m_pOldPalette;
-	CRect		m_oldRect;
-	float		m_fRadius;
-	CClientDC*	m_pDC;
-	ViewState	m_ViewState;
-	ViewState	m_MouseState;
-	float		m_Scale;
-	CPoint		m_MouseDown,
-			m_MouseUp,
-			m_MouseMove,
-			m_MouseMDown,
-			m_LastMPoint;
-	Vector2		m_LookCenter;
-	Vector2		m_LookDown;
-	HWND		m_hWndDX11;
-	D3DApp		m_D3DApp;
-	bool		m_MButtonDown;
+	CPalette    m_cPalette;
+	CPalette*   m_pOldPalette;
+	CRect       m_oldRect;
+	float       m_fRadius;
+	CClientDC*  m_pDC;
+	ViewState   m_ViewState;
+	ViewState   m_MouseState;
+	float       m_Scale;
+	CPoint      m_MouseDown,
+	            m_MouseUp,
+	            m_MouseMove,
+	            m_MouseMDown,
+	            m_LastMPoint;
+	Vector2     m_LookCenter;
+	Vector2     m_LookDown;
+	HWND        m_hWndDX11;
+	D3DApp      m_D3DApp;
+	bool        m_MButtonDown;
 // 覆寫
 public:
 	virtual void OnDraw(CDC* pDC);  // 覆寫以描繪此檢視
@@ -96,7 +96,7 @@ public:
 	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	afx_msg void OnCaptureChanged(CWnd *pWnd);
+	afx_msg void OnCaptureChanged(CWnd* pWnd);
 	afx_msg void OnMouseLeave();
 	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
 	afx_msg void OnNcMButtonUp(UINT nHitTest, CPoint point);
@@ -104,6 +104,6 @@ public:
 
 #ifndef _DEBUG  // VAV_View.cpp 中的偵錯版本
 inline VAV_Doc* VAV_View::GetDocument() const
-   { return reinterpret_cast<VAV_Doc*>(m_pDocument); }
+{ return reinterpret_cast<VAV_Doc*>(m_pDocument); }
 #endif
 

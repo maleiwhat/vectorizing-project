@@ -9,7 +9,7 @@
 
 struct WeightData
 {
-	WeightData(Vector2& p, int w): pos(p), weight(w)	{}
+	WeightData(Vector2& p, int w): pos(p), weight(w)    {}
 	Vector2 pos;
 	int  weight;
 	bool operator<(const WeightData& wd)
@@ -24,23 +24,30 @@ extern Weights wm_init_cross;
 extern Weights wm_init2;
 
 // ÂX´²
-void	Dilation(cv::Mat& image, int dilation_elem = 2, int dilation_size = 2);
+void    Dilation(cv::Mat& image, int dilation_elem = 2, int dilation_size = 2);
 // ²Ó¤Æ
-void	Erosion(cv::Mat& image, int erosion_elem, int erosion_size);
-void	S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int x, int y, CvPatchs& out_array, int dilation = 0, int erosion = 0);
-void	S2FloodFill(cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int x, int y, int dilation = 0, int erosion = 0);
-void	S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int x, int y, CvPatchs& out_array, int dilation = 0, int erosion = 0);
-void	S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int x, int y, int dilation = 0, int erosion = 0);
-void	LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y);
+void    Erosion(cv::Mat& image, int erosion_elem, int erosion_size);
+void    S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
+                    int range, int x, int y, CvPatchs& out_array, int dilation = 0,
+                    int erosion = 0);
+void    S2FloodFill(cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range,
+                    int x, int y, int dilation = 0, int erosion = 0);
+void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
+                    int range, int x, int y, CvPatchs& out_array, int dilation = 0,
+                    int erosion = 0);
+void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
+                    int range, int x, int y, int dilation = 0, int erosion = 0);
+void    LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y);
 
 CvPatchs S2GetPatchs(const cv::Mat& image, int dilation = 0, int erosion = 0);
 ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion);
-ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines, cv::Mat lineImage);
+ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
+                           cv::Mat lineImage);
 PatchLines GetPatchSplines(CvPatchs& patchs, cv::Mat& patchImage);
 Lines GetAllLineFromLineImage(cv::Mat& lineImage);
-void	FixHole(cv::Mat& patchImage);
-void	FillSmallHole(cv::Mat& patchImage);
-Lines	GetLines(const CvPoints2d& cvp);
+void    FixHole(cv::Mat& patchImage);
+void    FillSmallHole(cv::Mat& patchImage);
+Lines   GetLines(const CvPoints2d& cvp);
 cv::Mat MakeLineImage(const cv::Mat& image, const Lines& lines);
 cv::Mat MakeLineImage(const cv::Mat& image, Patch& patch);
 cv::Vec3b& GetColor(cv::Mat& image, int x, int y);
@@ -106,7 +113,8 @@ struct ColorPtrf
 typedef std::vector<ColorPtrf> floatptrs;
 typedef std::vector<floatptrs> floatptrs2d;
 void GetMatrixb(int w, int h, Vec3bptrs& ary, int x, int y, cv::Mat& img);
-void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth, double BlackRegionThreshold);
+void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
+                   double BlackRegionThreshold);
 
 ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold);
 void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2);

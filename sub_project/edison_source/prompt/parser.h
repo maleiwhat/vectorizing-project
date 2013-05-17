@@ -11,56 +11,56 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-class CmCToken 
+class CmCToken
 {
- public:
+public:
 
-  int lineNumber_, tokenSize_;
-  char *token_;
-  CmCToken *next_;
+	int lineNumber_, tokenSize_;
+	char* token_;
+	CmCToken* next_;
 
-  CmCToken(char *, int);
-  ~CmCToken( void );
+	CmCToken(char*, int);
+	~CmCToken(void);
 };
 
-class CmCParser 
+class CmCParser
 {
- public:
+public:
 
-  CmCParser( void );
-  ~CmCParser( void );
-  
-  //parses a file having specified filename
-  int Parse (char *);
+	CmCParser(void);
+	~CmCParser(void);
 
-  //sets the token pointer to the beginning of
-  //the token list
-  void StartOver( void );
+	//parses a file having specified filename
+	int Parse(char*);
 
-  //retrievs token pointed to by current token pointer
-  //and increments the current token pointer to point
-  //to the next token; NULL is returned if the current
-  //token pointer is NULL (i.e. nothing has been parsed
-  //or the end of the token list has been reached)
-  CmCToken *GetToken( void );
+	//sets the token pointer to the beginning of
+	//the token list
+	void StartOver(void);
 
-  //indicate any delimiters
-  void SetDelimiters(char *);
+	//retrievs token pointed to by current token pointer
+	//and increments the current token pointer to point
+	//to the next token; NULL is returned if the current
+	//token pointer is NULL (i.e. nothing has been parsed
+	//or the end of the token list has been reached)
+	CmCToken* GetToken(void);
 
-  //indicate whether delimiters should be stored as tokens
-  void StoreDelimiters(bool);
+	//indicate any delimiters
+	void SetDelimiters(char*);
 
- private:
+	//indicate whether delimiters should be stored as tokens
+	void StoreDelimiters(bool);
 
-  int tokenCount_;
-  bool storeDelimiters_;
-  CmCToken *head_, *tail_, *cur_;
-  char *delimiters_, *delstr_;  
+private:
 
-  void ClearList( void );
-  void InsertToken(char *, int);
-  void InsertToken(char, int);
-  bool IsDelimiter(char);  
+	int tokenCount_;
+	bool storeDelimiters_;
+	CmCToken* head_, *tail_, *cur_;
+	char* delimiters_, *delstr_;
+
+	void ClearList(void);
+	void InsertToken(char*, int);
+	void InsertToken(char, int);
+	bool IsDelimiter(char);
 };
 
 #endif

@@ -36,8 +36,11 @@ void algSpline2d::CheckBuildSpline()
 		m_data.setcontent(m_vV.size() / 3, 3, &m_vV[0]);
 		rbfsetpoints(m_model, m_data);
 		int new_size = m_vV.size() / 30;
-		if (new_size < 10) new_size = 10;
-		if (new_size > 200) new_size = 200;
+
+		if (new_size < 10) { new_size = 10; }
+
+		if (new_size > 200) { new_size = 200; }
+
 		rbfsetalgomultilayer(m_model, 5.0, new_size, 1.0e-2);
 		rbfbuildmodel(m_model, m_rep);
 	}

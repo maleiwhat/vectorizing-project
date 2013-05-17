@@ -27,7 +27,7 @@ class PatchSpline
 {
 public:
 	// 記錄由哪幾個Spline連起來的這些Spline的index
-	LineIndexs	m_LineIndexs;
+	LineIndexs  m_LineIndexs;
 };
 typedef std::vector<PatchSpline> PatchSplines;
 typedef std::vector<PatchSplines> PatchSplines2d;

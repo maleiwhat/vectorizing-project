@@ -24,7 +24,8 @@ CmCurveEx::CmCurveEx(const cv::Mat& srcImg1f, float maxOrntDif)
 /* Compute the eigenvalues and eigenvectors of the Hessian matrix given by
 dfdrr, dfdrc, and dfdcc, and sort them in descending order according to
 their absolute values. */
-void CmCurveEx::compute_eigenvals(double dfdrr, double dfdrc, double dfdcc, double eigval[2], double eigvec[2][2])
+void CmCurveEx::compute_eigenvals(double dfdrr, double dfdrc, double dfdcc,
+                                  double eigval[2], double eigvec[2][2])
 {
 	double theta, t, c, s, e1, e2, n1, n2; /* , phi; */
 
@@ -128,7 +129,8 @@ void cvThin(cv::Mat& src, cv::Mat& dst, int iterations)
 						ap++;
 					}
 
-					int p5 = (i == size.height - 1 || j == size.width - 1) ? 0 : t_image.at<uchar>(i + 1, j + 1);
+					int p5 = (i == size.height - 1
+					          || j == size.width - 1) ? 0 : t_image.at<uchar>(i + 1, j + 1);
 
 					if (p4 == 0 && p5 == 1)
 					{
@@ -168,7 +170,8 @@ void cvThin(cv::Mat& src, cv::Mat& dst, int iterations)
 						ap++;
 					}
 
-					if ((p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) > 1 && (p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) < 7)
+					if ((p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) > 1
+					        && (p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) < 7)
 					{
 						if (ap == 1)
 						{
@@ -209,7 +212,8 @@ void cvThin(cv::Mat& src, cv::Mat& dst, int iterations)
 						ap++;
 					}
 
-					int p5 = (i == size.height - 1 || j == size.width - 1) ? 0 : t_image.at<uchar>(i + 1, j + 1);
+					int p5 = (i == size.height - 1
+					          || j == size.width - 1) ? 0 : t_image.at<uchar>(i + 1, j + 1);
 
 					if (p4 == 0 && p5 == 1)
 					{
@@ -249,7 +253,8 @@ void cvThin(cv::Mat& src, cv::Mat& dst, int iterations)
 						ap++;
 					}
 
-					if ((p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) > 1 && (p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) < 7)
+					if ((p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) > 1
+					        && (p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) < 7)
 					{
 						if (ap == 1)
 						{
@@ -320,27 +325,33 @@ void Erosion(cv::Mat& image, int erosion_elem, int erosion_size)
 	cv::erode(image, image, element);
 }
 
-const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound, float linkStartBound)
+const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
+                                    float linkStartBound)
 {
 	cv::Mat dxx, dxy, dyy;
 	Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
 	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
 	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
-
 	double eigval[2], eigvec[2][2];
+
 	for (int y = 0; y < m_h; y++)
 	{
-		float *xx = dxx.ptr<float>(y);
-		float *xy = dxy.ptr<float>(y);
-		float *yy = dyy.ptr<float>(y);
-		float *pOrnt = m_pOrnt1f.ptr<float>(y);
-		float *pDer = m_pDer1f.ptr<float>(y);
+		float* xx = dxx.ptr<float>(y);
+		float* xy = dxy.ptr<float>(y);
+		float* yy = dyy.ptr<float>(y);
+		float* pOrnt = m_pOrnt1f.ptr<float>(y);
+		float* pDer = m_pDer1f.ptr<float>(y);
+
 		for (int x = 0; x < m_w; x++)
 		{
 			compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
 			pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
+
 			if (pOrnt[x] < 0.0f)
+			{
 				pOrnt[x] += PI2;
+			}
+
 			pDer[x] = float(eigval[0] > 0.0f ? eigval[0] : 0.0f);//計算二階導數
 		}
 	}
@@ -351,7 +362,8 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound, float linkSta
 	return m_pDer1f;
 }
 
-const cv::Mat& CmCurveEx::CalFirDer(int kSize, float linkEndBound, float linkStartBound)
+const cv::Mat& CmCurveEx::CalFirDer(int kSize, float linkEndBound,
+                                    float linkStartBound)
 {
 	cv::Mat dxMat, dyMat;
 	Sobel(m_img1f, dxMat, CV_32F, 1, 0, kSize);
@@ -412,7 +424,7 @@ void CmCurveEx::NoneMaximalSuppress(float linkEndBound, float linkStartBound)
 			sinN *= sinN;
 
 			if (pDer[c] >= (pDer[c + xSgn] * cosN + m_pDer1f.at<float>(r + ySgn, c) * sinN)
-			                && pDer[c] >= (pDer[c - xSgn] * cosN + m_pDer1f.at<float>(r - ySgn, c) * sinN))
+			        && pDer[c] >= (pDer[c - xSgn] * cosN + m_pDer1f.at<float>(r - ySgn, c) * sinN))
 			{
 				pLineInd[c] = IND_NMS;
 
@@ -439,7 +451,8 @@ const CmEdges& CmCurveEx::Link(int shortRemoveBound /* = 3 */)
 	m_vEdge.reserve(int(0.01 * m_w * m_h));
 	CEdge crtEdge(0);//當前邊
 
-	for (vector<PntImp>::iterator it = m_StartPnt.begin(); it != m_StartPnt.end(); it++)
+	for (vector<PntImp>::iterator it = m_StartPnt.begin(); it != m_StartPnt.end();
+	        it++)
 	{
 		cv::Point pnt = it->second;
 
@@ -770,7 +783,8 @@ void CmCurveEx::refreshOrnt(float& ornt, float& newOrnt)
 	newOrnt = ornt;
 }
 
-bool CmCurveEx::goNext(cv::Point& pnt, float& ornt, CEdge& crtEdge, int orntInd, bool isBackward)
+bool CmCurveEx::goNext(cv::Point& pnt, float& ornt, CEdge& crtEdge, int orntInd,
+                       bool isBackward)
 {
 	cv::Point pntN = pnt + DIRECTION8[orntInd];
 	int& label = m_pLabel1i.at<int>(pntN);
@@ -804,13 +818,15 @@ bool CmCurveEx::goNext(cv::Point& pnt, float& ornt, CEdge& crtEdge, int orntInd,
 	return false;
 }
 
-bool CmCurveEx::jumpNext(cv::Point& pnt, float& ornt, CEdge& crtEdge, int orntInd, bool isBackward)
+bool CmCurveEx::jumpNext(cv::Point& pnt, float& ornt, CEdge& crtEdge,
+                         int orntInd, bool isBackward)
 {
 	cv::Point pnt2 = pnt + DIRECTION16[orntInd];
 
 	if (CHK_IND(pnt2) && m_pLabel1i.at<int>(pnt2) <= IND_NMS)
 	{
-		if (angle(ornt, m_pOrnt1f.at<float>(pnt2)) > m_maxAngDif) //如果該點方向與當前線方向差別比較大則不加入
+		if (angle(ornt, m_pOrnt1f.at<float>(pnt2)) >
+		        m_maxAngDif) //如果該點方向與當前線方向差別比較大則不加入
 		{
 			return false;
 		}
@@ -873,7 +889,7 @@ bool MyfloodFill(int x, int y, cv::Mat mask01, cv::Mat mask02, cv::Mat image)
 	cv::Point seed(x, y);
 
 	if (mask01.at<uchar>(y + 1, x + 1) > 0
-	                || mask02.at<uchar>(y , x) > 0)
+	        || mask02.at<uchar>(y , x) > 0)
 	{
 		return false;
 	}
@@ -892,8 +908,8 @@ bool MyfloodFill(int x, int y, cv::Mat mask01, cv::Mat mask02, cv::Mat image)
 	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
 	area = floodFill(dst, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
 	                 cv::Scalar(up, up, up), flags);
-// 	cv::imshow("xx", mask01);
-// 	cv::waitKey();
+//  cv::imshow("xx", mask01);
+//  cv::waitKey();
 	return true;
 }
 
@@ -908,6 +924,7 @@ void CmCurveEx::Demo(const cv::Mat& cImg, bool isCartoon)
 	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
 	CmCurveEx dEdge(srcImg1f);
 	dEdge.SetColorImage(ctmp);
+
 	if (isCartoon)
 	{
 		dEdge.CalSecDer(3, 0.01f, 0.2f);
@@ -930,18 +947,16 @@ void CmCurveEx::Demo(const cv::Mat& cImg, bool isCartoon)
 			show3u.at<cv::Vec3b>(pnts[j]) = color;
 		}
 	}
-	imshow("Line", show3u);
 
+	imshow("Line", show3u);
 	//cv::namedWindow("Derivatives", 0);
 	imshow("Derivatives", dEdge.GetDer());
-	
 	//cv::namedWindow("Derivatives2", 0);
 	imshow("Derivatives2", dEdge.GetDer2());
 	cv::Mat mask01;
 	mask01.create(img1u.rows + 2, img1u.cols + 2, CV_8UC1);
 	mask01 = cv::Scalar::all(0);
 	cv::Mat Der2 = dEdge.GetDer2();
-	
 	Dilation(Der2, 1, 1);
 	loDiff = 10;
 	upDiff = 10;
@@ -989,8 +1004,8 @@ void CmCurveEx::Demo(const cv::Mat& cImg, bool isCartoon)
 		}
 	}
 
-// 	imshow("mask", mask01);
-// 	imshow("Image", cImg2);
+//  imshow("mask", mask01);
+//  imshow("Image", cImg2);
 
 	for (int i = 1; i < cImg3.rows - 1; i++)
 	{
@@ -1007,26 +1022,26 @@ void CmCurveEx::Demo(const cv::Mat& cImg, bool isCartoon)
 			}
 		}
 	}
-// 	for (int i = 1; i < cImg3.rows - 1; i++)
-// 	{
-// 		for (int j = 1; j < cImg3.cols - 1; j++)
-// 		{
-// 			cv::Vec3b& v = cImg3.at<cv::Vec3b>(i, j);
-// 			float lv = v[0] * 0.299 + v[1] * 0.587 + v[2] * 0.114;
-// 
-// 			if (v[0] < 120 || v[1] < 120 || v[2] < 120)
-// 			{
-// 
-// 			}
-// 			else
-// 			{
-// 				v[0] = 255;
-// 				v[1] = 255;
-// 				v[2] = 255;
-// 			}
-// 		}
-// 	}
 
+//  for (int i = 1; i < cImg3.rows - 1; i++)
+//  {
+//      for (int j = 1; j < cImg3.cols - 1; j++)
+//      {
+//          cv::Vec3b& v = cImg3.at<cv::Vec3b>(i, j);
+//          float lv = v[0] * 0.299 + v[1] * 0.587 + v[2] * 0.114;
+//
+//          if (v[0] < 120 || v[1] < 120 || v[2] < 120)
+//          {
+//
+//          }
+//          else
+//          {
+//              v[0] = 255;
+//              v[1] = 255;
+//              v[2] = 255;
+//          }
+//      }
+//  }
 //	imshow("Image2", cImg3);
 	cv::waitKey(0);
 }

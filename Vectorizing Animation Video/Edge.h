@@ -4,8 +4,8 @@
 
 struct CEdge
 {
-	CEdge( int _index ) {index = _index; }
-	~CEdge( void ) {}
+	CEdge(int _index) {index = _index; }
+	~CEdge(void) {}
 	Line GetLine() const;
 	// Domains assigned during link();
 	int index;    // Start from 0

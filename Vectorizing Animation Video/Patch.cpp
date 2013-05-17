@@ -44,8 +44,8 @@ void Patch::SplinePoints(double scale)
 			sb.AddPoint(it->z);
 		}
 
-		int	new_size = m_Outer.size() * scale;
-		float	step = 1.f /  new_size;
+		int new_size = m_Outer.size() * scale;
+		float   step = 1.f /  new_size;
 		m_Outer.clear();
 		m_OuterColor.clear();
 
@@ -69,7 +69,7 @@ void Patch::SplinePoints(double scale)
 			ss.AddPoint(it2->x, it2->y);
 		}
 
-		int	new_size = it->size() * scale;
+		int new_size = it->size() * scale;
 
 		if (new_size < 5) { continue; }
 
@@ -102,10 +102,12 @@ void Patch::Deflate(double len)
 
 	for (int i = 1; i < m_Outer.size() - 1 ; ++i)
 	{
-		normals.push_back(Quaternion::GetRotation(m_Outer[i + 1] - m_Outer[i - 1], -90));
+		normals.push_back(Quaternion::GetRotation(m_Outer[i + 1] - m_Outer[i - 1],
+		                  -90));
 	}
 
-	normals.push_back(Quaternion::GetRotation(m_Outer[0] - m_Outer[m_Outer.size() - 2], -90));
+	normals.push_back(Quaternion::GetRotation(m_Outer[0] -
+	                  m_Outer[m_Outer.size() - 2], -90));
 
 	for (int i = 0; i < normals.size() ; ++i)
 	{
@@ -173,17 +175,21 @@ void Patch::SmoothPatch()
 
 		if (cps.size() < 5) { continue; }
 
-		newcps.push_back((cps[last-1] + cps[last] + cps[0]*2 + cps[1] + cps[2]) / 6.0f);
-		newcps.push_back((cps[last] + cps[0] + cps[1]*2 + cps[2] + cps[3]) / 6.0f);
+		newcps.push_back((cps[last - 1] + cps[last] + cps[0] * 2 + cps[1] + cps[2]) /
+		                 6.0f);
+		newcps.push_back((cps[last] + cps[0] + cps[1] * 2 + cps[2] + cps[3]) / 6.0f);
 
 		for (int j = 2; j < cps.size() - 2; j ++)
 		{
-			auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
+			auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
+			           6.0f;
 			newcps.push_back(vec);
 		}
 
-		newcps.push_back((cps[last-3] + cps[last-2] + cps[last-1]*2 + cps[last] + cps[0]) / 6.0f);
-		newcps.push_back((cps[last-2] + cps[last-1] + cps[last]*2 + cps[0] + cps[1]) / 6.0f);
+		newcps.push_back((cps[last - 3] + cps[last - 2] + cps[last - 1] * 2 + cps[last]
+		                  + cps[0]) / 6.0f);
+		newcps.push_back((cps[last - 2] + cps[last - 1] + cps[last] * 2 + cps[0] +
+		                  cps[1]) / 6.0f);
 		cps = newcps;
 	}
 
@@ -197,17 +203,21 @@ void Patch::SmoothPatch()
 
 			if (cps.size() < 5) { continue; }
 
-			newcps.push_back((cps[last-1] + cps[last] + cps[0]*2 + cps[1] + cps[2]) / 6.0f);
-			newcps.push_back((cps[last] + cps[0] + cps[1]*2 + cps[2] + cps[3]) / 6.0f);
+			newcps.push_back((cps[last - 1] + cps[last] + cps[0] * 2 + cps[1] + cps[2]) /
+			                 6.0f);
+			newcps.push_back((cps[last] + cps[0] + cps[1] * 2 + cps[2] + cps[3]) / 6.0f);
 
 			for (int j = 2; j < cps.size() - 2; j ++)
 			{
-				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
+				           6.0f;
 				newcps.push_back(vec);
 			}
 
-			newcps.push_back((cps[last-3] + cps[last-2] + cps[last-1]*2 + cps[last] + cps[0]) / 6.0f);
-			newcps.push_back((cps[last-2] + cps[last-1] + cps[last]*2 + cps[0] + cps[1]) / 6.0f);
+			newcps.push_back((cps[last - 3] + cps[last - 2] + cps[last - 1] * 2 + cps[last]
+			                  + cps[0]) / 6.0f);
+			newcps.push_back((cps[last - 2] + cps[last - 1] + cps[last] * 2 + cps[0] +
+			                  cps[1]) / 6.0f);
 			cps = newcps;
 		}
 	}
@@ -286,18 +296,18 @@ ColorConstraint_sptr CvPatch::GetColorConstraint()
 		}
 	}
 
-// 	for (int i = 0; i < m_Outer2.size(); ++i)
-// 	{
-// 		res->AddPoint(m_Outer2[i].x, m_Outer2[i].y, m_OuterColor[i]);
-// 	}
+//  for (int i = 0; i < m_Outer2.size(); ++i)
+//  {
+//      res->AddPoint(m_Outer2[i].x, m_Outer2[i].y, m_OuterColor[i]);
+//  }
 //
-// 	for (int i = 0; i < m_Inter2.size(); ++i)
-// 	{
-// 		for (int j = 0; j < m_Inter2[i].size(); ++j)
-// 		{
-// 			res->AddPoint(m_Inter2[i][j].x, m_Inter2[i][j].y, m_InterColor[i][j]);
-// 		}
-// 	}
+//  for (int i = 0; i < m_Inter2.size(); ++i)
+//  {
+//      for (int j = 0; j < m_Inter2[i].size(); ++j)
+//      {
+//          res->AddPoint(m_Inter2[i][j].x, m_Inter2[i][j].y, m_InterColor[i][j]);
+//      }
+//  }
 	return res;
 }
 

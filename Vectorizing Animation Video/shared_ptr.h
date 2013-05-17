@@ -5,13 +5,13 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 
 #define SHARE_PTR(x) \
-	typedef boost::shared_ptr<x>	x##_sptr; \
-	typedef boost::ptr_vector<x>	x##_sptrs; \
-	typedef std::vector<x>		x##_vector; \
-	typedef std::vector<x*>		x##_rawptrs;
+	typedef boost::shared_ptr<x>    x##_sptr; \
+	typedef boost::ptr_vector<x>    x##_sptrs; \
+	typedef std::vector<x>      x##_vector; \
+	typedef std::vector<x*>     x##_rawptrs;
 
 #define INTRUSIVE_PTR(x) \
-	typedef boost::shared_ptr<x>	   x##_iptr; \
+	typedef boost::shared_ptr<x>       x##_iptr; \
 	void intrusive_ptr_add_ref(x *p)   \
 	{   \
 		p->AddRef();   \

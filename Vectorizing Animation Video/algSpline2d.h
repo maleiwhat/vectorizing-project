@@ -16,10 +16,10 @@ private:
 	void CheckBuildSpline();
 
 	doubles m_vV;
-	alglib::ae_int_t		m_SplineFunctionInfo;
-	alglib::rbfmodel		m_model;
-	alglib::rbfreport		m_rep;
-	alglib::real_2d_array		m_data;
-	double	m_rho;
-	bool	m_NeedBuildSpline;
+	alglib::ae_int_t        m_SplineFunctionInfo;
+	alglib::rbfmodel        m_model;
+	alglib::rbfreport       m_rep;
+	alglib::real_2d_array       m_data;
+	double  m_rho;
+	bool    m_NeedBuildSpline;
 };

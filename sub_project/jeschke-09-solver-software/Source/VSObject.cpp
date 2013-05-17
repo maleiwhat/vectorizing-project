@@ -67,8 +67,12 @@ VSObject::VSObject(ID3D10Device* pd3dDevice)
 	m_pan = D3DXVECTOR2(0, 0);
 	m_polySize = 1.0;
 	// create output quad
-	m_sizeX = (DXUTIsAppRenderingWithD3D9()) ? DXUTGetD3D9BackBufferSurfaceDesc()->Width : DXUTGetDXGIBackBufferSurfaceDesc()->Width;
-	m_sizeY = (DXUTIsAppRenderingWithD3D9()) ? DXUTGetD3D9BackBufferSurfaceDesc()->Height : DXUTGetDXGIBackBufferSurfaceDesc()->Height;
+	m_sizeX = (DXUTIsAppRenderingWithD3D9()) ?
+	          DXUTGetD3D9BackBufferSurfaceDesc()->Width :
+	          DXUTGetDXGIBackBufferSurfaceDesc()->Width;
+	m_sizeY = (DXUTIsAppRenderingWithD3D9()) ?
+	          DXUTGetD3D9BackBufferSurfaceDesc()->Height :
+	          DXUTGetDXGIBackBufferSurfaceDesc()->Height;
 }
 
 
@@ -105,7 +109,10 @@ void VSObject::RenderDiffusion(ID3D10Device* pd3dDevice)
 	ID3D10InputLayout* pCurveVertexLayout;
 	m_pDrawVectorsTechnique->GetPassByIndex(0)->GetDesc(&PassDesc);
 
-	if (FAILED(pd3dDevice->CreateInputLayout(InputCurveElements, InputCurveElementCount, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &pCurveVertexLayout)))
+	if (FAILED(pd3dDevice->CreateInputLayout(InputCurveElements,
+	           InputCurveElementCount,
+	           PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize,
+	           &pCurveVertexLayout)))
 	{
 		return;
 	}
@@ -118,7 +125,8 @@ void VSObject::RenderDiffusion(ID3D10Device* pd3dDevice)
 	pd3dDevice->IASetVertexBuffers(0, 1, &pVertexBuffer, &stride, &offset);
 	pd3dDevice->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
 	pd3dDevice->RSSetViewports(1, &m_vp);
-	pd3dDevice->ClearDepthStencilView(m_pDepthStencilView, D3D10_CLEAR_DEPTH, 1.0f, 0);
+	pd3dDevice->ClearDepthStencilView(m_pDepthStencilView, D3D10_CLEAR_DEPTH, 1.0f,
+	                                  0);
 	//construct the curve triangles in the geometry shader and render them directly
 	ID3D10RenderTargetView* destTexTV[3];
 	destTexTV[0] = m_diffuseTextureTV[1 - diffTex];
@@ -138,7 +146,8 @@ void VSObject::RenderDiffusion(ID3D10Device* pd3dDevice)
 	// setup the pipeline for the following image-space algorithms
 	m_pDiffuseTechnique->GetPassByIndex(0)->GetDesc(&PassDesc);
 
-	if (FAILED(pd3dDevice->CreateInputLayout(InputElements, InputElementCount, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_pVertexLayout)))
+	if (FAILED(pd3dDevice->CreateInputLayout(InputElements, InputElementCount,
+	           PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_pVertexLayout)))
 	{
 		return;
 	}
@@ -207,7 +216,8 @@ void VSObject::Render(ID3D10Device* pd3dDevice)
 	D3D10_PASS_DESC PassDesc;
 	m_pDisplayImage->GetPassByIndex(0)->GetDesc(&PassDesc);
 
-	if (FAILED(pd3dDevice->CreateInputLayout(InputElements, InputElementCount, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_pVertexLayout)))
+	if (FAILED(pd3dDevice->CreateInputLayout(InputElements, InputElementCount,
+	           PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_pVertexLayout)))
 	{
 		return;
 	}
@@ -236,11 +246,11 @@ void VSObject::Render(ID3D10Device* pd3dDevice)
 	}
 
 	pd3dDevice->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
-
 	V(m_pMeshTexture->GetDeviceVertexBuffer(0, &m_pVertexBuffer));
 	pd3dDevice->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pd3dDevice->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	V(m_pDiffTex->SetResource(m_TextureRV));
+
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
 		m_pDisplayImage->GetPassByIndex(p)->Apply(0);
@@ -258,7 +268,9 @@ bool stringStartsWith(const char* s, const char* val)
 
 
 
-void VSObject::SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* pEffect10, int sizeX, int sizeY)
+void VSObject::SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* pEffect10,
+                             int sizeX,
+                             int sizeY)
 {
 	HRESULT hr;
 
@@ -266,12 +278,16 @@ void VSObject::SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* pEffect10, 
 	if (m_pMeshDiff == NULL)
 	{
 		//create the screen space quad
-		D3DXVECTOR3 pos[3 * 2] = {        D3DXVECTOR3(-1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(-1.0f, 1.0f, +0.5f),
-		                                  D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, 1.0f, +0.5f), D3DXVECTOR3(-1.0f, 1.0f, +0.5f)
-		                         };
-		D3DXVECTOR2 tex[3 * 2] = {        D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(0.0f, 1.0f),
-		                                  D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(0.0f, 1.0f)
-		                         };
+		D3DXVECTOR3 pos[3 * 2] =
+		{
+			D3DXVECTOR3(-1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(-1.0f, 1.0f, +0.5f),
+			D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, 1.0f, +0.5f), D3DXVECTOR3(-1.0f, 1.0f, +0.5f)
+		};
+		D3DXVECTOR2 tex[3 * 2] =
+		{
+			D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(0.0f, 1.0f),
+			D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(0.0f, 1.0f)
+		};
 		VSO_Vertex pd[2 * 3];
 
 		for (int ctri = 0; ctri < 2; ctri++)
@@ -285,16 +301,22 @@ void VSObject::SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* pEffect10, 
 			pd[i + 2].tex = tex[i + 2];
 		}
 
-		V(D3DX10CreateMesh(pd3dDevice, VSObject::InputElements, VSObject::InputElementCount, "POSITION", 2 * 3, 2, 0, &m_pMeshDiff));
+		V(D3DX10CreateMesh(pd3dDevice, VSObject::InputElements,
+		                   VSObject::InputElementCount, "POSITION",
+		                   2 * 3, 2, 0, &m_pMeshDiff));
 		V(m_pMeshDiff->SetVertexData(0, pd));
 		V(m_pMeshDiff->CommitToDevice());
 		//create the screen space quad
-		D3DXVECTOR3 pos2[3 * 2] = {        D3DXVECTOR3(-1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(0.0f, 1.0f, +0.5f),
-		                                   D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, 1.0f, +0.5f), D3DXVECTOR3(-1.0f, 1.0f, +0.5f)
-		                          };
-		D3DXVECTOR2 tex2[3 * 2] = {        D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(0.5f, 1.0f),
-		                                   D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(0.0f, 1.0f)
-		                          };
+		D3DXVECTOR3 pos2[3 * 2] =
+		{
+			D3DXVECTOR3(-1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(0.0f, 1.0f, +0.5f),
+			D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, 1.0f, +0.5f), D3DXVECTOR3(-1.0f, 1.0f, +0.5f)
+		};
+		D3DXVECTOR2 tex2[3 * 2] =
+		{
+			D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(0.5f, 1.0f),
+			D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(0.0f, 1.0f)
+		};
 		VSO_Vertex pd2[2 * 3];
 
 		for (int ctri = 0; ctri < 2; ctri++)
@@ -308,10 +330,11 @@ void VSObject::SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* pEffect10, 
 			pd2[i + 2].tex = tex2[i + 2];
 		}
 
-		V(D3DX10CreateMesh(pd3dDevice, VSObject::InputElements, VSObject::InputElementCount, "POSITION", 2 * 3, 1, 0, &m_pMeshTexture));
+		V(D3DX10CreateMesh(pd3dDevice, VSObject::InputElements,
+		                   VSObject::InputElementCount, "POSITION",
+		                   2 * 3, 1, 0, &m_pMeshTexture));
 		V(m_pMeshTexture->SetVertexData(0, pd2));
 		V(m_pMeshTexture->CommitToDevice());
-		
 	}
 
 	m_sizeX = sizeX;
@@ -331,7 +354,8 @@ void VSObject::SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* pEffect10, 
 
 	for (int i = 0; i < 3; i++)
 	{
-		m_pInTex[i] = (pEffect10->GetVariableByName("g_inTex"))->GetElement(i)->AsShaderResource();
+		m_pInTex[i] = (pEffect10->GetVariableByName("g_inTex"))->GetElement(
+		                  i)->AsShaderResource();
 	}
 
 	m_pDiffX = pEffect10->GetVariableByName("g_diffX")->AsScalar();
@@ -360,7 +384,8 @@ void VSObject::SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* pEffect10, 
 	}
 
 	hr = pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_pDepthStencil);
-	hr = pd3dDevice->CreateDepthStencilView(m_pDepthStencil, NULL, &m_pDepthStencilView);
+	hr = pd3dDevice->CreateDepthStencilView(m_pDepthStencil, NULL,
+	                                        &m_pDepthStencilView);
 
 	//create diffusion textures (2 for ping pong rendering)
 	if (m_diffuseTexture[0] != NULL)
@@ -399,16 +424,24 @@ void VSObject::SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* pEffect10, 
 	hr = pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_distDirTexture);
 	hr = pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_Texture);
 	//create render target views
-	hr = pd3dDevice->CreateShaderResourceView(m_diffuseTexture[0], NULL, &m_diffuseTextureRV[0]);
-	hr = pd3dDevice->CreateRenderTargetView(m_diffuseTexture[0], NULL, &m_diffuseTextureTV[0]);
-	hr = pd3dDevice->CreateShaderResourceView(m_diffuseTexture[1], NULL, &m_diffuseTextureRV[1]);
-	hr = pd3dDevice->CreateRenderTargetView(m_diffuseTexture[1], NULL, &m_diffuseTextureTV[1]);
-	hr = pd3dDevice->CreateShaderResourceView(m_distDirTexture, NULL, &m_distDirTextureRV);
-	hr = pd3dDevice->CreateRenderTargetView(m_distDirTexture, NULL, &m_distDirTextureTV);
+	hr = pd3dDevice->CreateShaderResourceView(m_diffuseTexture[0], NULL,
+	        &m_diffuseTextureRV[0]);
+	hr = pd3dDevice->CreateRenderTargetView(m_diffuseTexture[0], NULL,
+	                                        &m_diffuseTextureTV[0]);
+	hr = pd3dDevice->CreateShaderResourceView(m_diffuseTexture[1], NULL,
+	        &m_diffuseTextureRV[1]);
+	hr = pd3dDevice->CreateRenderTargetView(m_diffuseTexture[1], NULL,
+	                                        &m_diffuseTextureTV[1]);
+	hr = pd3dDevice->CreateShaderResourceView(m_distDirTexture, NULL,
+	        &m_distDirTextureRV);
+	hr = pd3dDevice->CreateRenderTargetView(m_distDirTexture, NULL,
+	                                        &m_distDirTextureTV);
 	hr = pd3dDevice->CreateShaderResourceView(m_Texture, NULL, &m_TextureRV);
 	hr = pd3dDevice->CreateRenderTargetView(m_Texture, NULL, &m_TextureTV);
-	hr = pd3dDevice->CreateShaderResourceView(m_otherTexture, NULL, &m_otherTextureRV);
-	hr = pd3dDevice->CreateRenderTargetView(m_otherTexture, NULL, &m_otherTextureTV);
+	hr = pd3dDevice->CreateShaderResourceView(m_otherTexture, NULL,
+	        &m_otherTextureRV);
+	hr = pd3dDevice->CreateRenderTargetView(m_otherTexture, NULL,
+	                                        &m_otherTextureTV);
 	// Orzan diffusion curves
 	char s[255] = "Media\\zephyr.xml";
 
@@ -431,7 +464,8 @@ void VSObject::ReadVectorFile(char* s)
 	while (fgets(buff, 255, F))
 		if (stringStartsWith(buff, "<!DOCTYPE CurveSetXML"))
 		{
-			StringCchPrintf(wcFileInfo, 512, L"(INFO) : This seems to be a diffusion curves file.\n");
+			StringCchPrintf(wcFileInfo, 512,
+			                L"(INFO) : This seems to be a diffusion curves file.\n");
 			OutputDebugString(wcFileInfo);
 			break;
 		}
@@ -462,7 +496,8 @@ void VSObject::ReadVectorFile(char* s)
 
 	token = strtok(NULL, " \"\t");
 	m_cNum = atof(token);
-	StringCchPrintf(wcFileInfo, 512, L"(INFO) : %d curves found in file.\n", m_cNum);
+	StringCchPrintf(wcFileInfo, 512, L"(INFO) : %d curves found in file.\n",
+	                m_cNum);
 	OutputDebugString(wcFileInfo);
 	m_curve.resize(m_cNum);
 	m_cSegNum = 0;
@@ -683,7 +718,8 @@ void VSObject::ReadVectorFile(char* s)
 
 	fclose(F);
 	//scale the whole image between -1 and 1
-	D3DXVECTOR2 middlePan = D3DXVECTOR2(0.5 * (maxBound.x + minBound.x), 0.5 * (maxBound.y + minBound.y));
+	D3DXVECTOR2 middlePan = D3DXVECTOR2(0.5 * (maxBound.x + minBound.x),
+	                                    0.5 * (maxBound.y + minBound.y));
 
 	for (int i1 = 0; i1 < m_cNum; i1++)
 		for (int i2 = 0; i2 < m_curve[i1].pNum; i2++)
@@ -692,7 +728,8 @@ void VSObject::ReadVectorFile(char* s)
 			m_curve[i1].p[i2].y = 2.0f * (m_curve[i1].p[i2].y - middlePan.y) / m_fHeight;
 		}
 
-	StringCchPrintf(wcFileInfo, 512, L"(INFO) : %d curve segments found in file.\n", m_cSegNum);
+	StringCchPrintf(wcFileInfo, 512, L"(INFO) : %d curve segments found in file.\n",
+	                m_cSegNum);
 	OutputDebugString(wcFileInfo);
 }
 
@@ -763,16 +800,24 @@ void VSObject::ConstructCurves(ID3D10Device* pd3dDevice)
 				float t2 = t + 0.1f;
 				float f = (float)(cSeg - lS) / (float)(lN - lS);
 				float fN = (float)(cSeg + 1 - lS) / (float)(lN - lS);
-				D3DXVECTOR4 cL = D3DXVECTOR4((1.0f - f) * m_curve[i1].cl[lID].col + f * m_curve[i1].cl[lID + 1].col, 1.0f);
-				D3DXVECTOR4 cNL = D3DXVECTOR4((1.0f - fN) * m_curve[i1].cl[lID].col + fN * m_curve[i1].cl[lID + 1].col, 1.0f);
+				D3DXVECTOR4 cL = D3DXVECTOR4((1.0f - f) * m_curve[i1].cl[lID].col + f *
+				                             m_curve[i1].cl[lID + 1].col,
+				                             1.0f);
+				D3DXVECTOR4 cNL = D3DXVECTOR4((1.0f - fN) * m_curve[i1].cl[lID].col + fN *
+				                              m_curve[i1].cl[lID + 1].col, 1.0f);
 				f = (float)(cSeg - rS) / (float)(rN - rS);
 				fN = (float)(cSeg + 1 - rS) / (float)(rN - rS);
-				D3DXVECTOR4 cR = D3DXVECTOR4((1.0f - f) * m_curve[i1].cr[rID].col + f * m_curve[i1].cr[rID + 1].col, 1.0f);
-				D3DXVECTOR4 cNR = D3DXVECTOR4((1.0f - fN) * m_curve[i1].cr[rID].col + fN * m_curve[i1].cr[rID + 1].col, 1.0f);
+				D3DXVECTOR4 cR = D3DXVECTOR4((1.0f - f) * m_curve[i1].cr[rID].col + f *
+				                             m_curve[i1].cr[rID + 1].col,
+				                             1.0f);
+				D3DXVECTOR4 cNR = D3DXVECTOR4((1.0f - fN) * m_curve[i1].cr[rID].col + fN *
+				                              m_curve[i1].cr[rID + 1].col, 1.0f);
 				f = ((float)(cSeg - bS)) / ((float)(bN2 - bS));
 				fN = (float)(cSeg + 1 - bS) / (float)(bN2 - bS);
-				float b = (1.0f - f) * m_curve[i1].b[bID].blurr + f * m_curve[i1].b[bID + 1].blurr;
-				float bN = (1.0f - fN) * m_curve[i1].b[bID].blurr + fN * m_curve[i1].b[bID + 1].blurr;
+				float b = (1.0f - f) * m_curve[i1].b[bID].blurr + f *
+				          m_curve[i1].b[bID + 1].blurr;
+				float bN = (1.0f - fN) * m_curve[i1].b[bID].blurr + fN *
+				           m_curve[i1].b[bID + 1].blurr;
 				// it is not entirely clear how [Orzan et al.08] encode the blurr in the files, this has been found to work ok..
 				b = b * 1; //pow(1.5f,b);
 				bN = bN * 1; //pow(1.5f,bN);
@@ -782,8 +827,14 @@ void VSObject::ConstructCurves(ID3D10Device* pd3dDevice)
 					float sN = sI + 1.0f / subSegNum;
 					float s1  = (1.0f - sI) * t1 + sI * t2;
 					float s2 = (1.0f - sN) * t1 + sN * t2;
-					D3DXVECTOR2 p0 = (1.0f - s1) * (1.0f - s1) * (1.0f - s1) * m_curve[i1].p[i2] + 3 * s1 * (1.0f - s1) * (1.0f - s1) * m_curve[i1].p[i2 + 1] + 3 * s1 * s1 * (1.0f - s1) * m_curve[i1].p[i2 + 2] + s1 * s1 * s1 * m_curve[i1].p[i2 + 3];
-					D3DXVECTOR2 p1 = (1.0f - s2) * (1.0f - s2) * (1.0f - s2) * m_curve[i1].p[i2] + 3 * s2 * (1.0f - s2) * (1.0f - s2) * m_curve[i1].p[i2 + 1] + 3 * s2 * s2 * (1.0f - s2) * m_curve[i1].p[i2 + 2] + s2 * s2 * s2 * m_curve[i1].p[i2 + 3];
+					D3DXVECTOR2 p0 = (1.0f - s1) * (1.0f - s1) * (1.0f - s1) * m_curve[i1].p[i2] +
+					                 3 * s1 *
+					                 (1.0f - s1) * (1.0f - s1) * m_curve[i1].p[i2 + 1] + 3 * s1 * s1 * (1.0f - s1) *
+					                 m_curve[i1].p[i2 + 2] + s1 * s1 * s1 * m_curve[i1].p[i2 + 3];
+					D3DXVECTOR2 p1 = (1.0f - s2) * (1.0f - s2) * (1.0f - s2) * m_curve[i1].p[i2] +
+					                 3 * s2 *
+					                 (1.0f - s2) * (1.0f - s2) * m_curve[i1].p[i2 + 1] + 3 * s2 * s2 * (1.0f - s2) *
+					                 m_curve[i1].p[i2 + 2] + s2 * s2 * s2 * m_curve[i1].p[i2 + 3];
 					pd[cPos + 0].col[0] = (1.0f - sI) * cL + sI * cNL;
 					pd[cPos + 0].col[0].w = (1.0f - sI) * b + sI * bN;
 					pd[cPos + 1].col[0] = (1.0f - sN) * cL + sN * cNL;
@@ -800,7 +851,8 @@ void VSObject::ConstructCurves(ID3D10Device* pd3dDevice)
 						pd[cPos + 0].nb = D3DXVECTOR2(10000.0f, 10000.0f);
 
 						// if we are at the begin of a loop, do not declare endpoints
-						if ((m_curve[i1].p[0] == m_curve[i1].p[m_curve[i1].pNum - 1]) && (sI < 0.5f / subSegNum))
+						if ((m_curve[i1].p[0] == m_curve[i1].p[m_curve[i1].pNum - 1])
+						        && (sI < 0.5f / subSegNum))
 						{
 							pLoop = pd[cPos + 1].pos;
 							iLoopStart = cPos;
@@ -815,7 +867,9 @@ void VSObject::ConstructCurves(ID3D10Device* pd3dDevice)
 					pd[cPos + 1].nb = D3DXVECTOR2(10000.0f, 10000.0f);
 
 					// if we are at the end of a loop, do not declare endpoints
-					if ((m_curve[i1].p[0] == m_curve[i1].p[m_curve[i1].pNum - 1]) && (i2 == m_curve[i1].pNum - 1 - 3) && (t >= 0.89f) && (sI + 1.1f / subSegNum >= 1.0))
+					if ((m_curve[i1].p[0] == m_curve[i1].p[m_curve[i1].pNum - 1])
+					        && (i2 == m_curve[i1].pNum - 1 - 3)
+					        && (t >= 0.89f) && (sI + 1.1f / subSegNum >= 1.0))
 					{
 						pd[iLoopStart].nb = pd[cPos + 0].pos;
 						pd[cPos + 1].nb = pLoop;
@@ -860,12 +914,17 @@ void VSObject::ConstructCurves(ID3D10Device* pd3dDevice)
 	}
 
 	m_pMeshCurves = NULL;
-	V(D3DX10CreateMesh(pd3dDevice, VSObject::InputCurveElements, VSObject::InputCurveElementCount, "POSITION", m_cSegNum * (int)(subSegNum) * 10 * 2, m_cSegNum * (int)(subSegNum) * 10, 0, &m_pMeshCurves));
+	V(D3DX10CreateMesh(pd3dDevice, VSObject::InputCurveElements,
+	                   VSObject::InputCurveElementCount,
+	                   "POSITION", m_cSegNum * (int)(subSegNum) * 10 * 2,
+	                   m_cSegNum * (int)(subSegNum) * 10, 0,
+	                   &m_pMeshCurves));
 	V(m_pMeshCurves->SetVertexData(0, pd));
 	V(m_pMeshCurves->CommitToDevice());
 	delete[]pd;
 	delete[]used;
 	WCHAR wcFileInfo[512];
-	StringCchPrintf(wcFileInfo, 512, L"(INFO) : Number of curve segments: %d \n", m_cSegNum * (int)(subSegNum) * 10);
+	StringCchPrintf(wcFileInfo, 512, L"(INFO) : Number of curve segments: %d \n",
+	                m_cSegNum * (int)(subSegNum) * 10);
 	OutputDebugString(wcFileInfo);
 }

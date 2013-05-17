@@ -27,10 +27,10 @@ public:
 	typedef Triangulation::Point  Point;
 
 	virtual ~TriangulationCgal_SeedPoint() {}
-	virtual void AddPoint( double x, double y );
+	virtual void AddPoint(double x, double y);
 	virtual void Compute();
 	virtual void Clear();
 
-	Triangulation	m_Triangulation;
+	Triangulation   m_Triangulation;
 };
 

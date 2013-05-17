@@ -22,14 +22,14 @@ private:
 
 	doubles m_vX;
 	doubles m_vY;
-	alglib::spline1dinterpolant	m_InterpolantX;
-	alglib::spline1dinterpolant	m_InterpolantY;
-	alglib::spline1dfitreport	m_FitReport;
-	alglib::real_1d_array		m_aX;
-	alglib::real_1d_array		m_aY;
-	alglib::real_1d_array		m_aScale;
-	alglib::ae_int_t		m_SplineFunctionInfo;
-	double	m_rho;
-	bool	m_NeedBuildSpline;
+	alglib::spline1dinterpolant m_InterpolantX;
+	alglib::spline1dinterpolant m_InterpolantY;
+	alglib::spline1dfitreport   m_FitReport;
+	alglib::real_1d_array       m_aX;
+	alglib::real_1d_array       m_aY;
+	alglib::real_1d_array       m_aScale;
+	alglib::ae_int_t        m_SplineFunctionInfo;
+	double  m_rho;
+	bool    m_NeedBuildSpline;
 };
 

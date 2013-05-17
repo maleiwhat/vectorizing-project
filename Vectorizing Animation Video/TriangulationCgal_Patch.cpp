@@ -12,6 +12,7 @@ void TriangulationCgal_Patch::Compute()
 {
 	m_Triangulation.clear();
 	Vertex_handles vhs;
+
 	/* add 4 conner point
 	Point lu(0, 0);
 	Point ld(0, m_h);
@@ -77,14 +78,16 @@ void TriangulationCgal_Patch::Compute()
 
 	for (; fc != m_Triangulation.finite_faces_end(); ++fc)
 	{
-		if (fc->is_in_domain() && fc->info().in_domain() && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
+		if (fc->is_in_domain() && fc->info().in_domain()
+		        && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
 		{
 			t.m_Points[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
 			t.m_Points[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
 			t.m_Points[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
 
-			if (fc->info().nesting_level >= 0 && m_ColorConstraint.size() > fc->info().nesting_level
-			                && m_ColorConstraint[fc->info().nesting_level].get())
+			if (fc->info().nesting_level >= 0
+			        && m_ColorConstraint.size() > fc->info().nesting_level
+			        && m_ColorConstraint[fc->info().nesting_level].get())
 			{
 				t.m_Colors[0] = m_ColorConstraint[fc->info().nesting_level]->
 				                GetColorVector3(t.m_Points[0].x, t.m_Points[0].y);
@@ -105,11 +108,13 @@ void TriangulationCgal_Patch::Compute()
 	}
 
 	LineSegs lineSegs;
-	double_vector	LinesWidth;
+	double_vector   LinesWidth;
 
-	for (fc = m_Triangulation.finite_faces_begin(); fc != m_Triangulation.finite_faces_end(); ++fc)
+	for (fc = m_Triangulation.finite_faces_begin();
+	        fc != m_Triangulation.finite_faces_end(); ++fc)
 	{
-		if (fc->is_in_domain() && fc->info().in_domain() && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
+		if (fc->is_in_domain() && fc->info().in_domain()
+		        && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
 		{
 			Vector2s pts;
 			int constrained = 0;
@@ -121,10 +126,10 @@ void TriangulationCgal_Patch::Compute()
 
 				if (!m_Triangulation.is_constrained(e))
 				{
-					Vector2 e1(e.first->vertex(m_Triangulation.ccw(e.second))->point().hx(), 
-						e.first->vertex(m_Triangulation.ccw(e.second))->point().hy());
-					Vector2 e2(e.first->vertex(m_Triangulation.cw(e.second))->point().hx(), 
-						e.first->vertex(m_Triangulation.cw(e.second))->point().hy());
+					Vector2 e1(e.first->vertex(m_Triangulation.ccw(e.second))->point().hx(),
+					           e.first->vertex(m_Triangulation.ccw(e.second))->point().hy());
+					Vector2 e2(e.first->vertex(m_Triangulation.cw(e.second))->point().hx(),
+					           e.first->vertex(m_Triangulation.cw(e.second))->point().hy());
 					pts.push_back(e1.midPoint(e2));
 					widths.push_back(e1.distance(e2));
 					++constrained;
@@ -197,10 +202,11 @@ void TriangulationCgal_Patch::Compute()
 		{
 			hs.AddPointByDistance(cps[j]);
 		}
+
 		res.clear();
 		res.push_back(beg);
 
-		for (int j = 1; j < dis-1; ++j)
+		for (int j = 1; j < dis - 1; ++j)
 		{
 			res.push_back(hs.GetValue(j));
 		}
@@ -219,7 +225,8 @@ void TriangulationCgal_Patch::Clear()
 	m_SeedPoints.clear();
 }
 
-void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_ImageSpline, int idx)
+void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt,
+        ImageSpline& m_ImageSpline, int idx)
 {
 	PatchSpline& ps = m_ImageSpline.m_PatchSplines[idx];
 	LineIndex start_idx = ps.m_LineIndexs.front();
@@ -250,11 +257,11 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 		Line pts = m_ImageSpline.m_LineFragments[it->m_id].m_Points;
 
 		// show normal
-// 		for (int j = 1; j < pts.size(); ++j)
-// 		{
-// 			Vector2 right = Quaternion::GetRotation(pts[j] - pts[j - 1], 90);
-// 			m_LineSegs.push_back(LineSeg(pts[j], pts[j] + right*3));
-// 		}
+//      for (int j = 1; j < pts.size(); ++j)
+//      {
+//          Vector2 right = Quaternion::GetRotation(pts[j] - pts[j - 1], 90);
+//          m_LineSegs.push_back(LineSeg(pts[j], pts[j] + right*3));
+//      }
 		if (it->m_Forward)
 		{
 			for (auto it2 = pts.begin(); it2 != pts.end(); ++it2)
@@ -312,7 +319,8 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, ImageSpline& m_
 	assert(start == last);
 }
 
-void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt, ImageSpline& is, PatchSpline& ps)
+void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt,
+        ImageSpline& is, PatchSpline& ps)
 {
 	const int NESTING_LEVEL = 0;
 	//const int NESTING_LEVEL = TRIANGLE_TRANSPARENT;
@@ -400,7 +408,8 @@ void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt, ImageSpli
 	assert(start == last);
 }
 
-void TriangulationCgal_Patch::insert_polygonInter(Triangulation& cdt, ImageSpline& is, int idx)
+void TriangulationCgal_Patch::insert_polygonInter(Triangulation& cdt,
+        ImageSpline& is, int idx)
 {
 	PatchSplines& pss = is.m_PatchSplinesInter[idx];
 
@@ -410,14 +419,16 @@ void TriangulationCgal_Patch::insert_polygonInter(Triangulation& cdt, ImageSplin
 	}
 }
 
-void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, const Polygon& polygon, int domain)
+void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt,
+        const Polygon& polygon, int domain)
 {
 	if (polygon.is_empty()) { return; }
 
-	Triangulation::Vertex_handle v_prev = cdt.insert(*CGAL::cpp0x::prev(polygon.vertices_end()));
+	Triangulation::Vertex_handle v_prev = cdt.insert(*CGAL::cpp0x::prev(
+	        polygon.vertices_end()));
 
 	for (Polygon::Vertex_iterator vit = polygon.vertices_begin();
-	                vit != polygon.vertices_end(); ++vit)
+	        vit != polygon.vertices_end(); ++vit)
 	{
 		Triangulation::Vertex_handle vh = cdt.insert(*vit);
 		vh->info().nesting_level = domain;
@@ -426,8 +437,9 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt, const Polygon& 
 	}
 }
 
-void	TriangulationCgal_Patch::mark_domains(Triangulation& ct, Triangulation::Face_handle start, int index,
-                std::list<Triangulation::Edge>& border)
+void    TriangulationCgal_Patch::mark_domains(Triangulation& ct,
+        Triangulation::Face_handle start, int index,
+        std::list<Triangulation::Edge>& border)
 {
 	if (start->info().nesting_level != TRIANGLE_NOT_INIT)
 	{
@@ -473,9 +485,10 @@ void	TriangulationCgal_Patch::mark_domains(Triangulation& ct, Triangulation::Fac
 //level of 0. Then we recursively consider the non-explored facets incident
 //to constrained edges bounding the former set and increase the nesting level by 1.
 //Facets in the domain are those with an odd nesting level.
-void	TriangulationCgal_Patch::mark_domains(Triangulation& cdt)
+void    TriangulationCgal_Patch::mark_domains(Triangulation& cdt)
 {
-	for (Triangulation::All_faces_iterator it = cdt.all_faces_begin(); it != cdt.all_faces_end(); ++it)
+	for (Triangulation::All_faces_iterator it = cdt.all_faces_begin();
+	        it != cdt.all_faces_end(); ++it)
 	{
 		it->info().nesting_level = TRIANGLE_NOT_INIT;
 	}
@@ -487,8 +500,10 @@ void	TriangulationCgal_Patch::mark_domains(Triangulation& cdt)
 	for (; fc != m_Triangulation.finite_faces_end(); ++fc)
 	{
 		int domain = fc->vertex(0)->info().nesting_level;
-		domain = fc->vertex(1)->info().nesting_level == 0 ? fc->vertex(1)->info().nesting_level : domain;
-		domain = fc->vertex(2)->info().nesting_level == 0 ? fc->vertex(2)->info().nesting_level : domain;
+		domain = fc->vertex(1)->info().nesting_level == 0 ? fc->vertex(
+		             1)->info().nesting_level : domain;
+		domain = fc->vertex(2)->info().nesting_level == 0 ? fc->vertex(
+		             2)->info().nesting_level : domain;
 
 		if (TRIANGLE_NOT_INIT == fc->info().nesting_level && domain == 0)
 		{
@@ -503,9 +518,12 @@ void	TriangulationCgal_Patch::mark_domains(Triangulation& cdt)
 		border.pop_front();
 		Triangulation::Face_handle n = e.first->neighbor(e.second);
 		int domain = e.first->vertex(0)->info().nesting_level;
-		domain = e.first->vertex(1)->info().nesting_level > domain ? e.first->vertex(1)->info().nesting_level : domain;
-		domain = e.first->vertex(2)->info().nesting_level > domain ? e.first->vertex(2)->info().nesting_level : domain;
-		int transparent = e.first->vertex(0)->info().nesting_level == TRIANGLE_TRANSPARENT;
+		domain = e.first->vertex(1)->info().nesting_level > domain ? e.first->vertex(
+		             1)->info().nesting_level : domain;
+		domain = e.first->vertex(2)->info().nesting_level > domain ? e.first->vertex(
+		             2)->info().nesting_level : domain;
+		int transparent = e.first->vertex(0)->info().nesting_level ==
+		                  TRIANGLE_TRANSPARENT;
 		transparent += e.first->vertex(1)->info().nesting_level == TRIANGLE_TRANSPARENT;
 		transparent += e.first->vertex(2)->info().nesting_level == TRIANGLE_TRANSPARENT;
 
@@ -531,7 +549,8 @@ void TriangulationCgal_Patch::AddPatch(Patch& cvps)
 	m_Patch.push_back(cvps);
 }
 
-void TriangulationCgal_Patch::AddColorConstraint(ColorConstraint_sptr constraint)
+void TriangulationCgal_Patch::AddColorConstraint(ColorConstraint_sptr
+        constraint)
 {
 	m_ColorConstraint.push_back(constraint);
 }

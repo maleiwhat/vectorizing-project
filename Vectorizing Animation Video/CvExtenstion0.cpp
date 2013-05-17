@@ -12,7 +12,8 @@
 #include "SplineShape.h"
 #include "math\Vector2.h"
 
-cv::Mat CannyEdge(cv::Mat& image, double threshold1/*=0*/, double threshold2/*=30*/, int apertureSize/*=3*/, bool L2gradient/*=false*/)
+cv::Mat CannyEdge(cv::Mat& image, double threshold1/*=0*/,
+                  double threshold2/*=30*/, int apertureSize/*=3*/, bool L2gradient/*=false*/)
 {
 	cv::Mat edges;
 	cvtColor(image, edges, CV_BGR2GRAY);   //convert from RGB color space to GRAY
@@ -73,7 +74,7 @@ bool IsZero(cv::Mat& image, int i, int j)
 Lines ComputeEdgeLine(const cv::Mat& image)
 {
 	cv::Mat tImage = image;
-	Lines	res;
+	Lines   res;
 
 	for (int i = 0; i < tImage.rows; ++i)
 	{
@@ -99,7 +100,7 @@ Lines ComputeEdgeLine(const cv::Mat& image)
 
 void EdgeLink(cv::Mat& image, Line& now_line)
 {
-	bool	edgefail = false;
+	bool    edgefail = false;
 
 	for (; !edgefail;)
 	{
@@ -284,7 +285,7 @@ void EdgeLink(cv::Mat& image, Line& now_line)
 
 void EdgeLink2(cv::Mat& image, Line& now_line)
 {
-	bool	edgefail = false;
+	bool    edgefail = false;
 
 	for (; !edgefail;)
 	{
@@ -461,7 +462,7 @@ void EdgeLink2(cv::Mat& image, Line& now_line)
 Lines ComputeEdgeLine2(const cv::Mat& image)
 {
 	cv::Mat tImage = image;
-	Lines	res;
+	Lines   res;
 
 	for (int i = 0; i < tImage.rows; ++i)
 	{
@@ -477,29 +478,29 @@ Lines ComputeEdgeLine2(const cv::Mat& image)
 				EdgeLink2(tImage, line);
 				res.push_back(line);
 // debug use
-// 				cv::imshow("tImage", tImage);
+//              cv::imshow("tImage", tImage);
 //
-// 				cv::Mat drawing = cv::Mat::zeros(tImage.size(), CV_8UC3),
-// 					show3u3 = cv::Mat::zeros(tImage.size(), CV_8UC3);;
-// 				cv::RNG rng(12345);
-// 				for (int i = 0; i < res.size(); ++i)
-// 				{
-// 					cv::Vec3b color(rng.uniform(100, 255), rng.uniform(100, 255), rng.uniform(100, 255));
-// 					Line& now_line = res[i];
+//              cv::Mat drawing = cv::Mat::zeros(tImage.size(), CV_8UC3),
+//                  show3u3 = cv::Mat::zeros(tImage.size(), CV_8UC3);;
+//              cv::RNG rng(12345);
+//              for (int i = 0; i < res.size(); ++i)
+//              {
+//                  cv::Vec3b color(rng.uniform(100, 255), rng.uniform(100, 255), rng.uniform(100, 255));
+//                  Line& now_line = res[i];
 //
-// 					for (int j = 0; j < now_line.size(); ++j)
-// 					{
-// 						if (j != 0)
-// 						{
-// 							cv::Point p1(now_line[j - 1].x, now_line[j - 1].y);
-// 							cv::Point p2(now_line[j].x, now_line[j].y);
-// 							cv::line(show3u3, p1, p2, cv::Scalar(color), 1, 8, 0);
-// 						}
-// 					}
-// 				}
+//                  for (int j = 0; j < now_line.size(); ++j)
+//                  {
+//                      if (j != 0)
+//                      {
+//                          cv::Point p1(now_line[j - 1].x, now_line[j - 1].y);
+//                          cv::Point p2(now_line[j].x, now_line[j].y);
+//                          cv::line(show3u3, p1, p2, cv::Scalar(color), 1, 8, 0);
+//                      }
+//                  }
+//              }
 //
-// 				imshow("drawing", show3u3);
-// 				cv::waitKey();
+//              imshow("drawing", show3u3);
+//              cv::waitKey();
 			}
 		}
 	}
@@ -637,7 +638,8 @@ void cvThin(cv::Mat& src, cv::Mat& dst, int iterations /*= 1*/)
 						ap++;
 					}
 
-					int p5 = (i == size.height - 1 || j == size.width - 1) ? 0 : t_image.at<uchar>(i + 1, j + 1);
+					int p5 = (i == size.height - 1
+					          || j == size.width - 1) ? 0 : t_image.at<uchar>(i + 1, j + 1);
 
 					if (p4 == 0 && p5 == 1)
 					{
@@ -677,7 +679,8 @@ void cvThin(cv::Mat& src, cv::Mat& dst, int iterations /*= 1*/)
 						ap++;
 					}
 
-					if ((p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) > 1 && (p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) < 7)
+					if ((p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) > 1
+					        && (p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) < 7)
 					{
 						if (ap == 1)
 						{
@@ -718,7 +721,8 @@ void cvThin(cv::Mat& src, cv::Mat& dst, int iterations /*= 1*/)
 						ap++;
 					}
 
-					int p5 = (i == size.height - 1 || j == size.width - 1) ? 0 : t_image.at<uchar>(i + 1, j + 1);
+					int p5 = (i == size.height - 1
+					          || j == size.width - 1) ? 0 : t_image.at<uchar>(i + 1, j + 1);
 
 					if (p4 == 0 && p5 == 1)
 					{
@@ -758,7 +762,8 @@ void cvThin(cv::Mat& src, cv::Mat& dst, int iterations /*= 1*/)
 						ap++;
 					}
 
-					if ((p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) > 1 && (p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) < 7)
+					if ((p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) > 1
+					        && (p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9) < 7)
 					{
 						if (ap == 1)
 						{
@@ -786,7 +791,8 @@ cv::Mat Laplace(const cv::Mat& image, int aperture_size)
 	return edges;
 }
 
-void S1FloodFill(cv::Mat& image, cv::Mat& mask, int x, int y, CvPoints2d& out_array)
+void S1FloodFill(cv::Mat& image, cv::Mat& mask, int x, int y,
+                 CvPoints2d& out_array)
 {
 	cv::Vec3b& c = image.at<cv::Vec3b>(y, x);
 
@@ -817,8 +823,8 @@ void S1FloodFill(cv::Mat& image, cv::Mat& mask, int x, int y, CvPoints2d& out_ar
 		c2 = 0;
 	}
 
-	// 	Dilation( mask2, 0, 1 );
-	// 	Erosion( mask2, 0, 1 );
+	//  Dilation( mask2, 0, 1 );
+	//  Erosion( mask2, 0, 1 );
 
 	for (int i = 1; i < mask2.rows - 1; i++)
 	{
@@ -843,7 +849,8 @@ void S1FloodFill(cv::Mat& image, cv::Mat& mask, int x, int y, CvPoints2d& out_ar
 	out_array.push_back(points.front());
 }
 
-void S1FloodFill(cv::Mat& image, cv::Mat& mask, int x, int y, CvPatchs& out_array, int dilation, int erosion)
+void S1FloodFill(cv::Mat& image, cv::Mat& mask, int x, int y,
+                 CvPatchs& out_array, int dilation, int erosion)
 {
 	cv::Vec3b& c = image.at<cv::Vec3b>(y, x);
 
@@ -985,7 +992,8 @@ CvPatchs S1GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	return cvps;
 }
 
-Lines ComputeTrappedBallEdge(cv::Mat& image, const Lines& old_line, int ball_radius)
+Lines ComputeTrappedBallEdge(cv::Mat& image, const Lines& old_line,
+                             int ball_radius)
 {
 	cv::Mat timage(image.size(), CV_8U, cv::Scalar(0));
 
@@ -1007,7 +1015,8 @@ Lines ComputeTrappedBallEdge(cv::Mat& image, const Lines& old_line, int ball_rad
 		if (li.size() < 4) { continue; }
 
 		bool findhole = false;
-		Vector2 ahead = (li[li.size() - 1] - li[li.size() - 2]) + (li[li.size() - 1] - li[li.size() - 3]);
+		Vector2 ahead = (li[li.size() - 1] - li[li.size() - 2]) +
+		                (li[li.size() - 1] - li[li.size() - 3]);
 		ahead.normalise();
 
 		if (LinkTrapBallBack(li, ahead, timage, ball_radius))
@@ -1045,7 +1054,8 @@ Lines ComputeTrappedBallEdge(cv::Mat& image, const Lines& old_line, int ball_rad
 		if (li.size() < 4) { continue; }
 
 		bool findhole = false;
-		Vector2 ahead = (li[li.size() - 1] - li[li.size() - 2]) + (li[li.size() - 1] - li[li.size() - 3]);
+		Vector2 ahead = (li[li.size() - 1] - li[li.size() - 2]) +
+		                (li[li.size() - 1] - li[li.size() - 3]);
 		ahead.normalise();
 
 		if (LinkTrapBallBack(li, ahead, timage, ball_radius))
@@ -1075,7 +1085,8 @@ Lines ComputeTrappedBallEdge(cv::Mat& image, const Lines& old_line, int ball_rad
 }
 
 
-bool LinkTrapBallBack(Line& li, const Vector2& ahead, cv::Mat& image, int ball_radius)
+bool LinkTrapBallBack(Line& li, const Vector2& ahead, cv::Mat& image,
+                      int ball_radius)
 {
 	for (int r = 1; r <= ball_radius; ++r)
 	{

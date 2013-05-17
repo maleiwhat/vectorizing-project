@@ -49,40 +49,42 @@ void TriangulationCgal_Sideline::Compute()
 	m_Triangles.clear();
 	Triangle t;
 	Finite_faces_iterator fc = m_Triangulation.finite_faces_begin();
-// 	for (; fc != m_Triangulation.finite_faces_end(); ++fc)
-// 	{
-// 		if (fc->is_in_domain() && fc->info().in_domain() && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
-// 		{
-// 			t.m_Points[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
-// 			t.m_Points[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
-// 			t.m_Points[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
+//  for (; fc != m_Triangulation.finite_faces_end(); ++fc)
+//  {
+//      if (fc->is_in_domain() && fc->info().in_domain() && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
+//      {
+//          t.m_Points[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
+//          t.m_Points[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
+//          t.m_Points[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
 //
-// 			if (fc->info().nesting_level >= 0 && m_ColorConstraint.size() > fc->info().nesting_level
-// 			                && m_ColorConstraint[fc->info().nesting_level].get())
-// 			{
-// 				t.m_Colors[0] = m_ColorConstraint[fc->info().nesting_level]->
-// 				                GetColorVector3(t.m_Points[0].x, t.m_Points[0].y);
-// 				t.m_Colors[1] = m_ColorConstraint[fc->info().nesting_level]->
-// 				                GetColorVector3(t.m_Points[1].x, t.m_Points[1].y);
-// 				t.m_Colors[2] = m_ColorConstraint[fc->info().nesting_level]->
-// 				                GetColorVector3(t.m_Points[2].x, t.m_Points[2].y);
-// 			}
-// 			else
-// 			{
-// 				t.m_Colors[0] = 255;
-// 				t.m_Colors[1] = 0;
-// 				t.m_Colors[2] = 0;
-// 			}
+//          if (fc->info().nesting_level >= 0 && m_ColorConstraint.size() > fc->info().nesting_level
+//                          && m_ColorConstraint[fc->info().nesting_level].get())
+//          {
+//              t.m_Colors[0] = m_ColorConstraint[fc->info().nesting_level]->
+//                              GetColorVector3(t.m_Points[0].x, t.m_Points[0].y);
+//              t.m_Colors[1] = m_ColorConstraint[fc->info().nesting_level]->
+//                              GetColorVector3(t.m_Points[1].x, t.m_Points[1].y);
+//              t.m_Colors[2] = m_ColorConstraint[fc->info().nesting_level]->
+//                              GetColorVector3(t.m_Points[2].x, t.m_Points[2].y);
+//          }
+//          else
+//          {
+//              t.m_Colors[0] = 255;
+//              t.m_Colors[1] = 0;
+//              t.m_Colors[2] = 0;
+//          }
 //
-// 			m_Triangles.push_back(t);
-// 		}
-// 	}
+//          m_Triangles.push_back(t);
+//      }
+//  }
 	LineSegs lineSegs;
-	double_vector	LinesWidth;
+	double_vector   LinesWidth;
 
-	for (fc = m_Triangulation.finite_faces_begin(); fc != m_Triangulation.finite_faces_end(); ++fc)
+	for (fc = m_Triangulation.finite_faces_begin();
+	        fc != m_Triangulation.finite_faces_end(); ++fc)
 	{
-		if (fc->is_in_domain() && fc->info().in_domain() && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
+		if (fc->is_in_domain() && fc->info().in_domain()
+		        && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
 		{
 			Vector2s pts;
 			int constrained = 0;
@@ -167,28 +169,28 @@ void TriangulationCgal_Sideline::Compute()
 		}
 
 		cps.push_back(end);
-// 		hs.Clear();
+//      hs.Clear();
 //
-// 		for (int j = 0; j < cps.size(); ++j)
-// 		{
-// 			hs.AddPointByDistance(cps[j]);
-// 		}
-// 		res.clear();
-// 		res.push_back(beg);
+//      for (int j = 0; j < cps.size(); ++j)
+//      {
+//          hs.AddPointByDistance(cps[j]);
+//      }
+//      res.clear();
+//      res.push_back(beg);
 //
-// 		for (int j = 1; j < dis-1; ++j)
-// 		{
-// 			res.push_back(hs.GetValue(j));
-// 		}
+//      for (int j = 1; j < dis-1; ++j)
+//      {
+//          res.push_back(hs.GetValue(j));
+//      }
 //
-// 		res.push_back(end);
+//      res.push_back(end);
 	}
 
 	m_Triangulation.clear();
 	Point lu(1, 1);
-	Point ld(1, m_h-1);
-	Point ru(m_w-1, m_h-1);
-	Point rd(m_w-1, 1);
+	Point ld(1, m_h - 1);
+	Point ru(m_w - 1, m_h - 1);
+	Point rd(m_w - 1, 1);
 	Triangulation::Vertex_handle v1 = m_Triangulation.insert(lu);
 	Triangulation::Vertex_handle v2 = m_Triangulation.insert(ld);
 	Triangulation::Vertex_handle v3 = m_Triangulation.insert(ru);
@@ -201,6 +203,7 @@ void TriangulationCgal_Sideline::Compute()
 	m_Triangulation.insert_constraint(v2, v3);
 	m_Triangulation.insert_constraint(v3, v4);
 	m_Triangulation.insert_constraint(v4, v1);
+
 	for (int i = 0; i < m_Patch.size(); ++i)
 	{
 		Polygon poly;
@@ -231,34 +234,35 @@ void TriangulationCgal_Sideline::Compute()
 	m_Triangles.clear();
 	fc = m_Triangulation.finite_faces_begin();
 	Vector3s rand_color(100);
-	for (int i=0;i<100;i++)
+
+	for (int i = 0; i < 100; i++)
 	{
-		rand_color[i].x = rand()/1.0/RAND_MAX*255;
-		rand_color[i].y = rand()/1.0/RAND_MAX*255;
-		rand_color[i].z = rand()/1.0/RAND_MAX*255;
+		rand_color[i].x = rand() / 1.0 / RAND_MAX * 255;
+		rand_color[i].y = rand() / 1.0 / RAND_MAX * 255;
+		rand_color[i].z = rand() / 1.0 / RAND_MAX * 255;
 	}
+
 	for (; fc != m_Triangulation.finite_faces_end(); ++fc)
 	{
-		if (fc->is_in_domain() && fc->info().in_domain() && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
+		if (fc->is_in_domain() && fc->info().in_domain()
+		        && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
 		{
 			t.m_Points[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
 			t.m_Points[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
 			t.m_Points[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
-
-// 			if (fc->info().nesting_level >= 0 && m_ColorConstraint.size() > fc->info().nesting_level
-// 			                && m_ColorConstraint[fc->info().nesting_level].get())
+//          if (fc->info().nesting_level >= 0 && m_ColorConstraint.size() > fc->info().nesting_level
+//                          && m_ColorConstraint[fc->info().nesting_level].get())
 			{
 				t.m_Colors[0] = rand_color[fc->info().color_label % 100];
 				t.m_Colors[1] = rand_color[fc->info().color_label % 100];
 				t.m_Colors[2] = rand_color[fc->info().color_label % 100];
 			}
-// 			else
-// 			{
-// 				t.m_Colors[0] = 255;
-// 				t.m_Colors[1] = 0;
-// 				t.m_Colors[2] = 0;
-// 			}
-
+//          else
+//          {
+//              t.m_Colors[0] = 255;
+//              t.m_Colors[1] = 0;
+//              t.m_Colors[2] = 0;
+//          }
 			m_Triangles.push_back(t);
 		}
 	}
@@ -274,7 +278,8 @@ void TriangulationCgal_Sideline::Clear()
 	m_SeedPoints.clear();
 }
 
-void TriangulationCgal_Sideline::insert_polygon(Triangulation& cdt, ImageSpline& m_ImageSpline, int idx)
+void TriangulationCgal_Sideline::insert_polygon(Triangulation& cdt,
+        ImageSpline& m_ImageSpline, int idx)
 {
 	PatchSpline& ps = m_ImageSpline.m_PatchSplines[idx];
 	LineIndex start_idx = ps.m_LineIndexs.front();
@@ -305,11 +310,11 @@ void TriangulationCgal_Sideline::insert_polygon(Triangulation& cdt, ImageSpline&
 		Line pts = m_ImageSpline.m_LineFragments[it->m_id].m_Points;
 
 		// show normal
-// 		for (int j = 1; j < pts.size(); ++j)
-// 		{
-// 			Vector2 right = Quaternion::GetRotation(pts[j] - pts[j - 1], 90);
-// 			m_LineSegs.push_back(LineSeg(pts[j], pts[j] + right*3));
-// 		}
+//      for (int j = 1; j < pts.size(); ++j)
+//      {
+//          Vector2 right = Quaternion::GetRotation(pts[j] - pts[j - 1], 90);
+//          m_LineSegs.push_back(LineSeg(pts[j], pts[j] + right*3));
+//      }
 		if (it->m_Forward)
 		{
 			for (auto it2 = pts.begin(); it2 != pts.end(); ++it2)
@@ -367,7 +372,8 @@ void TriangulationCgal_Sideline::insert_polygon(Triangulation& cdt, ImageSpline&
 	assert(start == last);
 }
 
-void TriangulationCgal_Sideline::insert_polygonInter2(Triangulation& cdt, ImageSpline& is, PatchSpline& ps)
+void TriangulationCgal_Sideline::insert_polygonInter2(Triangulation& cdt,
+        ImageSpline& is, PatchSpline& ps)
 {
 	const int NESTING_LEVEL = TRIANGLE_TRANSPARENT;
 
@@ -454,7 +460,8 @@ void TriangulationCgal_Sideline::insert_polygonInter2(Triangulation& cdt, ImageS
 	assert(start == last);
 }
 
-void TriangulationCgal_Sideline::insert_polygonInter(Triangulation& cdt, ImageSpline& is, int idx)
+void TriangulationCgal_Sideline::insert_polygonInter(Triangulation& cdt,
+        ImageSpline& is, int idx)
 {
 	PatchSplines& pss = is.m_PatchSplinesInter[idx];
 
@@ -464,14 +471,16 @@ void TriangulationCgal_Sideline::insert_polygonInter(Triangulation& cdt, ImageSp
 	}
 }
 
-void TriangulationCgal_Sideline::insert_polygon(Triangulation& cdt, const Polygon& polygon, int domain)
+void TriangulationCgal_Sideline::insert_polygon(Triangulation& cdt,
+        const Polygon& polygon, int domain)
 {
 	if (polygon.is_empty()) { return; }
 
-	Triangulation::Vertex_handle v_prev = cdt.insert(*CGAL::cpp0x::prev(polygon.vertices_end()));
+	Triangulation::Vertex_handle v_prev = cdt.insert(*CGAL::cpp0x::prev(
+	        polygon.vertices_end()));
 
 	for (Polygon::Vertex_iterator vit = polygon.vertices_begin();
-	                vit != polygon.vertices_end(); ++vit)
+	        vit != polygon.vertices_end(); ++vit)
 	{
 		Triangulation::Vertex_handle vh = cdt.insert(*vit);
 		vh->info().nesting_level = domain;
@@ -486,8 +495,9 @@ void TriangulationCgal_Sideline::insert_polygon(Triangulation& cdt, const Polygo
 //level of 0. Then we recursively consider the non-explored facets incident
 //to constrained edges bounding the former set and increase the nesting level by 1.
 //Facets in the domain are those with an odd nesting level.
-void	TriangulationCgal_Sideline::mark_domains(Triangulation& ct, Triangulation::Face_handle start, int index,
-                std::list<Triangulation::Edge>& border)
+void    TriangulationCgal_Sideline::mark_domains(Triangulation& ct,
+        Triangulation::Face_handle start, int index,
+        std::list<Triangulation::Edge>& border)
 {
 	if (start->info().nesting_level != TRIANGLE_NOT_INIT)
 	{
@@ -527,9 +537,10 @@ void	TriangulationCgal_Sideline::mark_domains(Triangulation& ct, Triangulation::
 	}
 }
 
-void	TriangulationCgal_Sideline::mark_domains(Triangulation& cdt)
+void    TriangulationCgal_Sideline::mark_domains(Triangulation& cdt)
 {
-	for (Triangulation::All_faces_iterator it = cdt.all_faces_begin(); it != cdt.all_faces_end(); ++it)
+	for (Triangulation::All_faces_iterator it = cdt.all_faces_begin();
+	        it != cdt.all_faces_end(); ++it)
 	{
 		it->info().nesting_level = TRIANGLE_NOT_INIT;
 	}
@@ -541,8 +552,10 @@ void	TriangulationCgal_Sideline::mark_domains(Triangulation& cdt)
 	for (; fc != m_Triangulation.finite_faces_end(); ++fc)
 	{
 		int domain = fc->vertex(0)->info().nesting_level;
-		domain = fc->vertex(1)->info().nesting_level == 0 ? fc->vertex(1)->info().nesting_level : domain;
-		domain = fc->vertex(2)->info().nesting_level == 0 ? fc->vertex(2)->info().nesting_level : domain;
+		domain = fc->vertex(1)->info().nesting_level == 0 ? fc->vertex(
+		             1)->info().nesting_level : domain;
+		domain = fc->vertex(2)->info().nesting_level == 0 ? fc->vertex(
+		             2)->info().nesting_level : domain;
 
 		if (TRIANGLE_NOT_INIT == fc->info().nesting_level && domain == 0)
 		{
@@ -557,9 +570,12 @@ void	TriangulationCgal_Sideline::mark_domains(Triangulation& cdt)
 		border.pop_front();
 		Triangulation::Face_handle n = e.first->neighbor(e.second);
 		int domain = e.first->vertex(0)->info().nesting_level;
-		domain = e.first->vertex(1)->info().nesting_level > domain ? e.first->vertex(1)->info().nesting_level : domain;
-		domain = e.first->vertex(2)->info().nesting_level > domain ? e.first->vertex(2)->info().nesting_level : domain;
-		int transparent = e.first->vertex(0)->info().nesting_level == TRIANGLE_TRANSPARENT;
+		domain = e.first->vertex(1)->info().nesting_level > domain ? e.first->vertex(
+		             1)->info().nesting_level : domain;
+		domain = e.first->vertex(2)->info().nesting_level > domain ? e.first->vertex(
+		             2)->info().nesting_level : domain;
+		int transparent = e.first->vertex(0)->info().nesting_level ==
+		                  TRIANGLE_TRANSPARENT;
 		transparent += e.first->vertex(1)->info().nesting_level == TRIANGLE_TRANSPARENT;
 		transparent += e.first->vertex(2)->info().nesting_level == TRIANGLE_TRANSPARENT;
 
@@ -585,7 +601,8 @@ void TriangulationCgal_Sideline::AddPatch(Patch& cvps)
 	m_Patch.push_back(cvps);
 }
 
-void TriangulationCgal_Sideline::AddColorConstraint(ColorConstraint_sptr constraint)
+void TriangulationCgal_Sideline::AddColorConstraint(ColorConstraint_sptr
+        constraint)
 {
 	m_ColorConstraint.push_back(constraint);
 }
@@ -602,8 +619,9 @@ void TriangulationCgal_Sideline::SetSize(int w, int h)
 }
 
 
-void	TriangulationCgal_Sideline::mark_domains2(Triangulation& ct, Triangulation::Face_handle start, int index,
-                std::list<Triangulation::Edge>& border, int color_label)
+void    TriangulationCgal_Sideline::mark_domains2(Triangulation& ct,
+        Triangulation::Face_handle start, int index,
+        std::list<Triangulation::Edge>& border, int color_label)
 {
 	if (start->info().nesting_level != TRIANGLE_NOT_INIT)
 	{
@@ -644,9 +662,10 @@ void	TriangulationCgal_Sideline::mark_domains2(Triangulation& ct, Triangulation:
 	}
 }
 
-void	TriangulationCgal_Sideline::mark_domains2(Triangulation& cdt)
+void    TriangulationCgal_Sideline::mark_domains2(Triangulation& cdt)
 {
-	for (Triangulation::All_faces_iterator it = cdt.all_faces_begin(); it != cdt.all_faces_end(); ++it)
+	for (Triangulation::All_faces_iterator it = cdt.all_faces_begin();
+	        it != cdt.all_faces_end(); ++it)
 	{
 		it->info().nesting_level = TRIANGLE_NOT_INIT;
 	}
@@ -665,12 +684,12 @@ void	TriangulationCgal_Sideline::mark_domains2(Triangulation& cdt)
 		}
 	}
 
-	
 	while (! border.empty())
 	{
 		Triangulation::Edge e = border.front();
 		border.pop_front();
 		Triangulation::Face_handle n = e.first->neighbor(e.second);
+
 		if (n->info().nesting_level == TRIANGLE_NOT_INIT)
 		{
 			mark_domains2(cdt, n, e.first->info().nesting_level + 1, border, cc++);

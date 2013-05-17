@@ -5,7 +5,7 @@
 //  @ Project : Untitled
 //  @ File Name : PathInterpolater.cpp
 //  @ Date : 2011/9/3
-//  @ Author : 
+//  @ Author :
 //
 //
 
@@ -18,12 +18,13 @@ void PathInterpolater::AddPoint(double time, const Vector2& p)
 	m_points.push_back(PathPoint(time, p));
 }
 
-void PathInterpolater::AddPointByDistance( const Vector2& p )
+void PathInterpolater::AddPointByDistance(const Vector2& p)
 {
 	if (m_points.size() > 0)
 	{
 		m_RefenceDistance += p.distance(m_points.back().pos);
 	}
+
 	AddPoint(m_RefenceDistance, p);
 }
 

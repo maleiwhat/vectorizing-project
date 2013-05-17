@@ -1,31 +1,31 @@
 /*******************************************************
 
                  Mean Shift Analysis Library
-	=============================================
+    =============================================
 
-	The mean shift library is a collection of routines
-	that use the mean shift algorithm. Using this algorithm,
-	the necessary output will be generated needed
-	to analyze a given input set of data.
+    The mean shift library is a collection of routines
+    that use the mean shift algorithm. Using this algorithm,
+    the necessary output will be generated needed
+    to analyze a given input set of data.
 
   Mean Shift System:
   ==================
 
-	The Mean Shift System class provides a mechanism for the
-	mean shift library classes to prompt progress and to
-	time its computations. When porting the mean shift library
-	to an application the methods of this class may be changed
-	such that the output of the mean shift class prompts
-	will be given to whatever hardware or software device that
-	is desired.
+    The Mean Shift System class provides a mechanism for the
+    mean shift library classes to prompt progress and to
+    time its computations. When porting the mean shift library
+    to an application the methods of this class may be changed
+    such that the output of the mean shift class prompts
+    will be given to whatever hardware or software device that
+    is desired.
 
-	The definition for the mean shift system class is provided
-	below. Its prototype is provided in "msSys.cc".
+    The definition for the mean shift system class is provided
+    below. Its prototype is provided in "msSys.cc".
 
 The theory is described in the papers:
 
   D. Comaniciu, P. Meer: Mean Shift: A robust approach toward feature
-									 space analysis.
+                                     space analysis.
 
   C. Christoudias, B. Georgescu, P. Meer: Synergism in low level vision.
 
@@ -42,26 +42,26 @@ Implemented by Chris M. Christoudias, Bogdan Georgescu
 ////////////////////////////////////////////////////////////////////////
 
 //include the msSystem class prototype
-#include	"msSys.h"
+#include    "msSys.h"
 
 //include needed system libraries
-#include	<time.h>
-#include	<stdio.h>
-#include	<stdarg.h>
-#include	<stdlib.h>
+#include    <time.h>
+#include    <stdio.h>
+#include    <stdarg.h>
+#include    <stdlib.h>
 
 //define bgLog
 extern bool CmCDisplayProgress;
-void bgLog(const char *PromptStr, ...)
+void bgLog(const char* PromptStr, ...)
 {
 	//obtain argument list using ANSI standard...
-	va_list	argList;
+	va_list argList;
 	va_start(argList, PromptStr);
 
 	//print the output string to stderr using
-	if(CmCDisplayProgress) vfprintf(stdout, PromptStr, argList);
-	va_end(argList);
+	if (CmCDisplayProgress) { vfprintf(stdout, PromptStr, argList); }
 
+	va_end(argList);
 	//done.
 	return;
 }
@@ -72,9 +72,9 @@ void bgLog(const char *PromptStr, ...)
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 
-  /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
-  /*** Class Constructor and Destructor ***/
-  /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
+/*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
+/*** Class Constructor and Destructor ***/
+/*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
 
 /*******************************************************/
 /*Class Constructor                                    */
@@ -86,14 +86,11 @@ void bgLog(const char *PromptStr, ...)
 /*        ialized.                                     */
 /*******************************************************/
 
-msSystem::msSystem( void )
+msSystem::msSystem(void)
 {
-
 	//initialize currentTime
 	currentTime = clock();
-
 	//done.
-
 }
 
 /*******************************************************/
@@ -106,14 +103,14 @@ msSystem::msSystem( void )
 /*        royed.                                       */
 /*******************************************************/
 
-msSystem::~msSystem( void )
+msSystem::~msSystem(void)
 {
 	/* do nothing */
 }
 
- /*/\/\/\/\/\/\/\/\/\*/
- /*** System Timer ***/
- /*\/\/\/\/\/\/\/\/\/*/
+/*/\/\/\/\/\/\/\/\/\*/
+/*** System Timer ***/
+/*\/\/\/\/\/\/\/\/\/*/
 
 /*******************************************************/
 /*Start Timer                                          */
@@ -126,15 +123,12 @@ msSystem::~msSystem( void )
 /*        the current system time.                     */
 /*******************************************************/
 
-void msSystem::StartTimer( void )
+void msSystem::StartTimer(void)
 {
-
 	//set msSystem time to system time
 	currentTime = clock();
-
 	//done.
 	return;
-
 }
 
 /*******************************************************/
@@ -148,18 +142,16 @@ void msSystem::StartTimer( void )
 /*        shift system time was last set is returned.  */
 /*******************************************************/
 
-double msSystem::ElapsedTime( void )
+double msSystem::ElapsedTime(void)
 {
-
 	//return the amount of time elapsed in seconds
 	//since the msSystem time was last set...
-	return ((double) (clock() - currentTime))/(CLOCKS_PER_SEC);
-
+	return ((double)(clock() - currentTime)) / (CLOCKS_PER_SEC);
 }
 
- /*/\/\/\/\/\/\/\/\/\/\*/
- /***  System Output ***/
- /*\/\/\/\/\/\/\/\/\/\/*/
+/*/\/\/\/\/\/\/\/\/\/\*/
+/***  System Output ***/
+/*\/\/\/\/\/\/\/\/\/\/*/
 
 /*******************************************************/
 /*Prompt                                               */
@@ -179,20 +171,18 @@ double msSystem::ElapsedTime( void )
 /*        has been output to the user.                 */
 /*******************************************************/
 
-void msSystem::Prompt(const char *PromptStr, ...)
+void msSystem::Prompt(const char* PromptStr, ...)
 {
-
 	//obtain argument list using ANSI standard...
-	va_list	argList;
+	va_list argList;
 	va_start(argList, PromptStr);
 
 	//print the output string to stderr using
-	if(CmCDisplayProgress) vfprintf(stdout, PromptStr, argList);
-	va_end(argList);
+	if (CmCDisplayProgress) { vfprintf(stdout, PromptStr, argList); }
 
+	va_end(argList);
 	//done.
 	return;
-
 }
 
 /*******************************************************/
@@ -202,9 +192,9 @@ void msSystem::Prompt(const char *PromptStr, ...)
 /*shift library is output to the user.                 */
 /*******************************************************/
 /*Pre:                                                 */
-/*		- percentComplete indicates the percentage     */
-/*		  of the algorithm that has executed and is    */
-/*		  a floating point number from zero to one     */
+/*      - percentComplete indicates the percentage     */
+/*        of the algorithm that has executed and is    */
+/*        a floating point number from zero to one     */
 /*Post:                                                */
 /*      - the percentComplete has been noted by the    */
 /*        interface (possibly to update a progress     */

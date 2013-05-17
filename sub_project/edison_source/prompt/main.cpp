@@ -21,47 +21,51 @@
 //*******************************************************
 
 //check syntax of source file
-CmCError CheckSyntax(char *filename, CmCParser *synParser);
+CmCError CheckSyntax(char* filename, CmCParser* synParser);
 
 //run the script
-CmCError Run(CmCParser *script);
+CmCError Run(CmCParser* script);
 
 //report system errors
-void Report(CmCError *error, char *srcFilename, CmCParser *srcParser);
+void Report(CmCError* error, char* srcFilename, CmCParser* srcParser);
 
 //*******************************************************
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-  //check usage
-  if(argc != 2) {
-      fprintf(stderr, "--------------------------------------------------\n");
-      fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
-      fprintf(stderr, "--------------------------------------------------\n");
-      fprintf(stderr, "filename: File containing EDISON execution script.\n");
-      fprintf(stderr, "--------------------------------------------------\n");
-      exit(1);
-  }
-  
-  //parse the source file and check for
-  //syntaxical errors
-  CmCParser *srcParser = new CmCParser;
-  CmCError error = CheckSyntax(argv[1], srcParser);
-  if(error.errorCode_) {
-    Report(&error, argv[1], srcParser);
-    exit(1);
-  }
+	//check usage
+	if (argc != 2)
+	{
+		fprintf(stderr, "--------------------------------------------------\n");
+		fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+		fprintf(stderr, "--------------------------------------------------\n");
+		fprintf(stderr, "filename: File containing EDISON execution script.\n");
+		fprintf(stderr, "--------------------------------------------------\n");
+		exit(1);
+	}
 
-  //execute script
-  error = Run(srcParser);
-  if(error.errorCode_) {
-    Report(&error, argv[1], srcParser);
-    exit(1);
-  }
+	//parse the source file and check for
+	//syntaxical errors
+	CmCParser* srcParser = new CmCParser;
+	CmCError error = CheckSyntax(argv[1], srcParser);
 
-  //de-allocate parser
-  delete srcParser;
+	if (error.errorCode_)
+	{
+		Report(&error, argv[1], srcParser);
+		exit(1);
+	}
 
-  return 0;
+	//execute script
+	error = Run(srcParser);
+
+	if (error.errorCode_)
+	{
+		Report(&error, argv[1], srcParser);
+		exit(1);
+	}
+
+	//de-allocate parser
+	delete srcParser;
+	return 0;
 }
 

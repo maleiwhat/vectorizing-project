@@ -42,38 +42,38 @@ public:
 	double x, y;
 
 public:
-	inline Vector2():x(0), y(0)
+	inline Vector2(): x(0), y(0)
 	{
 	}
 
-	inline Vector2(const double fX, const double fY )
-		: x( fX ), y( fY )
+	inline Vector2(const double fX, const double fY)
+		: x(fX), y(fY)
 	{
 	}
 
-	inline explicit Vector2( const double scaler )
-		: x( scaler), y( scaler )
+	inline explicit Vector2(const double scaler)
+		: x(scaler), y(scaler)
 	{
 	}
 
-	inline explicit Vector2( const double afCoordinate[2] )
-		: x( afCoordinate[0] ),
-		y( afCoordinate[1] )
+	inline explicit Vector2(const double afCoordinate[2])
+		: x(afCoordinate[0]),
+		  y(afCoordinate[1])
 	{
 	}
 
-	inline explicit Vector2( const int afCoordinate[2] )
+	inline explicit Vector2(const int afCoordinate[2])
 	{
 		x = (double)afCoordinate[0];
 		y = (double)afCoordinate[1];
 	}
 
-	inline explicit Vector2( double* const r )
-		: x( r[0] ), y( r[1] )
+	inline explicit Vector2(double* const r)
+		: x(r[0]), y(r[1])
 	{
 	}
 
-	/** Exchange the contents of this vector with another. 
+	/** Exchange the contents of this vector with another.
 	*/
 	inline void swap(Vector2& other)
 	{
@@ -81,18 +81,16 @@ public:
 		std::swap(y, other.y);
 	}
 
-	inline double operator [] ( const size_t i ) const
+	inline double operator [](const size_t i) const
 	{
-		assert( i < 2 );
-
-		return *(&x+i);
+		assert(i < 2);
+		return *(&x + i);
 	}
 
-	inline double& operator [] ( const size_t i )
+	inline double& operator [](const size_t i)
 	{
-		assert( i < 2 );
-
-		return *(&x+i);
+		assert(i < 2);
+		return *(&x + i);
 	}
 
 	/// Pointer accessor for direct copying
@@ -110,77 +108,73 @@ public:
 	@param
 	rkVector The other vector
 	*/
-	inline Vector2& operator = ( const Vector2& rkVector )
+	inline Vector2& operator = (const Vector2& rkVector)
 	{
 		x = rkVector.x;
 		y = rkVector.y;
-
 		return *this;
 	}
 
-	inline Vector2& operator = ( const double fScalar)
+	inline Vector2& operator = (const double fScalar)
 	{
 		x = fScalar;
 		y = fScalar;
-
 		return *this;
 	}
 
-	inline bool operator == ( const Vector2& rkVector ) const
+	inline bool operator == (const Vector2& rkVector) const
 	{
-		return ( abs(x - rkVector.x) < 0.005 && abs(y - rkVector.y) < 0.005 );
+		return (abs(x - rkVector.x) < 0.005 && abs(y - rkVector.y) < 0.005);
 	}
 
-	inline bool operator != ( const Vector2& rkVector ) const
+	inline bool operator != (const Vector2& rkVector) const
 	{
-		return ( x != rkVector.x || y != rkVector.y  );
+		return (x != rkVector.x || y != rkVector.y);
 	}
 
 	// arithmetic operations
-	inline Vector2 operator + ( const Vector2& rkVector ) const
+	inline Vector2 operator + (const Vector2& rkVector) const
 	{
 		return Vector2(
-			x + rkVector.x,
-			y + rkVector.y);
+		           x + rkVector.x,
+		           y + rkVector.y);
 	}
 
-	inline Vector2 operator - ( const Vector2& rkVector ) const
+	inline Vector2 operator - (const Vector2& rkVector) const
 	{
 		return Vector2(
-			x - rkVector.x,
-			y - rkVector.y);
+		           x - rkVector.x,
+		           y - rkVector.y);
 	}
 
-	inline Vector2 operator * ( const double fScalar ) const
+	inline Vector2 operator * (const double fScalar) const
 	{
 		return Vector2(
-			x * fScalar,
-			y * fScalar);
+		           x * fScalar,
+		           y * fScalar);
 	}
 
-	inline Vector2 operator * ( const Vector2& rhs) const
+	inline Vector2 operator * (const Vector2& rhs) const
 	{
 		return Vector2(
-			x * rhs.x,
-			y * rhs.y);
+		           x * rhs.x,
+		           y * rhs.y);
 	}
 
-	inline Vector2 operator / ( const double fScalar ) const
+	inline Vector2 operator / (const double fScalar) const
 	{
-		assert( fScalar != 0.0f );
-
+		assert(fScalar != 0.0f);
 		double fInv = 1.0f / fScalar;
-
 		return Vector2(
-			x * fInv,
-			y * fInv);
+		           x * fInv,
+		           y * fInv);
 	}
 
-	inline Vector2 operator / ( const Vector2& rhs) const
+	inline Vector2 operator / (const Vector2& rhs) const
 	{
 		return Vector2(
-			x / rhs.x,
-			y / rhs.y);
+		           x / rhs.x,
+		           y / rhs.y);
 	}
 
 	inline const Vector2& operator + () const
@@ -194,113 +188,103 @@ public:
 	}
 
 	// overloaded operators to help Vector2
-	inline friend Vector2 operator * ( const double fScalar, const Vector2& rkVector )
+	inline friend Vector2 operator * (const double fScalar, const Vector2& rkVector)
 	{
 		return Vector2(
-			fScalar * rkVector.x,
-			fScalar * rkVector.y);
+		           fScalar * rkVector.x,
+		           fScalar * rkVector.y);
 	}
 
-	inline friend Vector2 operator / ( const double fScalar, const Vector2& rkVector )
+	inline friend Vector2 operator / (const double fScalar, const Vector2& rkVector)
 	{
 		return Vector2(
-			fScalar / rkVector.x,
-			fScalar / rkVector.y);
+		           fScalar / rkVector.x,
+		           fScalar / rkVector.y);
 	}
 
 	inline friend Vector2 operator + (const Vector2& lhs, const double rhs)
 	{
 		return Vector2(
-			lhs.x + rhs,
-			lhs.y + rhs);
+		           lhs.x + rhs,
+		           lhs.y + rhs);
 	}
 
 	inline friend Vector2 operator + (const double lhs, const Vector2& rhs)
 	{
 		return Vector2(
-			lhs + rhs.x,
-			lhs + rhs.y);
+		           lhs + rhs.x,
+		           lhs + rhs.y);
 	}
 
 	inline friend Vector2 operator - (const Vector2& lhs, const double rhs)
 	{
 		return Vector2(
-			lhs.x - rhs,
-			lhs.y - rhs);
+		           lhs.x - rhs,
+		           lhs.y - rhs);
 	}
 
 	inline friend Vector2 operator - (const double lhs, const Vector2& rhs)
 	{
 		return Vector2(
-			lhs - rhs.x,
-			lhs - rhs.y);
+		           lhs - rhs.x,
+		           lhs - rhs.y);
 	}
 	// arithmetic updates
-	inline Vector2& operator += ( const Vector2& rkVector )
+	inline Vector2& operator += (const Vector2& rkVector)
 	{
 		x += rkVector.x;
 		y += rkVector.y;
-
 		return *this;
 	}
 
-	inline Vector2& operator += ( const double fScaler )
+	inline Vector2& operator += (const double fScaler)
 	{
 		x += fScaler;
 		y += fScaler;
-
 		return *this;
 	}
 
-	inline Vector2& operator -= ( const Vector2& rkVector )
+	inline Vector2& operator -= (const Vector2& rkVector)
 	{
 		x -= rkVector.x;
 		y -= rkVector.y;
-
 		return *this;
 	}
 
-	inline Vector2& operator -= ( const double fScaler )
+	inline Vector2& operator -= (const double fScaler)
 	{
 		x -= fScaler;
 		y -= fScaler;
-
 		return *this;
 	}
 
-	inline Vector2& operator *= ( const double fScalar )
+	inline Vector2& operator *= (const double fScalar)
 	{
 		x *= fScalar;
 		y *= fScalar;
-
 		return *this;
 	}
 
-	inline Vector2& operator *= ( const Vector2& rkVector )
+	inline Vector2& operator *= (const Vector2& rkVector)
 	{
 		x *= rkVector.x;
 		y *= rkVector.y;
-
 		return *this;
 	}
 
-	inline Vector2& operator /= ( const double fScalar )
+	inline Vector2& operator /= (const double fScalar)
 	{
-		assert( fScalar != 0.0f );
-
+		assert(fScalar != 0.0f);
 		double fInv = 1.0f / fScalar;
-
 		x *= fInv;
 		y *= fInv;
-
 		return *this;
 	}
 
-	inline Vector2& operator /= ( const Vector2& rkVector )
+	inline Vector2& operator /= (const Vector2& rkVector)
 	{
 		x /= rkVector.x;
 		y /= rkVector.y;
-
 		return *this;
 	}
 
@@ -311,9 +295,9 @@ public:
 	length (e.g. for just comparing lengths) use squaredLength()
 	instead.
 	*/
-	inline double length () const
+	inline double length() const
 	{
-		return Math::Sqrt( x * x + y * y );
+		return Math::Sqrt(x * x + y * y);
 	}
 
 	/** Returns the square of the length(magnitude) of the vector.
@@ -326,7 +310,7 @@ public:
 	want to find the longest / shortest vector without incurring
 	the square root.
 	*/
-	inline double squaredLength () const
+	inline double squaredLength() const
 	{
 		return x * x + y * y;
 	}
@@ -387,10 +371,10 @@ public:
 	*/
 	inline double normalise()
 	{
-		double fLength = Math::Sqrt( x * x + y * y);
+		double fLength = Math::Sqrt(x * x + y * y);
 
 		// Will also work for zero-sized vectors, but will change nothing
-		if ( fLength > 1e-08 )
+		if (fLength > 1e-08)
 		{
 			double fInvLength = 1.0f / fLength;
 			x *= fInvLength;
@@ -405,30 +389,36 @@ public:
 	/** Returns a vector at a point half way between this and the passed
 	in vector.
 	*/
-	inline Vector2 midPoint( const Vector2& vec ) const
+	inline Vector2 midPoint(const Vector2& vec) const
 	{
 		return Vector2(
-			( x + vec.x ) * 0.5f,
-			( y + vec.y ) * 0.5f );
+		           (x + vec.x) * 0.5f,
+		           (y + vec.y) * 0.5f);
 	}
 
 	/** Returns true if the vector's scalar components are all greater
 	that the ones of the vector it is compared against.
 	*/
-	inline bool operator < ( const Vector2& rhs ) const
+	inline bool operator < (const Vector2& rhs) const
 	{
-		if( x < rhs.x && y < rhs.y )
+		if (x < rhs.x && y < rhs.y)
+		{
 			return true;
+		}
+
 		return false;
 	}
 
 	/** Returns true if the vector's scalar components are all smaller
 	that the ones of the vector it is compared against.
 	*/
-	inline bool operator > ( const Vector2& rhs ) const
+	inline bool operator > (const Vector2& rhs) const
 	{
-		if( x > rhs.x && y > rhs.y )
+		if (x > rhs.x && y > rhs.y)
+		{
 			return true;
+		}
+
 		return false;
 	}
 
@@ -439,10 +429,11 @@ public:
 	value of x, y and z from both vectors. Lowest is taken just
 	numerically, not magnitude, so -1 < 0.
 	*/
-	inline void makeFloor( const Vector2& cmp )
+	inline void makeFloor(const Vector2& cmp)
 	{
-		if( cmp.x < x ) x = cmp.x;
-		if( cmp.y < y ) y = cmp.y;
+		if (cmp.x < x) { x = cmp.x; }
+
+		if (cmp.y < y) { y = cmp.y; }
 	}
 
 	/** Sets this vector's components to the maximum of its own and the
@@ -452,10 +443,11 @@ public:
 	value of x, y and z from both vectors. Highest is taken just
 	numerically, not magnitude, so 1 > -3.
 	*/
-	inline void makeCeil( const Vector2& cmp )
+	inline void makeCeil(const Vector2& cmp)
 	{
-		if( cmp.x > x ) x = cmp.x;
-		if( cmp.y > y ) y = cmp.y;
+		if (cmp.x > x) { x = cmp.x; }
+
+		if (cmp.y > y) { y = cmp.y; }
 	}
 
 	/** Generates a vector perpendicular to this vector (eg an 'up' vector).
@@ -467,12 +459,12 @@ public:
 	*/
 	inline Vector2 perpendicular(void) const
 	{
-		return Vector2 (-y, x);
+		return Vector2(-y, x);
 	}
 	/** Calculates the 2 dimensional cross-product of 2 vectors, which results
 	in a single doubleing point value which is 2 times the area of the triangle.
 	*/
-	inline double crossProduct( const Vector2& rkVector ) const
+	inline double crossProduct(const Vector2& rkVector) const
 	{
 		return x * rkVector.y - y * rkVector.x;
 	}
@@ -496,14 +488,13 @@ public:
 	afterwards.
 	*/
 	inline Vector2 randomDeviant(
-		double angle) const
+	    double angle) const
 	{
-
 		angle *=  Math::UnitRandom() * Math::TWO_PI;
 		double cosa = cos(angle);
 		double sina = sin(angle);
 		return  Vector2(cosa * x - sina * y,
-			sina * x + cosa * y);
+		                sina * x + cosa * y);
 	}
 
 	/** Returns true if this vector is zero length. */
@@ -511,7 +502,6 @@ public:
 	{
 		double sqlen = (x * x) + (y * y);
 		return (sqlen < (1e-06 * 1e-06));
-
 	}
 
 	/** As normalise, except that this vector is unaffected and the
@@ -528,7 +518,7 @@ public:
 	*/
 	inline Vector2 reflect(const Vector2& normal) const
 	{
-		return Vector2( *this - ( 2 * this->dotProduct(normal) * normal ) );
+		return Vector2(*this - (2 * this->dotProduct(normal) * normal));
 	}
 	/// Check whether this vector contains valid values
 	inline bool isNaN() const
@@ -547,7 +537,7 @@ public:
 	/** Function for writing to a stream.
 	*/
 	inline friend std::ostream& operator <<
-		( std::ostream& o, const Vector2& v )
+	(std::ostream& o, const Vector2& v)
 	{
 		o << "Vector2(" << v.x << ", " << v.y <<  ")";
 		return o;

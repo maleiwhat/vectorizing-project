@@ -126,7 +126,8 @@ void VAV_View::OnRButtonUp(UINT /* nFlags */, CPoint point)
 void VAV_View::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 {
 #ifndef SHARED_HANDLERS
-	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y, this, TRUE);
+	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y,
+	        this, TRUE);
 #endif
 }
 
@@ -136,16 +137,16 @@ void VAV_View::InitDx11(HWND hWnd)
 	GetWindowRect(&rect);
 	m_LookCenter.x = 0;
 	m_LookCenter.y = 0;
-	// 	m_hWndDX11 = CreateWindowA("edit", "", WS_CHILD | WS_DISABLED | WS_VISIBLE
-	// 		, 0, 0, rect.right-rect.left, rect.bottom-rect.top, hWnd,
-	// 		(HMENU)"", 0, NULL);
+	//  m_hWndDX11 = CreateWindowA("edit", "", WS_CHILD | WS_DISABLED | WS_VISIBLE
+	//      , 0, 0, rect.right-rect.left, rect.bottom-rect.top, hWnd,
+	//      (HMENU)"", 0, NULL);
 	m_hWndDX11 = hWnd;
 	::ShowWindow(m_hWndDX11, true);
 	::UpdateWindow(m_hWndDX11);
 	m_D3DApp.initApp(m_hWndDX11, rect.Width(), rect.Height());
 	m_D3DApp.BuildShaderFX();
 	m_D3DApp.SetLookCenter(m_LookCenter.x , m_LookCenter.y);
-	vavImage::SetDx11Device(m_D3DApp.GetDevice());
+	vavImage::SetDx11Device(m_D3DApp.GetDevice(), m_D3DApp.GetDeviceContext());
 }
 
 VAV_MainFrame* VAV_View::GetMainFrame()
@@ -259,10 +260,14 @@ void VAV_View::OnMButtonUp(UINT nFlags, CPoint point)
 void VAV_View::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	CView::OnLButtonDown(nFlags, point);
-// 	printf("%3d %3d ", point.x, m_D3DApp.Height()-point.y);
-// 	printf("%3d %3d %3.2f %3.2f %3.2f\n", GetImage()->GetHeight(), m_D3DApp.Height(), m_Scale, m_LookCenter.x, m_LookCenter.y);
-	printf("%3.2f %3.2f\n", (point.x-m_LookCenter.x)/m_Scale, (GetImage()->GetHeight()*m_Scale-m_D3DApp.Height()+point.y-m_LookCenter.y)/m_Scale);
-	GetMainFrame()->ShowPatch((point.x-m_LookCenter.x)/m_Scale, (GetImage()->GetHeight()*m_Scale-m_D3DApp.Height()+point.y-m_LookCenter.y)/m_Scale);
+//  printf("%3d %3d ", point.x, m_D3DApp.Height()-point.y);
+//  printf("%3d %3d %3.2f %3.2f %3.2f\n", GetImage()->GetHeight(), m_D3DApp.Height(), m_Scale, m_LookCenter.x, m_LookCenter.y);
+	printf("%3.2f %3.2f\n", (point.x - m_LookCenter.x) / m_Scale,
+	       (GetImage()->GetHeight()*m_Scale - m_D3DApp.Height() + point.y - m_LookCenter.y)
+	       / m_Scale);
+	GetMainFrame()->ShowPatch((point.x - m_LookCenter.x) / m_Scale,
+	                          (GetImage()->GetHeight()*m_Scale - m_D3DApp.Height() + point.y - m_LookCenter.y)
+	                          / m_Scale);
 	m_D3DApp.SetLookCenter(m_LookCenter.x, m_LookCenter.y);
 }
 
@@ -275,16 +280,14 @@ vavImage* VAV_View::GetImage()
 void VAV_View::OnKillFocus(CWnd* pNewWnd)
 {
 	CView::OnKillFocus(pNewWnd);
-
 	// TODO: 在此加入您的訊息處理常式程式碼
 	printf("OnMouseLeave\n");
 }
 
 
-void VAV_View::OnCaptureChanged(CWnd *pWnd)
+void VAV_View::OnCaptureChanged(CWnd* pWnd)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼
-
 	CView::OnCaptureChanged(pWnd);
 	printf("OnMouseLeave\n");
 }
@@ -293,17 +296,14 @@ void VAV_View::OnCaptureChanged(CWnd *pWnd)
 void VAV_View::OnMouseLeave()
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
-
 	CView::OnMouseLeave();
 	printf("OnMouseLeave\n");
-	
 }
 
 
 void VAV_View::OnNcMouseMove(UINT nHitTest, CPoint point)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
-
 	CView::OnNcMouseMove(nHitTest, point);
 	printf("OnNcMouseMove\n");
 	m_D3DApp.SetLookCenter(m_LookCenter.x, m_LookCenter.y);
@@ -316,7 +316,6 @@ void VAV_View::OnNcMouseMove(UINT nHitTest, CPoint point)
 void VAV_View::OnNcMButtonUp(UINT nHitTest, CPoint point)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
-
 	CView::OnNcMButtonUp(nHitTest, point);
 	printf("OnNcMButtonUp\n");
 	m_D3DApp.SetLookCenter(m_LookCenter.x, m_LookCenter.y);

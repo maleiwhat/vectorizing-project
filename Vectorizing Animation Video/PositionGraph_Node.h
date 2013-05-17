@@ -14,9 +14,9 @@ class PositionGraph_Node
 {
 public:
 	Vector2 m_Position;
-	double	m_Width;
+	double  m_Width;
 	PositionGraph_Node_ptrs m_Links;
-	int	m_line_id;
+	int m_line_id;
 	PositionGraph_Node(void);
 	~PositionGraph_Node(void);
 };

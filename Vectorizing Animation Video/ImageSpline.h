@@ -15,16 +15,16 @@ public:
 	void ComputeToLineFragments();
 	void SmoothingFragments();
 
-	CvPatchs	m_CvPatchs;
+	CvPatchs    m_CvPatchs;
 	SplineFragments& GetSplineFragments();
-	Lines		m_Controls;
-	LineFragments	m_LineFragments;
-	LineFragments	m_ControlPoints;
-	PatchSplines	m_PatchSplines;
-	PatchSplines2d	m_PatchSplinesInter;
+	Lines       m_Controls;
+	LineFragments   m_LineFragments;
+	LineFragments   m_ControlPoints;
+	PatchSplines    m_PatchSplines;
+	PatchSplines2d  m_PatchSplinesInter;
 private:
-	PatchLines	m_PatchLines;
+	PatchLines  m_PatchLines;
 	SplineFragments m_SplineFragments;
-	
+
 };
 

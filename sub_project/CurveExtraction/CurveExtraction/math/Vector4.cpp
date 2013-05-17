@@ -28,5 +28,5 @@ THE SOFTWARE.
 #include "Vector4.h"
 #include "BasicMath.h"
 
-const Vector4 Vector4::ZERO( 0, 0, 0, 0 );
+const Vector4 Vector4::ZERO(0, 0, 0, 0);
 

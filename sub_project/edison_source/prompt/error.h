@@ -16,16 +16,17 @@
 //error class
 class CmCError
 {
- public:
+public:
 
-  CmCToken *token_;
-  int      errorCode_;
-  
-  CmCError(CmCToken *token, int errorCode) {
-    token_ = token;
-    errorCode_ = errorCode;
-  }
-  ~CmCError( void ) { return; }
+	CmCToken* token_;
+	int      errorCode_;
+
+	CmCError(CmCToken* token, int errorCode)
+	{
+		token_ = token;
+		errorCode_ = errorCode;
+	}
+	~CmCError(void) { return; }
 };
 
 #endif

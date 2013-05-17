@@ -35,7 +35,8 @@ PositionGraph::~PositionGraph(void)
 {
 }
 
-bool PositionGraph::AddNewLine(const Vector2& p1, const Vector2& p2, double width)
+bool PositionGraph::AddNewLine(const Vector2& p1, const Vector2& p2,
+                               double width)
 {
 	if (m_AllNodes.empty())
 	{
@@ -221,7 +222,8 @@ void PositionGraph::InterMakeGraphLines()
 
 				for (auto it4 = it3->m_Links.begin(); it4 != it3->m_Links.end(); ++it4)
 				{
-					if ((**it4).m_line_id == PositionGraph_NOT_INIT || ((**it4).m_line_id == PositionGraph_JOINT_ID && *it4 != last_it3))
+					if ((**it4).m_line_id == PositionGraph_NOT_INIT
+					        || ((**it4).m_line_id == PositionGraph_JOINT_ID && *it4 != last_it3))
 					{
 						last_it3 = it3;
 						it3 = *it4;
@@ -243,7 +245,8 @@ void PositionGraph::InterMakeGraphLines()
 }
 
 
-bool PositionGraph::AddJoint(const Vector2& joint, const Vector2& p1, const Vector2& p2, const Vector2& p3)
+bool PositionGraph::AddJoint(const Vector2& joint, const Vector2& p1,
+                             const Vector2& p2, const Vector2& p3)
 {
 	if (m_AllNodes.empty())
 	{
@@ -355,7 +358,8 @@ void PositionGraph::SmoothGraphLines()
 
 			for (int j = 2; j < cps.size() - 2; j ++)
 			{
-				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) / 6.0f;
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
+				           6.0f;
 				newcps.push_back(vec);
 			}
 
@@ -494,14 +498,14 @@ void PositionGraph::MakeContourLines()
 
 		for (int j = 0; j < now_line.size(); ++j)
 		{
-			lineSegs.push_back(now_line[j] + rights[j]*(now_linewidth[j]-0.2) * 0.5);
+			lineSegs.push_back(now_line[j] + rights[j] * (now_linewidth[j] - 0.2) * 0.5);
 		}
 
 		//lineSegs.push_back(now_line.back() + rights.back()*now_linewidth.back() * 0.5);
 
 		for (int j = now_line.size() - 1; j >= 0; --j)
 		{
-			lineSegs.push_back(now_line[j] - rights[j]*(now_linewidth[j]-0.2) * 0.5);
+			lineSegs.push_back(now_line[j] - rights[j] * (now_linewidth[j] - 0.2) * 0.5);
 		}
 	}
 
@@ -567,29 +571,29 @@ void PositionGraph::MakeContourLines()
 
 	for (int i = 0; i < m_ContourLines.size(); ++i)
 	{
-		gPoints Qx;
-		const Line& now_line = m_ContourLines[i];
+	    gPoints Qx;
+	    const Line& now_line = m_ContourLines[i];
 
-		for (int j = 0; j < now_line.size(); j ++)
-		{
-			Qx.push_back(gPoint(now_line[j].x, now_line[j].y));
-		}
+	    for (int j = 0; j < now_line.size(); j ++)
+	    {
+	        Qx.push_back(gPoint(now_line[j].x, now_line[j].y));
+	    }
 
-		gPolygon Qxx(Qx.begin(), Qx.end());
-		ps += Qxx;
+	    gPolygon Qxx(Qx.begin(), Qx.end());
+	    ps += Qxx;
 	}
 
 	m_ContourLines.clear();
 
 	for (auto itx = ps.begin(); itx != ps.end(); ++itx)
 	{
-		m_ContourLines.push_back(Line());
-		Line& cps = m_ContourLines.back();
+	    m_ContourLines.push_back(Line());
+	    Line& cps = m_ContourLines.back();
 
-		for (auto vit = itx->begin(); vit != itx->end(); ++vit)
-		{
-			cps.push_back(now);
-		}
+	    for (auto vit = itx->begin(); vit != itx->end(); ++vit)
+	    {
+	        cps.push_back(now);
+	    }
 	}
 
 	/*
@@ -598,36 +602,36 @@ void PositionGraph::MakeContourLines()
 
 	for (int i = 0; i < m_ContourLines[0].size(); ++i)
 	{
-		const Line& now_line = m_ContourLines[0];
-		P.push_back(Point_2(now_line[i].x, now_line[i].y));
+	    const Line& now_line = m_ContourLines[0];
+	    P.push_back(Point_2(now_line[i].x, now_line[i].y));
 	}
 
 	if (P.is_clockwise_oriented())
 	{
-		P.reverse_orientation();
+	    P.reverse_orientation();
 	}
 
 	S.insert(P);
 
 	for (int i = 1; i < m_ContourLines.size(); ++i)
 	{
-		Polygon_2 Q;
-		const Line& now_line = m_ContourLines[i];
+	    Polygon_2 Q;
+	    const Line& now_line = m_ContourLines[i];
 
-		for (int j = 0; j < now_line.size(); j ++)
-		{
-			Q.push_back(Point_2(now_line[j].x, now_line[j].y));
-		}
+	    for (int j = 0; j < now_line.size(); j ++)
+	    {
+	        Q.push_back(Point_2(now_line[j].x, now_line[j].y));
+	    }
 
-		if (Q.is_simple())
-		{
-			if (Q.is_clockwise_oriented())
-			{
-				Q.reverse_orientation();
-			}
+	    if (Q.is_simple())
+	    {
+	        if (Q.is_clockwise_oriented())
+	        {
+	            Q.reverse_orientation();
+	        }
 
-			S.join(Q);
-		}
+	        S.join(Q);
+	    }
 	}
 
 	std::vector<Polygon_with_holes_2> res;
@@ -637,31 +641,31 @@ void PositionGraph::MakeContourLines()
 
 	for (it = res.begin(); it != res.end(); ++it)
 	{
-		if (it->outer_boundary().size() > 0)
-		{
-			m_ContourLines.push_back(Line());
-			Line& lineSegs = m_ContourLines.back();
+	    if (it->outer_boundary().size() > 0)
+	    {
+	        m_ContourLines.push_back(Line());
+	        Line& lineSegs = m_ContourLines.back();
 
-			for (auto vit = it->outer_boundary().vertices_begin(); vit != it->outer_boundary().vertices_end(); ++vit)
-			{
-				lineSegs.push_back(Vector2(vit->x(), vit->y()));
-			}
+	        for (auto vit = it->outer_boundary().vertices_begin(); vit != it->outer_boundary().vertices_end(); ++vit)
+	        {
+	            lineSegs.push_back(Vector2(vit->x(), vit->y()));
+	        }
 
-			lineSegs.push_back(lineSegs.front());
-		}
+	        lineSegs.push_back(lineSegs.front());
+	    }
 
-		if (it->has_holes())
-		{
-			m_ContourLines.push_back(Line());
-			Line& lineSegs = m_ContourLines.back();
+	    if (it->has_holes())
+	    {
+	        m_ContourLines.push_back(Line());
+	        Line& lineSegs = m_ContourLines.back();
 
-			for (auto vit = it->holes_begin()->vertices_begin(); vit != it->holes_begin()->vertices_end(); ++vit)
-			{
-				lineSegs.push_back(Vector2(vit->x(), vit->y()));
-			}
+	        for (auto vit = it->holes_begin()->vertices_begin(); vit != it->holes_begin()->vertices_end(); ++vit)
+	        {
+	            lineSegs.push_back(Vector2(vit->x(), vit->y()));
+	        }
 
-			lineSegs.push_back(lineSegs.front());
-		}
+	        lineSegs.push_back(lineSegs.front());
+	    }
 	}
 	*/
 }

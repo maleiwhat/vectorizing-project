@@ -3,7 +3,7 @@
 // MFC 參考及 MFC C++ 程式庫軟體
 // 隨附相關電子文件的補充。
 // 關於 Fluent UI 之複製、使用或散發的授權條款則分別提供。
-// 如需 Fluent UI 授權計劃的詳細資訊，請造訪 
+// 如需 Fluent UI 授權計劃的詳細資訊，請造訪
 // http://msdn.microsoft.com/officeui。
 //
 // Copyright (C) Microsoft Corporation
@@ -40,7 +40,6 @@ END_MESSAGE_MAP()
 VAV_Doc::VAV_Doc()
 {
 	// TODO: 在此加入一次建構程式碼
-
 }
 
 VAV_Doc::~VAV_Doc()
@@ -50,11 +49,12 @@ VAV_Doc::~VAV_Doc()
 BOOL VAV_Doc::OnNewDocument()
 {
 	if (!CDocument::OnNewDocument())
+	{
 		return FALSE;
+	}
 
 	// TODO: 在此加入重新初始化程式碼
 	// (SDI 文件會重用此文件)
-
 	return TRUE;
 }
 
@@ -82,17 +82,14 @@ void VAV_Doc::OnDrawThumbnail(CDC& dc, LPRECT lprcBounds)
 {
 	// 修改這段程式碼以繪製文件的資料
 	dc.FillSolidRect(lprcBounds, RGB(255, 255, 255));
-
 	CString strText = _T("TODO: implement thumbnail drawing here");
 	LOGFONT lf;
-
-	CFont* pDefaultGUIFont = CFont::FromHandle((HFONT) GetStockObject(DEFAULT_GUI_FONT));
+	CFont* pDefaultGUIFont = CFont::FromHandle((HFONT) GetStockObject(
+	                             DEFAULT_GUI_FONT));
 	pDefaultGUIFont->GetLogFont(&lf);
 	lf.lfHeight = 36;
-
 	CFont fontDraw;
 	fontDraw.CreateFontIndirect(&lf);
-
 	CFont* pOldFont = dc.SelectObject(&fontDraw);
 	dc.DrawText(strText, lprcBounds, DT_CENTER | DT_WORDBREAK);
 	dc.SelectObject(pOldFont);
@@ -104,7 +101,6 @@ void VAV_Doc::InitializeSearchContent()
 	CString strSearchContent;
 	// 設定來自文件資料的搜尋內容。
 	// 內容部分應該以 ";" 隔開
-
 	// 範例:  strSearchContent = _T("point;rectangle;circle;ole object;");
 	SetSearchContent(strSearchContent);
 }
@@ -117,8 +113,9 @@ void VAV_Doc::SetSearchContent(const CString& value)
 	}
 	else
 	{
-		CMFCFilterChunkValueImpl *pChunk = NULL;
+		CMFCFilterChunkValueImpl* pChunk = NULL;
 		ATLTRY(pChunk = new CMFCFilterChunkValueImpl);
+
 		if (pChunk != NULL)
 		{
 			pChunk->SetTextValue(PKEY_Search_Contents, value, CHUNK_TEXT);

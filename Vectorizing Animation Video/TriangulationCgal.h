@@ -27,11 +27,11 @@ public:
 	typedef Triangulation::Point  Point;
 
 	virtual ~TriangulationCgal_SeedPoint() {}
-	virtual void AddPoint( float x, float y );
+	virtual void AddPoint(float x, float y);
 	virtual void Compute();
 	virtual void Clear();
 
-	Triangulation	m_Triangulation;
+	Triangulation   m_Triangulation;
 };
 
 class TriangulationCgal_Sideline : public TriangulationBase
@@ -54,23 +54,24 @@ public:
 	typedef Triangulation::Point Point;
 	typedef std::vector<Point> Points;
 	typedef std::vector<Vertex_handle> Vertex_handles;
-	
 
-	TriangulationCgal_Sideline(): m_Criteria( 0.125, 5 ) {}
+
+	TriangulationCgal_Sideline(): m_Criteria(0.125, 5) {}
 	virtual ~TriangulationCgal_Sideline() {}
-	virtual void AddPoint( float x, float y );
-	virtual void AddSeedPoint( float x, float y );
+	virtual void AddPoint(float x, float y);
+	virtual void AddSeedPoint(float x, float y);
 	virtual void Compute();
 	virtual void Clear();
-	void	SetCriteria( float shapebound, float length );
-	void	insert_polygon(Triangulation& cdt,const Polygon_2& polygon);
+	void    SetCriteria(float shapebound, float length);
+	void    insert_polygon(Triangulation& cdt, const Polygon_2& polygon);
 
-	void mark_domains( Triangulation& ct, Triangulation::Face_handle start, int index, std::list<Triangulation::Edge>& border );
-	void mark_domains( Triangulation& cdt );
+	void mark_domains(Triangulation& ct, Triangulation::Face_handle start,
+	                  int index, std::list<Triangulation::Edge>& border);
+	void mark_domains(Triangulation& cdt);
 
-	Triangulation	m_Triangulation;
-	Criteria	m_Criteria;
-	Points		m_Points;
-	Points		m_SeedPoints;
-	Polygon_2	m_Polygon;
+	Triangulation   m_Triangulation;
+	Criteria    m_Criteria;
+	Points      m_Points;
+	Points      m_SeedPoints;
+	Polygon_2   m_Polygon;
 };

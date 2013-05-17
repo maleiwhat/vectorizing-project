@@ -64,15 +64,16 @@ public:
 	// Coder  Dated                    Desc
 	// bro    2002-02-20
 	//===========================================================
-	static inline BOOL vmInitPool( DWORD dwPoolSize , BOOL bAllocNow = FALSE, DWORD dwObjSize = 0 )
+	static inline BOOL vmInitPool(DWORD dwPoolSize , BOOL bAllocNow = FALSE,
+	                              DWORD dwObjSize = 0)
 	{
 		ms_dwPoolSize = dwPoolSize;
 
-		if ( bAllocNow && dwObjSize > 0 )
+		if (bAllocNow && dwObjSize > 0)
 		{
 			ms_dwObjSize = dwObjSize;
 
-			if ( !AllocPool( ms_dwPoolSize, ms_dwObjSize ) )
+			if (!AllocPool(ms_dwPoolSize, ms_dwObjSize))
 			{
 				return FALSE;
 			}
@@ -94,12 +95,13 @@ public:
 	//===========================================================
 	static inline void vmCleanUp()
 	{
-		if ( ms_pMemPool )
+		if (ms_pMemPool)
 		{
-			VirtualFree( ms_pMemPool, DWORD( ms_dwPoolSize * ms_dwObjSize ), MEM_RELEASE | MEM_DECOMMIT );
+			VirtualFree(ms_pMemPool, DWORD(ms_dwPoolSize * ms_dwObjSize),
+			            MEM_RELEASE | MEM_DECOMMIT);
 		}
 
-		DeleteCriticalSection( &ms_csLock );
+		DeleteCriticalSection(&ms_csLock);
 	}
 
 	//===========================================================
@@ -115,33 +117,34 @@ public:
 	// Coder  Dated                    Desc
 	// bro    2002-02-20
 	//===========================================================
-	static inline BOOL vmGetPoolInfo( DWORD* pdwPoolSize, DWORD* pdwAllocObjCount, DWORD* pdwObjSize )
+	static inline BOOL vmGetPoolInfo(DWORD* pdwPoolSize, DWORD* pdwAllocObjCount,
+	                                 DWORD* pdwObjSize)
 	{
 		BOOL bRet = TRUE;
 
-		if ( !ms_pMemPool )
+		if (!ms_pMemPool)
 		{
 			bRet = FALSE;
 		}
 
-		if ( pdwPoolSize ) { *pdwPoolSize = ms_dwPoolSize; }
+		if (pdwPoolSize) { *pdwPoolSize = ms_dwPoolSize; }
 
-		if ( pdwAllocObjCount ) { *pdwAllocObjCount = ms_dwAllocObjCount; }
+		if (pdwAllocObjCount) { *pdwAllocObjCount = ms_dwAllocObjCount; }
 
-		if ( pdwObjSize ) { *pdwObjSize = ms_dwObjSize; }
+		if (pdwObjSize) { *pdwObjSize = ms_dwObjSize; }
 
 		return bRet;
 	}
 	// memory block validation checker
-	static inline BOOL vmIsBadPtr( void* p )
+	static inline BOOL vmIsBadPtr(void* p)
 	{
 		// is follow basic rule of pool block?
-		if ( p && p >= ms_pData && p <= ms_pData + ( ms_dwPoolSize * ms_dwObjSize ) &&
-		                ( ( char* )p - ms_pData ) % ms_dwObjSize == 0 )
+		if (p && p >= ms_pData && p <= ms_pData + (ms_dwPoolSize * ms_dwObjSize) &&
+		        ((char*)p - ms_pData) % ms_dwObjSize == 0)
 		{
 			// is really allocated in pool ?
-			DWORD id = Addr2Id( p );
-			return ( ms_bsAllocSet.Get( id ) == 0 );
+			DWORD id = Addr2Id(p);
+			return (ms_bsAllocSet.Get(id) == 0);
 		}
 
 		return TRUE;
@@ -149,86 +152,87 @@ public:
 	struct CSLock
 	{
 		CRITICAL_SECTION  cs;
-		CSLock() { InitializeCriticalSection( &cs ); }
-		~CSLock() { DeleteCriticalSection( &cs ); }
-		void Lock() { EnterCriticalSection( &cs ); }
-		void Unlock() { LeaveCriticalSection( &cs ); }
+		CSLock() { InitializeCriticalSection(&cs); }
+		~CSLock() { DeleteCriticalSection(&cs); }
+		void Lock() { EnterCriticalSection(&cs); }
+		void Unlock() { LeaveCriticalSection(&cs); }
 	};
 private:
-	static CBitSet			ms_bsAllocSet;			// bitset for allocated blocks
-	static DWORD			ms_dwSrtFree;			// freeblock start marker in circular queue
-	static DWORD			ms_dwEndFree;			// freeblock end marker
-	static BOOL			ms_bEmptyFree;			// state value for empry queue
-	static BOOL			ms_bFullFree;			// state value for full queue
+	static CBitSet          ms_bsAllocSet;          // bitset for allocated blocks
+	static DWORD
+	ms_dwSrtFree;           // freeblock start marker in circular queue
+	static DWORD            ms_dwEndFree;           // freeblock end marker
+	static BOOL         ms_bEmptyFree;          // state value for empry queue
+	static BOOL         ms_bFullFree;           // state value for full queue
 
-	static DWORD			ms_dwFreeQueueSize;
-	static DWORD			ms_dwTotalSize;
+	static DWORD            ms_dwFreeQueueSize;
+	static DWORD            ms_dwTotalSize;
 
 
-	static CSLock	ms_csLock;
-	static char*	ms_pMemPool;					// Virtual memory pool pointer
-	static char*	ms_pData;						// real data pointer
-	static DWORD	ms_dwPoolSize;					// Total Pool object counter
-	static DWORD	ms_dwObjSize;					// one object size (bytes)
-	static DWORD	ms_dwAllocObjCount;				// current allocated counts
+	static CSLock   ms_csLock;
+	static char*    ms_pMemPool;                    // Virtual memory pool pointer
+	static char*    ms_pData;                       // real data pointer
+	static DWORD    ms_dwPoolSize;                  // Total Pool object counter
+	static DWORD    ms_dwObjSize;                   // one object size (bytes)
+	static DWORD    ms_dwAllocObjCount;             // current allocated counts
 
 
 
 	// translate address to block numer
-	static inline DWORD	Addr2Id( void* p )
+	static inline DWORD Addr2Id(void* p)
 	{
-		return DWORD( ( char* )p - ms_pData ) / ms_dwObjSize;
+		return DWORD((char*)p - ms_pData) / ms_dwObjSize;
 	}
 	// translate block number to address
-	static inline void* Id2Addr( DWORD id )
+	static inline void* Id2Addr(DWORD id)
 	{
-		return ms_pData + ( ms_dwObjSize * id );
+		return ms_pData + (ms_dwObjSize * id);
 	}
 
 	// add free block number to free-circular queue
-	static inline BOOL InsertFree( DWORD id )
+	static inline BOOL InsertFree(DWORD id)
 	{
-		if ( ( ms_dwEndFree + 1 ) % ms_dwFreeQueueSize == ms_dwSrtFree )
+		if ((ms_dwEndFree + 1) % ms_dwFreeQueueSize == ms_dwSrtFree)
 		{
 			// OverFlow
 			return FALSE;
 		}
 
 		// write newbie free block
-		*( ( DWORD* )ms_pMemPool + ms_dwEndFree ) = id;
+		*((DWORD*)ms_pMemPool + ms_dwEndFree) = id;
 		ms_dwEndFree = ++ms_dwEndFree % ms_dwFreeQueueSize;
 		// free block bit set
-		ms_bsAllocSet.Set( id, 0 );
+		ms_bsAllocSet.Set(id, 0);
 		return TRUE;
 	}
 	// pop free block from free-circular queue
 	static inline DWORD PopFree()
 	{
-		if ( ms_dwSrtFree == ms_dwEndFree )
+		if (ms_dwSrtFree == ms_dwEndFree)
 		{
 			// Underflow ( no block for use )
 			return 0xFFFFFFFF;
 		}
 
 		// get free id
-		DWORD id = *( ( DWORD* )ms_pMemPool + ms_dwSrtFree );
+		DWORD id = *((DWORD*)ms_pMemPool + ms_dwSrtFree);
 		// bit set it is used.
-		ms_bsAllocSet.Set( id, 1 );
+		ms_bsAllocSet.Set(id, 1);
 		// increment start free marker
-		ms_dwSrtFree = ( ++ms_dwSrtFree ) % ms_dwFreeQueueSize;
+		ms_dwSrtFree = (++ms_dwSrtFree) % ms_dwFreeQueueSize;
 		return id;
 	}
 
-	static inline BOOL AllocPool( DWORD dwPoolSize, DWORD dwObjSize )
+	static inline BOOL AllocPool(DWORD dwPoolSize, DWORD dwObjSize)
 	{
-		DWORD dwUsedBytes = ms_bsAllocSet.sCalcUsedBytes( dwPoolSize );
-		DWORD dwFreeQueue = ( dwPoolSize + 1 ) * sizeof( DWORD );
+		DWORD dwUsedBytes = ms_bsAllocSet.sCalcUsedBytes(dwPoolSize);
+		DWORD dwFreeQueue = (dwPoolSize + 1) * sizeof(DWORD);
 		DWORD dwTotalSize = dwUsedBytes + dwFreeQueue + dwPoolSize * dwObjSize;
-		ms_pMemPool = ( char* )VirtualAlloc( NULL, dwTotalSize,
-		                                     MEM_RESERVE | MEM_COMMIT | MEM_TOP_DOWN,
-		                                     PAGE_READWRITE );
+		ms_pMemPool = (char*)VirtualAlloc(NULL, dwTotalSize,
+		                                  MEM_RESERVE | MEM_COMMIT | MEM_TOP_DOWN,
+		                                  PAGE_READWRITE);
 
-		if ( !ms_pMemPool )
+		if (!ms_pMemPool)
 		{
 			return FALSE;
 		}
@@ -238,7 +242,8 @@ private:
 		ms_pData = ms_pMemPool + dwUsedBytes + dwFreeQueue;
 
 		// allocation bitset create
-		if ( !ms_bsAllocSet.Create( dwPoolSize, TRUE, TRUE, ms_pMemPool + dwFreeQueue, dwUsedBytes ) )
+		if (!ms_bsAllocSet.Create(dwPoolSize, TRUE, TRUE, ms_pMemPool + dwFreeQueue,
+		                          dwUsedBytes))
 		{
 			return FALSE;
 		}
@@ -249,42 +254,42 @@ private:
 		ms_bEmptyFree = TRUE;
 		ms_bFullFree = FALSE;
 
-		for ( DWORD i = 0 ; i < dwPoolSize; i++ )
+		for (DWORD i = 0 ; i < dwPoolSize; i++)
 		{
 			// all block is available when pool is created.
-			InsertFree( i );
+			InsertFree(i);
 		}
 
 		return TRUE;
 	}
 public:
 	// DEBUG_NEW support function ( No support memory tracking for MFC )
-	inline void* operator new( size_t nSize, LPCSTR lpszFileName, int nLine )
+	inline void* operator new(size_t nSize, LPCSTR lpszFileName, int nLine)
 	{
-		return operator new( nSize );
+		return operator new(nSize);
 	}
-	inline void operator delete( void* p, LPCSTR lpszFileName, int nLine )
+	inline void operator delete(void* p, LPCSTR lpszFileName, int nLine)
 	{
-		operator delete( p );
+		operator delete(p);
 	}
 
 	// new operator override
-	void* operator new( size_t size )
+	void* operator new(size_t size)
 	{
-		assert( size > 0 );
+		assert(size > 0);
 		// pointer for newed free address in pool
 		void* pNew = NULL;
 		ms_csLock.Lock();
 
 		//====================================================
 		// if pool isn't init, then init
-		if ( !ms_pMemPool )
+		if (!ms_pMemPool)
 		{
-			if ( !ms_dwPoolSize ) { ms_dwPoolSize = _dwPoolSizeT; }
+			if (!ms_dwPoolSize) { ms_dwPoolSize = _dwPoolSizeT; }
 
 			ms_dwObjSize = size;
 
-			if ( !AllocPool( ms_dwPoolSize, ms_dwObjSize ) )
+			if (!AllocPool(ms_dwPoolSize, ms_dwObjSize))
 			{
 				ms_csLock.Unlock();
 				return NULL;
@@ -294,15 +299,15 @@ public:
 		// get available block in pool
 		DWORD id = PopFree();
 
-		if ( id == 0xFFFFFFFF )
+		if (id == 0xFFFFFFFF)
 		{
 			return NULL;
 		}
 
-		pNew = Id2Addr( id );
+		pNew = Id2Addr(id);
 
 		//====================================================
-		if ( pNew )
+		if (pNew)
 		{
 			ms_dwAllocObjCount++;
 		}
@@ -313,20 +318,20 @@ public:
 		return pNew;
 	}
 	// free memory
-	void operator delete( void* p )
+	void operator delete(void* p)
 	{
-		assert( p &&
-		        p >= ms_pData &&
-		        p <= ms_pData + ( ms_dwPoolSize * ms_dwObjSize ) &&
-		        ( ( char* )p - ms_pData ) % ms_dwObjSize == 0 );
+		assert(p &&
+		       p >= ms_pData &&
+		       p <= ms_pData + (ms_dwPoolSize * ms_dwObjSize) &&
+		       ((char*)p - ms_pData) % ms_dwObjSize == 0);
 
-		if ( !p ) { return; }
+		if (!p) { return; }
 
 		// lock pool
 		ms_csLock.Lock();
 		//====================================================
 		// add to 'free-queue'for reusing this block
-		InsertFree( Addr2Id( p ) );
+		InsertFree(Addr2Id(p));
 		ms_dwAllocObjCount--;
 		//====================================================
 		// unlock
@@ -344,8 +349,9 @@ template <class T, DWORD F> DWORD CVMemPool<T, F>::ms_dwTotalSize;
 template <class T, DWORD F> DWORD CVMemPool<T, F>::ms_dwFreeQueueSize;
 template <class T, DWORD F> char* CVMemPool<T, F>::ms_pData;
 
-template <class T, DWORD F> typename CVMemPool<T, F>::CSLock CVMemPool<T, F>::ms_csLock;
-template <class T, DWORD F> char*	CVMemPool<T, F>::ms_pMemPool = NULL;
+template <class T, DWORD F> typename CVMemPool<T, F>::CSLock
+CVMemPool<T, F>::ms_csLock;
+template <class T, DWORD F> char*   CVMemPool<T, F>::ms_pMemPool = NULL;
 template <class T, DWORD F> DWORD CVMemPool<T, F>::ms_dwObjSize;
 template <class T, DWORD F> DWORD CVMemPool<T, F>::ms_dwAllocObjCount;
 template <class T, DWORD F> DWORD CVMemPool<T, F>::ms_dwPoolSize;

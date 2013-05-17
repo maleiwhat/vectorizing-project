@@ -7,23 +7,23 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <fftw3.h>
 
-typedef unsigned char	uchar;
-typedef unsigned short	ushort;
-typedef unsigned int	uint;
-typedef __int64		int64;
-typedef unsigned __int64	uint64;
+typedef unsigned char   uchar;
+typedef unsigned short  ushort;
+typedef unsigned int    uint;
+typedef __int64     int64;
+typedef unsigned __int64    uint64;
 
-typedef std::vector<bool>	bool_vector;
-typedef std::vector<uchar>	uchar_vector;
-typedef std::vector<ushort>	ushort_vector;
-typedef std::vector<uint>	uint_vector;
-typedef std::vector<double>	double_vector;
-typedef std::vector<double_vector>	double_vector2d;
-typedef std::vector<float>	float_vector;
-typedef std::vector<float_vector>	float_vector2d;
-typedef std::vector<int>	int_vector;
-typedef std::vector<std::vector<int> >	int_vector2d;
-typedef std::vector<int64>	int64_vector;
+typedef std::vector<bool>   bool_vector;
+typedef std::vector<uchar>  uchar_vector;
+typedef std::vector<ushort> ushort_vector;
+typedef std::vector<uint>   uint_vector;
+typedef std::vector<double> double_vector;
+typedef std::vector<double_vector>  double_vector2d;
+typedef std::vector<float>  float_vector;
+typedef std::vector<float_vector>   float_vector2d;
+typedef std::vector<int>    int_vector;
+typedef std::vector<std::vector<int> >  int_vector2d;
+typedef std::vector<int64>  int64_vector;
 typedef std::vector<std::vector<int64> > int64_vector2d;
 
 #pragma warning( push, 0 )
@@ -40,26 +40,30 @@ typedef std::vector<std::vector<int64> > int64_vector2d;
 namespace UBLAS = boost::numeric::ublas;
 typedef double num;
 // vector
-typedef UBLAS::vector<num>		Vector;
-typedef UBLAS::mapped_vector<num>	MVector;	//M stand for mapped
-typedef UBLAS::compressed_vector<num>	SVector;	//S stand for small and slow
+typedef UBLAS::vector<num>      Vector;
+typedef UBLAS::mapped_vector<num>   MVector;    //M stand for mapped
+typedef UBLAS::compressed_vector<num>   SVector;    //S stand for small and slow
 // generic matrix
-typedef UBLAS::zero_matrix	<num>	ZMatrix;
-typedef UBLAS::identity_matrix	<num>	IMatrix;
+typedef UBLAS::zero_matrix  <num>   ZMatrix;
+typedef UBLAS::identity_matrix  <num>   IMatrix;
 // matrix
-typedef UBLAS::basic_row_major<int64, int64>		row_major_int64;
-typedef UBLAS::basic_column_major<int64, int64>		col_major_int64;
+typedef UBLAS::basic_row_major<int64, int64>        row_major_int64;
+typedef UBLAS::basic_column_major<int64, int64>     col_major_int64;
 typedef UBLAS::map_std<int64, num> map_std_int64;
-typedef UBLAS::matrix		<num, col_major_int64>	Matrix_col;
-typedef UBLAS::matrix		<num, row_major_int64>	Matrix_row;
-typedef UBLAS::mapped_matrix	<num, col_major_int64, map_std_int64> MMatrix_col; //M stand for mapped
-typedef UBLAS::mapped_matrix	<num, row_major_int64, map_std_int64> MMatrix_row;
-typedef UBLAS::coordinate_matrix<num, col_major_int64>	CMatrix_col;	//C stand for coordinate
-typedef UBLAS::coordinate_matrix<num, row_major_int64>	CMatrix_row;
-typedef UBLAS::compressed_matrix<num, col_major_int64>	SMatrix_col;	//S stand for small and slow
-typedef UBLAS::compressed_matrix<num, row_major_int64>	SMatrix_row;
-typedef UBLAS::diagonal_matrix	<num, col_major_int64>	DMatrix_col;
-typedef UBLAS::diagonal_matrix	<num, row_major_int64>	DMatrix_row;
+typedef UBLAS::matrix       <num, col_major_int64>  Matrix_col;
+typedef UBLAS::matrix       <num, row_major_int64>  Matrix_row;
+typedef UBLAS::mapped_matrix    <num, col_major_int64, map_std_int64>
+MMatrix_col; //M stand for mapped
+typedef UBLAS::mapped_matrix    <num, row_major_int64, map_std_int64>
+MMatrix_row;
+typedef UBLAS::coordinate_matrix<num, col_major_int64>
+CMatrix_col;    //C stand for coordinate
+typedef UBLAS::coordinate_matrix<num, row_major_int64>  CMatrix_row;
+typedef UBLAS::compressed_matrix<num, col_major_int64>
+SMatrix_col;    //S stand for small and slow
+typedef UBLAS::compressed_matrix<num, row_major_int64>  SMatrix_row;
+typedef UBLAS::diagonal_matrix  <num, col_major_int64>  DMatrix_col;
+typedef UBLAS::diagonal_matrix  <num, row_major_int64>  DMatrix_row;
 
 
 //#define COL_MAJOR
@@ -69,17 +73,17 @@ typedef UBLAS::diagonal_matrix	<num, row_major_int64>	DMatrix_row;
 #endif
 
 #if defined(ROW_MAJOR)
-typedef Matrix_row	Matrix;
-typedef MMatrix_row	MMatrix;
-typedef CMatrix_row	CMatrix;
-typedef SMatrix_row	SMatrix;
-typedef DMatrix_row	DMatrix;
+typedef Matrix_row  Matrix;
+typedef MMatrix_row MMatrix;
+typedef CMatrix_row CMatrix;
+typedef SMatrix_row SMatrix;
+typedef DMatrix_row DMatrix;
 #elif defined(COL_MAJOR)
-typedef Matrix_col	Matrix;
-typedef MMatrix_col	MMatrix;
-typedef CMatrix_col	CMatrix;
-typedef SMatrix_col	SMatrix;
-typedef DMatrix_col	DMatrix;
+typedef Matrix_col  Matrix;
+typedef MMatrix_col MMatrix;
+typedef CMatrix_col CMatrix;
+typedef SMatrix_col SMatrix;
+typedef DMatrix_col DMatrix;
 #endif
 
 struct Matrix2
@@ -191,26 +195,26 @@ Matrix Matdiffinv(const Matrix& mat, int dim)
 {
 	Matrix out = ZMatrix(mat.size1(), mat.size2());
 
-// 	if (dim == 1)
-// 	{
-// 		for (int i = 0; i < mat.size1(); ++i)
-// 		{
-// 			for (int j = 0; j < mat.size2(); ++j)
-// 			{
-// 				out(i, j) = mat(i, j) - mat((i + 1) % mat.size1(), j);
-// 			}
-// 		}
-// 	}
-// 	else if (dim == 2)
-// 	{
-// 		for (int i = 0; i < mat.size1(); ++i)
-// 		{
-// 			for (int j = 0; j < mat.size2(); ++j)
-// 			{
-// 				out(i, j) = mat(i, j) - mat(i, (j + 1) % mat.size2());
-// 			}
-// 		}
-// 	}
+//  if (dim == 1)
+//  {
+//      for (int i = 0; i < mat.size1(); ++i)
+//      {
+//          for (int j = 0; j < mat.size2(); ++j)
+//          {
+//              out(i, j) = mat(i, j) - mat((i + 1) % mat.size1(), j);
+//          }
+//      }
+//  }
+//  else if (dim == 2)
+//  {
+//      for (int i = 0; i < mat.size1(); ++i)
+//      {
+//          for (int j = 0; j < mat.size2(); ++j)
+//          {
+//              out(i, j) = mat(i, j) - mat(i, (j + 1) % mat.size2());
+//          }
+//      }
+//  }
 	if (dim == 1)
 	{
 		for (int i = 0; i < mat.size1(); ++i)
@@ -231,6 +235,7 @@ Matrix Matdiffinv(const Matrix& mat, int dim)
 			}
 		}
 	}
+
 	return out;
 }
 
@@ -309,9 +314,12 @@ Matrix2 fft2(const Matrix& mat)
 	fftw_complex*   data_in;
 	fftw_complex*   fft;
 	fftw_plan       plan_f;
-	data_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.size1() * mat.size2());
-	fft     = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.size1() * mat.size2());
-	plan_f = fftw_plan_dft_2d(mat.size1(), mat.size2(), data_in, fft,  FFTW_FORWARD,  FFTW_ESTIMATE);
+	data_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.size1() *
+	                                     mat.size2());
+	fft     = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.size1() *
+	                                     mat.size2());
+	plan_f = fftw_plan_dft_2d(mat.size1(), mat.size2(), data_in, fft,  FFTW_FORWARD,
+	                          FFTW_ESTIMATE);
 
 	for (int i = 0, k = 0; i < mat.size1(); ++i)
 	{
@@ -348,9 +356,12 @@ Matrix ifft2(const Matrix2& mat)
 	fftw_complex*   data_in;
 	fftw_complex*   ifft;
 	fftw_plan       plan_b;
-	data_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.imge.size1() * mat.imge.size2());
-	ifft    = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.imge.size1() * mat.imge.size2());
-	plan_b = fftw_plan_dft_2d(mat.imge.size1(), mat.imge.size2(), data_in, ifft,  FFTW_BACKWARD,  FFTW_ESTIMATE);
+	data_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.imge.size1() *
+	                                     mat.imge.size2());
+	ifft    = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.imge.size1() *
+	                                     mat.imge.size2());
+	plan_b = fftw_plan_dft_2d(mat.imge.size1(), mat.imge.size2(), data_in, ifft,
+	                          FFTW_BACKWARD,  FFTW_ESTIMATE);
 
 	for (int i = 0, k = 0; i < mat.imge.size1(); ++i)
 	{
@@ -432,7 +443,7 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.1, double kappa = 2.0)
 	Matrix2 Normin1B = fft2(SB);
 	Matrix Denormin2 = otfFx2 + otfFy2;
 	float beta = 2 * lambda;
-	
+
 	while (beta < betamax)
 	{
 		float lb = lambda / beta;
@@ -444,11 +455,10 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.1, double kappa = 2.0)
 		Matrix vG = Matdiff(SG, 1);
 		Matrix hB = Matdiff(SB, 2);
 		Matrix vB = Matdiff(SB, 1);
-		
 		Matrix Pos2Sum = MatPow2(hR) + MatPow2(vR) +
 		                 MatPow2(hG) + MatPow2(vG) +
 		                 MatPow2(hB) + MatPow2(vB);
-		
+
 		for (int j = 0; j < Im.cols; ++j)
 		{
 			for (int i = 0; i < Im.rows; ++i)
@@ -464,19 +474,19 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.1, double kappa = 2.0)
 				}
 			}
 		}
-		
+
 		Matrix Normin2R = Matdiffinv(hR, 2) + Matdiffinv(vR, 1);
 		Matrix Normin2G = Matdiffinv(hG, 2) + Matdiffinv(vG, 1);
 		Matrix Normin2B = Matdiffinv(hB, 2) + Matdiffinv(vB, 1);
 		Matrix2 FSR = (Normin1R + fft2(Normin2R) * beta) / Denormin;
 		Matrix2 FSG = (Normin1G + fft2(Normin2G) * beta) / Denormin;
 		Matrix2 FSB = (Normin1B + fft2(Normin2B) * beta) / Denormin;
-		
 		SR = ifft2(FSR);
 		SG = ifft2(FSG);
 		SB = ifft2(FSB);
 		beta = beta * kappa;
 		printf(".");
+
 		for (uint i = 0; i < out.rows; ++i)
 		{
 			for (uint j = 0; j < out.cols; ++j)
@@ -487,6 +497,7 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.1, double kappa = 2.0)
 				v1[2] = SB(i, j);
 			}
 		}
+
 		cv::imshow("out", out);
 		cv::waitKey(1);
 	}
@@ -507,7 +518,7 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.1, double kappa = 2.0)
 
 int main(int argc, char** argv)
 {
-	cv::Mat		img1, img2, img3;
+	cv::Mat     img1, img2, img3;
 
 	/* check for supplied argument */
 	if (argc < 3)
@@ -528,4 +539,3 @@ int main(int argc, char** argv)
 	return 0;
 }
 
- 

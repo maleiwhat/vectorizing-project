@@ -13,17 +13,17 @@ public:
 	typedef std::vector<Points> Points2d;
 	CgalPatch(void);
 	~CgalPatch(void);
-	void	SetData(ImageSpline& is);
-	Points&		Outer() {return m_Outer;}
-	Points2d&	Inter() {return m_Inter;}
+	void    SetData(ImageSpline& is);
+	Points&     Outer() {return m_Outer;}
+	Points2d&   Inter() {return m_Inter;}
 	bool CheckInside(double x, double y);
 	void Clear();
 	void insert_polygon(ImageSpline& is, int idx);
 	void insert_polygonInter(ImageSpline& is, int idx);
 	void insert_polygonInter2(ImageSpline& is, PatchSpline& ps);
 private:
-	Points		m_Outer;
-	Points2d	m_Inter;
+	Points      m_Outer;
+	Points2d    m_Inter;
 };
 typedef std::vector<CgalPatch> CgalPatchs;
 

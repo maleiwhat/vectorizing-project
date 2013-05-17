@@ -42,9 +42,9 @@ THE SOFTWARE.
 class Quaternion
 {
 public:
-	inline Quaternion (
-		double fW = 1.0,
-		double fX = 0.0, double fY = 0.0, double fZ = 0.0)
+	inline Quaternion(
+	    double fW = 1.0,
+	    double fX = 0.0, double fY = 0.0, double fZ = 0.0)
 	{
 		w = fW;
 		x = fX;
@@ -62,7 +62,8 @@ public:
 		this->FromAngleAxis(rfAngle, rkAxis);
 	}
 	/// Construct a quaternion from 3 orthonormal local axes
-	inline Quaternion(const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis)
+	inline Quaternion(const Vector3& xaxis, const Vector3& yaxis,
+	                  const Vector3& zaxis)
 	{
 		this->FromAxes(xaxis, yaxis, zaxis);
 	}
@@ -74,10 +75,10 @@ public:
 	/// Construct a quaternion from 4 manual w/x/y/z values
 	inline Quaternion(double* valptr)
 	{
-		memcpy(&w, valptr, sizeof(double)*4);
+		memcpy(&w, valptr, sizeof(double) * 4);
 	}
 
-	/** Exchange the contents of this quaternion with another. 
+	/** Exchange the contents of this quaternion with another.
 	*/
 	inline void swap(Quaternion& other)
 	{
@@ -88,19 +89,17 @@ public:
 	}
 
 	/// Array accessor operator
-	inline double operator [] ( const size_t i ) const
+	inline double operator [](const size_t i) const
 	{
-		assert( i < 4 );
-
-		return *(&w+i);
+		assert(i < 4);
+		return *(&w + i);
 	}
 
 	/// Array accessor operator
-	inline double& operator [] ( const size_t i )
+	inline double& operator [](const size_t i)
 	{
-		assert( i < 4 );
-
-		return *(&w+i);
+		assert(i < 4);
+		return *(&w + i);
 	}
 
 	/// Pointer accessor for direct copying
@@ -115,19 +114,20 @@ public:
 		return &w;
 	}
 
-	void FromRotationMatrix (const Matrix3& kRot);
-	void ToRotationMatrix (Matrix3& kRot) const;
-	void FromAngleAxis (const Radian& rfAngle, const Vector3& rkAxis);
-	void ToAngleAxis (Radian& rfAngle, Vector3& rkAxis) const;
-	inline void ToAngleAxis (Degree& dAngle, Vector3& rkAxis) const {
+	void FromRotationMatrix(const Matrix3& kRot);
+	void ToRotationMatrix(Matrix3& kRot) const;
+	void FromAngleAxis(const Radian& rfAngle, const Vector3& rkAxis);
+	void ToAngleAxis(Radian& rfAngle, Vector3& rkAxis) const;
+	inline void ToAngleAxis(Degree& dAngle, Vector3& rkAxis) const
+	{
 		Radian rAngle;
-		ToAngleAxis ( rAngle, rkAxis );
+		ToAngleAxis(rAngle, rkAxis);
 		dAngle = rAngle;
 	}
-	void FromAxes (const Vector3* akAxis);
-	void FromAxes (const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
-	void ToAxes (Vector3* akAxis) const;
-	void ToAxes (Vector3& xAxis, Vector3& yAxis, Vector3& zAxis) const;
+	void FromAxes(const Vector3* akAxis);
+	void FromAxes(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
+	void ToAxes(Vector3* akAxis) const;
+	void ToAxes(Vector3& xAxis, Vector3& yAxis, Vector3& zAxis) const;
 	/// Get the local x-axis
 	Vector3 xAxis(void) const;
 	/// Get the local y-axis
@@ -148,26 +148,26 @@ public:
 	Quaternion operator* (const Quaternion& rkQ) const;
 	Quaternion operator* (double fScalar) const;
 	friend Quaternion operator* (double fScalar,
-		const Quaternion& rkQ);
+	                             const Quaternion& rkQ);
 	Quaternion operator- () const;
 	inline bool operator== (const Quaternion& rhs) const
 	{
 		return (rhs.x == x) && (rhs.y == y) &&
-			(rhs.z == z) && (rhs.w == w);
+		       (rhs.z == z) && (rhs.w == w);
 	}
 	inline bool operator!= (const Quaternion& rhs) const
 	{
 		return !operator==(rhs);
 	}
 	// functions of a quaternion
-	double Dot (const Quaternion& rkQ) const;  // dot product
-	double Norm () const;  // squared-length
+	double Dot(const Quaternion& rkQ) const;   // dot product
+	double Norm() const;   // squared-length
 	/// Normalises this quaternion, and returns the previous length
-	double normalise(void); 
-	Quaternion Inverse () const;  // apply to non-zero quaternion
-	Quaternion UnitInverse () const;  // apply to unit-length quaternion
-	Quaternion Exp () const;
-	Quaternion Log () const;
+	double normalise(void);
+	Quaternion Inverse() const;   // apply to non-zero quaternion
+	Quaternion UnitInverse() const;   // apply to unit-length quaternion
+	Quaternion Exp() const;
+	Quaternion Log() const;
 
 	// rotation of a vector by a quaternion
 	Vector3 operator* (const Vector3& rkVector) const;
@@ -177,8 +177,8 @@ public:
 	that is, if you projected the local Y of the quaternion onto the X and
 	Y axes, the angle between them is returned. If set to false though, the
 	result is the actual yaw that will be used to implement the quaternion,
-	which is the shortest possible path to get to the same orientation and 
-	may involve less axial rotation. 
+	which is the shortest possible path to get to the same orientation and
+	may involve less axial rotation.
 	*/
 	Radian getRoll(bool reprojectAxis = true) const;
 	/** Calculate the local pitch element of this quaternion
@@ -186,8 +186,8 @@ public:
 	that is, if you projected the local Z of the quaternion onto the X and
 	Y axes, the angle between them is returned. If set to true though, the
 	result is the actual yaw that will be used to implement the quaternion,
-	which is the shortest possible path to get to the same orientation and 
-	may involve less axial rotation. 
+	which is the shortest possible path to get to the same orientation and
+	may involve less axial rotation.
 	*/
 	Radian getPitch(bool reprojectAxis = true) const;
 	/** Calculate the local yaw element of this quaternion
@@ -195,10 +195,10 @@ public:
 	that is, if you projected the local Z of the quaternion onto the X and
 	Z axes, the angle between them is returned. If set to true though, the
 	result is the actual yaw that will be used to implement the quaternion,
-	which is the shortest possible path to get to the same orientation and 
-	may involve less axial rotation. 
+	which is the shortest possible path to get to the same orientation and
+	may involve less axial rotation.
 	*/
-	Radian getYaw(bool reprojectAxis = true) const;		
+	Radian getYaw(bool reprojectAxis = true) const;
 	/// Equality with tolerance (tolerance is max angle difference)
 	bool equals(const Quaternion& rhs, const Radian& tolerance) const;
 	/** Gets the shortest arc quaternion to rotate this vector to the destination
@@ -211,7 +211,7 @@ public:
 	*/
 
 	Quaternion getRotationTo(const Vector3& orig, const Vector3& dest,
-		const Vector3& fallbackAxis = Vector3::ZERO) const
+	                         const Vector3& fallbackAxis = Vector3::ZERO) const
 	{
 		// Based on Stan Melax's article in Game Programming Gems
 		Quaternion q;
@@ -220,13 +220,14 @@ public:
 		Vector3 v1 = dest;
 		v0.normalise();
 		v1.normalise();
-
 		double d = v0.dotProduct(v1);
+
 		// If dot == 1, vectors are the same
 		if (d >= 1.0)
 		{
 			return Quaternion::IDENTITY;
 		}
+
 		if (d < (1e-6f - 1.0))
 		{
 			if (fallbackAxis != Vector3::ZERO)
@@ -238,63 +239,68 @@ public:
 			{
 				// Generate an axis
 				Vector3 axis = Vector3::UNIT_X.crossProduct(orig);
+
 				if (axis.isZeroLength()) // pick another if colinear
+				{
 					axis = Vector3::UNIT_Y.crossProduct(orig);
+				}
+
 				axis.normalise();
 				q.FromAngleAxis(Radian(Math::PI), axis);
 			}
 		}
 		else
 		{
-			double s = Math::Sqrt( (1+d)*2 );
+			double s = Math::Sqrt((1 + d) * 2);
 			double invs = 1 / s;
-
 			Vector3 c = v0.crossProduct(v1);
-
 			q.x = c.x * invs;
 			q.y = c.y * invs;
 			q.z = c.z * invs;
 			q.w = s * 0.5f;
 			q.normalise();
 		}
+
 		return q;
 	}
-	static Vector3 GetRotation( const Vector3& src, double angle, const Vector3& middle_up = Vector3::NEGATIVE_UNIT_Z )
+	static Vector3 GetRotation(const Vector3& src, double angle,
+	                           const Vector3& middle_up = Vector3::NEGATIVE_UNIT_Z)
 	{
 		Quaternion q;
-		q.FromAngleAxis( Degree(angle), middle_up );
+		q.FromAngleAxis(Degree(angle), middle_up);
 		return q * src;
 	}
-	static Vector2 GetRotation( const Vector2& src, double angle, const Vector2& middle = Vector2::ZERO )
+	static Vector2 GetRotation(const Vector2& src, double angle,
+	                           const Vector2& middle = Vector2::ZERO)
 	{
 		Quaternion q;
 		Vec3 tmpsrc(src.x, src.y, 0);
 		Vec3 up(middle.x, middle.y, -1);
-		q.FromAngleAxis( Degree(angle), up );
+		q.FromAngleAxis(Degree(angle), up);
 		tmpsrc = q * tmpsrc;
 		return Vec2(tmpsrc.x, tmpsrc.y);
 	}
 	// spherical linear interpolation
-	static Quaternion Slerp (double fT, const Quaternion& rkP,
-		const Quaternion& rkQ, bool shortestPath = false);
+	static Quaternion Slerp(double fT, const Quaternion& rkP,
+	                        const Quaternion& rkQ, bool shortestPath = false);
 
-	static Quaternion SlerpExtraSpins (double fT,
-		const Quaternion& rkP, const Quaternion& rkQ,
-		int iExtraSpins);
+	static Quaternion SlerpExtraSpins(double fT,
+	                                  const Quaternion& rkP, const Quaternion& rkQ,
+	                                  int iExtraSpins);
 
 	// setup for spherical quadratic interpolation
-	static void Intermediate (const Quaternion& rkQ0,
-		const Quaternion& rkQ1, const Quaternion& rkQ2,
-		Quaternion& rka, Quaternion& rkB);
+	static void Intermediate(const Quaternion& rkQ0,
+	                         const Quaternion& rkQ1, const Quaternion& rkQ2,
+	                         Quaternion& rka, Quaternion& rkB);
 
 	// spherical quadratic interpolation
-	static Quaternion Squad (double fT, const Quaternion& rkP,
-		const Quaternion& rkA, const Quaternion& rkB,
-		const Quaternion& rkQ, bool shortestPath = false);
+	static Quaternion Squad(double fT, const Quaternion& rkP,
+	                        const Quaternion& rkA, const Quaternion& rkB,
+	                        const Quaternion& rkQ, bool shortestPath = false);
 
 	// normalised linear interpolation - faster but less accurate (non-constant rotation velocity)
-	static Quaternion nlerp(double fT, const Quaternion& rkP, 
-		const Quaternion& rkQ, bool shortestPath = false);
+	static Quaternion nlerp(double fT, const Quaternion& rkP,
+	                        const Quaternion& rkQ, bool shortestPath = false);
 
 	// cutoff for sine near zero
 	static const double ms_fEpsilon;
@@ -315,7 +321,7 @@ public:
 	being the member values of the quaternion.
 	*/
 	inline friend std::ostream& operator <<
-		( std::ostream& o, const Quaternion& q )
+	(std::ostream& o, const Quaternion& q)
 	{
 		o << "Quaternion(" << q.w << ", " << q.x << ", " << q.y << ", " << q.z << ")";
 		return o;
