@@ -48,9 +48,10 @@ public:
 	void SetLineSkeletonTransparency(float t);
 	void SetPictureTransparency(float t);
 	void ClearTriangles();
-	int  Width() { return mClientWidth;}
-	int  Height() {return mClientHeight;};
+	int  Width() { return m_ClientWidth;}
+	int  Height() {return m_ClientHeight;};
 	void SetTexture(ID3D11ShaderResourceView* tex);
+	
 	ID3D11Device* GetDevice()
 	{
 		return m_d3dDevice;
@@ -61,10 +62,16 @@ public:
 	}
 protected:
 	void initDirect3D();
-
+	void InterDraw();
+	void InterSetLookCenter(float x, float y);
+	void InterSetScale(float s);
+	void InterSetSize(float w, float h);
 protected:
 	int     m_PicW;
 	int     m_PicH;
+	float	m_Scale;
+	float	m_LookCenterX;
+	float	m_LookCenterY;
 	HINSTANCE   m_hAppInst;
 	HWND        m_hMainWnd;
 	bool        m_AppPaused;
@@ -91,6 +98,7 @@ protected:
 	ID3D11DepthStencilState* m_pDepthStencil_ZWriteON;
 	ID3D11DepthStencilState* m_pDepthStencil_ZWriteOFF;
 
+	ID3D11Buffer*           m_Backup_Buffer;
 	ID3D11Buffer*           m_Pics_Buffer;
 	ID3DX11Effect*          m_Pics_Effect;
 	ID3DX11EffectTechnique*     m_Pics_PTech;
@@ -183,8 +191,8 @@ protected:
 	std::wstring    m_MainWndCaption;
 	D3D_DRIVER_TYPE m_d3dDriverType;
 	D3DXCOLOR   m_ClearColor;
-	int     mClientWidth;
-	int     mClientHeight;
+	int     m_ClientWidth;
+	int     m_ClientHeight;
 };
 
 struct CD3D11_BLEND_DESCX : public D3D11_BLEND_DESC
@@ -217,3 +225,4 @@ struct CD3D11_BLEND_DESCX : public D3D11_BLEND_DESC
 	~CD3D11_BLEND_DESCX() {}
 	operator const D3D11_BLEND_DESC& () const { return *this; }
 };
+

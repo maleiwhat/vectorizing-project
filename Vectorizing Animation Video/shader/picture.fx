@@ -53,8 +53,8 @@ VS_OUT VS(VS_IN vIn)
 [maxvertexcount (6)]
 void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 {
-	float x = 0*3.14159/180;
-	float2x2 mat = {cos(x), -sin(x), sin(x), cos(x)};
+	//float x = 90*3.14159/180;
+	//float2x2 mat = {cos(x), -sin(x), sin(x), cos(x)};
 	float2 size = {1/width*scale,1/height*scale};
 	GS_OUT out5;
 	out5.posH.z = 0;
