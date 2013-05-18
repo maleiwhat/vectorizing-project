@@ -177,13 +177,7 @@ void D3DApp::OnResize(int w, int h)
 	m_ClientWidth = w;
 	m_ClientHeight = h;
 	printf("w: %d h:%d\n", m_ClientWidth, m_ClientHeight);
-
-	if (m_Pics_Width)
-	{
-// 		m_ClientWidth = m_PicW;
-// 		m_ClientHeight = m_PicH;
-	}
-
+	
 	// Release the old views, as they hold references to the buffers we
 	// will be destroying.  Also release the old depth/stencil buffer.
 	ReleaseCOM(m_RenderTargetView);
@@ -269,97 +263,17 @@ void D3DApp::DrawScene()
 {
 	if (!m_DXUT_UI) { return; }
 
-	m_DXUT_UI->UpdataUI(0.1f);
-	ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
-	ID3D11DepthStencilView* old_pDSV = DXUTGetD3D11DepthStencilView();
-	UINT NumViewports = 1;
-	D3D11_VIEWPORT pViewports[1];
-	m_DeviceContext->RSGetViewports(&NumViewports, &pViewports[0]);
-
-	if (1)
-	{
-		m_DeviceContext->OMSetRenderTargets(1, &m_distDirTextureTV,
-		                                    m_DrawTextureDepthStencilView);
-		m_DeviceContext->ClearRenderTargetView(m_distDirTextureTV, m_ClearColor);
-		D3D11_VIEWPORT vp;
-		vp.TopLeftX = 0;
-		vp.TopLeftY = 0;
-		vp.Width    = (float)m_PicW;
-		vp.Height   = (float)m_PicH;
-		vp.MinDepth = 0.0f;
-		vp.MaxDepth = 1.0f;
-		m_DeviceContext->RSSetViewports(1, &vp);
-	}
-
+	//m_DXUT_UI->UpdataUI(0.1f);
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, m_ClearColor);
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView,
 	                                       D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	InterSetScale(1);
-	InterSetLookCenter(0, 0);
-	InterSetSize(m_PicW, m_PicH);
+	InterSetSize(m_ClientWidth, m_ClientHeight);
+	InterSetLookCenter(m_LookCenterX, m_LookCenterY);
+	InterSetScale(m_Scale);
 	InterDraw();
-//  const int TexWidth = m_ClientWidth;
-//  const int TexHeight = m_ClientHeight;
-	const int TexWidth = m_PicW;
-	const int TexHeight = m_PicH;
-
-	if (TexWidth > 0)
-	{
-		ID3D11Texture2D* pTextureRead;
-		D3D11_TEXTURE2D_DESC texDescCV;
-		ZeroMemory(&texDescCV, sizeof(texDescCV));
-		texDescCV.Width     = TexWidth;
-		texDescCV.Height    = TexHeight;
-		texDescCV.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		texDescCV.MipLevels = 1;
-		texDescCV.ArraySize = 1;
-		texDescCV.SampleDesc.Quality = 0;
-		texDescCV.SampleDesc.Count = 1;
-		texDescCV.MiscFlags = 0;
-		texDescCV.Usage = D3D11_USAGE_STAGING;
-		texDescCV.BindFlags = 0;
-		texDescCV.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-		float* nothingImages = new float[TexWidth * TexHeight * 4];
-		D3D11_SUBRESOURCE_DATA sSubDataCV;
-		sSubDataCV.SysMemPitch = (UINT)(TexWidth * 4 * 4);
-		sSubDataCV.SysMemSlicePitch = (UINT)(TexWidth * TexHeight * 4 * 4);
-		sSubDataCV.pSysMem = nothingImages;
-		HR(m_d3dDevice->CreateTexture2D(&texDescCV, &sSubDataCV, &pTextureRead));
-		m_DeviceContext->CopyResource(pTextureRead, m_DrawTexture);
-		D3D11_MAPPED_SUBRESOURCE MappedResource;
-		float* pimg;
-		unsigned int subresource = D3D11CalcSubresource(0, 0, 0);
-		HR(m_DeviceContext->Map(pTextureRead, subresource, D3D11_MAP_READ, 0,
-		                        &MappedResource));
-		pimg = (float*)MappedResource.pData;
-		cv::Mat simg;
-		simg.create(TexHeight, TexWidth, CV_8UC3);
-		simg = cv::Scalar(0);
-		int addoffset = (8 - (TexWidth - (TexWidth / 8 * 8))) % 8;
-
-		for (int j = 0; j < simg.cols; ++j)
-		{
-			for (int i = 0; i < simg.rows; ++i)
-			{
-				int offset = (i * (simg.cols + addoffset) + j) * 4;
-				cv::Vec3b& intensity = simg.at<cv::Vec3b>(i, j);
-				intensity[2] = pimg[offset  ] * 255.0f;
-				intensity[1] = pimg[offset + 1] * 255.0f;
-				intensity[0] = pimg[offset + 2] * 255.0f;
-			}
-		}
-
-		cv::imshow("gimg", simg);
-		delete [] nothingImages;
-		m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
-		m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
-		InterSetSize(m_ClientWidth, m_ClientHeight);
-		InterSetLookCenter(m_LookCenterX, m_LookCenterY);
-		InterSetScale(m_Scale);
-		InterDraw();
-	}
-
 	m_SwapChain->Present(0, 0);
+
+	cv::imwrite("draw.png", DrawSceneToCvMat());
 }
 
 void D3DApp::BuildShaderFX()
@@ -601,8 +515,8 @@ void D3DApp::SetTexture(ID3D11ShaderResourceView* tex)
 
 	ReleaseCOM(m_Pics_Texture);
 	m_Pics_PMap->SetResource(tex);
-	InterSetSize(m_ClientWidth, m_ClientHeight);
 	m_Pics_Texture = tex;
+	OnResize(m_ClientWidth, m_ClientHeight);
 }
 
 void D3DApp::ClearTriangles()
@@ -1468,3 +1382,85 @@ void D3DApp::InterSetSize(float w, float h)
 	m_SkeletonLines_Height->SetFloat(h);
 }
 
+cv::Mat D3DApp::DrawSceneToCvMat()
+{
+	const int TexWidth = m_PicW;
+	const int TexHeight = m_PicH;
+
+	if (TexWidth > 0)
+	{
+		ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
+		ID3D11DepthStencilView* old_pDSV = DXUTGetD3D11DepthStencilView();
+		UINT NumViewports = 1;
+		D3D11_VIEWPORT pViewports[1];
+		m_DeviceContext->RSGetViewports(&NumViewports, &pViewports[0]);
+		m_DeviceContext->OMSetRenderTargets(1, &m_distDirTextureTV,
+		                                    m_DrawTextureDepthStencilView);
+		m_DeviceContext->ClearRenderTargetView(m_distDirTextureTV, m_ClearColor);
+		D3D11_VIEWPORT vp;
+		vp.TopLeftX = 0;
+		vp.TopLeftY = 0;
+		vp.Width    = (float)m_PicW;
+		vp.Height   = (float)m_PicH;
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+		m_DeviceContext->RSSetViewports(1, &vp);
+		InterSetScale(1);
+		InterSetLookCenter(0, 0);
+		InterSetSize(m_PicW, m_PicH);
+		InterDraw();
+		ID3D11Texture2D* pTextureRead;
+		D3D11_TEXTURE2D_DESC texDescCV;
+		ZeroMemory(&texDescCV, sizeof(texDescCV));
+		texDescCV.Width     = TexWidth;
+		texDescCV.Height    = TexHeight;
+		texDescCV.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		texDescCV.MipLevels = 1;
+		texDescCV.ArraySize = 1;
+		texDescCV.SampleDesc.Quality = 0;
+		texDescCV.SampleDesc.Count = 1;
+		texDescCV.MiscFlags = 0;
+		texDescCV.Usage = D3D11_USAGE_STAGING;
+		texDescCV.BindFlags = 0;
+		texDescCV.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+		float* nothingImages = new float[TexWidth * TexHeight * 4];
+		D3D11_SUBRESOURCE_DATA sSubDataCV;
+		sSubDataCV.SysMemPitch = (UINT)(TexWidth * 4 * 4);
+		sSubDataCV.SysMemSlicePitch = (UINT)(TexWidth * TexHeight * 4 * 4);
+		sSubDataCV.pSysMem = nothingImages;
+		HR(m_d3dDevice->CreateTexture2D(&texDescCV, &sSubDataCV, &pTextureRead));
+		m_DeviceContext->CopyResource(pTextureRead, m_DrawTexture);
+		D3D11_MAPPED_SUBRESOURCE MappedResource;
+		float* pimg;
+		unsigned int subresource = D3D11CalcSubresource(0, 0, 0);
+		HR(m_DeviceContext->Map(pTextureRead, subresource, D3D11_MAP_READ, 0,
+		                        &MappedResource));
+		pimg = (float*)MappedResource.pData;
+		cv::Mat simg;
+		simg.create(TexHeight, TexWidth, CV_8UC3);
+		simg = cv::Scalar(0);
+		int addoffset = (8 - (TexWidth - (TexWidth / 8 * 8))) % 8;
+
+		for (int j = 0; j < simg.cols; ++j)
+		{
+			for (int i = 0; i < simg.rows; ++i)
+			{
+				int offset = (i * (simg.cols + addoffset) + j) * 4;
+				cv::Vec3b& intensity = simg.at<cv::Vec3b>(i, j);
+				intensity[2] = pimg[offset  ] * 255.0f;
+				intensity[1] = pimg[offset + 1] * 255.0f;
+				intensity[0] = pimg[offset + 2] * 255.0f;
+			}
+		}
+
+		cv::imshow("gimg", simg);
+		delete [] nothingImages;
+		m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
+		m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
+		return simg;
+	}
+	else // no load any image
+	{
+		return cv::Mat(m_ClientHeight, m_ClientWidth, CV_8UC3);
+	}
+}

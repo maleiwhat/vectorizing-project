@@ -3,6 +3,7 @@
 #include <dwrite.h>
 #include <d3dCompiler.h>
 #include <d3dx11effect.h>
+#include <opencv2/opencv.hpp>
 #include "Timer.h"
 #include "DXUTUI.h"
 #include "Vertex.h"
@@ -25,6 +26,7 @@ public:
 	void SetLookCenter(float x, float y);
 	void SetScale(float s);
 	void DrawScene();
+	cv::Mat DrawSceneToCvMat();
 	void LoadBlend();
 	void BuildShaderFX();
 	void BuildPoint();

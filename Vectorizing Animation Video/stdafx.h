@@ -61,6 +61,9 @@
 #include <sstream>
 #include <tchar.h>
 
+#include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
 //¥þ°ì¥¨¶°
 #define ReleaseCOM(x) { if(x){ x->Release();x = 0; }}
 
