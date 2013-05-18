@@ -9,8 +9,9 @@
 
 ImageSpline::ImageSpline(void)
 {
+	m_w = 0;
+	m_h = 0;
 }
-
 
 ImageSpline::~ImageSpline(void)
 {
@@ -126,27 +127,36 @@ void ImageSpline::SmoothingFragments()
 		{
 			Line& cps = m_LineFragments[i].m_Points;
 			Line newcps;
+			int last = cps.size() - 1;
 
-			if (cps.size() < 4) { continue; }
+			if (cps.size() < 5) { continue; }
 
 			newcps.push_back(cps.front());
-			newcps.push_back(*(cps.begin() + 1));
+			newcps.push_back((cps[0] + cps[1] * 2 + cps[2] + cps[3]) / 5.0f);
 
 			for (int j = 2; j < cps.size() - 2; j ++)
 			{
-				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
-				           6.0f;
-				newcps.push_back(vec);
+				if (CheckOnSide(cps[j].x, cps[j].y))
+				{
+					newcps.push_back(cps[j]);
+				}
+				else
+				{
+					auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
+					           6.0f;
+					newcps.push_back(vec);
+				}
 			}
 
-			newcps.push_back(*(cps.end() - 2));
+			newcps.push_back((cps[last - 3] + cps[last - 2] + cps[last - 1] * 2 +
+			                  cps[last]) / 5.0f);
 			newcps.push_back(cps.back());
 			cps = newcps;
 		}
 	}
-
+	/*
 	m_Controls.resize(m_LineFragments.size());
-
+	
 	for (int i = 0; i < m_LineFragments.size(); ++i)
 	{
 		HSplineCurve hs;
@@ -175,7 +185,7 @@ void ImageSpline::SmoothingFragments()
 //      {
 //          hs.AddPointByDistance(cps[j]);
 //      }
-		res.clear();
+//      res.clear();
 		res.push_back(beg);
 
 		for (int j = 1; j < dis - 1; ++j)
@@ -185,7 +195,7 @@ void ImageSpline::SmoothingFragments()
 
 		res.push_back(end);
 	}
-
+	*/
 	// 略過 只折一次點
 //  for (int i = 0; i < m_LineFragments.size(); ++i)
 //  {
@@ -271,7 +281,6 @@ void ImageSpline::SmoothingFragments()
 //
 //      cps = newcps;
 //  }
-//	return ;
 	// 內插出中間點
 //  for (int i = 0; i < m_LineFragments.size(); ++i)
 //  {
@@ -331,4 +340,27 @@ void ImageSpline::SmoothingFragments()
 //          }
 //      }
 //  }
+}
+
+void ImageSpline::SetSize(int w, int h)
+{
+	m_w = w;
+	m_h = h;
+}
+
+bool ImageSpline::CheckOnSide(int x, int y)
+{
+	if (x == 0 || y == 0)
+	{
+		return true;
+	}
+
+	assert(m_w != 0);
+
+	if (x == m_w || y == m_h)
+	{
+		return true;
+	}
+
+	return false;
 }

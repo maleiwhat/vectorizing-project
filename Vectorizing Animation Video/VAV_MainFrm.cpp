@@ -498,7 +498,7 @@ void VAV_MainFrame::OnFileOpenPicture()
 					                                     re->GetEditText().GetString()).c_str());
 				}
 
-				((VAV_View*)this->GetActiveView())->m_D3DApp.SetSelectPatchTransparency((
+				((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_SelectPatch((
 				            100 - m_SelectPatchTransparency) * 0.01);
 				tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyPatch);
 				re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
@@ -509,7 +509,7 @@ void VAV_MainFrame::OnFileOpenPicture()
 					                               re->GetEditText().GetString()).c_str());
 				}
 
-				((VAV_View*)this->GetActiveView())->m_D3DApp.SetSelectPatchTransparency((
+				((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_SelectPatch((
 				            100 - m_PatchTransparency) * 0.01);
 				tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(
 				             ID_SPIN_TransparencyTriangleLine);
@@ -521,7 +521,7 @@ void VAV_MainFrame::OnFileOpenPicture()
 					                                      re->GetEditText().GetString()).c_str());
 				}
 
-				((VAV_View*)this->GetActiveView())->m_D3DApp.SetSelectPatchTransparency((
+				((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_SelectPatch((
 				            100 - m_TriangleLineTransparency) * 0.01);
 				tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(ID_SPIN_TransparencyPicture);
 				re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
@@ -532,7 +532,7 @@ void VAV_MainFrame::OnFileOpenPicture()
 					                                 re->GetEditText().GetString()).c_str());
 				}
 
-				((VAV_View*)this->GetActiveView())->m_D3DApp.SetPictureTransparency((
+				((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_Picture((
 				            100 - m_PictureTransparency) * 0.01);
 			}
 			m_vavImage.ReadImage(ConvStr::GetStr(filename.GetString()));
@@ -836,7 +836,7 @@ void VAV_MainFrame::OnButtonLaplace()
 void VAV_MainFrame::OnSpinTransparencySelectPatch()
 {
 	((VAV_View*)this->GetActiveView())->
-	m_D3DApp.SetSelectPatchTransparency((100 - m_SelectPatchTransparency) * 0.01);
+	m_D3DApp.SetTransparency_SelectPatch((100 - m_SelectPatchTransparency) * 0.01);
 }
 
 
@@ -854,7 +854,7 @@ void VAV_MainFrame::OnUpdateSpinTransparencySelectPatch(CCmdUI* pCmdUI)
 	}
 
 	((VAV_View*)this->GetActiveView())->
-	m_D3DApp.SetSelectPatchTransparency((100 - m_SelectPatchTransparency) * 0.01);
+	m_D3DApp.SetTransparency_SelectPatch((100 - m_SelectPatchTransparency) * 0.01);
 }
 
 void VAV_MainFrame::ShowPatch(double x, double y)
@@ -891,7 +891,7 @@ void VAV_MainFrame::OnSpinTransparencyPatch()
 		                               re->GetEditText().GetString()).c_str());
 	}
 
-	((VAV_View*)this->GetActiveView())->m_D3DApp.SetPatchTransparency((
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_Triangle((
 	            100 - m_PatchTransparency) * 0.01);
 }
 
@@ -909,7 +909,7 @@ void VAV_MainFrame::OnUpdateSpinTransparencyPatch(CCmdUI* pCmdUI)
 		                               re->GetEditText().GetString()).c_str());
 	}
 
-	((VAV_View*)this->GetActiveView())->m_D3DApp.SetPatchTransparency((
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_Triangle((
 	            100 - m_PatchTransparency) * 0.01);
 }
 
@@ -927,7 +927,7 @@ void VAV_MainFrame::OnSpinTransparencyline()
 		                              re->GetEditText().GetString()).c_str());
 	}
 
-	((VAV_View*)this->GetActiveView())->m_D3DApp.SetLineTransparency((
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_Line((
 	            100 - m_LineTransparency) * 0.01);
 }
 
@@ -944,7 +944,7 @@ void VAV_MainFrame::OnUpdateSpinTransparencyline(CCmdUI* pCmdUI)
 		                              re->GetEditText().GetString()).c_str());
 	}
 
-	((VAV_View*)this->GetActiveView())->m_D3DApp.SetLineTransparency((
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_Line((
 	            100 - m_LineTransparency) * 0.01);
 }
 
@@ -962,7 +962,7 @@ void VAV_MainFrame::OnUpdateSpinTransparencypicture(CCmdUI* pCmdUI)
 		                                 re->GetEditText().GetString()).c_str());
 	}
 
-	((VAV_View*)this->GetActiveView())->m_D3DApp.SetPictureTransparency((
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_Picture((
 	            100 - m_PictureTransparency) * 0.01);
 }
 
@@ -980,7 +980,7 @@ void VAV_MainFrame::OnSpinTransparencypicture()
 		                                 re->GetEditText().GetString()).c_str());
 	}
 
-	((VAV_View*)this->GetActiveView())->m_D3DApp.SetPictureTransparency((
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_Picture((
 	            100 - m_PictureTransparency) * 0.01);
 }
 
@@ -1028,7 +1028,7 @@ void VAV_MainFrame::OnSpinTransparencytriangleline()
 		                                      re->GetEditText().GetString()).c_str());
 	}
 
-	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTriangleLineTransparency((
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_TriangleLine((
 	            100 - m_TriangleLineTransparency) * 0.01);
 }
 
@@ -1046,7 +1046,7 @@ void VAV_MainFrame::OnUpdateSpinTransparencytriangleline(CCmdUI* pCmdUI)
 		                                      re->GetEditText().GetString()).c_str());
 	}
 
-	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTriangleLineTransparency((
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_TriangleLine((
 	            100 - m_TriangleLineTransparency) * 0.01);
 }
 
@@ -1064,7 +1064,7 @@ void VAV_MainFrame::OnSpinTransparencylineskeleton()
 		                                      re->GetEditText().GetString()).c_str());
 	}
 
-	((VAV_View*)this->GetActiveView())->m_D3DApp.SetLineSkeletonTransparency((
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_LineSkeleton((
 	            100 - m_LineSkeletonTransparency) * 0.01);
 }
 
@@ -1081,6 +1081,6 @@ void VAV_MainFrame::OnUpdateSpinTransparencylineskeleton(CCmdUI* pCmdUI)
 		                                      re->GetEditText().GetString()).c_str());
 	}
 
-	((VAV_View*)this->GetActiveView())->m_D3DApp.SetLineSkeletonTransparency((
+	((VAV_View*)this->GetActiveView())->m_D3DApp.SetTransparency_LineSkeleton((
 	            100 - m_LineSkeletonTransparency) * 0.01);
 }

@@ -150,9 +150,6 @@
     <ClInclude Include="TriangulationBase.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="TriangulationCgal.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
     <ClInclude Include="TriangulationCgal_Patch.h">
       <Filter>標頭檔</Filter>
     </ClInclude>

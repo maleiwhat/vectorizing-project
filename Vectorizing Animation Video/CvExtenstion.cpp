@@ -1126,6 +1126,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	imshow("tmp_image2", tmp_image2);
 	AddCathetus(lines);
 	ImageSpline  is = GetImageSpline(tmp_cvps, lines, tmp_image);
+	is.SetSize(image0.cols, image0.rows);
 	CvPatchs& tcvps = is.m_CvPatchs;
 
 	// 還原 m_CvPatchs 的大小
@@ -2588,7 +2589,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	//cv::waitKey();
 	AddCathetus(lines);
 	ImageSpline is = GetImageSpline(tmp_cvps, lines, tmp_image);
-
+	is.SetSize(image0.cols, image0.rows);
 	// 還原圖的大小
 
 	for (int i = 0; i < is.m_LineFragments.size(); ++i)

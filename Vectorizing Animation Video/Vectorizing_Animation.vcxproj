@@ -262,7 +262,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TPSInterpolate.hpp" />
     <ClInclude Include="TriangulationBase.h" />
-    <ClInclude Include="TriangulationCgal.h" />
     <ClInclude Include="TriangulationCgal_Patch.h" />
     <ClInclude Include="TriangulationCgal_SeedPoint.h" />
     <ClInclude Include="TriangulationCgal_Sideline.h" />

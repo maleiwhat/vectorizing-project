@@ -49,34 +49,6 @@ void TriangulationCgal_Sideline::Compute()
 	m_Triangles.clear();
 	Triangle t;
 	Finite_faces_iterator fc = m_Triangulation.finite_faces_begin();
-//  for (; fc != m_Triangulation.finite_faces_end(); ++fc)
-//  {
-//      if (fc->is_in_domain() && fc->info().in_domain() && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
-//      {
-//          t.m_Points[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
-//          t.m_Points[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
-//          t.m_Points[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
-//
-//          if (fc->info().nesting_level >= 0 && m_ColorConstraint.size() > fc->info().nesting_level
-//                          && m_ColorConstraint[fc->info().nesting_level].get())
-//          {
-//              t.m_Colors[0] = m_ColorConstraint[fc->info().nesting_level]->
-//                              GetColorVector3(t.m_Points[0].x, t.m_Points[0].y);
-//              t.m_Colors[1] = m_ColorConstraint[fc->info().nesting_level]->
-//                              GetColorVector3(t.m_Points[1].x, t.m_Points[1].y);
-//              t.m_Colors[2] = m_ColorConstraint[fc->info().nesting_level]->
-//                              GetColorVector3(t.m_Points[2].x, t.m_Points[2].y);
-//          }
-//          else
-//          {
-//              t.m_Colors[0] = 255;
-//              t.m_Colors[1] = 0;
-//              t.m_Colors[2] = 0;
-//          }
-//
-//          m_Triangles.push_back(t);
-//      }
-//  }
 	LineSegs lineSegs;
 	double_vector   LinesWidth;
 
@@ -187,10 +159,10 @@ void TriangulationCgal_Sideline::Compute()
 	}
 
 	m_Triangulation.clear();
-	Point lu(1, 1);
-	Point ld(1, m_h - 1);
-	Point ru(m_w - 1, m_h - 1);
-	Point rd(m_w - 1, 1);
+	Point lu(0, 0);
+	Point ld(0, m_h);
+	Point ru(m_w, m_h);
+	Point rd(m_w, 0);
 	Triangulation::Vertex_handle v1 = m_Triangulation.insert(lu);
 	Triangulation::Vertex_handle v2 = m_Triangulation.insert(ld);
 	Triangulation::Vertex_handle v3 = m_Triangulation.insert(ru);
@@ -253,16 +225,18 @@ void TriangulationCgal_Sideline::Compute()
 //          if (fc->info().nesting_level >= 0 && m_ColorConstraint.size() > fc->info().nesting_level
 //                          && m_ColorConstraint[fc->info().nesting_level].get())
 			{
+//              int label = fc->info().color_label;
+//              Vector3 vm;
+//              vm.x = label % 255;
+//              vm.y = (label / 255) % 255;
+//              vm.z = label / 255 / 255;
+//              t.m_Colors[0] = vm;
+//              t.m_Colors[1] = vm;
+//              t.m_Colors[2] = vm;
 				t.m_Colors[0] = rand_color[fc->info().color_label % 100];
 				t.m_Colors[1] = rand_color[fc->info().color_label % 100];
 				t.m_Colors[2] = rand_color[fc->info().color_label % 100];
 			}
-//          else
-//          {
-//              t.m_Colors[0] = 255;
-//              t.m_Colors[1] = 0;
-//              t.m_Colors[2] = 0;
-//          }
 			m_Triangles.push_back(t);
 		}
 	}
@@ -329,12 +303,7 @@ void TriangulationCgal_Sideline::insert_polygon(Triangulation& cdt,
 					if (vh->info().nesting_level == -1 || vh->info().nesting_level == idx)
 					{
 						vh->info().nesting_level = idx;
-
-						if (abs(last.hx() - now.hx()) < 5 && abs(last.hy() - now.hy()) < 5)
-						{
-							m_Triangulation.insert_constraint(v_prev, vh);
-						}
-
+						m_Triangulation.insert_constraint(v_prev, vh);
 						v_prev = vh;
 						last = now;
 					}
@@ -355,12 +324,7 @@ void TriangulationCgal_Sideline::insert_polygon(Triangulation& cdt,
 					if (vh->info().nesting_level == -1 || vh->info().nesting_level == idx)
 					{
 						vh->info().nesting_level = idx;
-
-						if (abs(last.hx() - now.hx()) < 5 && abs(last.hy() - now.hy()) < 5)
-						{
-							m_Triangulation.insert_constraint(v_prev, vh);
-						}
-
+						m_Triangulation.insert_constraint(v_prev, vh);
 						v_prev = vh;
 						last = now;
 					}
@@ -369,7 +333,11 @@ void TriangulationCgal_Sideline::insert_polygon(Triangulation& cdt,
 		}
 	}
 
-	assert(start == last);
+	//assert(start == last);
+// 	if (start != last)
+// 	{
+// 		m_Triangulation.insert_constraint(last, start);
+// 	}
 }
 
 void TriangulationCgal_Sideline::insert_polygonInter2(Triangulation& cdt,
@@ -457,7 +425,11 @@ void TriangulationCgal_Sideline::insert_polygonInter2(Triangulation& cdt,
 		}
 	}
 
-	assert(start == last);
+	//assert(start == last);
+// 	if (start != last)
+// 	{
+// 		m_Triangulation.insert_constraint(last, start);
+// 	}
 }
 
 void TriangulationCgal_Sideline::insert_polygonInter(Triangulation& cdt,

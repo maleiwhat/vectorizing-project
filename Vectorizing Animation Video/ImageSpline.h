@@ -14,7 +14,8 @@ public:
 	void AddPatchSpline(const PatchLine& ps);
 	void ComputeToLineFragments();
 	void SmoothingFragments();
-
+	bool CheckOnSide(int x, int y);
+	void SetSize(int w, int h);
 	CvPatchs    m_CvPatchs;
 	SplineFragments& GetSplineFragments();
 	Lines       m_Controls;
@@ -22,9 +23,9 @@ public:
 	LineFragments   m_ControlPoints;
 	PatchSplines    m_PatchSplines;
 	PatchSplines2d  m_PatchSplinesInter;
+	int     m_w, m_h;
 private:
 	PatchLines  m_PatchLines;
 	SplineFragments m_SplineFragments;
-
 };
 

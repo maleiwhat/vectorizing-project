@@ -29,7 +29,7 @@ D3DApp::D3DApp()
 	m_Pics_Scale = NULL;
 	m_Pics_CenterX = NULL;
 	m_Pics_CenterY = NULL;
-	m_Pics_Transparency = NULL;
+	m_TransparencySV_Picture = NULL;
 	m_Triangle_Buffer = NULL;
 	m_Triangle_Effect = NULL;
 	m_Triangle_PTech = NULL;
@@ -39,7 +39,7 @@ D3DApp::D3DApp()
 	m_Triangle_Scale = NULL;
 	m_Triangle_CenterX = NULL;
 	m_Triangle_CenterY = NULL;
-	m_Triangle_Transparency = NULL;
+	m_TransparencySV_Triangle = NULL;
 	m_TriangleLine_Buffer = NULL;
 	m_TriangleLine_Effect = NULL;
 	m_TriangleLine_PTech = NULL;
@@ -49,7 +49,7 @@ D3DApp::D3DApp()
 	m_TriangleLine_Scale = NULL;
 	m_TriangleLine_CenterX = NULL;
 	m_TriangleLine_CenterY = NULL;
-	m_TriangleLine_Transparency = NULL;
+	m_TransparencySV_TriangleLine = NULL;
 	m_Patch_Buffer = NULL;
 	m_Patch_Effect = NULL;
 	m_Patch_PTech = NULL;
@@ -59,7 +59,7 @@ D3DApp::D3DApp()
 	m_Patch_Scale = NULL;
 	m_Patch_CenterX = NULL;
 	m_Patch_CenterY = NULL;
-	m_Patch_Transparency = NULL;
+	m_TransparencySV_SelectPatch = NULL;
 	m_Points_Buffer = NULL;
 	m_Points_Effect = NULL;
 	m_Points_PTech = NULL;
@@ -79,7 +79,7 @@ D3DApp::D3DApp()
 	m_Lines_Scale = NULL;
 	m_Lines_CenterX = NULL;
 	m_Lines_CenterY = NULL;
-	m_Lines_Transparency = NULL;
+	m_TransparencySV_Lines = NULL;
 	m_SkeletonLines_Buffer = NULL;
 	m_SkeletonLines_Effect = NULL;
 	m_SkeletonLines_PTech = NULL;
@@ -90,7 +90,13 @@ D3DApp::D3DApp()
 	m_SkeletonLines_CenterX = NULL;
 	m_SkeletonLines_CenterY = NULL;
 	m_BackBuffer = NULL;
-	m_SkeletonLines_Transparency = NULL;
+	m_TransparencySV_SkeletonLines = NULL;
+	m_Transparency_Triangle = 0;
+	m_Transparency_SelectPatch = 0;
+	m_Transparency_TriangleLine = 0;
+	m_Transparency_Lines = 0;
+	m_Transparency_LineSkeleton = 0;
+	m_Transparency_Picture = 0;
 	m_PicW = 0;
 	m_PicH = 0;
 	m_LookCenterX = 0;
@@ -177,7 +183,6 @@ void D3DApp::OnResize(int w, int h)
 	m_ClientWidth = w;
 	m_ClientHeight = h;
 	printf("w: %d h:%d\n", m_ClientWidth, m_ClientHeight);
-	
 	// Release the old views, as they hold references to the buffers we
 	// will be destroying.  Also release the old depth/stencil buffer.
 	ReleaseCOM(m_RenderTargetView);
@@ -209,11 +214,39 @@ void D3DApp::OnResize(int w, int h)
 	HR(m_d3dDevice->CreateTexture2D(&depthStencilDesc, 0, &m_DepthStencilBuffer));
 	HR(m_d3dDevice->CreateDepthStencilView(m_DepthStencilBuffer, 0,
 	                                       &m_DepthStencilView));
+	// Bind the render target view and depth/stencil view to the pipeline.
+	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
+	// Set the viewport transform.
+	D3D11_VIEWPORT vp;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	vp.Width    = (float)m_ClientWidth;
+	vp.Height   = (float)m_ClientHeight;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	m_DeviceContext->RSSetViewports(1, &vp);
+}
+void D3DApp::OnDrawToBimapResize()
+{
+	D3D11_TEXTURE2D_DESC depthStencilDesc;
+	depthStencilDesc.Width     = m_ClientWidth;
+	depthStencilDesc.Height    = m_ClientHeight;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.SampleDesc.Count   = 1; // multisampling must match
+	depthStencilDesc.SampleDesc.Quality = 0; // swap chain values.
+	depthStencilDesc.Usage          = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags      = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags      = 0;
+	const int TexWidth = m_PicW * m_Scale;
+	const int TexHeight = m_PicH * m_Scale;
 
-	if (m_PicW > 0)
+	if (TexWidth > 0)
 	{
-		depthStencilDesc.Width     = m_PicW;
-		depthStencilDesc.Height    = m_PicH;
+		depthStencilDesc.Width     = TexWidth;
+		depthStencilDesc.Height    = TexHeight;
 	}
 
 	HR(m_d3dDevice->CreateTexture2D(&depthStencilDesc, 0,
@@ -223,10 +256,10 @@ void D3DApp::OnResize(int w, int h)
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
 
-	if (m_PicW > 0)
+	if (TexWidth > 0)
 	{
-		texDesc.Width     = m_PicW;
-		texDesc.Height    = m_PicH;
+		texDesc.Width     = TexWidth;
+		texDesc.Height    = TexHeight;
 	}
 	else
 	{
@@ -246,19 +279,7 @@ void D3DApp::OnResize(int w, int h)
 	HR(m_d3dDevice->CreateTexture2D(&texDesc, 0, &m_DrawTexture));
 	m_d3dDevice->CreateRenderTargetView(m_DrawTexture, NULL, &m_distDirTextureTV);
 	m_d3dDevice->CreateShaderResourceView(m_DrawTexture, NULL, &m_distDirTextureRV);
-	// Bind the render target view and depth/stencil view to the pipeline.
-	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
-	// Set the viewport transform.
-	D3D11_VIEWPORT vp;
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
-	vp.Width    = (float)m_ClientWidth;
-	vp.Height   = (float)m_ClientHeight;
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	m_DeviceContext->RSSetViewports(1, &vp);
 }
-
 void D3DApp::DrawScene()
 {
 	if (!m_DXUT_UI) { return; }
@@ -272,8 +293,6 @@ void D3DApp::DrawScene()
 	InterSetScale(m_Scale);
 	InterDraw();
 	m_SwapChain->Present(0, 0);
-
-	cv::imwrite("draw.png", DrawSceneToCvMat());
 }
 
 void D3DApp::BuildShaderFX()
@@ -306,7 +325,7 @@ void D3DApp::BuildShaderFX()
 	m_Pics_CenterY = m_Pics_Effect->GetVariableByName("centerY")->AsScalar();
 	m_Pics_Scale = m_Pics_Effect->GetVariableByName("scale")->AsScalar();
 	m_Pics_PMap  = m_Pics_Effect->GetVariableByName("gMap")->AsShaderResource();
-	m_Pics_Transparency =
+	m_TransparencySV_Picture =
 	    m_Pics_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDesc;
 	m_Pics_PTech->GetPassByIndex(0)->GetDesc(&PassDesc);
@@ -339,7 +358,7 @@ void D3DApp::BuildShaderFX()
 	m_Triangle_CenterY =
 	    m_Triangle_Effect->GetVariableByName("centerY")->AsScalar();
 	m_Triangle_Scale = m_Triangle_Effect->GetVariableByName("scale")->AsScalar();
-	m_Triangle_Transparency =
+	m_TransparencySV_Triangle =
 	    m_Triangle_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri;
 	m_Triangle_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri);
@@ -374,7 +393,7 @@ void D3DApp::BuildShaderFX()
 	    m_TriangleLine_Effect->GetVariableByName("centerY")->AsScalar();
 	m_TriangleLine_Scale =
 	    m_TriangleLine_Effect->GetVariableByName("scale")->AsScalar();
-	m_TriangleLine_Transparency =
+	m_TransparencySV_TriangleLine =
 	    m_TriangleLine_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri2;
 	m_TriangleLine_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri2);
@@ -404,7 +423,7 @@ void D3DApp::BuildShaderFX()
 	m_Patch_CenterX = m_Patch_Effect->GetVariableByName("centerX")->AsScalar();
 	m_Patch_CenterY = m_Patch_Effect->GetVariableByName("centerY")->AsScalar();
 	m_Patch_Scale = m_Patch_Effect->GetVariableByName("scale")->AsScalar();
-	m_Patch_Transparency =
+	m_TransparencySV_SelectPatch =
 	    m_Patch_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri3;
 	m_Patch_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri3);
@@ -464,7 +483,7 @@ void D3DApp::BuildShaderFX()
 	m_Lines_CenterX = m_Lines_Effect->GetVariableByName("centerX")->AsScalar();
 	m_Lines_CenterY = m_Lines_Effect->GetVariableByName("centerY")->AsScalar();
 	m_Lines_Scale = m_Lines_Effect->GetVariableByName("scale")->AsScalar();
-	m_Lines_Transparency =
+	m_TransparencySV_Lines =
 	    m_Lines_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri5;
 	m_Lines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri5);
@@ -499,14 +518,13 @@ void D3DApp::BuildShaderFX()
 	    m_SkeletonLines_Effect->GetVariableByName("centerY")->AsScalar();
 	m_SkeletonLines_Scale =
 	    m_SkeletonLines_Effect->GetVariableByName("scale")->AsScalar();
-	m_SkeletonLines_Transparency =
+	m_TransparencySV_SkeletonLines =
 	    m_SkeletonLines_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri6;
 	m_SkeletonLines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri6);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_SkeletonLineVertex, 3,
 	                                  PassDescTri6.pIAInputSignature,
 	                                  PassDescTri6.IAInputSignatureSize, &m_SkeletonLines_PLayout));
-	InterSetSize(m_ClientWidth, m_ClientHeight);
 }
 
 void D3DApp::SetTexture(ID3D11ShaderResourceView* tex)
@@ -862,6 +880,7 @@ void D3DApp::SetLookCenter(float x, float y)
 void D3DApp::SetScale(float s)
 {
 	m_Scale = s;
+	OnDrawToBimapResize();
 }
 
 
@@ -881,34 +900,40 @@ void D3DApp::ClearPatchs()
 	m_PatchVertices.clear();
 }
 
-void D3DApp::SetPatchTransparency(float t)
+void D3DApp::SetTransparency_Triangle(float t)
 {
-	m_Triangle_Transparency->SetFloat(t);
+	m_Transparency_Triangle = t;
+	m_TransparencySV_Triangle->SetFloat(t);
 }
 
-void D3DApp::SetSelectPatchTransparency(float t)
+void D3DApp::SetTransparency_SelectPatch(float t)
 {
-	m_Patch_Transparency->SetFloat(t);
+	m_Transparency_SelectPatch = t;
+	m_TransparencySV_SelectPatch->SetFloat(t);
 }
 
-void D3DApp::SetTriangleLineTransparency(float t)
+void D3DApp::SetTransparency_TriangleLine(float t)
 {
-	m_TriangleLine_Transparency->SetFloat(t);
+	m_Transparency_TriangleLine = t;
+	m_TransparencySV_TriangleLine->SetFloat(t);
 }
 
-void D3DApp::SetPictureTransparency(float t)
+void D3DApp::SetTransparency_Line(float t)
 {
-	m_Pics_Transparency->SetFloat(t);
+	m_Transparency_Lines = t;
+	m_TransparencySV_Lines->SetFloat(t);
 }
 
-void D3DApp::SetLineTransparency(float t)
+void D3DApp::SetTransparency_LineSkeleton(float t)
 {
-	m_Lines_Transparency->SetFloat(t);
+	m_Transparency_LineSkeleton = t;
+	m_TransparencySV_SkeletonLines->SetFloat(t);
 }
 
-void D3DApp::SetLineSkeletonTransparency(float t)
+void D3DApp::SetTransparency_Picture(float t)
 {
-	m_SkeletonLines_Transparency->SetFloat(t);
+	m_Transparency_Picture = t;
+	m_TransparencySV_Picture->SetFloat(t);
 }
 
 void D3DApp::AddBigPoint(float x, float y, D3DXVECTOR3 color)
@@ -1384,11 +1409,12 @@ void D3DApp::InterSetSize(float w, float h)
 
 cv::Mat D3DApp::DrawSceneToCvMat()
 {
-	const int TexWidth = m_PicW;
-	const int TexHeight = m_PicH;
+	const int TexWidth = m_PicW * m_Scale;
+	const int TexHeight = m_PicH * m_Scale;
 
 	if (TexWidth > 0)
 	{
+		InterSetRenderTransparencyOutput();
 		ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
 		ID3D11DepthStencilView* old_pDSV = DXUTGetD3D11DepthStencilView();
 		UINT NumViewports = 1;
@@ -1400,14 +1426,14 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 		D3D11_VIEWPORT vp;
 		vp.TopLeftX = 0;
 		vp.TopLeftY = 0;
-		vp.Width    = (float)m_PicW;
-		vp.Height   = (float)m_PicH;
+		vp.Width    = (float)TexWidth;
+		vp.Height   = (float)TexHeight;
 		vp.MinDepth = 0.0f;
 		vp.MaxDepth = 1.0f;
 		m_DeviceContext->RSSetViewports(1, &vp);
-		InterSetScale(1);
+		InterSetScale(m_Scale);
 		InterSetLookCenter(0, 0);
-		InterSetSize(m_PicW, m_PicH);
+		InterSetSize(TexWidth, TexHeight);
 		InterDraw();
 		ID3D11Texture2D* pTextureRead;
 		D3D11_TEXTURE2D_DESC texDescCV;
@@ -1423,12 +1449,8 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 		texDescCV.Usage = D3D11_USAGE_STAGING;
 		texDescCV.BindFlags = 0;
 		texDescCV.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-		float* nothingImages = new float[TexWidth * TexHeight * 4];
-		D3D11_SUBRESOURCE_DATA sSubDataCV;
-		sSubDataCV.SysMemPitch = (UINT)(TexWidth * 4 * 4);
-		sSubDataCV.SysMemSlicePitch = (UINT)(TexWidth * TexHeight * 4 * 4);
-		sSubDataCV.pSysMem = nothingImages;
-		HR(m_d3dDevice->CreateTexture2D(&texDescCV, &sSubDataCV, &pTextureRead));
+	
+		HR(m_d3dDevice->CreateTexture2D(&texDescCV, 0, &pTextureRead));
 		m_DeviceContext->CopyResource(pTextureRead, m_DrawTexture);
 		D3D11_MAPPED_SUBRESOURCE MappedResource;
 		float* pimg;
@@ -1453,14 +1475,34 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 			}
 		}
 
-		cv::imshow("gimg", simg);
-		delete [] nothingImages;
+		cv::imshow("live", simg);
 		m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
 		m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
+		InterSetRenderTransparencyDefault();
 		return simg;
 	}
 	else // no load any image
 	{
 		return cv::Mat(m_ClientHeight, m_ClientWidth, CV_8UC3);
 	}
+}
+
+void D3DApp::InterSetRenderTransparencyOutput()
+{
+	m_TransparencySV_Triangle->SetFloat(1);
+	m_TransparencySV_SelectPatch->SetFloat(0);
+	m_TransparencySV_TriangleLine->SetFloat(0);
+	m_TransparencySV_Lines->SetFloat(0);
+	m_TransparencySV_SkeletonLines->SetFloat(0);
+	m_TransparencySV_Picture->SetFloat(0);
+}
+
+void D3DApp::InterSetRenderTransparencyDefault()
+{
+	m_TransparencySV_Triangle->SetFloat(m_Transparency_Triangle);
+	m_TransparencySV_SelectPatch->SetFloat(m_Transparency_SelectPatch);
+	m_TransparencySV_TriangleLine->SetFloat(m_Transparency_TriangleLine);
+	m_TransparencySV_Lines->SetFloat(m_Transparency_Lines);
+	m_TransparencySV_SkeletonLines->SetFloat(m_Transparency_LineSkeleton);
+	m_TransparencySV_Picture->SetFloat(m_Transparency_Picture);
 }

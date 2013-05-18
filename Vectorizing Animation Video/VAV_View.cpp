@@ -198,12 +198,10 @@ void VAV_View::OnSize(UINT nType, int cx, int cy)
 	m_D3DApp.OnResize(cx, cy);
 }
 
-
 void VAV_View::OnMouseHWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 	CView::OnMouseHWheel(nFlags, zDelta, pt);
 }
-
 
 BOOL VAV_View::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
@@ -214,15 +212,15 @@ BOOL VAV_View::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	}
 	else if (zDelta < 0)
 	{
-		m_Scale -= 0.1;
+		m_Scale -= 0.25;
 		printf("m_Scale %f\n", m_Scale);
 	}
 
 	m_D3DApp.SetScale(m_Scale);
 	m_D3DApp.DrawScene();
+	//cv::imwrite("draw.png", m_D3DApp.DrawSceneToCvMat());
 	return CView::OnMouseWheel(nFlags, zDelta, pt);
 }
-
 
 void VAV_View::OnMouseMove(UINT nFlags, CPoint point)
 {
@@ -237,7 +235,6 @@ void VAV_View::OnMouseMove(UINT nFlags, CPoint point)
 	}
 }
 
-
 void VAV_View::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	CView::OnMButtonDown(nFlags, point);
@@ -247,7 +244,6 @@ void VAV_View::OnMButtonDown(UINT nFlags, CPoint point)
 	m_LookDown = m_LookCenter;
 }
 
-
 void VAV_View::OnMButtonUp(UINT nFlags, CPoint point)
 {
 	CView::OnMButtonUp(nFlags, point);
@@ -255,7 +251,6 @@ void VAV_View::OnMButtonUp(UINT nFlags, CPoint point)
 	m_MButtonDown = false;
 	m_MouseUp = point;
 }
-
 
 void VAV_View::OnLButtonDown(UINT nFlags, CPoint point)
 {

@@ -22,6 +22,7 @@ public:
 
 	void initApp(HWND hWnd, int w, int h);
 	void OnResize(int w, int h);   // reset projection/etc
+	void OnDrawToBimapResize();
 	void SetPictureSize(int w, int h);
 	void SetLookCenter(float x, float y);
 	void SetScale(float s);
@@ -43,12 +44,14 @@ public:
 	void AddLineSegs(const LineSegs& lines);
 	void AddLines(const Points2d& lines);
 	void ClearPatchs();
-	void SetPatchTransparency(float t);
-	void SetSelectPatchTransparency(float t);
-	void SetTriangleLineTransparency(float t);
-	void SetLineTransparency(float t);
-	void SetLineSkeletonTransparency(float t);
-	void SetPictureTransparency(float t);
+	void SetTransparency_Triangle(float t);
+	void SetTransparency_SelectPatch(float t);
+	void SetTransparency_TriangleLine(float t);
+	void SetTransparency_Line(float t);
+	void SetTransparency_LineSkeleton(float t);
+	void SetTransparency_Picture(float t);
+	
+	
 	void ClearTriangles();
 	int  Width() { return m_ClientWidth;}
 	int  Height() {return m_ClientHeight;};
@@ -63,12 +66,21 @@ public:
 		return m_DeviceContext;
 	}
 protected:
+	void InterSetRenderTransparencyOutput();
+	void InterSetRenderTransparencyDefault();
 	void initDirect3D();
 	void InterDraw();
 	void InterSetLookCenter(float x, float y);
 	void InterSetScale(float s);
 	void InterSetSize(float w, float h);
 protected:
+	float m_Transparency_Triangle;
+	float m_Transparency_SelectPatch;
+	float m_Transparency_TriangleLine;
+	float m_Transparency_Lines;
+	float m_Transparency_LineSkeleton;
+	float m_Transparency_Picture;
+
 	int     m_PicW;
 	int     m_PicH;
 	float	m_Scale;
@@ -112,7 +124,7 @@ protected:
 	ID3DX11EffectScalarVariable*    m_Pics_CenterX;
 	ID3DX11EffectScalarVariable*    m_Pics_CenterY;
 	ID3DX11EffectScalarVariable*    m_Pics_Scale;
-	ID3DX11EffectScalarVariable*    m_Pics_Transparency;
+	ID3DX11EffectScalarVariable*    m_TransparencySV_Picture;
 	ID3DX11EffectShaderResourceVariable*  m_Pics_PMap;
 	ID3D11ShaderResourceView*   m_Pics_Texture;
 	PictureVertices         m_PicsVertices;
@@ -126,7 +138,7 @@ protected:
 	ID3DX11EffectScalarVariable*    m_Triangle_CenterX;
 	ID3DX11EffectScalarVariable*    m_Triangle_CenterY;
 	ID3DX11EffectScalarVariable*    m_Triangle_Scale;
-	ID3DX11EffectScalarVariable*    m_Triangle_Transparency;
+	ID3DX11EffectScalarVariable*    m_TransparencySV_Triangle;
 	TriangleVertices        m_TriangleVertices;
 
 	ID3D11Buffer*           m_TriangleLine_Buffer;
@@ -138,7 +150,7 @@ protected:
 	ID3DX11EffectScalarVariable*    m_TriangleLine_CenterX;
 	ID3DX11EffectScalarVariable*    m_TriangleLine_CenterY;
 	ID3DX11EffectScalarVariable*    m_TriangleLine_Scale;
-	ID3DX11EffectScalarVariable*    m_TriangleLine_Transparency;
+	ID3DX11EffectScalarVariable*    m_TransparencySV_TriangleLine;
 	TriangleVertices        m_TriangleLineVertices;
 
 	ID3D11Buffer*           m_Patch_Buffer;
@@ -150,7 +162,7 @@ protected:
 	ID3DX11EffectScalarVariable*    m_Patch_CenterX;
 	ID3DX11EffectScalarVariable*    m_Patch_CenterY;
 	ID3DX11EffectScalarVariable*    m_Patch_Scale;
-	ID3DX11EffectScalarVariable*    m_Patch_Transparency;
+	ID3DX11EffectScalarVariable*    m_TransparencySV_SelectPatch;
 	TriangleVertices        m_PatchVertices;
 
 	ID3D11Buffer*           m_Points_Buffer;
@@ -174,7 +186,7 @@ protected:
 	ID3DX11EffectScalarVariable*    m_Lines_Scale;
 	ID3DX11EffectScalarVariable*    m_Lines_CenterX;
 	ID3DX11EffectScalarVariable*    m_Lines_CenterY;
-	ID3DX11EffectScalarVariable*    m_Lines_Transparency;
+	ID3DX11EffectScalarVariable*    m_TransparencySV_Lines;
 	LineVertices            m_LinesVertices;
 
 	ID3D11Buffer*           m_SkeletonLines_Buffer;
@@ -186,7 +198,7 @@ protected:
 	ID3DX11EffectScalarVariable*    m_SkeletonLines_Scale;
 	ID3DX11EffectScalarVariable*    m_SkeletonLines_CenterX;
 	ID3DX11EffectScalarVariable*    m_SkeletonLines_CenterY;
-	ID3DX11EffectScalarVariable*    m_SkeletonLines_Transparency;
+	ID3DX11EffectScalarVariable*    m_TransparencySV_SkeletonLines;
 	SkeletonLineVertexes        m_SkeletonLinesVertices;
 
 	D3D11_BUFFER_DESC       m_vbd;
