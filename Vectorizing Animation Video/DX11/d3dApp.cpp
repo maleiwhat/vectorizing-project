@@ -178,6 +178,12 @@ void D3DApp::initDirect3D()
 
 void D3DApp::OnResize(int w, int h)
 {
+	if (0 == w || 0 == h)
+	{
+		w = m_ClientWidth;
+		h = m_ClientHeight;
+	}
+
 	if (!m_d3dDevice) { return; }
 
 	m_ClientWidth = w;
@@ -191,7 +197,6 @@ void D3DApp::OnResize(int w, int h)
 	ReleaseCOM(m_BackBuffer);
 	ReleaseCOM(m_DrawTexture);
 	ReleaseCOM(m_distDirTextureRV);
-	ReleaseCOM(m_distDirTextureTV);
 	DXUTResizeDXGIBuffers(w, h, 0);
 	// Resize the swap chain and recreate the render target view.
 	//HR(mSwapChain->ResizeBuffers(2, mClientWidth, mClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, 0));
@@ -228,6 +233,7 @@ void D3DApp::OnResize(int w, int h)
 }
 void D3DApp::OnDrawToBimapResize()
 {
+	ReleaseCOM(m_distDirTextureTV);
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
 	depthStencilDesc.Width     = m_ClientWidth;
 	depthStencilDesc.Height    = m_ClientHeight;
@@ -1449,7 +1455,6 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 		texDescCV.Usage = D3D11_USAGE_STAGING;
 		texDescCV.BindFlags = 0;
 		texDescCV.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-	
 		HR(m_d3dDevice->CreateTexture2D(&texDescCV, 0, &pTextureRead));
 		m_DeviceContext->CopyResource(pTextureRead, m_DrawTexture);
 		D3D11_MAPPED_SUBRESOURCE MappedResource;

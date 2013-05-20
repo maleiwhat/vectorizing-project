@@ -21,7 +21,7 @@ public:
 	HWND        getMainWnd();
 
 	void initApp(HWND hWnd, int w, int h);
-	void OnResize(int w, int h);   // reset projection/etc
+	void OnResize(int w = 0, int h = 0); // reset projection/etc
 	void OnDrawToBimapResize();
 	void SetPictureSize(int w, int h);
 	void SetLookCenter(float x, float y);
@@ -50,13 +50,13 @@ public:
 	void SetTransparency_Line(float t);
 	void SetTransparency_LineSkeleton(float t);
 	void SetTransparency_Picture(float t);
-	
-	
+
+
 	void ClearTriangles();
 	int  Width() { return m_ClientWidth;}
 	int  Height() {return m_ClientHeight;};
 	void SetTexture(ID3D11ShaderResourceView* tex);
-	
+
 	ID3D11Device* GetDevice()
 	{
 		return m_d3dDevice;
@@ -83,9 +83,9 @@ protected:
 
 	int     m_PicW;
 	int     m_PicH;
-	float	m_Scale;
-	float	m_LookCenterX;
-	float	m_LookCenterY;
+	float   m_Scale;
+	float   m_LookCenterX;
+	float   m_LookCenterY;
 	HINSTANCE   m_hAppInst;
 	HWND        m_hMainWnd;
 	bool        m_AppPaused;
