@@ -86,7 +86,7 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 		return 0;
 	}
 
-	{
+	{	// take draw texture
 		ID3D11Texture2D* pTextureRead;
 		D3D11_TEXTURE2D_DESC texDescCV;
 		ZeroMemory(&texDescCV, sizeof(texDescCV));
@@ -101,12 +101,7 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 		texDescCV.Usage = D3D11_USAGE_STAGING;
 		texDescCV.BindFlags = 0;
 		texDescCV.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-		float* nothingImages = new float[m_Image.rows * m_Image.cols * 4];
-		D3D11_SUBRESOURCE_DATA sSubDataCV;
-		sSubDataCV.SysMemPitch = (UINT)(m_Image.rows * 4 * 4);
-		sSubDataCV.SysMemSlicePitch = (UINT)(m_Image.rows * m_Image.cols * 4 * 4);
-		sSubDataCV.pSysMem = nothingImages;
-		HR(m_Device->CreateTexture2D(&texDescCV, &sSubDataCV, &pTextureRead));
+		HR(m_Device->CreateTexture2D(&texDescCV, 0, &pTextureRead));
 		m_DeviceContext->CopyResource(pTextureRead, pTextureDraw);
 		D3D11_MAPPED_SUBRESOURCE MappedResource;
 		float* pimg;
@@ -117,21 +112,20 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 		pimg = (float*)MappedResource.pData;
 		cv::Mat simg = m_Image.clone();
 		simg = cv::Scalar(0);
+		int addoffset = (8 - (simg.rows - (simg.rows / 8 * 8))) % 8;
+		printf("addoffset: %d \n", addoffset);
 
 		for (int j = 0; j < simg.cols; ++j)
 		{
 			for (int i = 0; i < simg.rows; ++i)
 			{
-				int offset = (j * simg.rows + i) * 4;
+				int offset = (j * (simg.rows+addoffset) + i) * 4;
 				cv::Vec3b& intensity = simg.at<cv::Vec3b>(i, j);
 				intensity[2] = pimg[offset  ] * 255.0f;
 				intensity[1] = pimg[offset + 1] * 255.0f;
 				intensity[0] = pimg[offset + 2] * 255.0f;
 			}
 		}
-
-		cv::imshow("simg", simg);
-		//cv::waitKey();
 	}
 
 	return pShaderResView;

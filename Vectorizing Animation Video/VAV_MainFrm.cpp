@@ -435,7 +435,8 @@ void VAV_MainFrame::OnFilePrintPreview()
 {
 	if (IsPrintPreview())
 	{
-		PostMessage(WM_COMMAND, AFX_ID_PREVIEW_CLOSE);   // 強制預覽列印模式關閉
+		PostMessage(WM_COMMAND,
+		            AFX_ID_PREVIEW_CLOSE);   // 強制預覽列印模式關閉
 	}
 }
 
@@ -620,6 +621,7 @@ void VAV_MainFrame::OnButtonControlPointInitialize()
 
 void VAV_MainFrame::OnButtonCGALTriangulation()
 {
+	D3DApp& d3dApp = ((VAV_View*)this->GetActiveView())->GetD3DApp();
 	const bool DRAW_PATCH = false;
 	const bool DRAW_SEPARATE_PATCH = false;
 	const bool DRAW_CONTOUR = true;
@@ -652,10 +654,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 
 		cgal_patch.SetCriteria(0.0, 4000);
 		cgal_patch.Compute();
-		((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
-		((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
+		d3dApp.AddColorTriangles(cgal_patch.GetTriangles());
+		d3dApp.AddTrianglesLine(cgal_patch.GetTriangles());
 	}
 
 	// separate patch
@@ -673,10 +673,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			cgal_patch.AddColorConstraint(constraint_sptr);
 			cgal_patch.SetCriteria(0.0, 4000);
 			cgal_patch.Compute();
-			((VAV_View*)this->GetActiveView())->
-			m_D3DApp.AddColorTriangles(cgal_patch.GetTriangles());
-			((VAV_View*)this->GetActiveView())->
-			m_D3DApp.AddTrianglesLine(cgal_patch.GetTriangles());
+			d3dApp.AddColorTriangles(cgal_patch.GetTriangles());
+			d3dApp.AddTrianglesLine(cgal_patch.GetTriangles());
 		}
 	}
 
@@ -695,6 +693,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		cgal_contour.AddImageSpline(is2);
 		cgal_contour.SetCriteria(0.001, 4000);
 		cgal_contour.Compute();
+		
 		Vector3s2d colors = GetLinesColor(m_vavImage, cgal_contour.m_OriginLines);
 
 		// add begin end line
@@ -741,17 +740,20 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 				cps = newcps;
 			}
 		}
-
-		((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddColorTriangles(cgal_contour.GetTriangles());
-		((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddTrianglesLine(cgal_contour.GetTriangles());
-//      ((VAV_View*)this->GetActiveView())->
-//      m_D3DApp.AddLineSegs(cgal_contour.m_LineSegs);
-//      ((VAV_View*)this->GetActiveView())->
-//      m_D3DApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth, colors);
-		((VAV_View*)this->GetActiveView())->
-		m_D3DApp.AddLines(cgal_contour.m_ContourLines);
+		cgal_contour.MakeColorSequential();
+		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
+		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
+		d3dApp.BuildPoint();
+		cv::Mat simg = d3dApp.DrawSceneToCvMat();
+		d3dApp.ClearTriangles();
+		cgal_contour.MakeColorRandom();
+		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
+		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
+		cv::imshow("simg", simg);
+		cgal_contour.MakeColorRandom();
+//      d3dApp.AddLineSegs(cgal_contour.m_LineSegs);
+		d3dApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth, colors);
+		d3dApp.AddLines(cgal_contour.m_ContourLines);
 
 		if (DRAW_CONTOUR_CONTROL_POINT)
 		{

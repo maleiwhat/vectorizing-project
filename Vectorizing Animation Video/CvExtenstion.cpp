@@ -483,7 +483,7 @@ CvPatchs S2GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	{
 		for (int j = 1; j < image.cols - 1; j++)
 		{
-			S2FloodFill(cc, image, mask, Der2, 0, j, i, cvps, dilation, erosion);
+			S2FloodFill(cc, image, mask, Der2, 0, j, i, cvps, dilation);
 		}
 	}
 
@@ -880,7 +880,7 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	{
 		for (int j = 1; j < image.cols - 1; j++)
 		{
-			S2FloodFill(cc, image, mask, Der2, 0, j, i, cvps, dilation, erosion);
+			S2FloodFill(cc, image, mask, Der2, 0, j, i, cvps, dilation);
 		}
 	}
 
@@ -1506,7 +1506,7 @@ void ClearEdge(cv::Mat& mask2)
 }
 
 void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
-                 int range, int x, int y, CvPatchs& out_array, int dilation, int erosion)
+                 int range, int x, int y, CvPatchs& out_array, int dilation)
 {
 	if (mask01.at<uchar>(y + 1, x + 1) > 0
 	        || mask02.at<uchar>(y , x) > 0
@@ -1554,45 +1554,15 @@ void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 		}
 	}
 
-	CvPoints2d points;
-	cv::findContours(mask2, points, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
-	double tarea = cv::contourArea(points.front());
-	//printf("num: %d\t area: %f\n", points.size(), tarea);
-
 	if (dilation > 0)
 	{
 		Dilation(mask2, 1, dilation);
 	}
 
-	cv::Mat mask22 = mask2.clone();
-
-	if (erosion > 0)
-	{
-		Erosion(mask2, 1, erosion);
-	}
-
 	CvPoints2d points2;
 	cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
 
-	for (int i = erosion - 1; i >= 0 && points2.empty(); --i)
-	{
-		mask2 = mask22.clone();
-
-		if (i > 0)
-		{
-			Erosion(mask2, 2, i);
-		}
-
-		cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
-	}
-
 	CvPatch cvp;
-	cvp.Outer() = points.front();
-
-	if (points.size() > 1)
-	{
-		std::copy(points.begin() + 1, points.end(), std::back_inserter(cvp.Inter()));
-	}
 
 	cvp.Outer2() = points2.front();
 

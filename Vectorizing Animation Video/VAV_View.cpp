@@ -218,7 +218,7 @@ BOOL VAV_View::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 
 	m_D3DApp.SetScale(m_Scale);
 	m_D3DApp.DrawScene();
-	//cv::imwrite("draw.png", m_D3DApp.DrawSceneToCvMat());
+	cv::imwrite("draw.png", m_D3DApp.DrawSceneToCvMat());
 	return CView::OnMouseWheel(nFlags, zDelta, pt);
 }
 
@@ -317,4 +317,9 @@ void VAV_View::OnNcMButtonUp(UINT nHitTest, CPoint point)
 	m_MButtonDown = false;
 	m_MouseUp.x = m_LookDown.x;
 	m_MouseUp.y = m_LookDown.y;
+}
+
+D3DApp& VAV_View::GetD3DApp()
+{
+	return m_D3DApp;
 }

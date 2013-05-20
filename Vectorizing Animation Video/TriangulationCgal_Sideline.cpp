@@ -109,7 +109,6 @@ void TriangulationCgal_Sideline::Compute()
 
 	m_PositionGraph.ComputeJoints();
 	m_PositionGraph.MakeGraphLines();
-	printf("joints: %d\n", m_PositionGraph.m_Joints.size());
 	m_OriginLines = m_PositionGraph.m_Lines;
 	m_PositionGraph.SmoothGraphLines();
 	m_Lines = m_PositionGraph.m_Lines;
@@ -203,43 +202,6 @@ void TriangulationCgal_Sideline::Compute()
 
 	mesher.mark_facets();
 	mark_domains2(m_Triangulation);
-	m_Triangles.clear();
-	fc = m_Triangulation.finite_faces_begin();
-	Vector3s rand_color(100);
-
-	for (int i = 0; i < 100; i++)
-	{
-		rand_color[i].x = rand() / 1.0 / RAND_MAX * 255;
-		rand_color[i].y = rand() / 1.0 / RAND_MAX * 255;
-		rand_color[i].z = rand() / 1.0 / RAND_MAX * 255;
-	}
-
-	for (; fc != m_Triangulation.finite_faces_end(); ++fc)
-	{
-		if (fc->is_in_domain() && fc->info().in_domain()
-		        && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
-		{
-			t.m_Points[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
-			t.m_Points[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
-			t.m_Points[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
-//          if (fc->info().nesting_level >= 0 && m_ColorConstraint.size() > fc->info().nesting_level
-//                          && m_ColorConstraint[fc->info().nesting_level].get())
-			{
-//              int label = fc->info().color_label;
-//              Vector3 vm;
-//              vm.x = label % 255;
-//              vm.y = (label / 255) % 255;
-//              vm.z = label / 255 / 255;
-//              t.m_Colors[0] = vm;
-//              t.m_Colors[1] = vm;
-//              t.m_Colors[2] = vm;
-				t.m_Colors[0] = rand_color[fc->info().color_label % 100];
-				t.m_Colors[1] = rand_color[fc->info().color_label % 100];
-				t.m_Colors[2] = rand_color[fc->info().color_label % 100];
-			}
-			m_Triangles.push_back(t);
-		}
-	}
 }
 
 void TriangulationCgal_Sideline::SetCriteria(float shapebound, float length)

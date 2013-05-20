@@ -67,14 +67,69 @@ public:
 	typedef std::vector<Point>      Points;
 	typedef std::vector<Vertex_handle>  Vertex_handles;
 
-	void AddColorConstraint(ColorConstraint_sptr constraint);
-	void AddPatch(Patch& cvps);
-	void AddImageSpline(ImageSpline& is);
+	void    AddColorConstraint(ColorConstraint_sptr constraint);
+	void    AddPatch(Patch& cvps);
+	void    AddImageSpline(ImageSpline& is);
 	TriangulationCgal_Sideline(): m_Criteria(0.125, 5) {}
 	virtual ~TriangulationCgal_Sideline() {}
 	virtual void AddPoint(double x, double y);
 	virtual void Compute();
 	virtual void Clear();
+	void    MakeColorSequential()
+	{
+		m_Triangles.clear();
+		Triangle t;
+		Finite_faces_iterator fc = m_Triangulation.finite_faces_begin();
+
+		for (; fc != m_Triangulation.finite_faces_end(); ++fc)
+		{
+			if (fc->is_in_domain() && fc->info().in_domain()
+			        && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
+			{
+				t.m_Points[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
+				t.m_Points[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
+				t.m_Points[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
+				int label = fc->info().color_label;
+				Vector3 vm;
+				vm.x = label % 255;
+				vm.y = (label / 255) % 255;
+				vm.z = label / 255 / 255;
+				t.m_Colors[0] = vm;
+				t.m_Colors[1] = vm;
+				t.m_Colors[2] = vm;
+				m_Triangles.push_back(t);
+			}
+		}
+	}
+	void    MakeColorRandom()
+	{
+		m_Triangles.clear();
+		Triangle t;
+		Finite_faces_iterator fc = m_Triangulation.finite_faces_begin();
+		Vector3s rand_color(100);
+
+		for (int i = 0; i < 100; i++)
+		{
+			rand_color[i].x = rand() / 1.0 / RAND_MAX * 255;
+			rand_color[i].y = rand() / 1.0 / RAND_MAX * 255;
+			rand_color[i].z = rand() / 1.0 / RAND_MAX * 255;
+		}
+
+		for (; fc != m_Triangulation.finite_faces_end(); ++fc)
+		{
+			if (fc->is_in_domain() && fc->info().in_domain()
+			        && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
+			{
+				t.m_Points[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
+				t.m_Points[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
+				t.m_Points[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
+				t.m_Colors[0] = rand_color[fc->info().color_label % 100];
+				t.m_Colors[1] = rand_color[fc->info().color_label % 100];
+				t.m_Colors[2] = rand_color[fc->info().color_label % 100];
+				m_Triangles.push_back(t);
+			}
+		}
+	}
 	void    SetSize(int w, int h);
 	void    SetCriteria(float shapebound, float length);
 	void    insert_polygon(Triangulation& cdt, const Polygon& polygon, int domain);

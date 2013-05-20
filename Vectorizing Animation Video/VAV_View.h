@@ -22,6 +22,7 @@ class VAV_MainFrame;
 class VAV_View : public CView
 {
 protected: // 僅從序列化建立
+	D3DApp      m_D3DApp;
 	VAV_View();
 	DECLARE_DYNCREATE(VAV_View)
 
@@ -56,12 +57,13 @@ public:
 	Vector2     m_LookCenter;
 	Vector2     m_LookDown;
 	HWND        m_hWndDX11;
-	D3DApp      m_D3DApp;
+	
 	bool        m_MButtonDown;
 // 覆寫
 public:
 	virtual void OnDraw(CDC* pDC);  // 覆寫以描繪此檢視
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+	D3DApp& GetD3DApp();
 protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);

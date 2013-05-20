@@ -28,8 +28,7 @@ void    Dilation(cv::Mat& image, int dilation_elem = 2, int dilation_size = 2);
 // ²Ó¤Æ
 void    Erosion(cv::Mat& image, int erosion_elem, int erosion_size);
 void    S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
-                    int range, int x, int y, CvPatchs& out_array, int dilation = 0,
-                    int erosion = 0);
+                    int range, int x, int y, CvPatchs& out_array, int dilation = 0);
 void    S2FloodFill(cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range,
                     int x, int y, int dilation = 0, int erosion = 0);
 void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
