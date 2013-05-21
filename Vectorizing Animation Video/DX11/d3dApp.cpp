@@ -246,8 +246,8 @@ void D3DApp::OnDrawToBimapResize()
 	depthStencilDesc.BindFlags      = D3D11_BIND_DEPTH_STENCIL;
 	depthStencilDesc.CPUAccessFlags = 0;
 	depthStencilDesc.MiscFlags      = 0;
-	const int TexWidth = m_PicW * m_Scale;
-	const int TexHeight = m_PicH * m_Scale;
+ 	const int TexWidth = m_PicW * m_Scale;
+ 	const int TexHeight = m_PicH * m_Scale;
 
 	if (TexWidth > 0)
 	{
@@ -1497,7 +1497,7 @@ void D3DApp::InterSetRenderTransparencyOutput()
 	m_TransparencySV_Triangle->SetFloat(1);
 	m_TransparencySV_SelectPatch->SetFloat(0);
 	m_TransparencySV_TriangleLine->SetFloat(0);
-	m_TransparencySV_Lines->SetFloat(0);
+	m_TransparencySV_Lines->SetFloat(1);
 	m_TransparencySV_SkeletonLines->SetFloat(0);
 	m_TransparencySV_Picture->SetFloat(0);
 }
@@ -1510,4 +1510,17 @@ void D3DApp::InterSetRenderTransparencyDefault()
 	m_TransparencySV_Lines->SetFloat(m_Transparency_Lines);
 	m_TransparencySV_SkeletonLines->SetFloat(m_Transparency_LineSkeleton);
 	m_TransparencySV_Picture->SetFloat(m_Transparency_Picture);
+}
+
+void D3DApp::SetScaleTemporary( float s )
+{
+	m_ScaleSave = m_Scale;
+	m_Scale = s;
+	OnDrawToBimapResize();
+}
+
+void D3DApp::SetScaleRecovery()
+{
+	m_Scale = m_ScaleSave;
+	OnDrawToBimapResize();
 }

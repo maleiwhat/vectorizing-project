@@ -15,9 +15,6 @@ class TriangulationBase
 {
 public:
 	virtual ~TriangulationBase() {}
-	virtual void AddPoint(double x, double y) = 0;
-	virtual void Compute() = 0;
-	virtual void Clear() = 0;
 	Triangles& GetTriangles()
 	{
 		return m_Triangles;

@@ -21,6 +21,7 @@
 #include "TriangulationCgal_Patch.h"
 #include "VoronoiCgal_Patch.h"
 #include "CvExtenstion.h"
+#include "CvExtenstion2.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -687,7 +688,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
 		cgal_contour.AddImageSpline(is2);
 		cgal_contour.SetCriteria(0.001, 4000);
-		cgal_contour.Compute();
+		int region = cgal_contour.Compute();
+		printf("region: %d\n", region);
 		Vector3s2d colors = GetLinesColor(m_vavImage, cgal_contour.m_OriginLines);
 
 		// add begin end line
@@ -738,11 +740,13 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		cgal_contour.MakeColorSequential();
 		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
 		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
-		d3dApp.OnDrawToBimapResize();
+		d3dApp.SetScaleTemporary(1);
 		d3dApp.BuildPoint();
 		cv::Mat simg = d3dApp.DrawSceneToCvMat();
+		d3dApp.SetScaleRecovery();
+		ColorConstraint_sptrs RegionColors = MakeColors(region, simg, m_vavImage);
  		d3dApp.ClearTriangles();
-		cgal_contour.MakeColorRandom();
+		cgal_contour.SetColor(RegionColors);
 		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
 		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
 //		d3dApp.AddLineSegs(cgal_contour.m_LineSegs);

@@ -14,8 +14,8 @@ public:
 	void AddPoint(double x, double y, const cv::Vec3b& p);
 	void AddPoint(double x, double y, const Vector3& p);
 	void Clear();
-	Vector3 GetColorVector3(double x, double y);
-	cv::Vec3b GetColorCvPoint(double x, double y);
+	Vector3 GetColorVector3();
+	cv::Vec3b GetColorCvPoint();
 private:
 	void ComputeMedian();
 	Vector3s m_Colors;

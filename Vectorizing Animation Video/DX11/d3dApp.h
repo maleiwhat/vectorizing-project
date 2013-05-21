@@ -26,6 +26,8 @@ public:
 	void SetPictureSize(int w, int h);
 	void SetLookCenter(float x, float y);
 	void SetScale(float s);
+	void SetScaleTemporary(float s);
+	void SetScaleRecovery();
 	void DrawScene();
 	cv::Mat DrawSceneToCvMat();
 	void LoadBlend();
@@ -84,6 +86,7 @@ protected:
 	int     m_PicW;
 	int     m_PicH;
 	float   m_Scale;
+	float   m_ScaleSave;
 	float   m_LookCenterX;
 	float   m_LookCenterY;
 	HINSTANCE   m_hAppInst;

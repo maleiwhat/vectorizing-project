@@ -89,12 +89,18 @@ void TriangulationCgal_Patch::Compute()
 			        && m_ColorConstraint.size() > fc->info().nesting_level
 			        && m_ColorConstraint[fc->info().nesting_level].get())
 			{
+// 				t.m_Colors[0] = m_ColorConstraint[fc->info().nesting_level]->
+// 				                GetColorVector3(t.m_Points[0].x, t.m_Points[0].y);
+// 				t.m_Colors[1] = m_ColorConstraint[fc->info().nesting_level]->
+// 				                GetColorVector3(t.m_Points[1].x, t.m_Points[1].y);
+// 				t.m_Colors[2] = m_ColorConstraint[fc->info().nesting_level]->
+// 				                GetColorVector3(t.m_Points[2].x, t.m_Points[2].y);
 				t.m_Colors[0] = m_ColorConstraint[fc->info().nesting_level]->
-				                GetColorVector3(t.m_Points[0].x, t.m_Points[0].y);
+					GetColorVector3();
 				t.m_Colors[1] = m_ColorConstraint[fc->info().nesting_level]->
-				                GetColorVector3(t.m_Points[1].x, t.m_Points[1].y);
+					GetColorVector3();
 				t.m_Colors[2] = m_ColorConstraint[fc->info().nesting_level]->
-				                GetColorVector3(t.m_Points[2].x, t.m_Points[2].y);
+					GetColorVector3();
 			}
 			else
 			{

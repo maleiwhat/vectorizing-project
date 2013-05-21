@@ -28,7 +28,7 @@ void ColorConstraintMedian::Clear()
 	m_Colors.clear();
 }
 
-Vector3 ColorConstraintMedian::GetColorVector3(double x, double y)
+Vector3 ColorConstraintMedian::GetColorVector3()
 {
 	if (m_NeedComputeMedian)
 	{
@@ -38,7 +38,7 @@ Vector3 ColorConstraintMedian::GetColorVector3(double x, double y)
 	return m_Median;
 }
 
-cv::Vec3b ColorConstraintMedian::GetColorCvPoint(double x, double y)
+cv::Vec3b ColorConstraintMedian::GetColorCvPoint()
 {
 	if (m_NeedComputeMedian)
 	{
