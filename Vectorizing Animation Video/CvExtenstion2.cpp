@@ -97,4 +97,3 @@ ColorConstraint_sptrs MakeColors(int regions, const cv::Mat& mask,
 	}
 	return ans;
 }
-

@@ -37,7 +37,6 @@ public:
 		{
 			return nesting_level % 2 == 1;
 		}
-
 	};
 
 	struct VertexInfo2

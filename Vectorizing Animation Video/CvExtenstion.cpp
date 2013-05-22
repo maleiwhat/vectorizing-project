@@ -1473,6 +1473,7 @@ ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
 	return is;
 }
 
+
 cv::Vec3b& GetColor(cv::Mat& image, int x, int y)
 {
 	if (y < 0) { y = 0; }
@@ -2187,7 +2188,7 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
 				s = 0.8;
 			}
 
-			s = pow(s, 2.0f);
+			s = pow(s, 1.5f);
 		}
 	}
 
@@ -2225,9 +2226,10 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
 		}
 	}
 
-//  imshow("MaxCapacity", MaxCapacity);
-//  imshow("MaxCapacity2", MaxCapacity2);
+	normalize(MaxCapacity, MaxCapacity, 0, 1, cv::NORM_MINMAX);
+	imshow("MaxCapacity", MaxCapacity);
 	FillSmallHole(MaxCapacity2);
+	imshow("MaxCapacity2", MaxCapacity2);
 
 	for (int i = 0; i < ans.rows; i++)
 	{
@@ -2560,7 +2562,8 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	//imshow("tmp_image2", tmp_image2);
 	//cv::waitKey();
 	AddCathetus(lines);
-	ImageSpline is = GetImageSpline(tmp_cvps, lines, tmp_image);
+	//ImageSpline is = GetImageSpline(tmp_cvps, lines, tmp_image);
+	ImageSpline is = GetImageSpline(tmp_cvps);
 	is.SetSize(image0.cols, image0.rows);
 	// 還原圖的大小
 
@@ -2603,3 +2606,77 @@ Vector3s2d GetLinesColor(cv::Mat img, const Lines& lines)
 
 	return ans;
 }
+
+Line CvPointToLine(const CvPoints& cvps)
+{
+	Line ans;
+
+	for (CvPoints::const_iterator it = cvps.begin(); it != cvps.end(); ++it)
+	{
+		ans.push_back(Vector2(it->x, it->y));
+	}
+
+	return ans;
+}
+
+ImageSpline GetImageSpline(CvPatchs& patchs)
+{
+	ImageSpline is;
+	LineFragments& lfs = is.m_LineFragments;
+	PatchSplines& patchContour = is.m_PatchSplines;
+	PatchSplines2d& patchInters = is.m_PatchSplinesInter;
+	int patchid = 0;
+	is.m_CvPatchs = patchs;
+	int count_id = 0;
+
+	for (CvPatchs::iterator it = patchs.begin(); it != patchs.end();
+	        ++it, ++patchid)
+	{
+		if (it->Outer2().size() < 4)
+		{
+			continue;
+		}
+
+		PatchSpline ps;
+		LineIndex li;
+		li.m_Forward = true;
+		li.m_id = count_id++;
+		ps.m_LineIndexs.push_back(li);
+		patchContour.push_back(ps);
+		LineFragment lf;
+		lf.m_id = -1;
+		lf.m_Points = CvPointToLine(it->Outer2());
+		lf.m_Points.push_back(lf.m_Points.front());
+		lfs.push_back(lf);
+
+		if (it->Inter2().size() == 0)
+		{
+			patchInters.push_back(PatchSplines());
+			continue;
+		}
+
+		PatchSplines patchInter;
+
+		for (CvPoints2d::iterator it2 = it->Inter2().begin(); it2 != it->Inter2().end();
+		        ++it2)
+		{
+			if (it2->size() < 4)
+			{
+				continue;
+			}
+
+			ps = PatchSpline();
+			li.m_id = count_id++;
+			ps.m_LineIndexs.push_back(li);
+			patchInter.push_back(ps);
+			lf.m_Points = CvPointToLine(*it2);
+			lf.m_Points.push_back(lf.m_Points.front());
+			lfs.push_back(lf);
+		}
+
+		patchInters.push_back(patchInter);
+	}
+
+	return is;
+}
+

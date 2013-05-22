@@ -1,139 +1,62 @@
-Image C:\Users\damody\Documents\Visual Studio 2012\Projects\test_floodfill\girl1.png loaded
-Input parameters:
-	Spatial Bandwidth		=    7
-	Color Bandwidth		=  6.5
-	Minimum Region		=   20
-	Gradient Window Radius	=    2
-	Mixing Parameter		=  0.3
-	Threshold			=  0.3
-Creating angle lookup table
-Computing confidence map...
-...smooth-differentiation filtering
-...subspace estimate
-...edge strengths
-...computing ranks
-timer start...
-done.
-Applying mean shift (Using Lattice) ... done.(  1.05 sec)
-Connecting regions         ...done. (  0.01 seconds, numRegions =   3762)
-Applying transitive closure...done. (  0.21 seconds, numRegions =   3541)
-Pruning spurious regions   ...done. (  0.02 seconds, numRegions =    456)
-timer stop, elapsed 1.33 seconds.
-Input parameters:
-	Spatial Bandwidth		=    7
-	Color Bandwidth		=  6.5
-	Minimum Region		=   20
-	Gradient Window Radius	=    2
-	Mixing Parameter		=  0.3
-	Threshold			=  0.3
-Creating angle lookup table
-Computing confidence map...
-...smooth-differentiation filtering
-...subspace estimate
-...edge strengths
-...computing ranks
-timer start...
-Connecting regions         ...done. (  0.01 seconds, numRegions =   4752)
-Applying transitive closure...done. (  0.23 seconds, numRegions =   3648)
-Pruning spurious regions   ...done. (  0.02 seconds, numRegions =    482)
-timer stop, elapsed 0.29 seconds.
-Input parameters:
-	Spatial Bandwidth		=    7
-	Color Bandwidth		=  5.0
-	Minimum Region		=   20
-	Gradient Window Radius	=    2
-	Mixing Parameter		=  0.3
-	Threshold			=  0.3
-Creating angle lookup table
-Computing confidence map...
-...smooth-differentiation filtering
-...subspace estimate
-...edge strengths
-...computing ranks
-timer start...
-Connecting regions         ...done. (  0.01 seconds, numRegions =   4752)
-Applying transitive closure...done. (  0.22 seconds, numRegions =   3655)
-Pruning spurious regions   ...done. (  0.02 seconds, numRegions =    482)
-timer stop, elapsed 0.28 seconds.
-Input parameters:
-	Spatial Bandwidth		=    7
-	Color Bandwidth		=  4.0
-	Minimum Region		=   20
-	Gradient Window Radius	=    2
-	Mixing Parameter		=  0.3
-	Threshold			=  0.3
-Creating angle lookup table
-Computing confidence map...
-...smooth-differentiation filtering
-...subspace estimate
-...edge strengths
-...computing ranks
-timer start...
-Connecting regions         ...done. (  0.01 seconds, numRegions =   4752)
-Applying transitive closure...done. (  0.04 seconds, numRegions =   3659)
-Pruning spurious regions   ...done. (  0.02 seconds, numRegions =    482)
-timer stop, elapsed 0.11 seconds.
-Input parameters:
-	Spatial Bandwidth		=    6
-	Color Bandwidth		=  4.0
-	Minimum Region		=   20
-	Gradient Window Radius	=    2
-	Mixing Parameter		=  0.3
-	Threshold			=  0.3
-Creating angle lookup table
-Computing confidence map...
-...smooth-differentiation filtering
-...subspace estimate
-...edge strengths
-...computing ranks
-timer start...
-Connecting regions         ...done. (  0.01 seconds, numRegions =   4752)
-Applying transitive closure...done. (  0.04 seconds, numRegions =   3659)
-Pruning spurious regions   ...done. (  0.02 seconds, numRegions =    482)
-timer stop, elapsed 0.10 seconds.
-Input parameters:
-	Spatial Bandwidth		=    7
-	Color Bandwidth		=  5.0
-	Minimum Region		=   20
-	Gradient Window Radius	=    2
-	Mixing Parameter		=  0.3
-	Threshold			=  0.3
-Creating angle lookup table
-Computing confidence map...
-...smooth-differentiation filtering
-...subspace estimate
-...edge strengths
-...computing ranks
-timer start...
-Connecting regions         ...done. (  0.01 seconds, numRegions =   4752)
-Applying transitive closure...done. (  0.22 seconds, numRegions =   3655)
-Pruning spurious regions   ...done. (  0.02 seconds, numRegions =    482)
-timer stop, elapsed 0.28 seconds.
-Input parameters:
-	Spatial Bandwidth		=    7
-	Color Bandwidth		=  6.0
-	Minimum Region		=   20
-	Gradient Window Radius	=    2
-	Mixing Parameter		=  0.3
-	Threshold			=  0.3
-Creating angle lookup table
-Computing confidence map...
-...smooth-differentiation filtering
-...subspace estimate
-...edge strengths
-...computing ranks
-timer start...
-Connecting regions         ...done. (  0.01 seconds, numRegions =   4752)
-Applying transitive closure...done. (  0.04 seconds, numRegions =   3649)
-Pruning spurious regions   ...done. (  0.02 seconds, numRegions =    481)
-timer stop, elapsed 0.10 seconds.
-Image C:\Users\damody\Documents\Visual Studio 2012\Projects\test_floodfill\girl1.png loaded
+Image C:\Users\damody\Desktop\²¦·~¬ÛÃö\test_picture\another_data.avi_000000.340.png loaded
 Creating angle lookup table
 Start edge detection...
 ...smooth-differentiation filtering
 ...subspace estimate
 ...edge strengths
 ...computing ranks
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
 ...nonmaxima supression: arc
 ...hysteresis thresholding, high: box  low: arc
 Done edge detection.

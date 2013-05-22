@@ -23,3 +23,5 @@ struct LineSeg
 	LineSeg(Vector2& b, Vector2& e): beg(b), end(e) {}
 };
 typedef std::deque<LineSeg> LineSegs;
+
+

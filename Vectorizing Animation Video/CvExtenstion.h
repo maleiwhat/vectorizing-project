@@ -42,6 +42,9 @@ CvPatchs S2GetPatchs(const cv::Mat& image, int dilation = 0, int erosion = 0);
 ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion);
 ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
                            cv::Mat lineImage);
+ImageSpline GetImageSpline(CvPatchs& patchs);
+Line CvPointToLine(const CvPoints& cvps);
+
 PatchLines GetPatchSplines(CvPatchs& patchs, cv::Mat& patchImage);
 Lines GetAllLineFromLineImage(cv::Mat& lineImage);
 void    FixHole(cv::Mat& patchImage);
@@ -119,3 +122,4 @@ ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold);
 void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2);
 ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion);
 Vector3s2d GetLinesColor(cv::Mat img, const Lines& lines);
+
