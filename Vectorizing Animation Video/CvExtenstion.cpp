@@ -1561,9 +1561,7 @@ void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 
 	CvPoints2d points2;
 	cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
-
 	CvPatch cvp;
-
 	cvp.Outer2() = points2.front();
 
 	if (points2.size() > 1)
@@ -1663,7 +1661,7 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 
 	cv::Vec3b v = image.at<cv::Vec3b>(y, x);
 	int b = cc % 255;
-	int g = cc / 255 ;
+	int g = (cc / 255) % 255 ;
 	int r = cc / (255 * 255);
 
 	if (v[0] == 0 && v[1] == 0 && v[2] == 0)
@@ -1767,9 +1765,12 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 	}
 
 	cv::Vec3b v = image.at<cv::Vec3b>(y, x);
-	int b = cc % 255;
-	int g = cc / 255 ;
-	int r = cc / (255 * 255);
+//  int b = cc % 255;
+//  int g = (cc / 255) % 255 ;
+//  int r = cc / (255 * 255);
+	int b = rand() % 255;
+	int g = rand() % 255;
+	int r = rand() % 255;
 
 	if (v[0] == 0 && v[1] == 0 && v[2] == 0)
 	{
@@ -2167,7 +2168,8 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
 			GetMatrix(rectw, recth, ary, x, y, src);
 			float& wmax = MaxCapacity.at<float>(y, x);
 			std::sort(ary.begin(), ary.end(), LightCompareColorPtr);
-			wmax = GetLight(ary.back().c) - GetLight(src.at<cv::Vec3f>(y, x));
+			//wmax = GetLight(ary.back().c) - GetLight(src.at<cv::Vec3f>(y, x));
+			wmax = GetLight(src.at<cv::Vec3f>(y, x)) - GetLight(ary.front().c);
 		}
 	}
 
@@ -2490,7 +2492,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	cc = 1;
 	CvPatchs tmp_cvps;
 //	cv::namedWindow("gap_image", 0);
-//  imshow("gap_image", gap_image);
+//	imshow("gap_image", gap_image);
 //  cv::waitKey();
 	// don't floodfill gap
 	//gap_image = cv::Scalar::all(0);

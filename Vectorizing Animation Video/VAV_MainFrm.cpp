@@ -531,8 +531,7 @@ void VAV_MainFrame::OnFileOpenPicture()
 				                                 re->GetEditText().GetString()).c_str());
 			}
 
-			d3dApp.SetTransparency_Picture((
-			                                   100 - m_PictureTransparency) * 0.01);
+			d3dApp.SetTransparency_Picture((100 - m_PictureTransparency) * 0.01);
 			m_vavImage.ReadImage(ConvStr::GetStr(filename.GetString()));
 			d3dApp.ClearTriangles();
 			d3dApp.SetPictureSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
@@ -712,7 +711,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			}
 		}
 
-		for (int count = 0; count < 4; count++)
+		for (int count = 0; count < 2; count++)
 		{
 			for (int i = 0; i < colors.size(); ++i)
 			{
@@ -745,7 +744,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		cv::Mat simg = d3dApp.DrawSceneToCvMat();
 		d3dApp.SetScaleRecovery();
 		ColorConstraint_sptrs RegionColors = MakeColors(region, simg, m_vavImage);
- 		d3dApp.ClearTriangles();
+		d3dApp.ClearTriangles();
 		cgal_contour.SetColor(RegionColors);
 		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
 		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
@@ -834,7 +833,8 @@ void VAV_MainFrame::OnButtonLaplace()
 void VAV_MainFrame::OnSpinTransparencySelectPatch()
 {
 	((VAV_View*)this->GetActiveView())->
-	GetD3DApp().SetTransparency_SelectPatch((100 - m_SelectPatchTransparency) * 0.01);
+	GetD3DApp().SetTransparency_SelectPatch((100 - m_SelectPatchTransparency) *
+	                                        0.01);
 }
 
 
@@ -852,7 +852,8 @@ void VAV_MainFrame::OnUpdateSpinTransparencySelectPatch(CCmdUI* pCmdUI)
 	}
 
 	((VAV_View*)this->GetActiveView())->
-	GetD3DApp().SetTransparency_SelectPatch((100 - m_SelectPatchTransparency) * 0.01);
+	GetD3DApp().SetTransparency_SelectPatch((100 - m_SelectPatchTransparency) *
+	                                        0.01);
 }
 
 void VAV_MainFrame::ShowPatch(double x, double y)
