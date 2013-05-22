@@ -392,10 +392,10 @@ void TriangulationCgal_Sideline::insert_polygonInter2(Triangulation& cdt,
 	}
 
 	//assert(start == last);
-//  if (start != last)
-//  {
-//      m_Triangulation.insert_constraint(last, start);
-//  }
+	if (start != last)
+	{
+		m_Triangulation.insert_constraint(last, start);
+	}
 }
 
 void TriangulationCgal_Sideline::insert_polygonInter(Triangulation& cdt,
@@ -607,7 +607,7 @@ int    TriangulationCgal_Sideline::mark_domains2(Triangulation& cdt)
 	{
 		it->info().nesting_level = TRIANGLE_NOT_INIT;
 	}
-
+  
 	int cc = 0;
 	std::list<Triangulation::Edge> border;
 	Finite_faces_iterator fc = m_Triangulation.finite_faces_begin();

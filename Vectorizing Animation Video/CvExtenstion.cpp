@@ -2169,8 +2169,8 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
 			GetMatrix(rectw, recth, ary, x, y, src);
 			float& wmax = MaxCapacity.at<float>(y, x);
 			std::sort(ary.begin(), ary.end(), LightCompareColorPtr);
-			//wmax = GetLight(ary.back().c) - GetLight(src.at<cv::Vec3f>(y, x));
-			wmax = GetLight(src.at<cv::Vec3f>(y, x)) - GetLight(ary.front().c);
+			wmax = GetLight(ary.back().c) - GetLight(src.at<cv::Vec3f>(y, x));
+			//wmax = GetLight(src.at<cv::Vec3f>(y, x)) - GetLight(ary.front().c);
 		}
 	}
 
