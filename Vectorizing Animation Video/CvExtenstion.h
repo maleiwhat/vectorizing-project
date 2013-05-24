@@ -52,7 +52,6 @@ void    FillSmallHole(cv::Mat& patchImage);
 Lines   GetLines(const CvPoints2d& cvp);
 cv::Mat MakeLineImage(const cv::Mat& image, const Lines& lines);
 cv::Mat MakeLineImage(const cv::Mat& image, Patch& patch);
-cv::Vec3b& GetColor(cv::Mat& image, int x, int y);
 
 inline bool CorrectPosition(cv::Mat& image, int x, int y)
 {
@@ -121,5 +120,5 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
 ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold);
 void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2);
 ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion);
-Vector3s2d GetLinesColor(cv::Mat img, const Lines& lines);
+
 

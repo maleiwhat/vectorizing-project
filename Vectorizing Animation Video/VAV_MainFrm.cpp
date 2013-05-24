@@ -690,6 +690,9 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		int region = cgal_contour.Compute();
 		printf("region: %d\n", region);
 		Vector3s2d colors = GetLinesColor(m_vavImage, cgal_contour.m_OriginLines);
+		Color2Side color2side = GetLinesColor2Side(m_vavImage, cgal_contour.m_ContourLines);
+		OutputDiffusionCurve("zephyr.xml", m_vavImage.GetWidth(),
+			m_vavImage.GetHeight(), color2side, cgal_contour.m_ContourLines);
 
 		// add begin end line
 		for (int i = 0; i < colors.size(); ++i)
@@ -711,7 +714,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			}
 		}
 
-		for (int count = 0; count < 2; count++)
+		for (int count = 0; count < 4; count++)
 		{
 			for (int i = 0; i < colors.size(); ++i)
 			{

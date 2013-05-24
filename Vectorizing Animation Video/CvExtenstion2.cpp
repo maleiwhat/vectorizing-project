@@ -2,6 +2,9 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include "CvExtenstion2.h"
+#include "math/Quaternion.h"
+#include <fstream>
+#include <iostream>
 
 double_vector ComputeAngle(const Line& line)
 {
@@ -92,8 +95,164 @@ ColorConstraint_sptrs MakeColors(int regions, const cv::Mat& mask,
 			const cv::Vec3b& id_color = mask.at<cv::Vec3b>(i, j);
 			int idx = id_color[0] + id_color[1] * 255 + id_color[2] * 255 * 255;
 			const cv::Vec3b& color = img.at<cv::Vec3b>(i, j);
-			ans[idx%ans.size()]->AddPoint(j, i, Vector3(color[0], color[1], color[2]));
+			ans[idx % ans.size()]->AddPoint(j, i, Vector3(color[0], color[1], color[2]));
 		}
 	}
+
 	return ans;
+}
+
+cv::Vec3b& GetColor(cv::Mat& image, int x, int y)
+{
+	if (y < 0) { y = 0; }
+
+	if (y >= image.rows) { y = image.rows - 1; }
+
+	if (x < 0) { x = 0; }
+
+	if (x >= image.cols) { x = image.cols - 1; }
+
+	return image.at<cv::Vec3b>(y, x);
+}
+
+Vector3s2d GetLinesColor(cv::Mat img, const Lines& lines)
+{
+	Vector3s2d ans;
+	double scale = 1.0 / 255.0;
+
+	for (auto it = lines.cbegin(); it != lines.cend(); ++it)
+	{
+		ans.push_back(Vector3s());
+		Vector3s& li = ans.back();
+
+		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2)
+		{
+			cv::Vec3b& color = GetColor(img, it2->x, it2->y);
+			li.push_back(Vector3(color[2]*scale, color[1]*scale, color[0]*scale));
+		}
+	}
+
+	return ans;
+}
+
+Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines)
+{
+	Vector2s2d normals(lines.size());
+
+	for (int i = 0; i < lines.size() ; ++i)
+	{
+		const Line& now_line = lines[i];
+		normals[i].resize(now_line.size());
+
+		for (int j = 0; j < now_line.size() - 1 ; ++j)
+		{
+			normals[i][j] = Quaternion::GetRotation(now_line[j + 1] - now_line[j],
+			                                        -90);
+		}
+
+		normals[i].back() = Quaternion::GetRotation(now_line[now_line.size() - 1] -
+		                    now_line[now_line.size() - 2], -90);
+	}
+
+	for (int i = 0; i < normals.size() ; ++i)
+	{
+		for (int j = 0; j < normals[i].size() ; ++j)
+		{
+			normals[i][j].normalise();
+		}
+	}
+
+	Color2Side ans;
+	Vector3s2d& ans_left = ans.left;
+	Vector3s2d& ans_right = ans.right;
+	ans_left.resize(lines.size());
+	ans_right.resize(lines.size());
+
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		Lines::const_iterator it = lines.cbegin() + i;
+		Vector3s& li = ans_left[i];
+		int j = 0;
+		li.resize(it->size());
+
+		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		{
+			Vector2 pos = *it2 + normals[i][j];
+			cv::Vec3b& color = GetColor(img, pos.x, pos.y);
+			li[j] = Vector3(color[2], color[1], color[0]);
+		}
+
+		Vector3s& ri = ans_right[i];
+		ri.resize(it->size());
+		j = 0;
+
+		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		{
+			Vector2 pos = *it2 - normals[i][j];
+			cv::Vec3b& color = GetColor(img, pos.x, pos.y);
+			ri[j] = Vector3(color[2], color[1], color[0]);
+		}
+	}
+
+	return ans;
+}
+
+void OutputDiffusionCurve(std::string name, int w, int h, const Color2Side& c2s,
+                          const Lines& lines)
+{
+	std::ofstream out(name);
+	out << "<!DOCTYPE CurveSetXML>" << std::endl;
+	out << " <curve_set image_width=\"" << w << "\" image_height=\"" << h <<
+	    "\" nb_curves=\"" << lines.size() << "\" >" << std::endl;
+
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		const Line& now_line = lines[i];
+		const Vector3s& now_left = c2s.left[i];
+		const Vector3s& now_right = c2s.right[i];
+//      out << " <curve nb_control_points=\"" << now_line.size() <<
+//          "\" nb_left_colors=\"" << now_left.size() << "\" nb_right_colors=\"" <<
+//          now_right.size() << "\" nb_blur_points=\"2\" lifetime=\"32\" >" <<
+//          std::endl;
+		out << " <curve nb_control_points=\"" << now_line.size() <<
+		    "\" nb_left_colors=\"2\" nb_right_colors=\"2\" nb_blur_points=\"2\" lifetime=\"32\" >"
+		    << std::endl;
+		out << "  <control_points_set>" << std::endl;
+
+		for (int j = 0; j < now_line.size(); j++)
+		{
+			out << "   <control_point x=\"" << now_line[j].x << "\" y=\"" << now_line[j].y
+			    << "\" />" << std::endl;
+		}
+
+		out << "  </control_points_set>" << std::endl;
+		out << "  <left_colors_set>" << std::endl;
+		double globalID_step = 10000.0 / (now_line.size() - 1);
+
+		for (int j = 1; j < now_left.size(); j++)
+		{
+			out << "   <left_color G=\"" << (int)now_left[j].y << "\" R=\"" <<
+			    (int)now_left[j].z << "\" globalID=\"" << (int)(j * globalID_step) <<
+			    "\" B=\"" << (int)now_left[j].x << "\" />" << std::endl;
+		}
+
+		out << "  </left_colors_set>" << std::endl;
+		out << "  <right_colors_set>" << std::endl;
+
+		for (int j = 1; j < now_right.size() ; j++)
+		{
+			out << "   <right_color G=\"" << (int)now_right[j].y << "\" R=\"" <<
+			    (int)now_right[j].z << "\" globalID=\"" << (int)(j * globalID_step) <<
+			    "\" B=\"" << (int)now_right[j].x << "\" />" << std::endl;
+		}
+
+		out << "  </right_colors_set>" << std::endl;
+		out << "  <blur_points_set>" << std::endl;
+		out << "   <best_scale value=\"0\" globalID=\"0\" />" << std::endl;
+		out << "   <best_scale value=\"0\" globalID=\"10000\" />" << std::endl;
+		out << "  </blur_points_set>" << std::endl;
+		out << " </curve>" << std::endl;
+	}
+
+	out << "</curve_set>" << std::endl;
 }

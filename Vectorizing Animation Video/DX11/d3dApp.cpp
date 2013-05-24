@@ -1253,7 +1253,7 @@ void D3DApp::AddLinesLine(const Lines& lines, const double_vector2d& linewidths)
 
 	for (int i = 0; i < lines.size(); ++i)
 	{
-		Line now_line = lines[i];
+		const Line& now_line = lines[i];
 		Line rights;
 		rights.resize(now_line.size());
 		const double_vector& now_linewidth = linewidths[i];

@@ -1473,20 +1473,6 @@ ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
 	return is;
 }
 
-
-cv::Vec3b& GetColor(cv::Mat& image, int x, int y)
-{
-	if (y < 0) { y = 0; }
-
-	if (y >= image.rows) { y = image.rows - 1; }
-
-	if (x < 0) { x = 0; }
-
-	if (x >= image.cols) { x = image.cols - 1; }
-
-	return image.at<cv::Vec3b>(y, x);
-}
-
 void ClearEdge(cv::Mat& mask2)
 {
 	for (int i = 0; i < mask2.rows ; i++)
@@ -2587,25 +2573,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	return is;
 }
 
-Vector3s2d GetLinesColor(cv::Mat img, const Lines& lines)
-{
-	Vector3s2d ans;
-	double scale = 1.0 / 255.0;
 
-	for (auto it = lines.cbegin(); it != lines.cend(); ++it)
-	{
-		ans.push_back(Vector3s());
-		Vector3s& li = ans.back();
-
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2)
-		{
-			cv::Vec3b& color = GetColor(img, it2->x, it2->y);
-			li.push_back(Vector3(color[2]*scale, color[1]*scale, color[0]*scale));
-		}
-	}
-
-	return ans;
-}
 
 Line CvPointToLine(const CvPoints& cvps)
 {

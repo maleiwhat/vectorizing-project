@@ -2,6 +2,7 @@
 #include "SplineShape.h"
 #include "algSpline.h"
 #include "CvExtenstion.h"
+#include "CvExtenstion2.h"
 #include "math\Quaternion.h"
 
 void Patch::AddOuterPoint(double x, double y)
