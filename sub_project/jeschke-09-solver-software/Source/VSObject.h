@@ -57,8 +57,8 @@ public:
 	m_distDirTexture;    // two textures used interleavedly for diffusion (blurr texture)
 	ID3D10Texture2D* m_Texture;
 	ID3D10Texture2D* m_pDepthStencil;         // for z culling
-	ID3D10Texture2D*
-	m_otherTexture;                // texture that keeps the color on the other side of a curve
+	// texture that keeps the color on the other side of a curve
+	ID3D10Texture2D* m_otherTexture;
 
 public:
 	ID3D10ShaderResourceView* m_diffuseTextureRV[2];

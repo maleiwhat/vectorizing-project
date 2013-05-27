@@ -80,7 +80,25 @@ VSObject::VSObject(ID3D10Device* pd3dDevice)
 
 VSObject::~VSObject(void)
 {
-//	SAFE_RELEASE( pMesh );
+	SAFE_RELEASE(m_diffuseTexture[0]);
+	SAFE_RELEASE(m_diffuseTexture[1]);
+	SAFE_RELEASE(m_distDirTexture);
+	SAFE_RELEASE(m_Texture);
+	SAFE_RELEASE(m_pDepthStencil);
+	SAFE_RELEASE(m_otherTexture);
+	SAFE_RELEASE(m_diffuseTextureRV[0]);
+	SAFE_RELEASE(m_diffuseTextureRV[1]);
+	SAFE_RELEASE(m_diffuseTextureTV[0]);
+	SAFE_RELEASE(m_diffuseTextureTV[1]);
+	SAFE_RELEASE(m_distDirTextureRV);
+	SAFE_RELEASE(m_distDirTextureTV);
+	SAFE_RELEASE(m_TextureRV);
+	SAFE_RELEASE(m_TextureTV);
+	SAFE_RELEASE(m_pDepthStencilView);
+	SAFE_RELEASE(m_otherTextureRV);
+	SAFE_RELEASE(m_otherTextureTV);
+	SAFE_RELEASE(m_pVertexBuffer);
+	SAFE_RELEASE(m_pVertexLayout);
 }
 
 
@@ -202,14 +220,12 @@ void VSObject::RenderDiffusion(ID3D10Device* pd3dDevice)
 	pd3dDevice->RSSetViewports(NumViewports, &pViewports[0]);
 }
 
-
-
-
 // this renders the final image to the screen
 void VSObject::Render(ID3D10Device* pd3dDevice)
 {
 	ID3D10RenderTargetView* old_pRTV = DXUTGetD3D10RenderTargetView();
 	ID3D10DepthStencilView* old_pDSV = DXUTGetD3D10DepthStencilView();
+	pd3dDevice->ClearRenderTargetView(m_TextureTV, D3DXCOLOR(0,0,0,0));
 	pd3dDevice->OMSetRenderTargets(1, &m_TextureTV, m_pDepthStencilView);
 	HRESULT hr;
 	// Create the input layout
@@ -275,7 +291,7 @@ void VSObject::SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* pEffect10,
 	HRESULT hr;
 
 	// create the new mesh
-	if (m_pMeshDiff == NULL)
+ 	if (m_pMeshDiff == NULL)
 	{
 		//create the screen space quad
 		D3DXVECTOR3 pos[3 * 2] =
@@ -309,14 +325,15 @@ void VSObject::SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* pEffect10,
 		//create the screen space quad
 		D3DXVECTOR3 pos2[3 * 2] =
 		{
-			D3DXVECTOR3(-1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(0.0f, 1.0f, +0.5f),
+			D3DXVECTOR3(-1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(-1.0f, 1.0f, +0.5f),
 			D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, 1.0f, +0.5f), D3DXVECTOR3(-1.0f, 1.0f, +0.5f)
 		};
 		D3DXVECTOR2 tex2[3 * 2] =
 		{
-			D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(0.5f, 1.0f),
-			D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(0.0f, 1.0f)
+			D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f),
+			D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 1.0f), D3DXVECTOR2(1.0f, 1.0f)
 		};
+
 		VSO_Vertex pd2[2 * 3];
 
 		for (int ctri = 0; ctri < 2; ctri++)
@@ -332,7 +349,7 @@ void VSObject::SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* pEffect10,
 
 		V(D3DX10CreateMesh(pd3dDevice, VSObject::InputElements,
 		                   VSObject::InputElementCount, "POSITION",
-		                   2 * 3, 1, 0, &m_pMeshTexture));
+		                   2 * 3, 2, 0, &m_pMeshTexture));
 		V(m_pMeshTexture->SetVertexData(0, pd2));
 		V(m_pMeshTexture->CommitToDevice());
 	}
@@ -792,7 +809,7 @@ void VSObject::ConstructCurves(ID3D10Device* pd3dDevice)
 		int bS = m_curve[i1].b[rID].off;
 		int bN2 = m_curve[i1].b[rID + 1].off;
 
-		for (int i2 = 0; i2 < m_curve[i1].pNum - 1; i2 += 3)
+		for (int i2 = 0; i2 < m_curve[i1].pNum - 3; i2 += 3)
 		{
 			for (float t = 0; t < 1.0f; t += 0.1f)
 			{

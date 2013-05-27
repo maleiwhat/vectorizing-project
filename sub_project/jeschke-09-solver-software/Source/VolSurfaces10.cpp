@@ -31,17 +31,17 @@ CD3DSettingsDlg         g_D3DSettingsDlg;       // Device settings dialog
 CDXUTDialog             g_HUD;                  // manages the 3D
 CDXUTDialog
 g_SampleUI;             // dialog for sample specific controls
-float                                   g_showMenue = true;
-bool                                    g_mouseLButtonDown = false;
+float                   g_showMenue = true;
+bool                    g_mouseLButtonDown = false;
 
 // Direct3D9 resources
 CDXUTTextHelper*        g_pTxtHelper = NULL;
 
 // Direct3D10 resources
-ID3D10Device*                   g_device = NULL;
+ID3D10Device*           g_device = NULL;
 ID3DX10Font*            g_pFont10 = NULL;
 ID3DX10Sprite*          g_pSprite10 = NULL;
-VSObject*                               g_vsObj;
+VSObject*               g_vsObj;
 ID3D10RasterizerState*  g_pRasterState;
 ID3D10Effect*           g_pEffect10 = NULL;
 

@@ -2174,7 +2174,7 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
 				s = 0.8;
 			}
 
-			s = pow(s, 1.5f);
+			s = pow(s, 2.0f);
 		}
 	}
 

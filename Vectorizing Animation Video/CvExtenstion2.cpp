@@ -177,7 +177,7 @@ Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines)
 
 		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
-			Vector2 pos = *it2 + normals[i][j];
+			Vector2 pos = *it2 - normals[i][j];
 			cv::Vec3b& color = GetColor(img, pos.x, pos.y);
 			li[j] = Vector3(color[2], color[1], color[0]);
 		}
@@ -188,7 +188,7 @@ Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines)
 
 		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
-			Vector2 pos = *it2 - normals[i][j];
+			Vector2 pos = *it2 + normals[i][j];
 			cv::Vec3b& color = GetColor(img, pos.x, pos.y);
 			ri[j] = Vector3(color[2], color[1], color[0]);
 		}
@@ -197,8 +197,8 @@ Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines)
 	return ans;
 }
 
-void OutputDiffusionCurve(std::string name, int w, int h, const Color2Side& c2s,
-                          const Lines& lines)
+void OutputDiffusionCurve(std::string name, int w, int h, Color2Side& c2s,
+                          Lines& lines)
 {
 	std::ofstream out(name);
 	out << "<!DOCTYPE CurveSetXML>" << std::endl;
@@ -207,16 +207,37 @@ void OutputDiffusionCurve(std::string name, int w, int h, const Color2Side& c2s,
 
 	for (int i = 0; i < lines.size(); ++i)
 	{
-		const Line& now_line = lines[i];
-		const Vector3s& now_left = c2s.left[i];
-		const Vector3s& now_right = c2s.right[i];
-//      out << " <curve nb_control_points=\"" << now_line.size() <<
-//          "\" nb_left_colors=\"" << now_left.size() << "\" nb_right_colors=\"" <<
-//          now_right.size() << "\" nb_blur_points=\"2\" lifetime=\"32\" >" <<
-//          std::endl;
+		Line& now_line = lines[i];
+		Vector3s& now_left = c2s.left[i];
+		Vector3s& now_right = c2s.right[i];
+		for (int j = 0; j < now_line.size(); j ++)
+		{
+			now_line[j] = Quaternion::GetRotation(now_line[j], 90);
+			now_line[j].y = -now_line[j].y;
+		}
+//      if (now_left.size() > 5000)
+//      {
+//          Vector3s tmp;
+//
+//          for (int j = 0; j < now_left.size(); j += 2)
+//          {
+//              tmp.push_back(now_left[j]);
+//          }
+//
+//          now_left = tmp;
+//          tmp.clear();
+//
+//          for (int j = 0; j < now_right.size(); j += 2)
+//          {
+//              tmp.push_back(now_right[j]);
+//          }
+//
+//          now_right = tmp;
+//      }
 		out << " <curve nb_control_points=\"" << now_line.size() <<
-		    "\" nb_left_colors=\"2\" nb_right_colors=\"2\" nb_blur_points=\"2\" lifetime=\"32\" >"
-		    << std::endl;
+		    "\" nb_left_colors=\"" << now_left.size() << "\" nb_right_colors=\"" <<
+		    now_right.size() << "\" nb_blur_points=\"2\" lifetime=\"32\" >" <<
+		    std::endl;
 		out << "  <control_points_set>" << std::endl;
 
 		for (int j = 0; j < now_line.size(); j++)
@@ -227,9 +248,9 @@ void OutputDiffusionCurve(std::string name, int w, int h, const Color2Side& c2s,
 
 		out << "  </control_points_set>" << std::endl;
 		out << "  <left_colors_set>" << std::endl;
-		double globalID_step = 10000.0 / (now_line.size() - 1);
+		double globalID_step = 10000.0 / (now_left.size() - 1);
 
-		for (int j = 1; j < now_left.size(); j++)
+		for (int j = 0; j < now_left.size(); j++)
 		{
 			out << "   <left_color G=\"" << (int)now_left[j].y << "\" R=\"" <<
 			    (int)now_left[j].z << "\" globalID=\"" << (int)(j * globalID_step) <<
@@ -239,7 +260,7 @@ void OutputDiffusionCurve(std::string name, int w, int h, const Color2Side& c2s,
 		out << "  </left_colors_set>" << std::endl;
 		out << "  <right_colors_set>" << std::endl;
 
-		for (int j = 1; j < now_right.size() ; j++)
+		for (int j = 0; j < now_right.size() ; j++)
 		{
 			out << "   <right_color G=\"" << (int)now_right[j].y << "\" R=\"" <<
 			    (int)now_right[j].z << "\" globalID=\"" << (int)(j * globalID_step) <<

@@ -21,5 +21,5 @@ struct Color2Side
 	Vector3s2d right;
 };
 Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines);
-void OutputDiffusionCurve(std::string name, int w, int h, const Color2Side& c2s,
-                          const Lines& lines);
+void OutputDiffusionCurve(std::string name, int w, int h, Color2Side& c2s,
+                          Lines& lines);
