@@ -964,10 +964,10 @@ typedef std::vector<WeightData> Weights;
 void Demo(const Mat& img1u)
 {
 	Mat srcImg1f, show3u = Mat::zeros(img1u.size(), CV_8UC3);
-	//img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
-	srcImg1f = img1u.clone();
+	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
+	//srcImg1f = img1u.clone();
 	CmCurveEx dEdge(srcImg1f);
-	dEdge.CalSecDer(3);
+	dEdge.CalSecDer(7, 0.01f);
 	dEdge.Link();
 	const vector<CmEdge>& edges = dEdge.GetEdges();
 
@@ -982,23 +982,34 @@ void Demo(const Mat& img1u)
 		}
 	}
 
-	namedWindow("Image", 0);
+	//namedWindow("Image", 0);
 	imshow("Derivativs", dEdge.GetDer());
 	imshow("Image", img1u);
-	namedWindow("Curv1", 0);
+	//namedWindow("Curv1", 0);
 	imshow("Curv1", show3u);
 	waitKey(0);
 }
 
 int main(int argc, char* argv[])
 {
-	cv::Mat cImg = cv::imread("data\\Cartoon1.png"), cImg2;
+	cv::Mat cImg = cv::imread("data\\ssss.png"), cImg2;
+
+// 	for (int r = 0; r < cImg.rows; r++)
+// 	{
+// 		for (int c = 0; c < cImg.cols; c++)
+// 		{
+// 			cv::Vec3b& s = cImg.at<cv::Vec3b>(r, c);
+// 			s[0] = int(s[0] * 3) % 255;
+// 			s[1] = int(s[1] * 3) % 255;
+// 			s[2] = int(s[2] * 3) % 255;
+// 		}
+// 	}
+
+	imshow("orgin", cImg);
 	//CmCurveEx::Demo( cImg, 1 );
-	//cv::namedWindow("cImg", 0);
-	cImg.convertTo(cImg, CV_32FC3, 1.0 / 255);
-	Flood_CollectWater(cImg, cImg2, 5, 5);
+//  cImg.convertTo(cImg, CV_32FC3, 1.0 / 255);
+//  Flood_CollectWater(cImg, cImg2, 5, 5);
 	cvtColor(cImg, cImg, CV_BGR2GRAY);
-//	cv::waitKey();
 	Demo(cImg);
 //  for (int k = 0; k < 9; k++)
 //  {

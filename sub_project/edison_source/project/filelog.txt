@@ -1,4 +1,468 @@
-Image C:\Users\damody\Desktop\畢業相關\test_picture\another_data.avi_000000.340.png loaded
+Image C:\Users\damody\Desktop\畢業相關\test_picture\[AirotaxLKSUB][Oda_Nobuna_no_Yabou][02][1280x720][x264_aac][4BC43B3D].mkv_20130322_062850.376.png loaded
+Image C:\Users\damody\Desktop\畢業相關\test_picture\[AirotaxLKSUB][Oda_Nobuna_no_Yabou][02][1280x720][x264_aac][4BC43B3D].mkv_20130322_062850.376.png loaded
+Creating angle lookup table
+Input parameters:
+	Spatial Bandwidth	=    7
+	Color Bandwidth	=  6.5
+	Minimum Region	=   20
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.51 seconds, numRegions =  35354)
+Pruning spurious regions   ...done. (  0.44 seconds, numRegions =   1698)
+timer stop, elapsed 1.10 seconds.
+Input parameters:
+	Spatial Bandwidth		=    7
+	Color Bandwidth		=  6.5
+	Minimum Region		=   20
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.06 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.70 seconds, numRegions = 152050)
+Pruning spurious regions   ...done. (  0.51 seconds, numRegions =   3803)
+timer stop, elapsed 1.40 seconds.
+Input parameters:
+	Spatial Bandwidth		=    7
+	Color Bandwidth		=  6.5
+	Minimum Region		=   40
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.70 seconds, numRegions = 152050)
+Pruning spurious regions   ...done. (  0.48 seconds, numRegions =   1778)
+timer stop, elapsed 1.36 seconds.
+Input parameters:
+	Spatial Bandwidth		=    7
+	Color Bandwidth		=  3.0
+	Minimum Region		=   40
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.06 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.57 seconds, numRegions = 192337)
+Pruning spurious regions   ...done. (  0.35 seconds, numRegions =   4094)
+timer stop, elapsed 1.11 seconds.
+Input parameters:
+	Spatial Bandwidth		=    4
+	Color Bandwidth		=  3.0
+	Minimum Region		=   50
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.57 seconds, numRegions = 192337)
+Pruning spurious regions   ...done. (  0.34 seconds, numRegions =   3234)
+timer stop, elapsed 1.9 seconds.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  7.0
+	Minimum Region		=   50
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.73 seconds, numRegions = 149917)
+Pruning spurious regions   ...done. (  0.50 seconds, numRegions =   1357)
+timer stop, elapsed 1.39 seconds.
+Image C:\Users\damody\Desktop\畢業相關\test_picture\Mobile Suit Gundam SEED HD Remaster - 03 (PHASE-03) (BD 1280x720 AVC AAC).mp4_20130427_125736.284.png loaded
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  7.0
+	Minimum Region		=   50
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+done.
+Applying mean shift (Using Lattice) ... done.Operation Canceled.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  7.0
+	Minimum Region		=   50
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 204545)
+Applying transitive closure...done. (  0.47 seconds, numRegions = 122478)
+Pruning spurious regions   ...done. (  0.27 seconds, numRegions =   1136)
+timer stop, elapsed 0.89 seconds.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  7.0
+	Minimum Region		=   70
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 204545)
+Applying transitive closure...done. (  0.46 seconds, numRegions = 122478)
+Pruning spurious regions   ...done. (  0.27 seconds, numRegions =    803)
+timer stop, elapsed 0.89 seconds.
+Image C:\Users\damody\Desktop\畢業相關\test_picture\[AirotaxLKSUB][Oda_Nobuna_no_Yabou][02][1280x720][x264_aac][4BC43B3D].mkv_20130322_062856.242.png loaded
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  7.0
+	Minimum Region		=   70
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+done.
+Applying mean shift (Using Lattice) ... done.Operation Canceled.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  7.0
+	Minimum Region		=   70
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 101360)
+Applying transitive closure...done. (  0.65 seconds, numRegions =  63439)
+Pruning spurious regions   ...done. (  0.48 seconds, numRegions =   1180)
+timer stop, elapsed 1.28 seconds.
+Image C:\Users\damody\Desktop\畢業相關\test_picture\[AirotaxLKSUB][Oda_Nobuna_no_Yabou][02][1280x720][x264_aac][4BC43B3D].mkv_20130322_062850.376.png loaded
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  7.0
+	Minimum Region		=   70
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.75 seconds, numRegions = 149917)
+Pruning spurious regions   ...done. (  0.49 seconds, numRegions =   1009)
+timer stop, elapsed 1.41 seconds.
+Image C:\Users\damody\Desktop\畢業相關\test_picture\[AirotaxLKSUB][Oda_Nobuna_no_Yabou][02][1280x720][x264_aac][4BC43B3D].mkv_20130322_062633.641.png loaded
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  7.0
+	Minimum Region		=   70
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 313823)
+Applying transitive closure...done. (  0.67 seconds, numRegions = 157531)
+Pruning spurious regions   ...done. (  0.44 seconds, numRegions =    983)
+timer stop, elapsed 1.29 seconds.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  7.0
+	Minimum Region		=   20
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 313823)
+Applying transitive closure...done. (  0.67 seconds, numRegions = 157531)
+Pruning spurious regions   ...done. (  0.45 seconds, numRegions =   3635)
+timer stop, elapsed 1.29 seconds.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  2.0
+	Minimum Region		=   60
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 313823)
+Applying transitive closure...done. (  0.43 seconds, numRegions = 227698)
+Pruning spurious regions   ...done. (  0.22 seconds, numRegions =   3688)
+timer stop, elapsed 0.83 seconds.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  2.0
+	Minimum Region		=   70
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 313823)
+Applying transitive closure...done. (  0.43 seconds, numRegions = 227698)
+Pruning spurious regions   ...done. (  0.22 seconds, numRegions =   3136)
+timer stop, elapsed 0.83 seconds.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  3.0
+	Minimum Region		=   70
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 313823)
+Applying transitive closure...done. (  0.47 seconds, numRegions = 196473)
+Pruning spurious regions   ...done. (  0.24 seconds, numRegions =   2117)
+timer stop, elapsed 0.89 seconds.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  3.0
+	Minimum Region		=   70
+	Gradient Window Radius	=    3
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 313823)
+Applying transitive closure...done. (  0.44 seconds, numRegions = 257541)
+Pruning spurious regions   ...done. (  0.23 seconds, numRegions =   3521)
+timer stop, elapsed 0.84 seconds.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  3.0
+	Minimum Region		=  150
+	Gradient Window Radius	=    3
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.06 seconds, numRegions = 313823)
+Applying transitive closure...done. (  0.46 seconds, numRegions = 257541)
+Pruning spurious regions   ...done. (  0.24 seconds, numRegions =   1785)
+timer stop, elapsed 0.88 seconds.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  3.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    3
+	Mixing Parameter		=  0.8
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 313823)
+Applying transitive closure...done. (  0.45 seconds, numRegions = 235421)
+Pruning spurious regions   ...done. (  0.26 seconds, numRegions =   1853)
+timer stop, elapsed 0.88 seconds.
+Image C:\Users\damody\Desktop\畢業相關\test_picture\[AirotaxLKSUB][Oda_Nobuna_no_Yabou][02][1280x720][x264_aac][4BC43B3D].mkv_20130322_062850.376.png loaded
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  3.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    3
+	Mixing Parameter		=  0.8
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.56 seconds, numRegions = 233157)
+Pruning spurious regions   ...done. (  0.34 seconds, numRegions =   2039)
+timer stop, elapsed 1.7 seconds.
+Image C:\Users\damody\Desktop\畢業相關\test_picture\2.png loaded
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  3.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    3
+	Mixing Parameter		=  0.8
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+done.
+Applying mean shift (Using Lattice) ... done.Operation Canceled.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  3.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    3
+	Mixing Parameter		=  0.8
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.08 seconds, numRegions = 361759)
+Applying transitive closure...done. (  1.33 seconds, numRegions = 285838)
+Pruning spurious regions   ...done. (  1.09 seconds, numRegions =   1723)
+timer stop, elapsed 2.62 seconds.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  2.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    3
+	Mixing Parameter		=  0.8
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.08 seconds, numRegions = 361759)
+Applying transitive closure...done. (  0.72 seconds, numRegions = 293619)
+Pruning spurious regions   ...done. (  0.50 seconds, numRegions =   1975)
+timer stop, elapsed 1.41 seconds.
+Input parameters:
+	Spatial Bandwidth		=    8
+	Color Bandwidth		=  3.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    3
+	Mixing Parameter		=  0.8
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.08 seconds, numRegions = 361759)
+Applying transitive closure...done. (  1.33 seconds, numRegions = 285838)
+Pruning spurious regions   ...done. (  1.10 seconds, numRegions =   1723)
+timer stop, elapsed 2.63 seconds.
+Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Creating angle lookup table
+Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
 Creating angle lookup table
 Start edge detection...
 ...smooth-differentiation filtering
@@ -40,7 +504,393 @@ Start edge detection...
 ...nonmaxima supression: arc
 ...hysteresis thresholding, high: box  low: arc
 Done edge detection.
+Creating angle lookup table
 Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: vertical line
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Creating angle lookup table
+Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+...nonmaxima supression: vertical line
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: vertical line
+...hysteresis thresholding, high: line  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: box
+...hysteresis thresholding, high: vertical line  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: vertical line
+...hysteresis thresholding, high: vertical line  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: line
+...hysteresis thresholding, high: vertical line  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: line
+...hysteresis thresholding, high: line  low: arc
+Done edge detection.
+ hyst high custom x:  0.000000 0.000000 0.700000 1.000000
+ hist high custom y:  0.000000 1.000000 0.700000 0.000000
+Start edge detection...
+...nonmaxima supression: line
+...hysteresis thresholding, high: custom  low: arc
+Done edge detection.
+ hyst high custom x:  0.000000 0.000000 0.695313 1.000000
+ hist high custom y:  0.000000 0.851563 0.777344 0.000000
+Start edge detection...
+...nonmaxima supression: line
+...hysteresis thresholding, high: custom  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: line
+...hysteresis thresholding, high: horizontal line  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: line
+...hysteresis thresholding, high: horizontal line  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: line
+...hysteresis thresholding, high: horizontal line  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: line
+...hysteresis thresholding, high: horizontal line  low: arc
+Done edge detection.
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: box
+Done edge detection.
+ hyst low custom x:  0.000000 0.000000 0.730469 0.875000
+ low custom y:  0.000000 0.191406 0.824219 0.000000
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: custom
+Done edge detection.
+ hyst low custom x:  0.000000 0.000000 0.730469 0.875000
+ low custom y:  0.000000 0.519531 0.824219 0.000000
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: custom
+Done edge detection.
+ hyst low custom x:  0.000000 0.000000 0.710938 0.875000
+ low custom y:  0.000000 0.519531 0.687500 0.000000
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: custom
+Done edge detection.
+ hyst low custom x:  0.000000 0.000000 0.710938 0.875000
+ low custom y:  0.000000 0.519531 0.687500 0.000000
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: custom
+Done edge detection.
+Creating angle lookup table
+ hyst low custom x:  0.000000 0.000000 0.710938 0.875000
+ low custom y:  0.000000 0.519531 0.687500 0.000000
+Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: custom
+Done edge detection.
+ hyst low custom x:  0.000000 0.000000 0.710938 0.875000
+ low custom y:  0.000000 0.519531 0.687500 0.000000
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: custom
+Done edge detection.
+ hyst low custom x:  0.000000 0.000000 0.710938 0.875000
+ low custom y:  0.000000 0.519531 0.687500 0.000000
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: custom
+Done edge detection.
+ hyst low custom x:  0.000000 0.000000 0.710938 0.875000
+ low custom y:  0.000000 0.519531 0.687500 0.000000
+Start edge detection...
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: custom
+Done edge detection.
+Creating angle lookup table
+ hyst low custom x:  0.000000 0.000000 0.710938 0.875000
+ low custom y:  0.000000 0.519531 0.687500 0.000000
+Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: custom
+Done edge detection.
+Creating angle lookup table
+ hyst low custom x:  0.000000 0.000000 0.710938 0.875000
+ low custom y:  0.000000 0.519531 0.687500 0.000000
+Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: custom
+Done edge detection.
+
+Image C:\Users\damody\Desktop\畢業相關\test_picture\[AirotaxLKSUB][Oda_Nobuna_no_Yabou][02][1280x720][x264_aac][4BC43B3D].mkv_20130322_062850.376.png loaded
+Input parameters:
+	Spatial Bandwidth	=    7
+	Color Bandwidth	=  6.5
+	Minimum Region	=   20
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.51 seconds, numRegions =  35354)
+Pruning spurious regions   ...done. (  0.44 seconds, numRegions =   1698)
+timer stop, elapsed 1.10 seconds.
+Input parameters:
+	Spatial Bandwidth		=    7
+	Color Bandwidth		=  2.0
+	Minimum Region		=   20
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.59 seconds, numRegions = 224112)
+Pruning spurious regions   ...done. (  0.34 seconds, numRegions =  10916)
+timer stop, elapsed 1.12 seconds.
+Input parameters:
+	Spatial Bandwidth		=    7
+	Color Bandwidth		=  2.0
+	Minimum Region		=  150
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.56 seconds, numRegions = 224112)
+Pruning spurious regions   ...done. (  0.31 seconds, numRegions =   1554)
+timer stop, elapsed 1.5 seconds.
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		=  2.0
+	Minimum Region		=  150
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.55 seconds, numRegions = 224112)
+Pruning spurious regions   ...done. (  0.32 seconds, numRegions =   1554)
+timer stop, elapsed 1.5 seconds.
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		=  2.0
+	Minimum Region		=  150
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.6
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.53 seconds, numRegions = 214625)
+Pruning spurious regions   ...done. (  0.31 seconds, numRegions =   1549)
+timer stop, elapsed 1.3 seconds.
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		=  2.0
+	Minimum Region		=  150
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.6
+	Threshold			=  0.6
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.52 seconds, numRegions = 184002)
+Pruning spurious regions   ...done. (  0.29 seconds, numRegions =   1511)
+timer stop, elapsed 0.99 seconds.
+The value of the mixture parameter cannot be negative or greater than one.
+The value of the mixture parameter cannot be negative or greater than one.
+The value of the mixture parameter cannot be negative or greater than one.
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		=  5.0
+	Minimum Region		=  150
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.9
+	Threshold			=  0.6
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.63 seconds, numRegions =  78052)
+Pruning spurious regions   ...done. (  0.37 seconds, numRegions =    482)
+timer stop, elapsed 1.17 seconds.
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		=  2.0
+	Minimum Region		=  150
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.9
+	Threshold			=  0.6
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.51 seconds, numRegions = 181400)
+Pruning spurious regions   ...done. (  0.29 seconds, numRegions =   1518)
+timer stop, elapsed 0.98 seconds.
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		=  3.0
+	Minimum Region		=  150
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.9
+	Threshold			=  0.9
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.54 seconds, numRegions = 121203)
+Pruning spurious regions   ...done. (  0.29 seconds, numRegions =   1091)
+timer stop, elapsed 1.1 seconds.
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		=  3.0
+	Minimum Region		=  150
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.5
+	Threshold			=  0.5
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.55 seconds, numRegions = 149485)
+Pruning spurious regions   ...done. (  0.30 seconds, numRegions =   1094)
+timer stop, elapsed 1.4 seconds.
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		=  3.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.5
+	Threshold			=  0.5
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.55 seconds, numRegions = 149485)
+Pruning spurious regions   ...done. (  0.31 seconds, numRegions =   1560)
+timer stop, elapsed 1.4 seconds.
+Image C:\Users\damody\Desktop\畢業相關\test_picture\another_data.avi_000000.340.png loaded
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		=  3.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.5
+	Threshold			=  0.5
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions = 125237)
+Applying transitive closure...done. (  0.14 seconds, numRegions =  86886)
+Pruning spurious regions   ...done. (  0.07 seconds, numRegions =    731)
+timer stop, elapsed 0.28 seconds.
+Image C:\Users\damody\Desktop\畢業相關\test_picture\another_data.avi_000000.340.png loaded
+Creating angle lookup table
+Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Creating angle lookup table
+Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
+Creating angle lookup table
+Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
 ...nonmaxima supression: arc
 ...hysteresis thresholding, high: box  low: arc
 Done edge detection.
@@ -48,7 +898,12 @@ Start edge detection...
 ...nonmaxima supression: arc
 ...hysteresis thresholding, high: box  low: arc
 Done edge detection.
+Creating angle lookup table
 Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
 ...nonmaxima supression: arc
 ...hysteresis thresholding, high: box  low: arc
 Done edge detection.
@@ -56,7 +911,104 @@ Start edge detection...
 ...nonmaxima supression: arc
 ...hysteresis thresholding, high: box  low: arc
 Done edge detection.
+Input parameters:
+	Spatial Bandwidth	=   10
+	Color Bandwidth	=  3.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions = 125237)
+Applying transitive closure...done. (  0.09 seconds, numRegions =  78219)
+Pruning spurious regions   ...done. (  0.06 seconds, numRegions =    723)
+timer stop, elapsed 0.21 seconds.
+Input parameters:
+	Spatial Bandwidth	=   10
+	Color Bandwidth	=  4.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions = 125237)
+Applying transitive closure...done. (  0.09 seconds, numRegions =  65012)
+Pruning spurious regions   ...done. (  0.05 seconds, numRegions =    629)
+timer stop, elapsed 0.19 seconds.
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		=  3.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.5
+	Threshold			=  0.5
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions = 125237)
+Applying transitive closure...done. (  0.13 seconds, numRegions =  86886)
+Pruning spurious regions   ...done. (  0.06 seconds, numRegions =    731)
+timer stop, elapsed 0.25 seconds.
+Image C:\Users\damody\Desktop\畢業相關\test_picture\Mobile Suit Gundam SEED HD Remaster - 03 (PHASE-03) (BD 1280x720 AVC AAC).mp4_20130427_125736.284.png loaded
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		=  3.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.5
+	Threshold			=  0.5
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 204545)
+Applying transitive closure...done. (  0.39 seconds, numRegions = 106469)
+Pruning spurious regions   ...done. (  0.20 seconds, numRegions =    852)
+timer stop, elapsed 0.76 seconds.
+Input parameters:
+	Spatial Bandwidth		=    5
+	Color Bandwidth		=  3.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.5
+	Threshold			=  0.5
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 204545)
+Applying transitive closure...done. (  0.39 seconds, numRegions = 106469)
+Pruning spurious regions   ...done. (  0.20 seconds, numRegions =    852)
+timer stop, elapsed 0.76 seconds.
+Input parameters:
+	Spatial Bandwidth		=    6
+	Color Bandwidth		=  3.0
+	Minimum Region		=   80
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.5
+	Threshold			=  0.5
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.07 seconds, numRegions = 204545)
+Applying transitive closure...done. (  0.41 seconds, numRegions = 106469)
+Pruning spurious regions   ...done. (  0.21 seconds, numRegions =   1067)
+timer stop, elapsed 0.79 seconds.
+Image C:\Users\damody\Desktop\畢業相關\test_picture\Mobile Suit Gundam SEED HD Remaster - 03 (PHASE-03) (BD 1280x720 AVC AAC).mp4_20130427_125736.284.png loaded
+Creating angle lookup table
 Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
 ...nonmaxima supression: arc
 ...hysteresis thresholding, high: box  low: arc
 Done edge detection.
