@@ -284,7 +284,7 @@ Vec3bs2d& CvPatch::InterColor()
 ColorConstraint_sptr CvPatch::GetColorConstraint()
 {
 	ColorConstraint_sptr res = ColorConstraint_sptr(new ColorConstraint);
-	cv::Rect rect = cv::boundingRect(m_Outer);
+	cv::Rect rect = cv::boundingRect(m_Outer2);
 
 	for (int i = rect.x; i < rect.x + rect.width - 1; i += 3)
 	{
@@ -324,7 +324,7 @@ CvPoints2d& CvPatch::Inter2()
 
 bool CvPatch::Inside(double x, double y)
 {
-	if (cv::pointPolygonTest(m_Outer, cv::Point2f(x, y), false) > 0)
+	if (cv::pointPolygonTest(m_Outer2, cv::Point2f(x, y), false) > 0)
 	{
 		for (int i = 0; i < m_Inter.size(); ++i)
 		{

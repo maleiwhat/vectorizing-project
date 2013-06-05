@@ -322,7 +322,11 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt,
 		}
 	}
 
-	assert(start == last);
+	//assert(start == last);
+	if (start != last)
+	{
+		m_Triangulation.insert_constraint(last, start);
+	}
 }
 
 void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt,
@@ -411,7 +415,11 @@ void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt,
 		}
 	}
 
-	assert(start == last);
+	//assert(start == last);
+	if (start != last)
+	{
+		m_Triangulation.insert_constraint(last, start);
+	}
 }
 
 void TriangulationCgal_Patch::insert_polygonInter(Triangulation& cdt,
