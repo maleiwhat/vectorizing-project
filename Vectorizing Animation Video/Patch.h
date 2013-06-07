@@ -3,7 +3,7 @@
 #include <math/Vector3.h>
 #include <opencv2/core/core.hpp>
 #include "Edge.h"
-#include "ColorConstraintMedian.h"
+#include "ColorConstraint.h"
 
 typedef std::vector<cv::Vec3b> Vec3bs;
 typedef std::vector<Vec3bs> Vec3bs2d;
@@ -21,6 +21,7 @@ public:
 	void    Clear();
 	void    SetImage(cv::Mat& image);
 	ColorConstraint_sptr GetColorConstraint();
+	ColorConstraint_sptr GetColorConstraint2(cv::Mat& tmp);
 	bool    Inside(double x, double y);
 private:
 	CvPoints    m_Outer;

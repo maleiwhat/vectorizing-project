@@ -282,9 +282,8 @@ void OutputDiffusionCurve(std::string name, int w, int h, Color2Side& c2s,
 
 cv::Mat MakeIsoSurfaceImg(cv::Mat img, int n)
 {
-	//cv::GaussianBlur(img, img, cv::Size(5, 5), 3, 3);
-	cv::GaussianBlur(img, img, cv::Size(3, 3), 1);
-	
+	//cv::GaussianBlur(img, img, cv::Size(5, 5), 2);
+	//cv::GaussianBlur(img, img, cv::Size(3, 3), 1);
 	cv::Mat ans = img.clone();
 
 	for (int i = 0; i < img.rows; i++)
@@ -292,17 +291,37 @@ cv::Mat MakeIsoSurfaceImg(cv::Mat img, int n)
 		for (int j = 0; j < img.cols; j++)
 		{
 			cv::Vec3b& v = img.at<cv::Vec3b>(i, j);
-// 			float vv = 0.299 * v[2] + 0.587 * v[1] + 0.114 * v[0];
-// 			vv = int(vv / n) * n;
+			float vv = 0.299 * v[2] + 0.587 * v[1] + 0.114 * v[0]+1;
+			vv = int(vv / n) * n;
 			cv::Vec3b& a = ans.at<cv::Vec3b>(i, j);
-			a[0] = int(v[0] / n) * n;
-			a[1] = int(v[1] / n) * n;
-			a[2] = int(v[2] / n) * n;
+			a[0] = a[1] = a[2] = vv;
+//          a[0] = int(v[0] / n) * n;
+//          a[1] = int(v[1] / n) * n;
+//          a[2] = int(v[2] / n) * n;
 		}
 	}
-	cv::medianBlur(ans, ans, 3);
- 	cv::medianBlur(ans, ans, 5);
-// 	cv::medianBlur(ans, ans, 7);
+
+//  cv::medianBlur(ans, ans, 3);
+//  cv::medianBlur(ans, ans, 5);
+//  cv::medianBlur(ans, ans, 7);
 	return ans;
+}
+
+ColorConstraint_sptr GetColorConstraint(cv::Mat& origin, cv::Mat& tmp)
+{
+	ColorConstraint_sptr res = ColorConstraint_sptr(new ColorConstraint);
+
+	for (int i = 1; i < origin.cols; i++)
+	{
+		for (int j = 1; j < origin.rows - 1; j++)
+		{
+			if (tmp.at<uchar>(j + 1, i + 1))
+			{
+				res->AddPoint(i, j, origin.at<cv::Vec3b>(j, i));
+			}
+		}
+	}
+
+	return res;
 }
 

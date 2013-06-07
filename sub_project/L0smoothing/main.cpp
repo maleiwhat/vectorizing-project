@@ -406,7 +406,7 @@ Matrix2 psf2otf(Matrix& psf, Matrix& outSize)
 	return otf;
 }
 
-cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.1, double kappa = 2.0)
+cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.02, double kappa = 2.0)
 {
 	cv::Mat out(Im.rows, Im.cols, CV_32FC3);
 	Matrix SR(Im.rows, Im.cols);
@@ -424,7 +424,7 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.1, double kappa = 2.0)
 		}
 	}
 
-	double betamax = 1e4;
+	double betamax = 1e2;
 	Matrix fx(1, 2);
 	fx(0, 0) = 1;
 	fx(0, 1) = -1;
@@ -463,9 +463,9 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.1, double kappa = 2.0)
 		{
 			for (int i = 0; i < Im.rows; ++i)
 			{
-				if (Pos2Sum(i, j) > lb)
+				if (Pos2Sum(i, j) < lb)
 				{
-					hR(i, j) *= 1.1;
+					hR(i, j) = 0;
 					vR(i, j) = 0;
 					hG(i, j) = 0;
 					vG(i, j) = 0;

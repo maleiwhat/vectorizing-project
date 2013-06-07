@@ -982,17 +982,17 @@ void Demo(const Mat& img1u)
 		}
 	}
 
-	//namedWindow("Image", 0);
 	imshow("Derivativs", dEdge.GetDer());
-	imshow("Image", img1u);
-	//namedWindow("Curv1", 0);
+	imshow("GetDer2", dEdge.GetDer2());
+	//imshow("GetOrnt", dEdge.GetOrnt());
+	//imshow("Image", img1u);
 	imshow("Curv1", show3u);
 	waitKey(0);
 }
 
 int main(int argc, char* argv[])
 {
-	cv::Mat cImg = cv::imread("data\\ssss.png"), cImg2;
+	cv::Mat cImg = cv::imread(argv[1]), cImg2;
 
 // 	for (int r = 0; r < cImg.rows; r++)
 // 	{

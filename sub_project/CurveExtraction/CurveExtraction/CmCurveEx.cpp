@@ -359,6 +359,36 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
 	GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0);
 	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
+	float sum = 0;
+
+	for (int r = 0; r < m_pDer1f.rows; r++)
+	{
+		for (int c = 0; c < m_pDer1f.cols; c++)
+		{
+			float s = m_pDer1f.at<float>(r, c);
+			sum += s;
+		}
+	}
+
+	sum = sum / m_pDer1f.rows / m_pDer1f.cols;
+	sum *= 0.9;
+	for (int r = 0; r < m_pDer1f.rows; r++)
+	{
+		for (int c = 0; c < m_pDer1f.cols; c++)
+		{
+			float s = m_pDer1f.at<float>(r, c);
+			uchar& v = m_pDer2.at<uchar>(r, c);
+
+			if (s < sum)
+			{
+				v = 0;
+			}
+			else
+			{
+				v = 255;
+			}
+		}
+	}
 	return m_pDer1f;
 }
 

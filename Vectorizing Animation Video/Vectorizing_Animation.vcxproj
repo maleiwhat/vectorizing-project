@@ -196,7 +196,9 @@
     <ClInclude Include="clipper.hpp" />
     <ClInclude Include="CmCurveEx.h" />
     <ClInclude Include="ColorConstraint.h" />
+    <ClInclude Include="ColorConstraintAverage.h" />
     <ClInclude Include="ColorConstraintMedian.h" />
+    <ClInclude Include="ColorConstraintRBF.h" />
     <ClInclude Include="ConvStr.h" />
     <ClInclude Include="curve\BezierCurve.h" />
     <ClInclude Include="curve\BsplineCurve.h" />
@@ -280,8 +282,9 @@
     <ClCompile Include="ClassView.cpp" />
     <ClCompile Include="clipper.cpp" />
     <ClCompile Include="CmCurveEx.cpp" />
-    <ClCompile Include="ColorConstraint.cpp" />
+    <ClCompile Include="ColorConstraintAverage.cpp" />
     <ClCompile Include="ColorConstraintMedian.cpp" />
+    <ClCompile Include="ColorConstraintRBF.cpp" />
     <ClCompile Include="ConvStr.cpp" />
     <ClCompile Include="curve\BezierCurve.cpp" />
     <ClCompile Include="curve\BsplineCurve.cpp" />

@@ -285,6 +285,12 @@
     <ClInclude Include="clipper.hpp">
       <Filter>clipper</Filter>
     </ClInclude>
+    <ClInclude Include="ColorConstraintAverage.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorConstraintRBF.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="algSpline.cpp">
@@ -300,9 +306,6 @@
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="CmCurveEx.cpp">
-      <Filter>原始程式檔</Filter>
-    </ClCompile>
-    <ClCompile Include="ColorConstraint.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="ColorConstraintMedian.cpp">
@@ -499,6 +502,12 @@
     </ClCompile>
     <ClCompile Include="clipper.cpp">
       <Filter>clipper</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorConstraintAverage.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorConstraintRBF.cpp">
+      <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

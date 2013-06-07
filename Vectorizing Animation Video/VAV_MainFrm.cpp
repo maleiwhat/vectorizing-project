@@ -619,18 +619,21 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	D3DApp& d3dApp = ((VAV_View*)this->GetActiveView())->GetD3DApp();
 	ImageSpline is;
 	const bool DRAW_PATCH = false;
-	const bool DRAW_SEPARATE_PATCH = true;
-	const bool DRAW_CONTOUR = false;
+	const bool DRAW_SEPARATE_PATCH = false;
+	const bool DRAW_CONTOUR = true;
 	const bool DRAW_CONTOUR_CONTROL_POINT = false;
 	const bool DRAW_CONTOUR_SKELETON_POINT = false;
 	const bool DRAW_ISOSURFACE = true;
 
 	if (DRAW_ISOSURFACE)
 	{
-		cv::Mat isoimg = MakeIsoSurfaceImg(m_vavImage, 8);
+		cv::imshow("vavImage", (cv::Mat)m_vavImage);
+		cv::Mat isoimg = MakeIsoSurfaceImg(m_vavImage, 4);
 		cv::imshow("isoimg", isoimg);
-		cv::waitKey(1);
-		is = S4GetPatchs(isoimg, 0, 0);
+		isoimg = MarkDiffence(isoimg, 3, 3);
+		cv::imshow("isoimg2", isoimg);
+		cv::waitKey();
+		//is = S5GetPatchs(isoimg, m_vavImage);
 	}
 	//Lines lines1 = m_vavImage.AnimaEdge(5, 0.01, 0.1);
 	//Lines lines = ComputeTrappedBallEdge(m_vavImage, lines1, 5);

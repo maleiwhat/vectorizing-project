@@ -340,6 +340,29 @@ bool CvPatch::Inside(double x, double y)
 	return false;
 }
 
+ColorConstraint_sptr CvPatch::GetColorConstraint2(cv::Mat& tmp)
+{
+	ColorConstraint_sptr res = ColorConstraint_sptr(new ColorConstraint);
+	cv::Rect rect = cv::boundingRect(m_Outer2);
+	cv::Scalar color = cv::Scalar(255);
+	tmp = cv::Scalar(0);
+	CvPoints2d tmpcvp;
+	tmpcvp.push_back(m_Outer2);
+	drawContours(tmp, tmpcvp, 0, color, -1, 8);
+	for (int i = rect.x; i < rect.x + rect.width - 1; i++)
+	{
+		for (int j = rect.y; j < rect.y + rect.height - 1; j++)
+		{
+			if (tmp.at<uchar>(j, i))
+			{
+				res->AddPoint(i, j, m_refImage->at<cv::Vec3b>(j, i));
+			}
+		}
+	}
+
+	return res;
+}
+
 Patch ToPatch(CvPatch& cvp)
 {
 	Patch p;

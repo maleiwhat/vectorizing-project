@@ -10,6 +10,7 @@
 #include "algSpline.h"
 #include "SplineShape.h"
 #include "math\Vector2.h"
+#include "CvExtenstion2.h"
 
 
 Weights wm_init;
@@ -2037,18 +2038,19 @@ void FixHole(cv::Mat& patchImage)
 
 	for (int count = 0; count < 4; ++count)
 	{
+		cv::Mat last = patchImage.clone();
 		int y = 0;
 		y = count % 2;
 
-		for (; y < patchImage.rows; y += 2)
+		for (; y < patchImage.rows; y ++)
 		{
-			for (int x = 0; x < patchImage.cols; x += 2)
+			for (int x = 0; x < patchImage.cols; x ++)
 			{
 				cv::Vec3b& color = patchImage.at<cv::Vec3b>(y, x);
 
 				if (color[0] == 0 && color[1] == 0 && color[2] == 0)
 				{
-					GetMatrixb(3, 3, ary, x, y, patchImage);
+					GetMatrixb(3, 3, ary, x, y, last);
 
 					for (int i = 0; i < 9; i += 1)
 					{
@@ -2064,13 +2066,13 @@ void FixHole(cv::Mat& patchImage)
 				}
 			}
 
-			for (int x = 1; x < patchImage.cols; x += 2)
+			for (int x = 1; x < patchImage.cols; x ++)
 			{
 				cv::Vec3b& color = patchImage.at<cv::Vec3b>(y, x);
 
 				if (color[0] == 0 && color[1] == 0 && color[2] == 0)
 				{
-					GetMatrixb(3, 3, ary, x, y, patchImage);
+					GetMatrixb(3, 3, ary, x, y, last);
 
 					for (int i = 1; i < 9; i += 2)
 					{
@@ -2646,5 +2648,165 @@ ImageSpline GetImageSpline(CvPatchs& patchs)
 	}
 
 	return is;
+}
+
+ImageSpline S5GetPatchs(const cv::Mat& image0, const cv::Mat& orig)
+{
+	assert(image0.type() == CV_8UC3);
+	cv::Mat img1u, img2u, cImg2;
+	cImg2 = image0.clone();
+	cvtColor(image0, img1u, CV_BGR2GRAY);
+	cv::Mat srcImg1f, show3u = cv::Mat::zeros(img1u.size(), CV_8UC3);
+	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
+	cv::Mat mask, image, joint_mask, tmp_image, outimage;
+	image0.copyTo(image);
+	joint_mask.create(image.rows * 2 + 1, image.cols * 2 + 1, CV_8UC1);
+	tmp_image.create(image.rows + 2, image.cols + 2, CV_8UC3);
+	joint_mask = cv::Scalar::all(0);
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	image0.copyTo(image);
+	image0.copyTo(outimage);
+	mask = cv::Scalar::all(0);
+	int cc = 1;
+	CvPatchs tmp_cvps;
+
+	for (int i = 1; i < image.rows - 1; i++)
+	{
+		for (int j = 1; j < image.cols - 1; j++)
+		{
+			S5FloodFill(cc, image, mask, joint_mask, 0, j, i, tmp_cvps, 1, image0,
+			            outimage);
+		}
+	}
+
+	// create bigger image to fix border problem
+	tmp_image = cv::Scalar::all(0);
+
+	for (int i = 0; i < image.rows ; i++)
+	{
+		for (int j = 0; j < image.cols ; j++)
+		{
+			tmp_image.at<cv::Vec3b>(i + 1, j + 1) = image.at<cv::Vec3b>(i , j);
+		}
+	}
+
+	imshow("tmp_image", tmp_image);
+	FixHole(tmp_image);
+	imshow("tmp_image2", tmp_image);
+	ImageSpline is;
+	return is;
+}
+
+void S5FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
+                 int range, int x, int y, CvPatchs& out_array, int dilation,
+                 cv::Mat image_orig, cv::Mat out)
+{
+	if (mask01.at<uchar>(y + 1, x + 1) > 0
+	        || mask02.at<uchar>(y , x) > 0
+	   )
+	{
+		return;
+	}
+
+	cv::Point seed(x, y);
+	cv::Rect ccomp;
+	printf("cc %d\n", cc);
+	cc++;
+	cv::Scalar newVal(0, 0, 0);
+	int area;
+	int lo = range;
+	int up = range;
+	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
+	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
+	cv::Mat mask01_clone = mask01.clone();
+	cv::Mat image_clone = image.clone();
+	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
+	                 cv::Scalar(up, up, up), flags);
+//  if (area < 5)
+//  {
+//      return;
+//  }
+	// get Contour line
+	cv::Mat mask2 = mask01.clone();
+	ClearEdge(mask2);
+
+	for (int i = 1; i < mask2.rows - 1; i++)
+	{
+		for (int j = 1; j < mask2.cols - 1; j++)
+		{
+			uchar& v = mask2.at<uchar>(i, j);
+
+			if (v > 128)
+			{
+				v = 255;
+			}
+			else
+			{
+				v = 0;
+			}
+		}
+	}
+
+	ColorConstraint_sptr constraint = GetColorConstraint(image_orig, mask2);
+	newVal[0] = constraint->GetColorVector3()[0];
+	newVal[1] = constraint->GetColorVector3()[1];
+	newVal[2] = constraint->GetColorVector3()[2];
+//  if (dilation > 0)
+//  {
+//      Dilation(mask2, 1, dilation);
+//  }
+//  CvPoints2d points2;
+//  cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+//  CvPatch cvp;
+//  cvp.Outer2() = points2.front();
+//
+//  if (points2.size() > 1)
+//  {
+//      std::copy(points2.begin() + 1, points2.end(), std::back_inserter(cvp.Inter2()));
+//  }
+//
+//  cvp.SetImage(image_orig);
+//  ColorConstraint_sptr constraint = cvp.GetColorConstraint2(mask02);
+	lo = 10;
+	up = 10;
+	area = floodFill(image_clone, mask01_clone, seed, newVal, &ccomp,
+	                 cv::Scalar(lo, lo, lo), cv::Scalar(up, up, up),
+	                 flags);
+	image = image_clone;
+	//out_array.push_back(cvp);
+	mask02 = cv::Scalar(0);
+}
+
+cv::Mat MarkDiffence(cv::Mat src, int rectw, int recth)
+{
+	cv::Mat ans = src.clone();
+	Vec3bptrs ary(rectw * recth);
+
+	for (int y = 0; y < src.rows; ++y)
+	{
+		for (int x = 0; x < src.cols; ++x)
+		{
+			GetMatrixb(rectw, recth, ary, x, y, src);
+			cv::Vec3b& v = src.at<cv::Vec3b>(y, x);
+
+			int diff = 0;
+			for (Vec3bptrs::iterator it = ary.begin(); it != ary.end(); ++it)
+			{
+				if ((*it->c)[0] != v[0] && (*it->c)[1] != v[1] && (*it->c)[2] != v[2])
+				{
+					diff++;
+					if (diff >= 3)
+					{
+						cv::Vec3b& vv = ans.at<cv::Vec3b>(y, x);
+						vv[0] = 255;
+						vv[1] = 255;
+						vv[2] = 255;
+						break;
+					}
+				}
+			}
+		}
+	}
+	return ans;
 }
 
