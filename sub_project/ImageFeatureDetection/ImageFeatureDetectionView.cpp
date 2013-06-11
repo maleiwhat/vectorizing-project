@@ -131,6 +131,25 @@ CImageFeatureDetectionDoc* CImageFeatureDetectionView::GetDocument() const // ¤º
 	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CImageFeatureDetectionDoc)));
 	return (CImageFeatureDetectionDoc*)m_pDocument;
 }
+
+void CImageFeatureDetectionView::AddPicturedata( CString name, cv::Mat pic, int index )
+{
+// 	if ( m_ViewMap.find( pic ) == m_ViewMap.end() )
+// 	{
+// 		AddView( RUNTIME_CLASS( CD3DpictureView ), name, index );
+// 		g_NewPictureView->m_PictureID = index;
+// 		g_NewPictureView->OnInitialUpdate();
+// 		g_NewPictureView->Refresh( pic );
+// 		SetActiveView(index);
+// 		m_ViewMap[pic] = g_NewPictureView;
+// 	}
+}
+
+void CImageFeatureDetectionView::SwitchPicture( int index )
+{
+	SetActiveView( index );
+}
+
 #endif //_DEBUG
 
 

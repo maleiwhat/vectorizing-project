@@ -3,7 +3,7 @@
 // MFC 參考及 MFC C++ 程式庫軟體
 // 隨附相關電子文件的補充。
 // 關於 Fluent UI 之複製、使用或散發的授權條款則分別提供。
-// 如需 Fluent UI 授權計劃的詳細資訊，請造訪 
+// 如需 Fluent UI 授權計劃的詳細資訊，請造訪
 // http://go.microsoft.com/fwlink/?LinkId=238214。
 //
 // Copyright (C) Microsoft Corporation
@@ -13,9 +13,13 @@
 //
 
 #pragma once
+#include <opencv2/opencv.hpp>
+#include <map>
+#include "D3DpictureView.h"
 
+typedef std::map<cv::Mat*, CD3DpictureView*> ViewMap;
 
-class CImageFeatureDetectionView : public CView
+class CImageFeatureDetectionView : public CTabView
 {
 protected: // 僅從序列化建立
 	CImageFeatureDetectionView();
@@ -53,10 +57,15 @@ protected:
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
+
+public:
+	void AddPicturedata(CString name, cv::Mat pic, int index);
+	void SwitchPicture(int index);
 };
 
 #ifndef _DEBUG  // ImageFeatureDetectionView.cpp 中的偵錯版本
-inline CImageFeatureDetectionDoc* CImageFeatureDetectionView::GetDocument() const
-   { return reinterpret_cast<CImageFeatureDetectionDoc*>(m_pDocument); }
+inline CImageFeatureDetectionDoc* CImageFeatureDetectionView::GetDocument()
+const
+{ return reinterpret_cast<CImageFeatureDetectionDoc*>(m_pDocument); }
 #endif
 

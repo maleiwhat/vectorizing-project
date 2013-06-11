@@ -20,6 +20,8 @@
 
 #include "ImageFeatureDetectionDoc.h"
 #include "ImageFeatureDetectionView.h"
+#include <auto_link_effect11.hpp>
+#include <auto_link_opencv.hpp>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

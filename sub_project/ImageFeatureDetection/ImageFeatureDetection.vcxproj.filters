@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="DX11">
+      <UniqueIdentifier>{3eadeada-301b-4988-8412-627885011372}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -42,6 +45,18 @@
     <ClInclude Include="CalendarBar.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="DX11\d3dApp_Picture.h">
+      <Filter>DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="DX11\Timer.h">
+      <Filter>DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="DX11\Vertex.h">
+      <Filter>DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DpictureView.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImageFeatureDetection.cpp">
@@ -60,6 +75,18 @@
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="CalendarBar.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="DX11\d3dApp_Picture.cpp">
+      <Filter>DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="DX11\Timer.cpp">
+      <Filter>DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="DX11\Vertex.cpp">
+      <Filter>DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DpictureView.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>
