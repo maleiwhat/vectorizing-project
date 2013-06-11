@@ -90,38 +90,6 @@ void CD3DpictureView::OnSize( UINT nType, int cx, int cy )
 	}
 }
 
-void CD3DpictureView::OnLButtonDown( UINT nFlags, CPoint point )
-{
-	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
-	point.x = 1 + ( point.x - m_D3DApp.m_Picture_OffsetX ) / m_D3DApp.m_Picture_Scale / ( int )m_CutW;
-	point.y = 1 + ( point.y - m_D3DApp.m_Picture_OffsetY ) / m_D3DApp.m_Picture_Scale / ( int )m_CutH;
-
-	if ( point.x <= 0 || point.x > m_CutR || point.y <= 0 || point.y > m_CutC )
-	{
-		return;
-	}
-	else
-	{
-		if (m_CtrlPress)
-		{
-			PreBuild(point.x,point.y);
-		}else{
-			Update( point.x, point.y );
-		}
-		
-	}
-
-	CView::OnLButtonDown( nFlags, point );
-}
-
-
-void CD3DpictureView::OnLButtonUp( UINT nFlags, CPoint point )
-{
-	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
-	CView::OnLButtonUp( nFlags, point );
-}
-
-
 void CD3DpictureView::OnMouseMove( UINT nFlags, CPoint point )
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
@@ -222,60 +190,6 @@ void CD3DpictureView::OnMButtonUp( UINT nFlags, CPoint point )
 	m_MMouseHold = false;
 	CView::OnMButtonUp( nFlags, point );
 }
-
-const unsigned int KEY_SHIFT	= 16;
-const unsigned int KEY_CTRL	= 17;
-const unsigned int KEY_LEFT	= 37;
-const unsigned int KEY_UP	= 38;
-const unsigned int KEY_RIGHT	= 39;
-const unsigned int KEY_DOWN	= 40;
-const unsigned int KEY_DELETE	= 46;
-const unsigned int KEY_A	= 65;
-const unsigned int KEY_C	= 67;
-const unsigned int KEY_E	= 69;
-const unsigned int KEY_ADD	= 107;
-const unsigned int KEY_SUB	= 109;
-const unsigned int KEY_EQUAL	= 187;
-const unsigned int KEY_ENTER	= 13;
-
-void CD3DpictureView::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags )
-{
-	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
-// 	char buff[100];
-// 	sprintf(buff, "%d", nChar);
-// 	CString str(buff);
-// 	AfxMessageBox(str);
-
-	if ( nChar == KEY_CTRL )
-	{
-		m_CtrlPress = true;
-	}
-
-	if ( nChar == KEY_SHIFT )
-	{
-		m_ShiftPress = true;
-	}
-	
-	CView::OnKeyDown( nChar, nRepCnt, nFlags );
-}
-
-
-void CD3DpictureView::OnKeyUp( UINT nChar, UINT nRepCnt, UINT nFlags )
-{
-	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
-	if ( nChar == KEY_CTRL )
-	{
-		m_CtrlPress = false;
-	}
-
-	if ( nChar == KEY_SHIFT )
-	{
-		m_ShiftPress = false;
-	}
-
-	CView::OnKeyUp( nChar, nRepCnt, nFlags );
-}
-
 
 void CD3DpictureView::OnPaint()
 {

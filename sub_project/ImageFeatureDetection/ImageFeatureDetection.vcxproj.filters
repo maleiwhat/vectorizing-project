@@ -16,6 +16,9 @@
     <Filter Include="DX11">
       <UniqueIdentifier>{3eadeada-301b-4988-8412-627885011372}</UniqueIdentifier>
     </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{45b304f2-568c-4ba2-b17e-55bed07d3cb2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -57,6 +60,57 @@
     <ClInclude Include="D3DpictureView.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="vavImage.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Matrix3.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Matrix4.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Plane.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\PlaneBoundedVolume.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Polygon2D.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Quaternion.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Ray.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Sphere.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Vector2.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Vector3.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Vector4.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\AABB2D.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\asm_math.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\AxisAlignedBox.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\BasicMath.h">
+      <Filter>math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImageFeatureDetection.cpp">
@@ -88,6 +142,42 @@
     </ClCompile>
     <ClCompile Include="D3DpictureView.cpp">
       <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="vavImage.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Math.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Matrix3.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Matrix4.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Plane.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Polygon2D.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Quaternion.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Vector2.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Vector3.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Vector4.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\AABB2D.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\AxisAlignedBox.cpp">
+      <Filter>math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

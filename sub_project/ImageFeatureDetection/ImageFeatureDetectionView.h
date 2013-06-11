@@ -28,7 +28,7 @@ protected: // 僅從序列化建立
 // 屬性
 public:
 	CImageFeatureDetectionDoc* GetDocument() const;
-
+	ViewMap m_ViewMap;
 // 作業
 public:
 
@@ -59,7 +59,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	void AddPicturedata(CString name, cv::Mat pic, int index);
+	void AddPicturedata(CString name, cv::Mat* pic, int index);
 	void SwitchPicture(int index);
 };
 

@@ -38,6 +38,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CMainFrame::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CMainFrame::OnFilePrintPreview)
 	ON_UPDATE_COMMAND_UI(ID_FILE_PRINT_PREVIEW, &CMainFrame::OnUpdateFilePrintPreview)
+	ON_COMMAND(ID_FILE_NEW, &CMainFrame::OnFileNew)
 END_MESSAGE_MAP()
 
 // CMainFrame «Øºc/¸Ñºc
@@ -265,4 +266,32 @@ void CMainFrame::OnFilePrintPreview()
 void CMainFrame::OnUpdateFilePrintPreview(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetCheck(IsPrintPreview());
+}
+
+
+void CMainFrame::OnFileNew()
+{
+	CFileDialog dlg(TRUE);
+	dlg.m_ofn.lpstrFilter   = L"All Files (*.*)\0*.*\0\0";
+	dlg.m_ofn.lpstrTitle    = L"Load File";
+	CString filename;
+
+	if (dlg.DoModal() == IDOK)
+	{
+		filename = dlg.GetPathName(); // return full path and filename
+
+		if (filename.GetLength() > 1)
+		{
+// 			D3DApp& d3dApp = ((VAV_View*)this->GetActiveView())->GetD3DApp();
+// 			CMFCRibbonEdit* re;
+// 			CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(
+// 				ID_SPIN_TransparencySelectPatch);
+// 			re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
+// 
+// 			m_vavImage.ReadImage(ConvStr::GetStr(filename.GetString()));
+// 			d3dApp.ClearTriangles();
+// 			d3dApp.SetPictureSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+// 			((VAV_View*)this->GetActiveView())->SetTexture(m_vavImage.GetDx11Texture());
+		}
+	}
 }
