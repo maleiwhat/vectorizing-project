@@ -580,5 +580,3 @@ void TriangulationCgal_Patch::SetSize(int w, int h)
 	m_h = h;
 }
 
-
-

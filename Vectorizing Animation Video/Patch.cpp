@@ -311,7 +311,23 @@ ColorConstraint_sptr CvPatch::GetColorConstraint()
 //  }
 	return res;
 }
+ColorConstraint_sptr CvPatch::GetColorConstraint3()
+{
+	ColorConstraint_sptr res = ColorConstraint_sptr(new ColorConstraint);
+	cv::Rect rect = cv::boundingRect(m_Outer2);
 
+	for (int i = rect.x; i < rect.x + rect.width - 1; i += 2)
+	{
+		for (int j = rect.y; j < rect.y + rect.height - 1; j += 2)
+		{
+			if (Inside(i, j))
+			{
+				res->AddPoint(i, j, m_refImage->at<cv::Vec3b>(j, i));
+			}
+		}
+	}
+	return res;
+}
 CvPoints& CvPatch::Outer2()
 {
 	return m_Outer2;

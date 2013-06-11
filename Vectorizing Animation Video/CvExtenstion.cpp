@@ -824,7 +824,8 @@ void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2)
 	//cv::waitKey();
 }
 
-ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
+ImageSpline S3GetPatchs(cv::Mat& image0, int dilation, int erosion,
+                        cv::Mat& image1)
 {
 	assert(image0.type() == CV_8UC3);
 	cv::Mat img1u, img2u, cImg2;
@@ -845,13 +846,12 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	mask = cv::Scalar::all(0);
 	CvPatchs cvps;
 	image0.copyTo(image);
-	mask = cv::Scalar::all(0);
 
 	for (int i = 1; i < image.rows - 1; i++)
 	{
 		for (int j = 1; j < image.cols - 1; j++)
 		{
-			S2FloodFill(image, mask, Der2, 20, j, i, dilation, erosion);
+			S2FloodFill(image, mask, Der2, 5, j, i, dilation, erosion);
 		}
 	}
 
@@ -869,9 +869,44 @@ ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		}
 	}
 
+	{
+		cv::Mat tmp_image2;
+		joint_mask = cv::Scalar::all(0);
+		image1.convertTo(tmp_image2, CV_32FC3, 1 / 255.0);
+		Collect_Water(tmp_image2, tmp_image2, 5, 5, 1);
+		cv::Mat mask_tmp;
+		mask_tmp.create(image.rows + 2, image.cols + 2, CV_8UC1);
+		// create bigger image to fix border problem
+		tmp_image = cv::Scalar::all(0);
+
+		for (int i = 0; i < tmp_image2.rows ; i++)
+		{
+			for (int j = 0; j < tmp_image2.cols ; j++)
+			{
+				if (tmp_image2.at<cv::Vec3b>(i, j)[0] > 0)
+				{
+					image.at<cv::Vec3b>(i, j) = tmp_image2.at<cv::Vec3b>(i , j);
+				}
+
+				tmp_image.at<cv::Vec3b>(i + 1, j + 1) = tmp_image2.at<cv::Vec3b>(i , j);
+			}
+		}
+
+		imshow("tmp_image", tmp_image);
+		mask_tmp = cv::Scalar::all(0);
+		for (int i = 1; i < image.rows - 1; i++)
+		{
+			for (int j = 1; j < image.cols - 1; j++)
+			{
+				S4FloodFill(image, mask_tmp, 0, j, i);
+			}
+		}
+	}
+	
 	//imshow("Image2", image);
 	FixHole(image);
 	imshow("Image", image);
+	cv::waitKey(10);
 	//cv::waitKey();
 	mask = cv::Scalar::all(0);
 	//Der2 = cv::Scalar::all(0);
@@ -1421,16 +1456,6 @@ ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
 			LineIndex li1 = ps.m_LineIndexs.front();
 			Vector2 start, end;
 
-//          if (lines[li1.m_id].front() == lines[li2.m_id].front())
-//          {
-//              start = lines[li1.m_id].front();
-//              end = lines[li2.m_id].front();
-//          }
-//          if (lines[li1.m_id].front() == lines[li2.m_id].front())
-//          {
-//              start = lines[li1.m_id].front();
-//              end = lines[li2.m_id].front();
-//          }
 			if (li1.m_Forward)
 			{
 				start = lines[li1.m_id].front();
@@ -1583,59 +1608,6 @@ void S2FloodFill(cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range,
 	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
 	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
 	                 cv::Scalar(up, up, up), flags);
-	cv::Mat mask2 = mask01.clone();
-	ClearEdge(mask2);
-
-	for (int i = 1; i < mask2.rows - 1; i++)
-	{
-		for (int j = 1; j < mask2.cols - 1; j++)
-		{
-			uchar& v = mask2.at<uchar>(i, j);
-
-			if (v > 128)
-			{
-				v = 255;
-			}
-			else
-			{
-				v = 0;
-			}
-		}
-	}
-
-	Dilation(mask2, 1, 1);
-	CvPoints2d points;
-	cv::findContours(mask2, points, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
-	double tarea = cv::contourArea(points.front());
-
-	if (points.empty() || tarea < 5) { return; }
-
-	if (dilation > 0)
-	{
-		Dilation(mask2, 1, dilation);
-	}
-
-	cv::Mat mask22 = mask2.clone();
-
-	if (erosion > 0)
-	{
-		Erosion(mask2, 1, erosion);
-	}
-
-	CvPoints2d points2;
-	cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
-
-	for (int i = erosion - 1; i >= 0 && points2.empty(); --i)
-	{
-		mask2 = mask22.clone();
-
-		if (i > 0)
-		{
-			Erosion(mask2, 2, i);
-		}
-
-		cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
-	}
 }
 
 void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
@@ -2176,6 +2148,11 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
 				s = 0.8;
 			}
 
+			if (GetLight(src.at<cv::Vec3f>(r, c)) > 0.2)
+			{
+				s *= 0.3;
+			}
+
 			s = pow(s, 2.0f);
 		}
 	}
@@ -2193,7 +2170,7 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
 	}
 
 	sum = sum / MaxCapacity.rows / MaxCapacity.cols;
-	sum *= BlackRegionThreshold;
+	sum *= BlackRegionThreshold*0.5;
 	std::cout << "sum: " << sum << std::endl;
 
 	for (int r = 0; r < MaxCapacity.rows; r++)
@@ -2788,13 +2765,14 @@ cv::Mat MarkDiffence(cv::Mat src, int rectw, int recth)
 		{
 			GetMatrixb(rectw, recth, ary, x, y, src);
 			cv::Vec3b& v = src.at<cv::Vec3b>(y, x);
-
 			int diff = 0;
+
 			for (Vec3bptrs::iterator it = ary.begin(); it != ary.end(); ++it)
 			{
 				if ((*it->c)[0] != v[0] && (*it->c)[1] != v[1] && (*it->c)[2] != v[2])
 				{
 					diff++;
+
 					if (diff >= 3)
 					{
 						cv::Vec3b& vv = ans.at<cv::Vec3b>(y, x);
@@ -2807,6 +2785,36 @@ cv::Mat MarkDiffence(cv::Mat src, int rectw, int recth)
 			}
 		}
 	}
+
 	return ans;
+}
+
+void S4FloodFill( cv::Mat& image, cv::Mat& mask01, int range, int x, int y )
+{
+	if (mask01.at<uchar>(y + 1, x + 1) > 0)
+	{
+		return;
+	}
+
+	cv::Point seed(x, y);
+	cv::Rect ccomp;
+	int b = rand() % 255;
+	int g = rand() % 255;
+	int r = rand() % 255;
+	cv::Scalar newVal(b, g, r);
+	int area;
+	int lo = range;
+	int up = range;
+	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
+	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
+	cv::Mat mask02 = mask01.clone();
+	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
+		cv::Scalar(up, up, up), flags);
+	if (area < 20)
+	{
+		cv::Scalar newVal2(0,0,0);
+		floodFill(image, mask02, seed, newVal2, &ccomp, cv::Scalar(lo, lo, lo),
+			cv::Scalar(up, up, up), flags);
+	}
 }
 

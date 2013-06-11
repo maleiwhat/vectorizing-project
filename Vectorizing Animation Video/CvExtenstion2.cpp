@@ -291,7 +291,7 @@ cv::Mat MakeIsoSurfaceImg(cv::Mat img, int n)
 		for (int j = 0; j < img.cols; j++)
 		{
 			cv::Vec3b& v = img.at<cv::Vec3b>(i, j);
-			float vv = 0.299 * v[2] + 0.587 * v[1] + 0.114 * v[0]+1;
+			float vv = 0.299 * v[2] + 0.587 * v[1] + 0.114 * v[0];
 			vv = int(vv / n) * n;
 			cv::Vec3b& a = ans.at<cv::Vec3b>(i, j);
 			a[0] = a[1] = a[2] = vv;

@@ -619,21 +619,18 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	D3DApp& d3dApp = ((VAV_View*)this->GetActiveView())->GetD3DApp();
 	ImageSpline is;
 	const bool DRAW_PATCH = false;
-	const bool DRAW_SEPARATE_PATCH = false;
-	const bool DRAW_CONTOUR = true;
+	const bool DRAW_SEPARATE_PATCH = true;
+	const bool DRAW_CONTOUR = false;
 	const bool DRAW_CONTOUR_CONTROL_POINT = false;
 	const bool DRAW_CONTOUR_SKELETON_POINT = false;
 	const bool DRAW_ISOSURFACE = true;
 
 	if (DRAW_ISOSURFACE)
 	{
-		cv::imshow("vavImage", (cv::Mat)m_vavImage);
-		cv::Mat isoimg = MakeIsoSurfaceImg(m_vavImage, 4);
-		cv::imshow("isoimg", isoimg);
-		isoimg = MarkDiffence(isoimg, 3, 3);
-		cv::imshow("isoimg2", isoimg);
-		cv::waitKey();
-		//is = S5GetPatchs(isoimg, m_vavImage);
+// 		cv::imshow("vavImage", (cv::Mat)m_vavImage);
+// 		cv::Mat isoimg = MakeIsoSurfaceImg(m_vavImage, 4);
+// 		cv::imshow("isoimg", isoimg);
+// 		is = S3GetPatchs(isoimg, 0, 0);
 	}
 	//Lines lines1 = m_vavImage.AnimaEdge(5, 0.01, 0.1);
 	//Lines lines = ComputeTrappedBallEdge(m_vavImage, lines1, 5);
@@ -644,7 +641,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 
 	if (DRAW_PATCH || DRAW_SEPARATE_PATCH)
 	{
-		is = S3GetPatchs(m_vavImage, 0, 0);
+		//is = S3GetPatchs(m_vavImage, 0, 0);
 	}
 
 	if (DRAW_PATCH)
@@ -656,7 +653,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		for (int i = 0; i < is.m_CvPatchs.size(); ++i)
 		{
 			is.m_CvPatchs[i].SetImage(m_vavImage);
-			ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint();
+			ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint3();
 			cgal_patch.AddColorConstraint(constraint_sptr);
 		}
 
@@ -669,6 +666,10 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	// separate patch
 	if (DRAW_SEPARATE_PATCH)
 	{
+		cv::imshow("vavImage", (cv::Mat)m_vavImage);
+		cv::Mat isoimg = MakeIsoSurfaceImg(m_vavImage, 6);
+		is = S3GetPatchs(isoimg, 0, 0, m_vavImage);
+		cv::imshow("isoimg", isoimg);
 		for (int i = 0; i < is.m_CvPatchs.size(); ++i)
 		{
 			TriangulationCgal_Patch cgal_patch;
@@ -677,7 +678,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			t_patch.SmoothPatch();
 			cgal_patch.AddPatch(t_patch);
 			is.m_CvPatchs[i].SetImage(m_vavImage);
-			ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint();
+			ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint3();
 			cgal_patch.AddColorConstraint(constraint_sptr);
 			cgal_patch.SetCriteria(0.0, 4000);
 			cgal_patch.Compute();
@@ -753,17 +754,17 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		}
 
 		cgal_contour.MakeColorSequential();
-		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
-		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
-		d3dApp.SetScaleTemporary(1);
-		d3dApp.BuildPoint();
-		cv::Mat simg = d3dApp.DrawSceneToCvMat();
-		d3dApp.SetScaleRecovery();
-		ColorConstraint_sptrs RegionColors = MakeColors(region, simg, m_vavImage);
-		d3dApp.ClearTriangles();
-		cgal_contour.SetColor(RegionColors);
-		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
-		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
+// 		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
+// 		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
+// 		d3dApp.SetScaleTemporary(1);
+// 		d3dApp.BuildPoint();
+// 		cv::Mat simg = d3dApp.DrawSceneToCvMat();
+// 		d3dApp.SetScaleRecovery();
+// 		ColorConstraint_sptrs RegionColors = MakeColors(region, simg, m_vavImage);
+// 		d3dApp.ClearTriangles();
+// 		cgal_contour.SetColor(RegionColors);
+// 		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
+// 		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
 //		d3dApp.AddLineSegs(cgal_contour.m_LineSegs);
 		d3dApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth, colors);
 		d3dApp.AddLines(cgal_contour.m_ContourLines);

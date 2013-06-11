@@ -21,6 +21,7 @@ public:
 	void    Clear();
 	void    SetImage(cv::Mat& image);
 	ColorConstraint_sptr GetColorConstraint();
+	ColorConstraint_sptr GetColorConstraint3();
 	ColorConstraint_sptr GetColorConstraint2(cv::Mat& tmp);
 	bool    Inside(double x, double y);
 private:

@@ -36,13 +36,15 @@ void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
                     int erosion = 0);
 void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
                     int range, int x, int y, int dilation = 0, int erosion = 0);
+void    S4FloodFill(cv::Mat& image, cv::Mat& mask01, int range,
+					int x, int y);
 void    S5FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 					int range, int x, int y, CvPatchs& out_array, int dilation, 
 					cv::Mat image_orig, cv::Mat out);
 void    LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y);
 
 CvPatchs S2GetPatchs(const cv::Mat& image, int dilation = 0, int erosion = 0);
-ImageSpline S3GetPatchs(const cv::Mat& image0, int dilation, int erosion);
+ImageSpline S3GetPatchs(cv::Mat& image0, int dilation, int erosion, cv::Mat& image1);
 ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
                            cv::Mat lineImage);
 ImageSpline GetImageSpline(CvPatchs& patchs);

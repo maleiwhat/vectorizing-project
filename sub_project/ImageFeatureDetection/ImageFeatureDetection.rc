@@ -1,0 +1,434 @@
+//Microsoft Visual C++ 產生的資源指令碼。
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// 已從 TEXTINCLUDE 2 資源產生。
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+#include "verrsrc.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#ifdef APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "#include ""verrsrc.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE
+BEGIN
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)\r\n"
+    "LANGUAGE 4, 1\r\n"
+    "#include ""res\\ImageFeatureDetection.rc2""  // 非 Microsoft Visual C++ 編輯過的資源\r\n"
+    "#include ""l.CHT\\afxres.rc""      // 標準元件\r\n"
+    "#include ""l.CHT\\afxprint.rc""    // 列印/預覽列印資源\r\n"
+    "#if !defined(_AFXDLL)\r\n"
+    "#include ""l.CHT\\afxribbon.rc""        // MFC 功能區和控制列資源\r\n"
+    "#endif\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// 圖示
+//
+
+// 先放置有最低 ID 的圖示，
+// 確保應用程式圖示在所有系統上保持一致。
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)
+LANGUAGE 4, 1
+IDR_MAINFRAME           ICON         "res\\ImageFeatureDetection.ico"
+IDR_ImageFeatureDetTYPE         ICON         "res\\ImageFeatureDetectionDoc.ico"
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// 點陣圖
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+IDR_MAINFRAME_256       BITMAP                  "res\\Toolbar256.bmp"
+IDB_MAIN                BITMAP                  "res\\main.bmp"
+IDB_FILELARGE           BITMAP                  "res\\filelarge.bmp"
+IDB_FILESMALL           BITMAP                  "res\\filesmall.bmp"
+IDB_WRITELARGE          BITMAP                  "res\\writelarge.bmp"
+IDB_WRITESMALL          BITMAP                  "res\\writesmall.bmp"
+IDB_BUTTONS             BITMAP                  "res\\buttons.bmp"
+IDB_NAVIGATION_LARGE    BITMAP                  "res\\nav_large.bmp"
+IDB_NAVIGATION_LARGE_HC BITMAP                  "res\\nav_large_hc.bmp"
+IDB_PAGES               BITMAP                  "res\\pages.bmp"
+IDB_PAGES_HC            BITMAP                  "res\\pages_hc.bmp"
+IDB_PAGES_SMALL         BITMAP                  "res\\pages_small.bmp"
+IDB_PAGES_SMALL_HC      BITMAP                  "res\\pages_small_hc.bmp"
+IDB_INFO                BITMAP                  "res\\info.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// 工具列
+//
+
+IDR_MAINFRAME TOOLBAR 16, 15
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_APP_ABOUT
+END
+
+IDR_MAINFRAME_256 TOOLBAR 16, 15
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_APP_ABOUT
+END
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)
+LANGUAGE 4, 1
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// 功能表
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "檔案(&F)"
+    BEGIN
+        MENUITEM "開新檔案(&N)\tCtrl+N",                ID_FILE_NEW
+        MENUITEM "開啟舊檔(&O)...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "儲存檔案(&S)\tCtrl+S",               ID_FILE_SAVE
+        MENUITEM "另存新檔(&A)...",                 ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "列印(&P)...\tCtrl+P",           ID_FILE_PRINT
+        MENUITEM "預覽列印(&V)",              ID_FILE_PRINT_PREVIEW
+        MENUITEM "列印設定(&R)...",             ID_FILE_PRINT_SETUP
+        MENUITEM SEPARATOR
+        MENUITEM "最近使用的檔案",                 ID_FILE_MRU_FILE1,GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "結束(&X)",                       ID_APP_EXIT
+    END
+    POPUP "編輯(&E)"
+    BEGIN
+        MENUITEM "復原(&U)\tCtrl+Z",               ID_EDIT_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "剪下(&T)\tCtrl+X",                ID_EDIT_CUT
+        MENUITEM "複製(&C)\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "貼上(&P)\tCtrl+V",              ID_EDIT_PASTE
+    END
+    POPUP "檢視(&V)"
+    BEGIN
+        MENUITEM "狀態列(&S)",                 ID_VIEW_STATUS_BAR
+        MENUITEM "標題列(&C)",                ID_VIEW_CAPTION_BAR
+    END
+    POPUP "說明(&H)"
+    BEGIN
+        MENUITEM "關於 ImageFeatureDetection(&A)...",          ID_APP_ABOUT
+    END
+END
+
+
+
+IDR_POPUP_EDIT MENU
+BEGIN
+	POPUP "編輯"
+	BEGIN
+		MENUITEM "剪下(&T)\tCtrl+X",            ID_EDIT_CUT
+		MENUITEM "複製(&C)\tCtrl+C",           ID_EDIT_COPY
+		MENUITEM "貼上(&P)\tCtrl+V",          ID_EDIT_PASTE
+    END
+END
+
+IDR_WINDOWS_MENU MENU
+BEGIN
+    MENUITEM "開新視窗(&N)",                 ID_WINDOW_NEW
+END
+
+IDR_HELP_MENU MENU 
+BEGIN
+    MENUITEM "關於 ImageFeatureDetection(&A)...",          ID_APP_ABOUT
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// 快速鍵
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY,CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY,CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY,CONTROL
+    "P",            ID_FILE_PRINT,          VIRTKEY,CONTROL
+	"Z",            ID_EDIT_UNDO,           VIRTKEY,CONTROL
+	"X",            ID_EDIT_CUT,            VIRTKEY,CONTROL
+	"C",            ID_EDIT_COPY,           VIRTKEY,CONTROL
+	"V",            ID_EDIT_PASTE,          VIRTKEY,CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY,ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY,SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY,CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY,SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY
+    VK_F6,          ID_PREV_PANE,           VIRTKEY,SHIFT
+END
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// 對話方塊
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "關於 ImageFeatureDetection"
+FONT 9, "????"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
+    LTEXT           "ImageFeatureDetection, 1.0 版",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2013",IDC_STATIC,42,26,114,8
+    DEFPUSHBUTTON   "確定",IDOK,113,41,50,14,WS_GROUP
+END
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// 版本
+//
+
+VS_VERSION_INFO     VERSIONINFO
+  FILEVERSION       1,0,0,1
+  PRODUCTVERSION    1,0,0,1
+ FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+#ifdef _DEBUG
+ FILEFLAGS VS_FF_DEBUG
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS VOS_NT_WINDOWS32
+ FILETYPE VFT_APP
+ FILESUBTYPE VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040404B0"
+        BEGIN
+            VALUE "CompanyName", "TODO: <公司名稱>"
+            VALUE "FileDescription", "ImageFeatureDetection"
+            VALUE "FileVersion",     "1.0.0.1"
+            VALUE "InternalName",    "ImageFeatureDetection.exe"
+            VALUE "LegalCopyright", "TODO: (c) <公司名稱>.  著作權所有，並保留一切權利。"
+            VALUE "OriginalFilename","ImageFeatureDetection.exe"
+            VALUE "ProductName", "TODO: <產品名稱>"
+            VALUE "ProductVersion",  "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0404, 1200
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 163
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// 字串資料表
+//
+
+STRINGTABLE
+BEGIN
+    IDP_OLE_INIT_FAILED       "OLE 初始化失敗。請確認 OLE 程式庫的版本是否正確。"
+END
+STRINGTABLE
+BEGIN
+// 目標非麥金塔的應用程式移除兩個額外的子字串
+    IDR_MAINFRAME           "ImageFeatureDetection\n\nImageFeatureDet\n\n\nImageFeatureDetection.Document\nImageFeatureDetection.Document"
+
+END
+STRINGTABLE
+BEGIN
+    AFX_IDS_APP_TITLE       "ImageFeatureDetection"
+    AFX_IDS_IDLEMESSAGE     "就緒"
+END
+STRINGTABLE
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+STRINGTABLE
+BEGIN
+    ID_FILE_NEW             "建立新文件\n開新檔案"
+    ID_FILE_OPEN            "開啟現有文件\n開啟舊檔"
+    ID_FILE_CLOSE           "關閉使用中文件\n關閉檔案"
+    ID_FILE_SAVE            "儲存使用中文件\n儲存檔案"
+    ID_FILE_SAVE_AS         "將使用中文件以新名稱儲存\n另存新檔"
+    ID_FILE_PAGE_SETUP      "變更列印選項\n版面設定"
+    ID_FILE_PRINT_SETUP     "變更印表機及列印選項\n列印設定"
+    ID_FILE_PRINT_DIRECT    "使用目前選項列印使用中文件\n快速列印"
+    ID_FILE_PRINT           "列印使用中文件\n列印"
+    ID_FILE_PRINT_PREVIEW   "顯示整頁\n預覽列印"
+    ID_APP_ABOUT            "顯示程式資訊、版本號碼及著作權\n關於"
+    ID_APP_EXIT             "結束應用程式; 提示使用者儲存文件\n結束"
+    ID_FILE_MRU_FILE1       "開啟這份文件"
+    ID_FILE_MRU_FILE2       "開啟這份文件"
+    ID_FILE_MRU_FILE3       "開啟這份文件"
+    ID_FILE_MRU_FILE4       "開啟這份文件"
+    ID_FILE_MRU_FILE5       "開啟這份文件"
+    ID_FILE_MRU_FILE6       "開啟這份文件"
+    ID_FILE_MRU_FILE7       "開啟這份文件"
+    ID_FILE_MRU_FILE8       "開啟這份文件"
+    ID_FILE_MRU_FILE9       "開啟這份文件"
+    ID_FILE_MRU_FILE10      "開啟這份文件"
+    ID_FILE_MRU_FILE11      "開啟這份文件"
+    ID_FILE_MRU_FILE12      "開啟這份文件"
+    ID_FILE_MRU_FILE13      "開啟這份文件"
+    ID_FILE_MRU_FILE14      "開啟這份文件"
+    ID_FILE_MRU_FILE15      "開啟這份文件"
+    ID_FILE_MRU_FILE16      "開啟這份文件"
+    ID_NEXT_PANE            "切換至下一窗格\n下一個窗格"
+    ID_PREV_PANE            "切換至上一個窗格\n上一個窗格"
+    ID_WINDOW_SPLIT         "將使用中視窗切割成窗格\n分割視窗"
+    ID_EDIT_CLEAR           "清除選取範圍\n清除"
+    ID_EDIT_CLEAR_ALL       "清除所有的項目\n全部清除"
+    ID_EDIT_COPY            "複製選取項目並放到剪貼簿\n複製"
+    ID_EDIT_CUT             "剪下選取項目並放到剪貼簿\n剪下"
+    ID_EDIT_FIND            "尋找指定的文字\n尋找"
+    ID_EDIT_PASTE           "插入剪貼簿的內容\n貼上"
+    ID_EDIT_REPEAT          "重複上次的動作\n重複"
+    ID_EDIT_REPLACE         "用不同的文字取代指定文字\n取代"
+    ID_EDIT_SELECT_ALL      "選取整份文件\n全選"
+    ID_EDIT_UNDO            "復原上次的動作\n復原"
+    ID_EDIT_REDO            "取消復原上次的動作\n取消復原"
+    ID_VIEW_TOOLBAR         "顯示或隱藏工具列\n切換工具列"
+    ID_VIEW_STATUS_BAR      "顯示或隱藏狀態列\n切換狀態列"
+    ID_VIEW_CAPTION_BAR     "顯示或隱藏標題列\n切換標題列"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCSIZE          "變更視窗大小"
+    AFX_IDS_SCMOVE          "變更視窗位置"
+    AFX_IDS_SCMINIMIZE      "將視窗縮成一個圖示"
+    AFX_IDS_SCMAXIMIZE      "將視窗放到最大"
+    AFX_IDS_SCNEXTWINDOW    "切換至下一個文件視窗"
+    AFX_IDS_SCPREVWINDOW    "切換至上一個文件視窗"
+    AFX_IDS_SCCLOSE         "關閉使用中視窗並提示使用者儲存文件"
+    AFX_IDS_SCRESTORE       "將視窗還原成標準大小"
+    AFX_IDS_SCTASKLIST      "啟動工作清單"
+    AFX_IDS_PREVIEW_CLOSE   "關閉預覽列印模式\n取消預覽"
+END
+
+
+STRINGTABLE
+BEGIN
+    IDS_STATUS_PANE1        "窗格 1"
+    IDS_STATUS_PANE2        "窗格 2"
+    IDS_MYCALENDARS         "我的月曆"
+    IDS_CALENDAR            "月曆"
+    IDS_SHORTCUTS           "捷徑"
+    IDS_FOLDERS             "資料夾"
+    IDS_OUTLOOKBAR          "Outlook 功能區"
+    IDS_CAPTION_BUTTON      "選項..."
+    IDS_CAPTION_BUTTON_TIP  "按一下這裡查看更多選項"
+    IDS_CAPTION_TEXT        "這是可以將訊息呈現給使用者的標題列。"
+    IDS_CAPTION_IMAGE_TIP   "重要"
+    IDS_CAPTION_IMAGE_TEXT  "這是給使用者的告知性訊息。"
+    IDS_EDIT_MENU           "編輯"
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// 功能區
+//
+
+IDR_RIBBON             RT_RIBBON_XML           "res\\ribbon.mfcribbon-ms"
+
+#endif
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// 已從 TEXTINCLUDE 3 資源產生。
+//
+
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)
+LANGUAGE 4, 1
+#include "res\\ImageFeatureDetection.rc2"  // 非 Microsoft Visual C++ 編輯過的資源
+#include "l.CHT\\afxres.rc"      // 標準元件
+#include "l.CHT\\afxprint.rc"  // 列印/預覽列印資源
+#if !defined(_AFXDLL)
+#include "l.CHT\\afxribbon.rc"        // MFC 功能區和控制列資源
+#endif
+#endif
+#endif    // 非 APSTUDIO_INVOKED

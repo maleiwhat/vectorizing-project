@@ -95,7 +95,7 @@ void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 float4 PS(GS_OUT pIn) : SV_Target
 {
 //discard;
-//	return float4(0,0,0,1);
+	return float4(0,0,0,transparency);
 	return float4(pIn.color.x, pIn.color.y, pIn.color.z, transparency);
 }
 
