@@ -19,6 +19,9 @@
     <Filter Include="math">
       <UniqueIdentifier>{45b304f2-568c-4ba2-b17e-55bed07d3cb2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{741ce9ca-38d0-4b0a-ba10-ce65704d10e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -251,5 +254,10 @@
     <None Include="res\ImageFeatureDetection.rc2">
       <Filter>資源檔</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shader\picture.fx">
+      <Filter>shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

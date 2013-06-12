@@ -120,6 +120,7 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture(ID3D11Device* dev, ID3D11Devi
 				intensity[0] = pimg[offset + 2] * 255.0f;
 			}
 		}
+		cv::imshow("simg", simg);
 	}
 
 	return pShaderResView;

@@ -22,7 +22,7 @@ D3DApp_Picture::D3DApp_Picture()
 	m_DeviceContext = NULL;
 	m_Pics_Width = NULL;
 	m_Pics_Height = NULL;
-	m_hAppInst   = GetModuleHandle( NULL );
+	m_hAppInst   = GetModuleHandle(NULL);
 	m_AppPaused  = false;
 	m_Minimized  = false;
 	m_Maximized  = false;
@@ -32,20 +32,20 @@ D3DApp_Picture::D3DApp_Picture()
 	m_MainWndCaption = L"D3D11 Application";
 	m_d3dDriverType  = D3D_DRIVER_TYPE_HARDWARE;
 	//md3dDriverType  = D3D_DRIVER_TYPE_REFERENCE;
-	m_ClearColor     = D3DXCOLOR( 0, 0, 0, 0.0f );
+	m_ClearColor     = D3DXCOLOR(0, 0, 0, 1.0f);
 	m_ClientWidth    = 1440;
 	m_ClientHeight   = 900;
 }
 
 D3DApp_Picture::~D3DApp_Picture()
 {
-	ReleaseCOM( m_d3dDevice );
-	ReleaseCOM( m_SwapChain );
-	ReleaseCOM( m_DepthStencilBuffer );
-	ReleaseCOM( m_DepthStencilView2 );
-	ReleaseCOM( m_RenderTargetView );
-	ReleaseCOM( m_DepthStencilView );
-	ReleaseCOM( m_DeviceContext );
+	ReleaseCOM(m_d3dDevice);
+	ReleaseCOM(m_SwapChain);
+	ReleaseCOM(m_DepthStencilBuffer);
+	ReleaseCOM(m_DepthStencilView2);
+	ReleaseCOM(m_RenderTargetView);
+	ReleaseCOM(m_DepthStencilView);
+	ReleaseCOM(m_DeviceContext);
 }
 
 HINSTANCE D3DApp_Picture::getAppInst()
@@ -58,20 +58,22 @@ HWND D3DApp_Picture::getMainWnd()
 	return m_hMainWnd;
 }
 
-void D3DApp_Picture::initApp( HWND hWnd, int w, int h )
+void D3DApp_Picture::initApp(HWND hWnd, int w, int h)
 {
 	m_hMainWnd = hWnd;
 	m_ClientWidth = w;
 	m_ClientHeight = h;
+
 	if (m_ClientWidth == 0)
 	{
 		m_ClientWidth = 100;
 		m_ClientHeight = 100;
 	}
+
 	initDirect3D();
 	LoadBlend();
-	float BlendFactor[4] = {0, 0, 0, 0};
-	m_DeviceContext->OMSetBlendState( m_pBlendState_BLEND, BlendFactor, 0xffffffff );
+// 	float BlendFactor[4] = {0, 0, 0, 0};
+// 	m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
 }
 
 void D3DApp_Picture::initDirect3D()
@@ -98,20 +100,20 @@ void D3DApp_Picture::initDirect3D()
 	UINT createDeviceFlags = D3D11_CREATE_DEVICE_DEBUG;
 	D3D_FEATURE_LEVEL  FeatureLevelsRequested = D3D_FEATURE_LEVEL_11_0;
 	UINT               numLevelsRequested = 1;
-	HR( D3D11CreateDeviceAndSwapChain(
-	            0,                 //default adapter
-	            m_d3dDriverType,
-	            0,                 // no software device
-	            createDeviceFlags,
-	            &FeatureLevelsRequested,
-	            numLevelsRequested,
-	            D3D11_SDK_VERSION,
-	            &sd,
-	            &m_SwapChain,
-	            &m_d3dDevice,
-	            &m_FeatureLevelsSupported,
-	            &m_DeviceContext ) );
-	OnResize( m_ClientWidth, m_ClientHeight );
+	HR(D3D11CreateDeviceAndSwapChain(
+	       0,                 //default adapter
+	       m_d3dDriverType,
+	       0,                 // no software device
+	       createDeviceFlags,
+	       &FeatureLevelsRequested,
+	       numLevelsRequested,
+	       D3D11_SDK_VERSION,
+	       &sd,
+	       &m_SwapChain,
+	       &m_d3dDevice,
+	       &m_FeatureLevelsSupported,
+	       &m_DeviceContext));
+	OnResize(m_ClientWidth, m_ClientHeight);
 	m_vbd.Usage = D3D11_USAGE_IMMUTABLE;
 	m_vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	m_vbd.CPUAccessFlags = 0;
@@ -119,23 +121,25 @@ void D3DApp_Picture::initDirect3D()
 }
 
 
-void D3DApp_Picture::OnResize( int w, int h )
+void D3DApp_Picture::OnResize(int w, int h)
 {
-	if ( !m_d3dDevice ) { return; }
+	if (!m_d3dDevice) { return; }
 
 	m_ClientWidth = w;
 	m_ClientHeight = h;
 	// Release the old views, as they hold references to the buffers we
 	// will be destroying.  Also release the old depth/stencil buffer.
-	ReleaseCOM( m_RenderTargetView );
-	ReleaseCOM( m_DepthStencilView );
-	ReleaseCOM( m_DepthStencilBuffer );
+	ReleaseCOM(m_RenderTargetView);
+	ReleaseCOM(m_DepthStencilView);
+	ReleaseCOM(m_DepthStencilBuffer);
 	// Resize the swap chain and recreate the render target view.
-	HR( m_SwapChain->ResizeBuffers( 1, m_ClientWidth, m_ClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, 0 ) );
+	HR(m_SwapChain->ResizeBuffers(1, m_ClientWidth, m_ClientHeight,
+	                              DXGI_FORMAT_R8G8B8A8_UNORM, 0));
 	ID3D11Texture2D* backBuffer;
-	HR( m_SwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), reinterpret_cast<void**>( &backBuffer ) ) );
-	HR( m_d3dDevice->CreateRenderTargetView( backBuffer, 0, &m_RenderTargetView ) );
-	ReleaseCOM( backBuffer );
+	HR(m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
+	                          reinterpret_cast<void**>(&backBuffer)));
+	HR(m_d3dDevice->CreateRenderTargetView(backBuffer, 0, &m_RenderTargetView));
+	ReleaseCOM(backBuffer);
 	// Create the depth/stencil buffer and view.
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
 	depthStencilDesc.Width     = m_ClientWidth;
@@ -149,24 +153,25 @@ void D3DApp_Picture::OnResize( int w, int h )
 	depthStencilDesc.BindFlags      = D3D11_BIND_DEPTH_STENCIL;
 	depthStencilDesc.CPUAccessFlags = 0;
 	depthStencilDesc.MiscFlags      = 0;
-	HR( m_d3dDevice->CreateTexture2D( &depthStencilDesc, 0, &m_DepthStencilBuffer ) );
-	HR( m_d3dDevice->CreateDepthStencilView( m_DepthStencilBuffer, 0, &m_DepthStencilView ) );
+	HR(m_d3dDevice->CreateTexture2D(&depthStencilDesc, 0, &m_DepthStencilBuffer));
+	HR(m_d3dDevice->CreateDepthStencilView(m_DepthStencilBuffer, 0,
+	                                       &m_DepthStencilView));
 	// Bind the render target view and depth/stencil view to the pipeline.
-	m_DeviceContext->OMSetRenderTargets( 1, &m_RenderTargetView, m_DepthStencilView );
+	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	// Set the viewport transform.
 	D3D11_VIEWPORT vp;
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
-	vp.Width    = ( float )m_ClientWidth;
-	vp.Height   = ( float )m_ClientHeight;
+	vp.Width    = (float)m_ClientWidth;
+	vp.Height   = (float)m_ClientHeight;
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
-	m_DeviceContext->RSSetViewports( 1, &vp );
-	
-	if ( m_Pics_Width != NULL && m_Pics_Height != NULL )
+	m_DeviceContext->RSSetViewports(1, &vp);
+
+	if (m_Pics_Width != NULL && m_Pics_Height != NULL)
 	{
-		m_Pics_Width->SetFloat( ( float )m_ClientWidth );
-		m_Pics_Height->SetFloat( ( float )m_ClientHeight );
+		m_Pics_Width->SetFloat((float)m_ClientWidth);
+		m_Pics_Height->SetFloat((float)m_ClientHeight);
 	}
 }
 
@@ -176,10 +181,11 @@ void D3DApp_Picture::DrawScene()
 	{
 		return;
 	}
-	m_DeviceContext->ClearRenderTargetView( m_RenderTargetView, m_ClearColor );
-	m_DeviceContext->ClearDepthStencilView( m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0 );
-	m_DeviceContext->OMSetDepthStencilState( m_pDepthStencil_ZWriteOFF, 0 );
 
+	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, m_ClearColor);
+	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView,
+	                                       D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
 	InterSetSize(m_ClientWidth, m_ClientHeight);
 	InterSetLookCenter(m_LookCenterX, m_LookCenterY);
 	printf("scale: %f \n", m_Scale);
@@ -197,7 +203,7 @@ void D3DApp_Picture::DrawScene()
 		m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
 	}
 
-	m_SwapChain->Present( 0, 0 );
+	m_SwapChain->Present(0, 0);
 }
 
 void D3DApp_Picture::buildShaderFX()
@@ -205,10 +211,9 @@ void D3DApp_Picture::buildShaderFX()
 	ID3D10Blob* pCode;
 	ID3D10Blob* pError;
 	HRESULT hr = 0;
-
 	hr = D3DX11CompileFromFile(_T("shader\\picture.fx"), NULL, NULL, NULL,
-		"fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
-		&pCode, &pError, NULL);
+	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
+	                           &pCode, &pError, NULL);
 
 	if (FAILED(hr))
 	{
@@ -222,7 +227,7 @@ void D3DApp_Picture::buildShaderFX()
 	}
 
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
-		pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Pics_Effect));
+	                                pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Pics_Effect));
 	m_Pics_PTech = m_Pics_Effect->GetTechniqueByName("PointTech");
 	m_Pics_Width = m_Pics_Effect->GetVariableByName("width")->AsScalar();
 	m_Pics_Height = m_Pics_Effect->GetVariableByName("height")->AsScalar();
@@ -231,12 +236,12 @@ void D3DApp_Picture::buildShaderFX()
 	m_Pics_Scale = m_Pics_Effect->GetVariableByName("scale")->AsScalar();
 	m_Pics_PMap  = m_Pics_Effect->GetVariableByName("gMap")->AsShaderResource();
 	m_TransparencySV_Picture =
-		m_Pics_Effect->GetVariableByName("transparency")->AsScalar();
+	    m_Pics_Effect->GetVariableByName("transparency")->AsScalar();
+	m_TransparencySV_Picture->SetFloat(1);
 	D3DX11_PASS_DESC PassDesc;
 	m_Pics_PTech->GetPassByIndex(0)->GetDesc(&PassDesc);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PICVertex, 2,
-		PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_Pics_PLayout));
-
+	                                  PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_Pics_PLayout));
 	m_vbd.Usage = D3D11_USAGE_IMMUTABLE;
 	m_vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	m_vbd.CPUAccessFlags = 0;
@@ -248,6 +253,7 @@ void D3DApp_Picture::BuildPoint()
 	ReleaseCOM(m_Pics_Buffer);
 
 	if (!m_DeviceContext) { return; }
+
 	m_PicsVertices.clear();
 
 	if (m_Pics_Texture)
@@ -260,6 +266,7 @@ void D3DApp_Picture::BuildPoint()
 		pv.size.y = m_PicH;
 		m_PicsVertices.push_back(pv);
 	}
+
 	if (!m_PicsVertices.empty())
 	{
 		m_vbd.ByteWidth = (UINT)(sizeof(PictureVertex) * m_PicsVertices.size());
@@ -273,7 +280,7 @@ void D3DApp_Picture::BuildPoint()
 void D3DApp_Picture::LoadBlend()
 {
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
-	ZeroMemory( &depth_stencil_desc, sizeof( depth_stencil_desc ) );
+	ZeroMemory(&depth_stencil_desc, sizeof(depth_stencil_desc));
 	depth_stencil_desc.DepthEnable = TRUE;
 	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS;
@@ -282,7 +289,8 @@ void D3DApp_Picture::LoadBlend()
 	depth_stencil_desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
 
 	// 開啟zbuffer write
-	if ( D3D_OK != m_d3dDevice->CreateDepthStencilState( &depth_stencil_desc, &m_pDepthStencil_ZWriteON ) )
+	if (D3D_OK != m_d3dDevice->CreateDepthStencilState(&depth_stencil_desc,
+	        &m_pDepthStencil_ZWriteON))
 	{
 		return ;
 	}
@@ -290,26 +298,28 @@ void D3DApp_Picture::LoadBlend()
 	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 
 	// 關閉zbuffer write
-	if ( D3D_OK != m_d3dDevice->CreateDepthStencilState( &depth_stencil_desc, &m_pDepthStencil_ZWriteOFF ) )
+	if (D3D_OK != m_d3dDevice->CreateDepthStencilState(&depth_stencil_desc,
+	        &m_pDepthStencil_ZWriteOFF))
 	{
 		return ;
 	}
 
-	m_DeviceContext->OMSetDepthStencilState( m_pDepthStencil_ZWriteON, 0 );
+	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteON, 0);
 	CD3D11_BLEND_DESCX blend_state_desc(
-	        FALSE,
-	        FALSE,
-	        TRUE,
-	        D3D11_BLEND_ONE,
-	        D3D11_BLEND_ONE,
-	        D3D11_BLEND_OP_ADD,
-	        D3D11_BLEND_ONE,
-	        D3D11_BLEND_ONE,
-	        D3D11_BLEND_OP_ADD,
-	        D3D11_COLOR_WRITE_ENABLE_ALL );
+	    FALSE,
+	    FALSE,
+	    TRUE,
+	    D3D11_BLEND_ONE,
+	    D3D11_BLEND_ONE,
+	    D3D11_BLEND_OP_ADD,
+	    D3D11_BLEND_ONE,
+	    D3D11_BLEND_ONE,
+	    D3D11_BLEND_OP_ADD,
+	    D3D11_COLOR_WRITE_ENABLE_ALL);
 
 	// ADD混色模式
-	if ( D3D_OK != m_d3dDevice->CreateBlendState( &blend_state_desc, &m_pBlendState_ADD ) )
+	if (D3D_OK != m_d3dDevice->CreateBlendState(&blend_state_desc,
+	        &m_pBlendState_ADD))
 	{
 		return;
 	}
@@ -320,23 +330,24 @@ void D3DApp_Picture::LoadBlend()
 	blend_state_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 
 	// Alpha Blend混色模式
-	if ( D3D_OK != m_d3dDevice->CreateBlendState( &blend_state_desc, &m_pBlendState_BLEND ) )
+	if (D3D_OK != m_d3dDevice->CreateBlendState(&blend_state_desc,
+	        &m_pBlendState_BLEND))
 	{
 		return ;
 	}
 }
 
-void D3DApp_Picture::SetTexture( ID3D11ShaderResourceView* tex )
+void D3DApp_Picture::SetTexture(ID3D11ShaderResourceView* tex)
 {
 	if (!tex) { return; }
 
-	ReleaseCOM(m_Pics_Texture);
+	//ReleaseCOM(m_Pics_Texture);
 	m_Pics_PMap->SetResource(tex);
 	m_Pics_Texture = tex;
 	OnResize(m_ClientWidth, m_ClientHeight);
 }
 
-void D3DApp_Picture::SetPictureSize( int w, int h )
+void D3DApp_Picture::SetPictureSize(int w, int h)
 {
 	if (w == h && w == 0)
 	{
