@@ -285,9 +285,9 @@ void CMainFrame::OnFileNew()
 			m_vavImage.ReadImage(ConvStr::GetStr(filename.GetString()));
 			//d3dApp.ClearTriangles();
 			//d3dApp.SetPictureSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-			cv::Mat* img = new cv::Mat();
 			static int idx = 0;
-			g_MainView->AddPicturedata(L"test", img, idx++);
+			
+			g_MainView->AddPicturedata(L"test", &m_vavImage, idx++);
 		}
 	}
 }

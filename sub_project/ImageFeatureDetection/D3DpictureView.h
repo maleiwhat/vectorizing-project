@@ -16,18 +16,32 @@ private:
 	bool m_ShiftPress;
 	bool m_KeyAPress;
 
-	float m_RecordX, m_RecordY;
-
-	float m_CutH;
-	float m_CutW;
-	int   m_CutR;
-	int   m_CutC;
+	float m_Scale;
 public:
 	int		m_PictureID;
 	HWND		m_hWndDX11;
 	D3DApp_Picture	m_D3DApp;
 
 	void Init();
+	void SetTexture(ID3D11ShaderResourceView* tex)
+	{
+		m_D3DApp.SetScale(m_Scale);
+		m_D3DApp.SetTexture(tex);
+		m_D3DApp.BuildPoint();
+		m_D3DApp.DrawScene();
+	}
+	void SetPictureSize(int w, int h)
+	{
+		m_D3DApp.SetPictureSize(w, h);
+	}
+	ID3D11Device* GetDevice()
+	{
+		return m_D3DApp.GetDevice();
+	}
+	ID3D11DeviceContext* GetDeviceContext()
+	{
+		return m_D3DApp.GetDeviceContext();
+	}
 protected:
 	void InitDx11( HWND hWnd );
 private:

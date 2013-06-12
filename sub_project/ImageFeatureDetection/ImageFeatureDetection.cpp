@@ -22,6 +22,10 @@
 #include "ImageFeatureDetectionView.h"
 #include <auto_link_effect11.hpp>
 #include <auto_link_opencv.hpp>
+#include <stdio.h>
+#include <io.h>
+#include <fcntl.h>
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -44,6 +48,14 @@ END_MESSAGE_MAP()
 
 CImageFeatureDetectionApp::CImageFeatureDetectionApp()
 {
+	AllocConsole();
+
+	HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
+	int hCrt = _open_osfhandle((long) handle_out, _O_TEXT);
+	FILE* hf_out = _fdopen(hCrt, "w");
+	setvbuf(hf_out, NULL, _IONBF, 1);
+	*stdout = *hf_out;
+
 	m_bHiColorIcons = TRUE;
 
 	// 支援重新啟動管理員

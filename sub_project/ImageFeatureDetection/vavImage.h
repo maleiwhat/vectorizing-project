@@ -7,12 +7,11 @@
 class vavImage
 {
 public:
-	static void SetDx11Device(ID3D11Device* dev, ID3D11DeviceContext* devc);
 	vavImage(const cv::Mat& im);
 	vavImage(void);
 	~vavImage(void);
 	bool    ReadImage(std::string path);
-	ID3D11ShaderResourceView* GetDx11Texture();
+	ID3D11ShaderResourceView* GetDx11Texture(ID3D11Device* dev, ID3D11DeviceContext* devc);
 	bool    Vaild();
 	Vector2s    GetWhitePoints();
 	int GetWidth() {return m_Image.cols;}
@@ -33,8 +32,6 @@ public:
 		return *this;
 	}
 private:
-	static ID3D11Device* m_Device;
-	static ID3D11DeviceContext* m_DeviceContext;
 	cv::Mat m_Image;
 };
 

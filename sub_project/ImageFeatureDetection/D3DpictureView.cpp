@@ -8,12 +8,13 @@
 
 
 
-IMPLEMENT_DYNCREATE( CD3DpictureView, CView )
+IMPLEMENT_DYNCREATE(CD3DpictureView, CView)
 CD3DpictureView* g_NewPictureView = NULL;
 
 CD3DpictureView::CD3DpictureView()
-	: m_TrackMouse( true ), m_LMouseHold( false ), m_MMouseHold( false ), m_CtrlPress( false ), m_KeyAPress( false ), m_ShiftPress( false ), m_RecordX( 0 ), m_RecordY( 0 ),
-	  m_CutH( 1 ), m_CutW( 1 ), m_CutR( 1 ), m_CutC( 1 )
+	: m_TrackMouse(true), m_LMouseHold(false), m_MMouseHold(false),
+	  m_CtrlPress(false), m_KeyAPress(false), m_ShiftPress(false),
+	  m_Scale(1)
 {
 	g_NewPictureView = this;
 }
@@ -22,7 +23,7 @@ CD3DpictureView::~CD3DpictureView()
 {
 }
 
-BEGIN_MESSAGE_MAP( CD3DpictureView, CView )
+BEGIN_MESSAGE_MAP(CD3DpictureView, CView)
 	ON_WM_SIZE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
@@ -40,7 +41,7 @@ END_MESSAGE_MAP()
 
 // CD3DpictureView 描繪
 
-void CD3DpictureView::OnDraw( CDC* pDC )
+void CD3DpictureView::OnDraw(CDC* pDC)
 {
 	CDocument* pDoc = GetDocument();
 	// TODO: 在此加入描繪程式碼
@@ -48,14 +49,14 @@ void CD3DpictureView::OnDraw( CDC* pDC )
 	m_D3DApp.DrawScene();
 }
 
-void CD3DpictureView::InitDx11( HWND hWnd )
+void CD3DpictureView::InitDx11(HWND hWnd)
 {
 	CRect rect;
-	GetWindowRect( &rect );
+	GetWindowRect(&rect);
 	m_hWndDX11 = hWnd;
-	::ShowWindow( m_hWndDX11, true );
-	::UpdateWindow( m_hWndDX11 );
-	m_D3DApp.initApp( m_hWndDX11, rect.Width(), rect.Height() );
+	::ShowWindow(m_hWndDX11, true);
+	::UpdateWindow(m_hWndDX11);
+	m_D3DApp.initApp(m_hWndDX11, rect.Width(), rect.Height());
 	m_D3DApp.buildShaderFX();
 }
 
@@ -65,12 +66,12 @@ void CD3DpictureView::OnInitialUpdate()
 {
 	CView::OnInitialUpdate();
 	//InitDx11(this->GetParent()->GetParent()->GetParent()->GetSafeHwnd());
-	this->InitDx11( this->GetSafeHwnd() );
+	this->InitDx11(this->GetSafeHwnd());
 }
 
-int CD3DpictureView::OnCreate( LPCREATESTRUCT lpCreateStruct )
+int CD3DpictureView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	if ( CView::OnCreate( lpCreateStruct ) == -1 )
+	if (CView::OnCreate(lpCreateStruct) == -1)
 	{
 		return -1;
 	}
@@ -79,90 +80,59 @@ int CD3DpictureView::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	return 0;
 }
 
-void CD3DpictureView::OnSize( UINT nType, int cx, int cy )
+void CD3DpictureView::OnSize(UINT nType, int cx, int cy)
 {
-	CView::OnSize( nType, cx, cy );
+	CView::OnSize(nType, cx, cy);
 
 	// TODO: 在此加入您的訊息處理常式程式碼
-	if ( cx > 0 && cy > 0 )
+	if (cx > 0 && cy > 0)
 	{
-		m_D3DApp.OnResize( cx, cy );
+		m_D3DApp.OnResize(cx, cy);
 	}
 }
 
-void CD3DpictureView::OnMouseMove( UINT nFlags, CPoint point )
+void CD3DpictureView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
-	if ( m_TrackMouse )
+	if (m_TrackMouse)
 	{
 		TRACKMOUSEEVENT tme;
-		tme.cbSize = sizeof( TRACKMOUSEEVENT );
+		tme.cbSize = sizeof(TRACKMOUSEEVENT);
 		tme.dwFlags = TME_LEAVE;
 		tme.hwndTrack = this->m_hWnd;
-		_TrackMouseEvent( &tme );
+		_TrackMouseEvent(&tme);
 		m_TrackMouse = false;
-	}
-
-	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
-	float dx = point.x - m_RecordX;
-	float dy = point.y - m_RecordY;
-	m_RecordX = point.x;
-	m_RecordY = point.y;
-
-	if ( m_MMouseHold )
-	{
-		m_D3DApp.m_Picture_OffsetX += dx;
-		m_D3DApp.m_Picture_OffsetY += dy;
-		m_D3DApp.BuildPoint();
-		m_D3DApp.DrawScene();
-	}
-
-	point.x = 1 + ( point.x - m_D3DApp.m_Picture_OffsetX ) / m_D3DApp.m_Picture_Scale / ( int )m_CutW;
-	point.y = 1 + ( point.y - m_D3DApp.m_Picture_OffsetY ) / m_D3DApp.m_Picture_Scale / ( int )m_CutH;
-
-	if ( point.x <= 0 || point.x > m_CutR || point.y <= 0 || point.y > m_CutC )
-	{
-		point.x = 0;
-		point.y = 0;
 	}
 
 	char buff[100];
 	//sprintf( buff, "   行: %d 列: %d  ", point.x, point.y );
 	//CString str( buff );
 	//( ( CMainFrame* )( this->GetParent()->GetParent()->GetParent()->GetParentFrame() ) )->SetStatus( str );
-	CView::OnMouseMove( nFlags, point );
+	CView::OnMouseMove(nFlags, point);
 }
 
 
-BOOL CD3DpictureView::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
+BOOL CD3DpictureView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
-	if ( m_CtrlPress && !m_ShiftPress )
+	if (zDelta > 0)
 	{
-		if ( zDelta > 0 )
-		{
-			if ( m_D3DApp.m_Picture_Scale < 10 )
-			{
-				m_D3DApp.m_Picture_Scale += 0.1f;
-			}
-		}
-		else
-		{
-			if ( m_D3DApp.m_Picture_Scale > 0.1 )
-			{
-				m_D3DApp.m_Picture_Scale -= 0.1f;
-			}
-		}
-
-		m_D3DApp.BuildPoint();
-		m_D3DApp.DrawScene();
+		m_Scale += 0.1;
+	}
+	else
+	{
+		m_Scale -= 0.1;
 	}
 
+	m_D3DApp.SetScale(m_Scale);
+	m_D3DApp.BuildPoint();
+	m_D3DApp.DrawScene();
+
 	char buff[100];
-// 	sprintf( buff, "   顯示比例 %.1f%%", m_D3DApp.m_Picture_Scale * 100 );
-// 	CString str( buff );
+//  sprintf( buff, "   顯示比例 %.1f%%", m_D3DApp.m_Picture_Scale * 100 );
+//  CString str( buff );
 	//( ( CMainFrame* )( this->GetParent()->GetParent()->GetParent()->GetParentFrame() ) )->SetStatus( str );
-	return CView::OnMouseWheel( nFlags, zDelta, pt );
+	return CView::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 
@@ -176,29 +146,30 @@ void CD3DpictureView::OnMouseLeave()
 }
 
 
-void CD3DpictureView::OnMButtonDown( UINT nFlags, CPoint point )
+void CD3DpictureView::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
 	m_MMouseHold = true;
-	CView::OnMButtonDown( nFlags, point );
+	CView::OnMButtonDown(nFlags, point);
 }
 
 
-void CD3DpictureView::OnMButtonUp( UINT nFlags, CPoint point )
+void CD3DpictureView::OnMButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
 	m_MMouseHold = false;
-	CView::OnMButtonUp( nFlags, point );
+	CView::OnMButtonUp(nFlags, point);
 }
 
 void CD3DpictureView::OnPaint()
 {
-	CPaintDC dc( this ); // device context for painting
+	CPaintDC dc(this);   // device context for painting
 	// TODO: 在此加入您的訊息處理常式程式碼
 	// 不要呼叫圖片訊息的 CView::OnPaint()
 	CRect rect;
-	GetClientRect( &rect );
-	m_D3DApp.OnResize( rect.Width(), rect.Height() );
+	GetClientRect(&rect);
+	m_D3DApp.OnResize(rect.Width(), rect.Height());
+	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
 }
 
@@ -206,12 +177,11 @@ void CD3DpictureView::Init()
 {
 }
 
-void CD3DpictureView::Update( int x, int y )
+void CD3DpictureView::Update(int x, int y)
 {
-	
 }
 
-void CD3DpictureView::PreBuild( int x,int y )
+void CD3DpictureView::PreBuild(int x, int y)
 {
 }
 
@@ -224,9 +194,9 @@ void CD3DpictureView::AssertValid() const
 }
 
 #ifndef _WIN32_WCE
-void CD3DpictureView::Dump( CDumpContext& dc ) const
+void CD3DpictureView::Dump(CDumpContext& dc) const
 {
-	CView::Dump( dc );
+	CView::Dump(dc);
 }
 
 

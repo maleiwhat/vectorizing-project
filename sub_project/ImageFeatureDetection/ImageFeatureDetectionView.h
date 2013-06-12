@@ -16,8 +16,9 @@
 #include <opencv2/opencv.hpp>
 #include <map>
 #include "D3DpictureView.h"
+#include "vavImage.h"
 
-typedef std::map<cv::Mat*, CD3DpictureView*> ViewMap;
+typedef std::map<vavImage*, CD3DpictureView*> ViewMap;
 
 class CImageFeatureDetectionDoc;
 class CImageFeatureDetectionView : public CTabView
@@ -59,9 +60,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	void AddPicturedata(CString name, cv::Mat* pic, int index);
+	void AddPicturedata(CString name, vavImage* pic, int index);
 	void SwitchPicture(int index);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };
 extern CImageFeatureDetectionView* g_MainView;
 

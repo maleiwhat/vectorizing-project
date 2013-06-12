@@ -9,12 +9,9 @@
 class D3DApp_Picture
 {
 public:
-	float m_Picture_Scale;
-	float m_Picture_OffsetX;
-	float m_Picture_OffsetY;
-
-	int  m_PicID;
-	void Cut( int r, int c );
+	int		m_PicW;
+	int		m_PicH;
+	int		m_PicID;
 private:
 public:
 	D3DApp_Picture();
@@ -24,6 +21,7 @@ public:
 	HWND		getMainWnd();
 
 	void initApp( HWND hWnd, int w, int h );
+	void SetPictureSize(int w, int h);
 	void OnResize( int w, int h ); // reset projection/etc
 	void DrawScene();
 	void LoadBlend();
@@ -43,15 +41,7 @@ public:
 	{
 		m_Pics_Scale->SetFloat(s);
 	}
-	void SetTexture(ID3D11ShaderResourceView* tex)
-	{
-		if (!tex) { return; }
-
-		ReleaseCOM(m_Pics_Texture);
-		m_Pics_PMap->SetResource(tex);
-		m_Pics_Texture = tex;
-		OnResize(m_ClientWidth, m_ClientHeight);
-	}
+	void SetTexture(ID3D11ShaderResourceView* tex);
 	void SetScale(float s)
 	{
 		m_Scale = s;
@@ -59,6 +49,10 @@ public:
 	ID3D11Device* GetDevice()
 	{
 		return m_d3dDevice;
+	}
+	ID3D11DeviceContext* GetDeviceContext()
+	{
+		return m_DeviceContext;
 	}
 protected:
 	void initDirect3D();
@@ -78,13 +72,13 @@ protected:
 	float   m_Scale;
 	std::wstring	m_FrameStats;
 	ID3D11Device*	m_d3dDevice;
+	ID3D11DeviceContext*	m_DeviceContext;
 	IDXGISwapChain*	m_SwapChain;
 	ID3D11Texture2D*	m_DepthStencilBuffer;
 	ID3D11DepthStencilView* m_DepthStencilView2;
 	ID3D11RenderTargetView* m_RenderTargetView;
 	ID3D11DepthStencilView* m_DepthStencilView;
-	ID3D11DeviceContext*	m_DeviceContext;
-
+	
 	ID3D11BlendState*	m_pBlendState_ADD;
 	ID3D11BlendState*	m_pBlendState_BLEND;
 	ID3D11DepthStencilState* m_pDepthStencil_ZWriteON;
@@ -111,8 +105,6 @@ protected:
 	std::wstring m_MainWndCaption;
 	D3D_DRIVER_TYPE m_d3dDriverType;
 	D3DXCOLOR m_ClearColor;
-	int mClientWidth;
-	int mClientHeight;
 	D3D_FEATURE_LEVEL  m_FeatureLevelsSupported;
 };
 

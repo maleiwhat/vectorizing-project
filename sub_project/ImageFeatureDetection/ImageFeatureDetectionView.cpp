@@ -40,6 +40,7 @@ BEGIN_MESSAGE_MAP(CImageFeatureDetectionView, CTabView)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
 	ON_WM_CREATE()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 // CImageFeatureDetectionView 建構/解構
@@ -136,17 +137,20 @@ const // 內嵌非偵錯版本
 	return (CImageFeatureDetectionDoc*)m_pDocument;
 }
 
-void CImageFeatureDetectionView::AddPicturedata(CString name, cv::Mat* pic,
+void CImageFeatureDetectionView::AddPicturedata(CString name, vavImage* pic,
         int index)
 {
 	if (m_ViewMap.find(pic) == m_ViewMap.end())
 	{
-		AddView(RUNTIME_CLASS(CD3DpictureView), name);
+		AddView(RUNTIME_CLASS(CD3DpictureView), name, index);
 		g_NewPictureView->m_PictureID = index;
 		g_NewPictureView->OnInitialUpdate();
 		//g_NewPictureView->Refresh( pic );
 		SetActiveView(index);
 		m_ViewMap[pic] = g_NewPictureView;
+		g_NewPictureView->SetPictureSize(pic->GetWidth(), pic->GetHeight());
+		g_NewPictureView->SetTexture(pic->GetDx11Texture(g_NewPictureView->GetDevice(),
+		                             g_NewPictureView->GetDeviceContext()));
 	}
 }
 
@@ -174,4 +178,13 @@ int CImageFeatureDetectionView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	this->GetTabControl().EnableTabSwap(FALSE);
 	this->GetTabControl().SetTabBorderSize(2);
 	return 0;
+}
+
+
+void CImageFeatureDetectionView::OnSize(UINT nType, int cx, int cy)
+{
+	CTabView::OnSize(nType, cx, cy);
+
+	// TODO: 在此加入您的訊息處理常式程式碼
+
 }

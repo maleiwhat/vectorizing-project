@@ -6,10 +6,6 @@
 #include "math\Quaternion.h"
 
 
-ID3D11Device* vavImage::m_Device;
-ID3D11DeviceContext* vavImage::m_DeviceContext;
-
-
 vavImage::vavImage(void)
 {
 }
@@ -19,7 +15,7 @@ vavImage::vavImage(const cv::Mat& im)
 	m_Image = im.clone();
 }
 
-ID3D11ShaderResourceView* vavImage::GetDx11Texture()
+ID3D11ShaderResourceView* vavImage::GetDx11Texture(ID3D11Device* dev, ID3D11DeviceContext* devc)
 {
 	if (m_Image.rows == 0 || m_Image.cols == 0) { return NULL; }
 
@@ -63,7 +59,7 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 	sSubData.SysMemSlicePitch = (UINT)(m_Image.rows * m_Image.cols * 4 * 4);
 	sSubData.pSysMem = characterImages;
 	ID3D11Texture2D* pTextureDraw;
-	HRESULT d3dResult = m_Device->CreateTexture2D(&texDesc, &sSubData,
+	HRESULT d3dResult = dev->CreateTexture2D(&texDesc, &sSubData,
 	                    &pTextureDraw);
 	ID3D11ShaderResourceView* pShaderResView;
 	int x = 0;
@@ -75,7 +71,7 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 		return 0;
 	}
 
-	d3dResult = m_Device->CreateShaderResourceView(pTextureDraw, &srDesc,
+	d3dResult = dev->CreateShaderResourceView(pTextureDraw, &srDesc,
 	            &pShaderResView);
 
 	if (FAILED(d3dResult))
@@ -99,13 +95,13 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 		texDescCV.Usage = D3D11_USAGE_STAGING;
 		texDescCV.BindFlags = 0;
 		texDescCV.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-		HR(m_Device->CreateTexture2D(&texDescCV, 0, &pTextureRead));
-		m_DeviceContext->CopyResource(pTextureRead, pTextureDraw);
+		HR(dev->CreateTexture2D(&texDescCV, 0, &pTextureRead));
+		devc->CopyResource(pTextureRead, pTextureDraw);
 		D3D11_MAPPED_SUBRESOURCE MappedResource;
 		float* pimg;
 		//HR(m_DeviceContext->Map(pTextureRead, 0, D3D11_MAP_READ, 0, &MappedResource));
 		unsigned int subresource = D3D11CalcSubresource(0, 0, 0);
-		HR(m_DeviceContext->Map(pTextureRead, subresource, D3D11_MAP_READ, 0,
+		HR(devc->Map(pTextureRead, subresource, D3D11_MAP_READ, 0,
 		                        &MappedResource));
 		pimg = (float*)MappedResource.pData;
 		cv::Mat simg = m_Image.clone();
@@ -144,11 +140,7 @@ bool vavImage::ReadImage(std::string path)
 		return false;
 	}
 }
-void vavImage::SetDx11Device(ID3D11Device* dev, ID3D11DeviceContext* devc)
-{
-	m_Device = dev;
-	m_DeviceContext = devc;
-}
+
 bool vavImage::Vaild()
 {
 	if (m_Image.cols > 0 && m_Image.rows > 0)
