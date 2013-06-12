@@ -137,23 +137,6 @@ const // 內嵌非偵錯版本
 	return (CImageFeatureDetectionDoc*)m_pDocument;
 }
 
-void CImageFeatureDetectionView::AddPicturedata(CString name, vavImage* pic,
-        int index)
-{
-	if (m_ViewMap.find(pic) == m_ViewMap.end())
-	{
-		AddView(RUNTIME_CLASS(CD3DpictureView), name, index);
-		g_NewPictureView->m_PictureID = index;
-		g_NewPictureView->OnInitialUpdate();
-		//g_NewPictureView->Refresh( pic );
-		SetActiveView(index);
-		m_ViewMap[pic] = g_NewPictureView;
-		g_NewPictureView->SetPictureSize(pic->GetWidth(), pic->GetHeight());
-		g_NewPictureView->SetTexture(pic->GetDx11Texture(g_NewPictureView->GetDevice(),
-		                             g_NewPictureView->GetDeviceContext()));
-	}
-}
-
 void CImageFeatureDetectionView::SwitchPicture(int index)
 {
 	SetActiveView(index);
@@ -187,4 +170,21 @@ void CImageFeatureDetectionView::OnSize(UINT nType, int cx, int cy)
 
 	// TODO: 在此加入您的訊息處理常式程式碼
 
+}
+
+void CImageFeatureDetectionView::AddPicturedata(CString name, vavImage* pic,
+												int index)
+{
+	if (m_ViewMap.find(pic) == m_ViewMap.end())
+	{
+		AddView(RUNTIME_CLASS(CD3DpictureView), name, index);
+		g_NewPictureView->m_PictureID = index;
+		g_NewPictureView->OnInitialUpdate();
+		//g_NewPictureView->Refresh( pic );
+		SetActiveView(index);
+		m_ViewMap[pic] = g_NewPictureView;
+		g_NewPictureView->SetPictureSize(pic->GetWidth(), pic->GetHeight());
+		g_NewPictureView->SetTexture(pic->GetDx11Texture(g_NewPictureView->GetDevice(),
+			g_NewPictureView->GetDeviceContext()));
+	}
 }
