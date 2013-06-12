@@ -28,8 +28,34 @@ public:
 	void DrawScene();
 	void LoadBlend();
 	void buildShaderFX();
-	void buildPoint();
+	void BuildPoint();
+	void InterSetSize(float w, float h)
+	{
+		m_Pics_Width->SetFloat(w);
+		m_Pics_Height->SetFloat(h);
+	}
+	void InterSetLookCenter(float x, float y)
+	{
+		m_Pics_CenterX->SetFloat(x);
+		m_Pics_CenterY->SetFloat(y);
+	}
+	void InterSetScale(float s)
+	{
+		m_Pics_Scale->SetFloat(s);
+	}
+	void SetTexture(ID3D11ShaderResourceView* tex)
+	{
+		if (!tex) { return; }
 
+		ReleaseCOM(m_Pics_Texture);
+		m_Pics_PMap->SetResource(tex);
+		m_Pics_Texture = tex;
+		OnResize(m_ClientWidth, m_ClientHeight);
+	}
+	void SetScale(float s)
+	{
+		m_Scale = s;
+	}
 	ID3D11Device* GetDevice()
 	{
 		return m_d3dDevice;
@@ -45,6 +71,11 @@ protected:
 	bool		m_Maximized;
 	bool		m_Resizing;
 	GameTimer	m_Timer;
+	int     m_ClientWidth;
+	int     m_ClientHeight;
+	float   m_LookCenterX;
+	float   m_LookCenterY;
+	float   m_Scale;
 	std::wstring	m_FrameStats;
 	ID3D11Device*	m_d3dDevice;
 	IDXGISwapChain*	m_SwapChain;
@@ -59,41 +90,20 @@ protected:
 	ID3D11DepthStencilState* m_pDepthStencil_ZWriteON;
 	ID3D11DepthStencilState* m_pDepthStencil_ZWriteOFF;
 
-	PointVertices			m_PointVertices;
-
-	ID3D11Buffer*			m_Buffer_Points;
-	ID3DX11Effect*			m_Effect_Points;
-	ID3DX11EffectTechnique*		m_PTech_Points;
-	ID3D11InputLayout*		m_PLayout_Points;
-	ID3DX11EffectScalarVariable*	m_Points_Width;
-	ID3DX11EffectScalarVariable*	m_Points_Height;
-	ID3DX11EffectScalarVariable*	m_Points_Scale;
-	ID3DX11EffectScalarVariable*	m_Points_OffsetX;
-	ID3DX11EffectScalarVariable*	m_Points_OffsetY;
-
-	LineVertices			m_LineVertices;
-
-	ID3D11Buffer*			m_Buffer_Lines;
-	ID3DX11Effect*			m_Effect_Lines;
-	ID3DX11EffectTechnique*		m_PTech_Lines;
-	ID3D11InputLayout*		m_PLayout_Lines;
-	ID3DX11EffectScalarVariable*	m_Lines_Width;
-	ID3DX11EffectScalarVariable*	m_Lines_Height;
-	ID3DX11EffectScalarVariable*	m_Lines_Scale;
-	ID3DX11EffectScalarVariable*	m_Lines_OffsetX;
-	ID3DX11EffectScalarVariable*	m_Lines_OffsetY;
-
-	ID3DX11Effect*			m_Effect_Pics;
-	ID3D11Buffer*			m_Buffer_Pics;
-	ID3DX11EffectTechnique*		m_PTech_Pics;
-	ID3D11InputLayout*		m_PLayout_Pics;
-	ID3DX11EffectScalarVariable*	m_Pics_Width;
-	ID3DX11EffectScalarVariable*	m_Pics_Height;
-	ID3DX11EffectScalarVariable*	m_Pics_Scale;
-	ID3DX11EffectScalarVariable*	m_Pics_OffsetX;
-	ID3DX11EffectScalarVariable*	m_Pics_OffsetY;
-	ID3DX11EffectShaderResourceVariable*  m_PMap_Pics;
-	ID3DX11EffectShaderResourceVariable*  m_BMap_Pics;
+	ID3D11Buffer*           m_Backup_Buffer;
+	ID3D11Buffer*           m_Pics_Buffer;
+	ID3DX11Effect*          m_Pics_Effect;
+	ID3DX11EffectTechnique*     m_Pics_PTech;
+	ID3D11InputLayout*      m_Pics_PLayout;
+	ID3DX11EffectScalarVariable*    m_Pics_Width;
+	ID3DX11EffectScalarVariable*    m_Pics_Height;
+	ID3DX11EffectScalarVariable*    m_Pics_CenterX;
+	ID3DX11EffectScalarVariable*    m_Pics_CenterY;
+	ID3DX11EffectScalarVariable*    m_Pics_Scale;
+	ID3DX11EffectScalarVariable*    m_TransparencySV_Picture;
+	ID3DX11EffectShaderResourceVariable*  m_Pics_PMap;
+	ID3D11ShaderResourceView*   m_Pics_Texture;
+	PictureVertices         m_PicsVertices;
 
 
 	D3D11_BUFFER_DESC		m_vbd;

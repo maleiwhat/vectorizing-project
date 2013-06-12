@@ -3,7 +3,7 @@
 // MFC 參考及 MFC C++ 程式庫軟體
 // 隨附相關電子文件的補充。
 // 關於 Fluent UI 之複製、使用或散發的授權條款則分別提供。
-// 如需 Fluent UI 授權計劃的詳細資訊，請造訪 
+// 如需 Fluent UI 授權計劃的詳細資訊，請造訪
 // http://go.microsoft.com/fwlink/?LinkId=238214。
 //
 // Copyright (C) Microsoft Corporation
@@ -16,11 +16,14 @@
 #include "ImageFeatureDetection.h"
 
 #include "MainFrm.h"
+#include "ConvStr.h"
+#include "DX11\d3dApp_Picture.h"
+#include "ImageFeatureDetectionView.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
 // CMainFrame
 
 IMPLEMENT_DYNCREATE(CMainFrame, CFrameWndEx)
@@ -37,7 +40,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_COMMAND(ID_FILE_PRINT, &CMainFrame::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CMainFrame::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CMainFrame::OnFilePrintPreview)
-	ON_UPDATE_COMMAND_UI(ID_FILE_PRINT_PREVIEW, &CMainFrame::OnUpdateFilePrintPreview)
+	ON_UPDATE_COMMAND_UI(ID_FILE_PRINT_PREVIEW,
+	                     &CMainFrame::OnUpdateFilePrintPreview)
 	ON_COMMAND(ID_FILE_NEW, &CMainFrame::OnFileNew)
 END_MESSAGE_MAP()
 
@@ -55,10 +59,9 @@ CMainFrame::~CMainFrame()
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CFrameWndEx::OnCreate(lpCreateStruct) == -1)
-		return -1;
+	{ return -1; }
 
 	BOOL bNameValid;
-
 	m_wndRibbonBar.Create(this);
 	m_wndRibbonBar.LoadFromResource(IDR_RIBBON);
 
@@ -74,19 +77,20 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	ASSERT(bNameValid);
 	bNameValid = strTitlePane2.LoadString(IDS_STATUS_PANE2);
 	ASSERT(bNameValid);
-	m_wndStatusBar.AddElement(new CMFCRibbonStatusBarPane(ID_STATUSBAR_PANE1, strTitlePane1, TRUE), strTitlePane1);
-	m_wndStatusBar.AddExtendedElement(new CMFCRibbonStatusBarPane(ID_STATUSBAR_PANE2, strTitlePane2, TRUE), strTitlePane2);
-
+	m_wndStatusBar.AddElement(new CMFCRibbonStatusBarPane(ID_STATUSBAR_PANE1,
+	                          strTitlePane1, TRUE), strTitlePane1);
+	m_wndStatusBar.AddExtendedElement(new CMFCRibbonStatusBarPane(
+	                                      ID_STATUSBAR_PANE2, strTitlePane2, TRUE), strTitlePane2);
 	// 啟用 Visual Studio 2005 樣式停駐視窗行為
 	CDockingManager::SetDockingMode(DT_SMART);
 	// 啟用 Visual Studio 2005 樣式停駐視窗自動隱藏行為
 	EnableAutoHidePanes(CBRS_ALIGN_ANY);
-
 	// 將在左側建立巡覽窗格，所以會暫時停用於左側停駐:
 	EnableDocking(CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM | CBRS_ALIGN_RIGHT);
 
 	// 建立和設定 [Outlook] 巡覽列:
-	if (!CreateOutlookBar(m_wndNavigationBar, ID_VIEW_NAVIGATION, m_wndTree, m_wndCalendar, 250))
+	if (!CreateOutlookBar(m_wndNavigationBar, ID_VIEW_NAVIGATION, m_wndTree,
+	                      m_wndCalendar, 250))
 	{
 		TRACE0("無法建立巡覽窗格\n");
 		return -1;      // 無法建立
@@ -102,40 +106,42 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// Outlook 功能區已建立，而且應該允許於左側停駐。
 	EnableDocking(CBRS_ALIGN_LEFT);
 	EnableAutoHidePanes(CBRS_ALIGN_RIGHT);
-
 	// 設定用來繪製所有使用者介面項目的視覺化管理員
-	CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerOffice2007));
-
+	CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(
+	        CMFCVisualManagerOffice2007));
 	// 設定視覺化管理員所使用的視覺化樣式
-	CMFCVisualManagerOffice2007::SetStyle(CMFCVisualManagerOffice2007::Office2007_ObsidianBlack);
-
+	CMFCVisualManagerOffice2007::SetStyle(
+	    CMFCVisualManagerOffice2007::Office2007_ObsidianBlack);
 	return 0;
 }
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
-	if( !CFrameWndEx::PreCreateWindow(cs) )
-		return FALSE;
-	// TODO: 在此經由修改 CREATESTRUCT cs 
-	// 達到修改視窗類別或樣式的目的
+	if (!CFrameWndEx::PreCreateWindow(cs))
+	{ return FALSE; }
 
+	// TODO: 在此經由修改 CREATESTRUCT cs
+	// 達到修改視窗類別或樣式的目的
 	return TRUE;
 }
 
-BOOL CMainFrame::CreateOutlookBar(CMFCOutlookBar& bar, UINT uiID, CMFCShellTreeCtrl& tree, CCalendarBar& calendar, int nInitialWidth)
+BOOL CMainFrame::CreateOutlookBar(CMFCOutlookBar& bar, UINT uiID,
+                                  CMFCShellTreeCtrl& tree, CCalendarBar& calendar, int nInitialWidth)
 {
 	bar.SetMode2003();
-
 	BOOL bNameValid;
 	CString strTemp;
 	bNameValid = strTemp.LoadString(IDS_SHORTCUTS);
 	ASSERT(bNameValid);
-	if (!bar.Create(strTemp, this, CRect(0, 0, nInitialWidth, 32000), uiID, WS_CHILD | WS_VISIBLE | CBRS_LEFT))
+
+	if (!bar.Create(strTemp, this, CRect(0, 0, nInitialWidth, 32000), uiID,
+	                WS_CHILD | WS_VISIBLE | CBRS_LEFT))
 	{
 		return FALSE; // 無法建立
 	}
 
-	CMFCOutlookBarTabCtrl* pOutlookBar = (CMFCOutlookBarTabCtrl*)bar.GetUnderlyingWindow();
+	CMFCOutlookBarTabCtrl* pOutlookBar = (CMFCOutlookBarTabCtrl*)
+	                                     bar.GetUnderlyingWindow();
 
 	if (pOutlookBar == NULL)
 	{
@@ -144,68 +150,61 @@ BOOL CMainFrame::CreateOutlookBar(CMFCOutlookBar& bar, UINT uiID, CMFCShellTreeC
 	}
 
 	pOutlookBar->EnableInPlaceEdit(TRUE);
-
 	static UINT uiPageID = 1;
-
 	// 可浮動、可自動隱藏、可調整大小、不可關閉
 	DWORD dwStyle = AFX_CBRS_FLOAT | AFX_CBRS_AUTOHIDE | AFX_CBRS_RESIZE;
-
 	CRect rectDummy(0, 0, 0, 0);
-	const DWORD dwTreeStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS;
-
+	const DWORD dwTreeStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT
+	                          | TVS_HASBUTTONS;
 	tree.Create(dwTreeStyle, rectDummy, &bar, 1200);
 	bNameValid = strTemp.LoadString(IDS_FOLDERS);
 	ASSERT(bNameValid);
 	pOutlookBar->AddControl(&tree, strTemp, 2, TRUE, dwStyle);
-
 	calendar.Create(rectDummy, &bar, 1201);
 	bNameValid = strTemp.LoadString(IDS_CALENDAR);
 	ASSERT(bNameValid);
 	pOutlookBar->AddControl(&calendar, strTemp, 3, TRUE, dwStyle);
-
-	bar.SetPaneStyle(bar.GetPaneStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-
-	pOutlookBar->SetImageList(theApp.m_bHiColorIcons ? IDB_PAGES_HC : IDB_PAGES, 24);
-	pOutlookBar->SetToolbarImageList(theApp.m_bHiColorIcons ? IDB_PAGES_SMALL_HC : IDB_PAGES_SMALL, 16);
+	bar.SetPaneStyle(bar.GetPaneStyle() | CBRS_TOOLTIPS | CBRS_FLYBY |
+	                 CBRS_SIZE_DYNAMIC);
+	pOutlookBar->SetImageList(theApp.m_bHiColorIcons ? IDB_PAGES_HC : IDB_PAGES,
+	                          24);
+	pOutlookBar->SetToolbarImageList(theApp.m_bHiColorIcons ? IDB_PAGES_SMALL_HC :
+	                                 IDB_PAGES_SMALL, 16);
 	pOutlookBar->RecalcLayout();
-
 	BOOL bAnimation = theApp.GetInt(_T("OutlookAnimation"), TRUE);
 	CMFCOutlookBarTabCtrl::EnableAnimation(bAnimation);
-
 	bar.SetButtonsFont(&afxGlobalData.fontBold);
-
 	return TRUE;
 }
 
 BOOL CMainFrame::CreateCaptionBar()
 {
-	if (!m_wndCaptionBar.Create(WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, this, ID_VIEW_CAPTION_BAR, -1, TRUE))
+	if (!m_wndCaptionBar.Create(WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, this,
+	                            ID_VIEW_CAPTION_BAR, -1, TRUE))
 	{
 		TRACE0("無法建立標題列\n");
 		return FALSE;
 	}
 
 	BOOL bNameValid;
-
 	CString strTemp, strTemp2;
 	bNameValid = strTemp.LoadString(IDS_CAPTION_BUTTON);
 	ASSERT(bNameValid);
-	m_wndCaptionBar.SetButton(strTemp, ID_TOOLS_OPTIONS, CMFCCaptionBar::ALIGN_LEFT, FALSE);
+	m_wndCaptionBar.SetButton(strTemp, ID_TOOLS_OPTIONS, CMFCCaptionBar::ALIGN_LEFT,
+	                          FALSE);
 	bNameValid = strTemp.LoadString(IDS_CAPTION_BUTTON_TIP);
 	ASSERT(bNameValid);
 	m_wndCaptionBar.SetButtonToolTip(strTemp);
-
 	bNameValid = strTemp.LoadString(IDS_CAPTION_TEXT);
 	ASSERT(bNameValid);
 	m_wndCaptionBar.SetText(strTemp, CMFCCaptionBar::ALIGN_LEFT);
-
-	m_wndCaptionBar.SetBitmap(IDB_INFO, RGB(255, 255, 255), FALSE, CMFCCaptionBar::ALIGN_LEFT);
+	m_wndCaptionBar.SetBitmap(IDB_INFO, RGB(255, 255, 255), FALSE,
+	                          CMFCCaptionBar::ALIGN_LEFT);
 	bNameValid = strTemp.LoadString(IDS_CAPTION_IMAGE_TIP);
 	ASSERT(bNameValid);
 	bNameValid = strTemp2.LoadString(IDS_CAPTION_IMAGE_TEXT);
 	ASSERT(bNameValid);
 	m_wndCaptionBar.SetImageToolTip(strTemp, strTemp2);
-
 	return TRUE;
 }
 
@@ -239,9 +238,9 @@ void CMainFrame::OnUpdateViewCaptionBar(CCmdUI* pCmdUI)
 
 void CMainFrame::OnOptions()
 {
-	CMFCRibbonCustomizeDialog *pOptionsDlg = new CMFCRibbonCustomizeDialog(this, &m_wndRibbonBar);
+	CMFCRibbonCustomizeDialog* pOptionsDlg = new CMFCRibbonCustomizeDialog(this,
+	        &m_wndRibbonBar);
 	ASSERT(pOptionsDlg != NULL);
-
 	pOptionsDlg->DoModal();
 	delete pOptionsDlg;
 }
@@ -259,7 +258,8 @@ void CMainFrame::OnFilePrintPreview()
 {
 	if (IsPrintPreview())
 	{
-		PostMessage(WM_COMMAND, AFX_ID_PREVIEW_CLOSE);  // 強制預覽列印模式關閉
+		PostMessage(WM_COMMAND,
+		            AFX_ID_PREVIEW_CLOSE);  // 強制預覽列印模式關閉
 	}
 }
 
@@ -282,16 +282,12 @@ void CMainFrame::OnFileNew()
 
 		if (filename.GetLength() > 1)
 		{
-// 			D3DApp& d3dApp = ((VAV_View*)this->GetActiveView())->GetD3DApp();
-// 			CMFCRibbonEdit* re;
-// 			CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(2)->FindByID(
-// 				ID_SPIN_TransparencySelectPatch);
-// 			re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
-// 
-// 			m_vavImage.ReadImage(ConvStr::GetStr(filename.GetString()));
-// 			d3dApp.ClearTriangles();
-// 			d3dApp.SetPictureSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-// 			((VAV_View*)this->GetActiveView())->SetTexture(m_vavImage.GetDx11Texture());
+			m_vavImage.ReadImage(ConvStr::GetStr(filename.GetString()));
+			//d3dApp.ClearTriangles();
+			//d3dApp.SetPictureSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+			cv::Mat* img = new cv::Mat();
+			static int idx = 0;
+			g_MainView->AddPicturedata(L"test", img, idx++);
 		}
 	}
 }

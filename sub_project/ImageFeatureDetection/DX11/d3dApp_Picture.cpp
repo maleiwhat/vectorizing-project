@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "d3dApp_Picture.h"
 #include <d3d11.h>
+#include <d3dx10.h>
 
 D3DApp_Picture::D3DApp_Picture()
 {
@@ -14,24 +15,8 @@ D3DApp_Picture::D3DApp_Picture()
 	m_RenderTargetView = NULL;
 	m_DepthStencilView = NULL;
 	m_DeviceContext = NULL;
-	m_Buffer_Points = NULL;
-	m_Effect_Points = NULL;
-	m_PTech_Points = NULL;
-	m_PLayout_Points = NULL;
-	m_Points_Width = NULL;
-	m_Points_Height = NULL;
-	m_Buffer_Lines = NULL;
-	m_Effect_Lines = NULL;
-	m_PTech_Lines = NULL;
-	m_PLayout_Lines = NULL;
-	m_Lines_Width = NULL;
-	m_Lines_Height = NULL;
-	m_Effect_Pics = NULL;
-	m_PTech_Pics = NULL;
-	m_PLayout_Pics = NULL;
 	m_Pics_Width = NULL;
 	m_Pics_Height = NULL;
-	m_Buffer_Pics = NULL;
 	m_hAppInst   = GetModuleHandle( NULL );
 	m_AppPaused  = false;
 	m_Minimized  = false;
@@ -73,6 +58,11 @@ void D3DApp_Picture::initApp( HWND hWnd, int w, int h )
 	m_hMainWnd = hWnd;
 	mClientWidth = w;
 	mClientHeight = h;
+	if (mClientWidth == 0)
+	{
+		mClientWidth = 100;
+		mClientHeight = 100;
+	}
 	initDirect3D();
 	LoadBlend();
 	float BlendFactor[4] = {0, 0, 0, 0};
@@ -167,19 +157,7 @@ void D3DApp_Picture::OnResize( int w, int h )
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	m_DeviceContext->RSSetViewports( 1, &vp );
-
-	if ( m_Points_Width != NULL && m_Points_Height != NULL )
-	{
-		m_Points_Width->SetFloat( ( float )mClientWidth );
-		m_Points_Height->SetFloat( ( float )mClientHeight );
-	}
-
-	if ( m_Lines_Width != NULL && m_Lines_Height != NULL )
-	{
-		m_Lines_Width->SetFloat( ( float )mClientWidth );
-		m_Lines_Height->SetFloat( ( float )mClientHeight );
-	}
-
+	
 	if ( m_Pics_Width != NULL && m_Pics_Height != NULL )
 	{
 		m_Pics_Width->SetFloat( ( float )mClientWidth );
@@ -196,27 +174,21 @@ void D3DApp_Picture::DrawScene()
 	m_DeviceContext->ClearRenderTargetView( m_RenderTargetView, m_ClearColor );
 	m_DeviceContext->ClearDepthStencilView( m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0 );
 	m_DeviceContext->OMSetDepthStencilState( m_pDepthStencil_ZWriteOFF, 0 );
-	
-	if ( m_LineVertices.size() > 0 )
-	{
-		UINT offset = 0;
-		UINT stride2 = sizeof( LineVertex );
-		m_DeviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINELIST );
-		m_DeviceContext->IASetInputLayout( m_PLayout_Lines );
-		m_DeviceContext->IASetVertexBuffers( 0, 1, &m_Buffer_Lines, &stride2, &offset );
-		m_PTech_Lines->GetPassByIndex( 0 )->Apply( 0, m_DeviceContext );
-		m_DeviceContext->Draw( ( UINT )m_LineVertices.size(), 0 );
-	}
 
-	if ( m_PointVertices.size() > 0 )
+	InterSetSize(m_ClientWidth, m_ClientHeight);
+	InterSetLookCenter(m_LookCenterX, m_LookCenterY);
+	InterSetScale(m_Scale);
+
+	if (m_PicsVertices.size() > 0)
 	{
+		m_Pics_PMap->SetResource(m_Pics_Texture);
 		UINT offset = 0;
-		UINT stride2 = sizeof( PointVertex );
-		m_DeviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
-		m_DeviceContext->IASetInputLayout( m_PLayout_Points );
-		m_DeviceContext->IASetVertexBuffers( 0, 1, &m_Buffer_Points, &stride2, &offset );
-		m_PTech_Points->GetPassByIndex( 0 )->Apply( 0, m_DeviceContext );
-		m_DeviceContext->Draw( ( UINT )m_PointVertices.size(), 0 );
+		UINT stride2 = sizeof(PictureVertex);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		m_DeviceContext->IASetInputLayout(m_Pics_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Pics_Buffer, &stride2, &offset);
+		m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
 	}
 
 	m_SwapChain->Present( 0, 0 );
@@ -227,49 +199,37 @@ void D3DApp_Picture::buildShaderFX()
 	ID3D10Blob* pCode;
 	ID3D10Blob* pError;
 	HRESULT hr = 0;
-	hr = D3DX11CompileFromFile( _T( "shader\\Point.fx" ), NULL, NULL, NULL,
-	                            "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL );
 
-	if ( FAILED( hr ) )
+	hr = D3DX11CompileFromFile(_T("shader\\picture.fx"), NULL, NULL, NULL,
+		"fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
+		&pCode, &pError, NULL);
+
+	if (FAILED(hr))
 	{
-		if ( pError )
+		if (pError)
 		{
-			MessageBoxA( 0, ( char* )pError->GetBufferPointer(), 0, 0 );
-			ReleaseCOM( pError );
+			MessageBoxA(0, (char*)pError->GetBufferPointer(), 0, 0);
+			ReleaseCOM(pError);
 		}
 
-		DXTrace( __FILE__, __LINE__, hr, _T( "D3DX11CreateEffectFromFile" ), TRUE );
+		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 
-	HR( D3DX11CreateEffectFromMemory( pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Effect_Points ) );
-	m_PTech_Points = m_Effect_Points->GetTechniqueByName( "PointTech" );
-	m_Points_Width = m_Effect_Points->GetVariableByName( "sceneW" )->AsScalar();
-	m_Points_Height = m_Effect_Points->GetVariableByName( "sceneH" )->AsScalar();
+	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
+		pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Pics_Effect));
+	m_Pics_PTech = m_Pics_Effect->GetTechniqueByName("PointTech");
+	m_Pics_Width = m_Pics_Effect->GetVariableByName("width")->AsScalar();
+	m_Pics_Height = m_Pics_Effect->GetVariableByName("height")->AsScalar();
+	m_Pics_CenterX = m_Pics_Effect->GetVariableByName("centerX")->AsScalar();
+	m_Pics_CenterY = m_Pics_Effect->GetVariableByName("centerY")->AsScalar();
+	m_Pics_Scale = m_Pics_Effect->GetVariableByName("scale")->AsScalar();
+	m_Pics_PMap  = m_Pics_Effect->GetVariableByName("gMap")->AsShaderResource();
+	m_TransparencySV_Picture =
+		m_Pics_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDesc;
-	m_PTech_Points->GetPassByIndex( 0 )->GetDesc( &PassDesc );
-	HR( m_d3dDevice->CreateInputLayout( VertexDesc_PointVertex, 3, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_PLayout_Points ) );
-	hr = 0;
-	hr = D3DX11CompileFromFile( _T( "shader\\Line.fx" ), NULL, NULL, NULL,
-	                            "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL, &pCode, &pError, NULL );
-
-	if ( FAILED( hr ) )
-	{
-		if ( pError )
-		{
-			MessageBoxA( 0, ( char* )pError->GetBufferPointer(), 0, 0 );
-			ReleaseCOM( pError );
-		}
-
-		DXTrace( __FILE__, __LINE__, hr, _T( "D3DX11CreateEffectFromFile" ), TRUE );
-	}
-
-	HR( D3DX11CreateEffectFromMemory( pCode->GetBufferPointer(), pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Effect_Lines ) );
-	m_PTech_Lines = m_Effect_Lines->GetTechniqueByName( "PointTech" );
-	m_Lines_Width = m_Effect_Lines->GetVariableByName( "sceneW" )->AsScalar();
-	m_Lines_Height = m_Effect_Lines->GetVariableByName( "sceneH" )->AsScalar();
-	D3DX11_PASS_DESC PassDesc_Line;
-	m_PTech_Lines->GetPassByIndex( 0 )->GetDesc( &PassDesc_Line );
-	HR( m_d3dDevice->CreateInputLayout( VertexDesc_LineVertex, 2, PassDesc_Line.pIAInputSignature, PassDesc_Line.IAInputSignatureSize, &m_PLayout_Lines ) );
+	m_Pics_PTech->GetPassByIndex(0)->GetDesc(&PassDesc);
+	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PICVertex, 2,
+		PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_Pics_PLayout));
 
 	m_vbd.Usage = D3D11_USAGE_IMMUTABLE;
 	m_vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -277,7 +237,7 @@ void D3DApp_Picture::buildShaderFX()
 	m_vbd.MiscFlags = 0;
 }
 
-void D3DApp_Picture::buildPoint()
+void D3DApp_Picture::BuildPoint()
 {
 	//Line
 // 	ReleaseCOM( m_Buffer_Lines );

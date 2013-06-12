@@ -3,7 +3,7 @@
 // MFC 參考及 MFC C++ 程式庫軟體
 // 隨附相關電子文件的補充。
 // 關於 Fluent UI 之複製、使用或散發的授權條款則分別提供。
-// 如需 Fluent UI 授權計劃的詳細資訊，請造訪 
+// 如需 Fluent UI 授權計劃的詳細資訊，請造訪
 // http://go.microsoft.com/fwlink/?LinkId=238214。
 //
 // Copyright (C) Microsoft Corporation
@@ -15,16 +15,17 @@
 #pragma once
 #include "CalendarBar.h"
 #include "Resource.h"
+#include "vavImage.h"
 
 class COutlookBar : public CMFCOutlookBar
 {
 	virtual BOOL AllowShowOnPaneMenu() const { return TRUE; }
-	virtual void GetPaneName(CString& strName) const { BOOL bNameValid = strName.LoadString(IDS_OUTLOOKBAR); ASSERT(bNameValid); if (!bNameValid) strName.Empty(); }
+	virtual void GetPaneName(CString& strName) const { BOOL bNameValid = strName.LoadString(IDS_OUTLOOKBAR); ASSERT(bNameValid); if (!bNameValid) { strName.Empty(); } }
 };
 
 class CMainFrame : public CFrameWndEx
 {
-	
+
 protected: // 僅從序列化建立
 	CMainFrame();
 	DECLARE_DYNCREATE(CMainFrame)
@@ -48,6 +49,7 @@ public:
 #endif
 
 protected:  // 控制列內嵌的成員
+	vavImage        m_vavImage;
 	CMFCRibbonBar     m_wndRibbonBar;
 	CMFCRibbonApplicationButton m_MainButton;
 	CMFCToolBarImages m_PanelImages;
@@ -68,7 +70,8 @@ protected:
 	afx_msg void OnUpdateFilePrintPreview(CCmdUI* pCmdUI);
 	DECLARE_MESSAGE_MAP()
 
-	BOOL CreateOutlookBar(CMFCOutlookBar& bar, UINT uiID, CMFCShellTreeCtrl& tree, CCalendarBar& calendar, int nInitialWidth);
+	BOOL CreateOutlookBar(CMFCOutlookBar& bar, UINT uiID, CMFCShellTreeCtrl& tree,
+	                      CCalendarBar& calendar, int nInitialWidth);
 	BOOL CreateCaptionBar();
 
 	int FindFocusedOutlookWnd(CMFCOutlookBarTabCtrl** ppOutlookWnd);

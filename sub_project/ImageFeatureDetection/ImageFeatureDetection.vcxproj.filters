@@ -111,6 +111,9 @@
     <ClInclude Include="math\BasicMath.h">
       <Filter>math</Filter>
     </ClInclude>
+    <ClInclude Include="ConvStr.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImageFeatureDetection.cpp">
@@ -178,6 +181,9 @@
     </ClCompile>
     <ClCompile Include="math\AxisAlignedBox.cpp">
       <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvStr.cpp">
+      <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -44,7 +44,7 @@ void CD3DpictureView::OnDraw( CDC* pDC )
 {
 	CDocument* pDoc = GetDocument();
 	// TODO: 在此加入描繪程式碼
-	m_D3DApp.buildPoint();
+	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
 }
 
@@ -113,7 +113,7 @@ void CD3DpictureView::OnMouseMove( UINT nFlags, CPoint point )
 	{
 		m_D3DApp.m_Picture_OffsetX += dx;
 		m_D3DApp.m_Picture_OffsetY += dy;
-		m_D3DApp.buildPoint();
+		m_D3DApp.BuildPoint();
 		m_D3DApp.DrawScene();
 	}
 
@@ -154,7 +154,7 @@ BOOL CD3DpictureView::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
 			}
 		}
 
-		m_D3DApp.buildPoint();
+		m_D3DApp.BuildPoint();
 		m_D3DApp.DrawScene();
 	}
 

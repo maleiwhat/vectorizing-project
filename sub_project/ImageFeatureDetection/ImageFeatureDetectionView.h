@@ -19,6 +19,7 @@
 
 typedef std::map<cv::Mat*, CD3DpictureView*> ViewMap;
 
+class CImageFeatureDetectionDoc;
 class CImageFeatureDetectionView : public CTabView
 {
 protected: // 僅從序列化建立
@@ -50,7 +51,6 @@ public:
 #endif
 
 protected:
-
 // 產生的訊息對應函式
 protected:
 	afx_msg void OnFilePrintPreview();
@@ -61,7 +61,10 @@ protected:
 public:
 	void AddPicturedata(CString name, cv::Mat* pic, int index);
 	void SwitchPicture(int index);
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 };
+extern CImageFeatureDetectionView* g_MainView;
+
 
 #ifndef _DEBUG  // ImageFeatureDetectionView.cpp 中的偵錯版本
 inline CImageFeatureDetectionDoc* CImageFeatureDetectionView::GetDocument()

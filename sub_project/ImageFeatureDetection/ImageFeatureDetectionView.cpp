@@ -3,7 +3,7 @@
 // MFC 參考及 MFC C++ 程式庫軟體
 // 隨附相關電子文件的補充。
 // 關於 Fluent UI 之複製、使用或散發的授權條款則分別提供。
-// 如需 Fluent UI 授權計劃的詳細資訊，請造訪 
+// 如需 Fluent UI 授權計劃的詳細資訊，請造訪
 // http://go.microsoft.com/fwlink/?LinkId=238214。
 //
 // Copyright (C) Microsoft Corporation
@@ -26,18 +26,20 @@
 #define new DEBUG_NEW
 #endif
 
-
+CImageFeatureDetectionView* g_MainView;
 // CImageFeatureDetectionView
 
-IMPLEMENT_DYNCREATE(CImageFeatureDetectionView, CView)
+IMPLEMENT_DYNCREATE(CImageFeatureDetectionView, CTabView)
 
-BEGIN_MESSAGE_MAP(CImageFeatureDetectionView, CView)
+BEGIN_MESSAGE_MAP(CImageFeatureDetectionView, CTabView)
 	// 標準列印命令
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
-	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CImageFeatureDetectionView::OnFilePrintPreview)
+	ON_COMMAND(ID_FILE_PRINT_PREVIEW,
+	           &CImageFeatureDetectionView::OnFilePrintPreview)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
+	ON_WM_CREATE()
 END_MESSAGE_MAP()
 
 // CImageFeatureDetectionView 建構/解構
@@ -45,7 +47,7 @@ END_MESSAGE_MAP()
 CImageFeatureDetectionView::CImageFeatureDetectionView()
 {
 	// TODO: 在此加入建構程式碼
-
+	g_MainView = this;
 }
 
 CImageFeatureDetectionView::~CImageFeatureDetectionView()
@@ -54,9 +56,8 @@ CImageFeatureDetectionView::~CImageFeatureDetectionView()
 
 BOOL CImageFeatureDetectionView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: 在此經由修改 CREATESTRUCT cs 
+	// TODO: 在此經由修改 CREATESTRUCT cs
 	// 達到修改視窗類別或樣式的目的
-
 	return CView::PreCreateWindow(cs);
 }
 
@@ -66,10 +67,9 @@ void CImageFeatureDetectionView::OnDraw(CDC* /*pDC*/)
 {
 	CImageFeatureDetectionDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	if (!pDoc)
-		return;
 
-	// TODO: 在此加入原生資料的描繪程式碼
+	if (!pDoc)
+	{ return; }
 }
 
 
@@ -89,12 +89,14 @@ BOOL CImageFeatureDetectionView::OnPreparePrinting(CPrintInfo* pInfo)
 	return DoPreparePrinting(pInfo);
 }
 
-void CImageFeatureDetectionView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
+void CImageFeatureDetectionView::OnBeginPrinting(CDC* /*pDC*/,
+        CPrintInfo* /*pInfo*/)
 {
 	// TODO: 加入列印前額外的初始設定
 }
 
-void CImageFeatureDetectionView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
+void CImageFeatureDetectionView::OnEndPrinting(CDC* /*pDC*/,
+        CPrintInfo* /*pInfo*/)
 {
 	// TODO: 加入列印後的清除程式碼
 }
@@ -108,7 +110,8 @@ void CImageFeatureDetectionView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 void CImageFeatureDetectionView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 {
 #ifndef SHARED_HANDLERS
-	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y, this, TRUE);
+	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y,
+	        this, TRUE);
 #endif
 }
 
@@ -126,17 +129,19 @@ void CImageFeatureDetectionView::Dump(CDumpContext& dc) const
 	CView::Dump(dc);
 }
 
-CImageFeatureDetectionDoc* CImageFeatureDetectionView::GetDocument() const // 內嵌非偵錯版本
+CImageFeatureDetectionDoc* CImageFeatureDetectionView::GetDocument()
+const // 內嵌非偵錯版本
 {
 	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CImageFeatureDetectionDoc)));
 	return (CImageFeatureDetectionDoc*)m_pDocument;
 }
 
-void CImageFeatureDetectionView::AddPicturedata( CString name, cv::Mat* pic, int index )
+void CImageFeatureDetectionView::AddPicturedata(CString name, cv::Mat* pic,
+        int index)
 {
-	if ( m_ViewMap.find( pic ) == m_ViewMap.end() )
+	if (m_ViewMap.find(pic) == m_ViewMap.end())
 	{
-		AddView( RUNTIME_CLASS( CD3DpictureView ), name, index );
+		AddView(RUNTIME_CLASS(CD3DpictureView), name);
 		g_NewPictureView->m_PictureID = index;
 		g_NewPictureView->OnInitialUpdate();
 		//g_NewPictureView->Refresh( pic );
@@ -145,12 +150,28 @@ void CImageFeatureDetectionView::AddPicturedata( CString name, cv::Mat* pic, int
 	}
 }
 
-void CImageFeatureDetectionView::SwitchPicture( int index )
+void CImageFeatureDetectionView::SwitchPicture(int index)
 {
-	SetActiveView( index );
+	SetActiveView(index);
 }
+
 
 #endif //_DEBUG
 
 
 // CImageFeatureDetectionView 訊息處理常式
+
+
+int CImageFeatureDetectionView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CTabView::OnCreate(lpCreateStruct) == -1)
+	{ return -1; }
+
+	this->GetTabControl().SetLocation(CMFCTabCtrl:: LOCATION_BOTTOM);
+	this->GetTabControl().ModifyTabStyle(CMFCTabCtrl:: STYLE_3D);
+	this->GetTabControl().EnableAutoColor(TRUE);
+	this->GetTabControl().HideSingleTab(FALSE);
+	this->GetTabControl().EnableTabSwap(FALSE);
+	this->GetTabControl().SetTabBorderSize(2);
+	return 0;
+}

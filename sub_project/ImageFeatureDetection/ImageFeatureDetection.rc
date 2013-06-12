@@ -332,7 +332,7 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_FILE_NEW             "建立新文件\n開新檔案"
+    ID_FILE_NEW             "建立新文件\n開啟新圖"
     ID_FILE_OPEN            "開啟現有文件\n開啟舊檔"
     ID_FILE_CLOSE           "關閉使用中文件\n關閉檔案"
     ID_FILE_SAVE            "儲存使用中文件\n儲存檔案"
