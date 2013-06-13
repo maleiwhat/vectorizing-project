@@ -121,18 +121,18 @@ void D3DApp_Picture::initDirect3D()
 	D3D_FEATURE_LEVEL  FeatureLevelsRequested = D3D_FEATURE_LEVEL_11_0;
 	UINT               numLevelsRequested = 1;
 	HR(D3D11CreateDeviceAndSwapChain(
-	       0,                 //default adapter
-	       m_d3dDriverType,
-	       0,                 // no software device
-	       createDeviceFlags,
-	       &FeatureLevelsRequested,
-	       numLevelsRequested,
-	       D3D11_SDK_VERSION,
-	       &sd,
-	       &m_SwapChain,
-	       &m_d3dDevice,
-	       &m_FeatureLevelsSupported,
-	       &m_DeviceContext));
+		   0,                 //default adapter
+		   m_d3dDriverType,
+		   0,                 // no software device
+		   createDeviceFlags,
+		   &FeatureLevelsRequested,
+		   numLevelsRequested,
+		   D3D11_SDK_VERSION,
+		   &sd,
+		   &m_SwapChain,
+		   &m_d3dDevice,
+		   &m_FeatureLevelsSupported,
+		   &m_DeviceContext));
 	OnResize(m_ClientWidth, m_ClientHeight);
 	m_vbd.Usage = D3D11_USAGE_IMMUTABLE;
 	m_vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -154,10 +154,10 @@ void D3DApp_Picture::OnResize(int w, int h)
 	ReleaseCOM(m_DepthStencilBuffer);
 	// Resize the swap chain and recreate the render target view.
 	HR(m_SwapChain->ResizeBuffers(1, m_ClientWidth, m_ClientHeight,
-	                              DXGI_FORMAT_R8G8B8A8_UNORM, 0));
+								  DXGI_FORMAT_R8G8B8A8_UNORM, 0));
 	ID3D11Texture2D* backBuffer;
 	HR(m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
-	                          reinterpret_cast<void**>(&backBuffer)));
+							  reinterpret_cast<void**>(&backBuffer)));
 	HR(m_d3dDevice->CreateRenderTargetView(backBuffer, 0, &m_RenderTargetView));
 	ReleaseCOM(backBuffer);
 	// Create the depth/stencil buffer and view.
@@ -175,7 +175,7 @@ void D3DApp_Picture::OnResize(int w, int h)
 	depthStencilDesc.MiscFlags      = 0;
 	HR(m_d3dDevice->CreateTexture2D(&depthStencilDesc, 0, &m_DepthStencilBuffer));
 	HR(m_d3dDevice->CreateDepthStencilView(m_DepthStencilBuffer, 0,
-	                                       &m_DepthStencilView));
+										   &m_DepthStencilView));
 	// Bind the render target view and depth/stencil view to the pipeline.
 	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	// Set the viewport transform.
@@ -199,7 +199,7 @@ void D3DApp_Picture::DrawScene()
 
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, m_ClearColor);
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView,
-	                                       D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+										   D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
 	InterSetSize(m_ClientWidth, m_ClientHeight);
 	InterSetLookCenter(m_LookCenterX, m_LookCenterY);
@@ -219,7 +219,7 @@ void D3DApp_Picture::DrawScene()
 	}
 
 	m_PointsVertices.push_back(m_MousePoint);
-	m_Points_Transparency->SetFloat(0.9);
+	m_Points_Transparency->SetFloat(0.3);
 	UINT offset = 0;
 	UINT stride2 = sizeof(PointVertex);
 	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
@@ -237,8 +237,8 @@ void D3DApp_Picture::BuildShaderFX()
 	ID3D10Blob* pError;
 	HRESULT hr = 0;
 	hr = D3DX11CompileFromFile(_T("shader\\picture.fx"), NULL, NULL, NULL,
-	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
-	                           &pCode, &pError, NULL);
+							   "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
+							   &pCode, &pError, NULL);
 
 	if (FAILED(hr))
 	{
@@ -252,7 +252,7 @@ void D3DApp_Picture::BuildShaderFX()
 	}
 
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
-	                                pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Pics_Effect));
+									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Pics_Effect));
 	m_Pics_PTech = m_Pics_Effect->GetTechniqueByName("PointTech");
 	m_Pics_Width = m_Pics_Effect->GetVariableByName("width")->AsScalar();
 	m_Pics_Height = m_Pics_Effect->GetVariableByName("height")->AsScalar();
@@ -261,15 +261,15 @@ void D3DApp_Picture::BuildShaderFX()
 	m_Pics_Scale = m_Pics_Effect->GetVariableByName("scale")->AsScalar();
 	m_Pics_PMap  = m_Pics_Effect->GetVariableByName("gMap")->AsShaderResource();
 	m_TransparencySV_Picture =
-	    m_Pics_Effect->GetVariableByName("transparency")->AsScalar();
+		m_Pics_Effect->GetVariableByName("transparency")->AsScalar();
 	m_TransparencySV_Picture->SetFloat(1);
 	D3DX11_PASS_DESC PassDesc;
 	m_Pics_PTech->GetPassByIndex(0)->GetDesc(&PassDesc);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PICVertex, 2,
-	                                  PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_Pics_PLayout));
+									  PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_Pics_PLayout));
 	hr = D3DX11CompileFromFile(_T("shader\\bigpoint.fx"), NULL, NULL, NULL,
-	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
-	                           &pCode, &pError, NULL);
+							   "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
+							   &pCode, &pError, NULL);
 
 	if (FAILED(hr))
 	{
@@ -283,7 +283,7 @@ void D3DApp_Picture::BuildShaderFX()
 	}
 
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
-	                                pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Points_Effect));
+									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Points_Effect));
 	m_Points_PTech = m_Points_Effect->GetTechniqueByName("PointTech");
 	m_Points_Width = m_Points_Effect->GetVariableByName("width")->AsScalar();
 	m_Points_Height = m_Points_Effect->GetVariableByName("height")->AsScalar();
@@ -291,12 +291,12 @@ void D3DApp_Picture::BuildShaderFX()
 	m_Points_CenterY = m_Points_Effect->GetVariableByName("centerY")->AsScalar();
 	m_Points_Scale = m_Points_Effect->GetVariableByName("scale")->AsScalar();
 	m_Points_Transparency =
-	    m_Points_Effect->GetVariableByName("transparency")->AsScalar();
+		m_Points_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri4;
 	m_Points_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri4);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PointVertex, 3,
-	                                  PassDescTri4.pIAInputSignature,
-	                                  PassDescTri4.IAInputSignatureSize, &m_Points_PLayout));
+									  PassDescTri4.pIAInputSignature,
+									  PassDescTri4.IAInputSignatureSize, &m_Points_PLayout));
 	m_vbd.Usage = D3D11_USAGE_IMMUTABLE;
 	m_vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	m_vbd.CPUAccessFlags = 0;
@@ -354,7 +354,7 @@ void D3DApp_Picture::LoadBlend()
 
 	// 開啟zbuffer write
 	if (D3D_OK != m_d3dDevice->CreateDepthStencilState(&depth_stencil_desc,
-	        &m_pDepthStencil_ZWriteON))
+			&m_pDepthStencil_ZWriteON))
 	{
 		return ;
 	}
@@ -363,27 +363,27 @@ void D3DApp_Picture::LoadBlend()
 
 	// 關閉zbuffer write
 	if (D3D_OK != m_d3dDevice->CreateDepthStencilState(&depth_stencil_desc,
-	        &m_pDepthStencil_ZWriteOFF))
+			&m_pDepthStencil_ZWriteOFF))
 	{
 		return ;
 	}
 
 	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteON, 0);
 	CD3D11_BLEND_DESCX blend_state_desc(
-	    FALSE,
-	    FALSE,
-	    TRUE,
-	    D3D11_BLEND_ONE,
-	    D3D11_BLEND_ONE,
-	    D3D11_BLEND_OP_ADD,
-	    D3D11_BLEND_ONE,
-	    D3D11_BLEND_ONE,
-	    D3D11_BLEND_OP_ADD,
-	    D3D11_COLOR_WRITE_ENABLE_ALL);
+		FALSE,
+		FALSE,
+		TRUE,
+		D3D11_BLEND_ONE,
+		D3D11_BLEND_ONE,
+		D3D11_BLEND_OP_ADD,
+		D3D11_BLEND_ONE,
+		D3D11_BLEND_ONE,
+		D3D11_BLEND_OP_ADD,
+		D3D11_COLOR_WRITE_ENABLE_ALL);
 
 	// ADD混色模式
 	if (D3D_OK != m_d3dDevice->CreateBlendState(&blend_state_desc,
-	        &m_pBlendState_ADD))
+			&m_pBlendState_ADD))
 	{
 		return;
 	}
@@ -395,7 +395,7 @@ void D3DApp_Picture::LoadBlend()
 
 	// Alpha Blend混色模式
 	if (D3D_OK != m_d3dDevice->CreateBlendState(&blend_state_desc,
-	        &m_pBlendState_BLEND))
+			&m_pBlendState_BLEND))
 	{
 		return ;
 	}
@@ -485,7 +485,7 @@ void D3DApp_Picture::AddBigPoint(float x, float y, D3DXVECTOR3 color)
 }
 
 void D3DApp_Picture::SetMousePoint(float x, float y, float radius,
-                                   D3DXVECTOR3 color)
+								   D3DXVECTOR3 color)
 {
 	m_MousePoint.color = color;
 	m_MousePoint.size.x = radius;

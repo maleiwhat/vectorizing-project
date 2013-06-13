@@ -7,7 +7,6 @@
 // CD3DpictureView
 
 
-
 IMPLEMENT_DYNCREATE(CD3DpictureView, CView)
 CD3DpictureView* g_NewPictureView = NULL;
 
@@ -15,10 +14,21 @@ CD3DpictureView::CD3DpictureView():
 	m_MButtonDown(false), m_Scale(1), m_LButtonDown(false)
 {
 	g_NewPictureView = this;
+	m_vavImage = NULL;
+	m_vtkTimerCallback = vtkSmartNew;
+	m_plot = vtkSmartNew;
+	m_vtkTimerCallback->m_plot = m_plot;
+	m_renderWindow = vtkSmartNew;
+	m_vtkTimerCallback->m_renderWindow = m_renderWindow;
+	m_interactor = vtkSmartNew;
+	m_vtkTimerCallback->m_interactor = m_interactor;
+	_beginthreadex(NULL, 0, MyThreadFunc, this, 0, NULL);
 }
 
 CD3DpictureView::~CD3DpictureView()
 {
+	m_interactor->RemoveAllObservers();
+	m_interactor->Disable();
 }
 
 BEGIN_MESSAGE_MAP(CD3DpictureView, CView)
@@ -129,7 +139,26 @@ void CD3DpictureView::OnMouseMove(UINT nFlags, CPoint point)
 		double realx = (point.x - m_LookCenter.x) / m_Scale - m_LookCenter.x * 0.5;
 		double realy = (m_PicH * m_Scale - m_D3DApp.Height() + point.y
 		                - m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
-		m_D3DApp.SetMousePoint(realx, realy, 10, color);
+		double_vector data = m_vavImage->GetRingLight(realx, realy, 4, 32);
+		int size = data.size();
+		for (int i=0;i<size;++i)
+		{
+			data.push_back(data[i]);
+		}
+		m_vtkTimerCallback->m_data[0] = data;
+		for (int i=0;i<size*2;++i)
+		{
+			if (i<size)
+			{
+				data[i] = 300;
+			}
+			else
+			{
+				data[i] = -1;
+			}
+		}
+		m_vtkTimerCallback->m_data[1] = data;
+		m_D3DApp.SetMousePoint(realx, realy, 8, color);
 		m_D3DApp.BuildPoint();
 		m_D3DApp.DrawScene();
 		printf("px: %3.1f py: %3.1f Center.x %3.1f Center3.y %3.1f\n",

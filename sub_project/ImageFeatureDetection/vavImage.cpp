@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "vavImage.h"
 #include "math\Quaternion.h"
-
+#include <cmath>
 
 vavImage::vavImage(void)
 {
@@ -15,7 +15,8 @@ vavImage::vavImage(const cv::Mat& im)
 	m_Image = im.clone();
 }
 
-ID3D11ShaderResourceView* vavImage::GetDx11Texture(ID3D11Device* dev, ID3D11DeviceContext* devc)
+ID3D11ShaderResourceView* vavImage::GetDx11Texture(ID3D11Device* dev,
+        ID3D11DeviceContext* devc)
 {
 	if (m_Image.rows == 0 || m_Image.cols == 0) { return NULL; }
 
@@ -80,7 +81,8 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture(ID3D11Device* dev, ID3D11Devi
 		return 0;
 	}
 
-	{	// take draw texture
+	{
+		// take draw texture
 		ID3D11Texture2D* pTextureRead;
 		D3D11_TEXTURE2D_DESC texDescCV;
 		ZeroMemory(&texDescCV, sizeof(texDescCV));
@@ -102,7 +104,7 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture(ID3D11Device* dev, ID3D11Devi
 		//HR(m_DeviceContext->Map(pTextureRead, 0, D3D11_MAP_READ, 0, &MappedResource));
 		unsigned int subresource = D3D11CalcSubresource(0, 0, 0);
 		HR(devc->Map(pTextureRead, subresource, D3D11_MAP_READ, 0,
-		                        &MappedResource));
+		             &MappedResource));
 		pimg = (float*)MappedResource.pData;
 		cv::Mat simg = m_Image.clone();
 		simg = cv::Scalar(0);
@@ -113,13 +115,14 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture(ID3D11Device* dev, ID3D11Devi
 		{
 			for (int i = 0; i < simg.rows; ++i)
 			{
-				int offset = (j * (simg.rows+addoffset) + i) * 4;
+				int offset = (j * (simg.rows + addoffset) + i) * 4;
 				cv::Vec3b& intensity = simg.at<cv::Vec3b>(i, j);
 				intensity[2] = pimg[offset  ] * 255.0f;
 				intensity[1] = pimg[offset + 1] * 255.0f;
 				intensity[0] = pimg[offset + 2] * 255.0f;
 			}
 		}
+
 		cv::imshow("simg", simg);
 	}
 
@@ -173,11 +176,11 @@ Vector2s vavImage::GetWhitePoints()
 }
 const cv::Vec3b& vavImage::GetColor(int x, int y) const
 {
-	if (y < 0) { x = 0; }
+	if (y < 0) { y = 0; }
 
 	if (y >= m_Image.rows) { y = m_Image.rows - 1; }
 
-	if (x < 0) { y = 0; }
+	if (x < 0) { x = 0; }
 
 	if (x >= m_Image.cols) { x = m_Image.cols - 1; }
 
@@ -276,4 +279,60 @@ bool vavImage::CorrectPosition(int x, int y)
 	}
 
 	return false;
+}
+
+double vavImage::GetBilinearLight(double x, double y)
+{
+	x += 0.0001;
+	y += 0.0001;
+	if (y < 0) { return 0; }
+
+	if (y >= m_Image.rows) { return 0; }
+
+	if (x < 0) { return 0; }
+
+	if (x >= m_Image.cols) { return 0; }
+
+	Vector2 left_up, left_down;
+	Vector2 right_up, right_down;
+	left_up.x = ceil(x);
+	left_up.y = ceil(y);
+	left_down.x = ceil(x);
+	left_down.y = floor(y);
+	right_up.x = floor(x);
+	right_up.y = ceil(y);
+	right_down.x = floor(x);
+	right_down.y = floor(y);
+	double v[4];
+	v[0] = GetLight(left_up.x, left_up.y);
+	v[1] = GetLight(left_down.x, left_down.y);
+	v[2] = GetLight(right_up.x, right_up.y);
+	v[3] = GetLight(right_down.x, right_down.y);
+	// bilinear interpolation
+	double ans = v[0] * ((2 - abs(x - left_up.x) - abs(y - left_up.y)) * 0.5);
+	ans += v[1] * ((2 - abs(x - left_down.x) - abs(y - left_down.y)) * 0.5);
+	ans += v[2] * ((2 - abs(x - right_up.x) - abs(y - right_up.y)) * 0.5);
+	ans += v[3] * ((2 - abs(x - right_down.x) - abs(y - right_down.y)) * 0.5);
+	return ans * 0.5;
+}
+
+double vavImage::GetLight(int x, int y) const
+{
+	const cv::Vec3b& v = m_Image.at<cv::Vec3b>(y, x);
+	return 0.299 * v[2] + 0.587 * v[1] + 0.114 * v[0];
+}
+
+double_vector vavImage::GetRingLight(double x, double y, double radius, int div)
+{
+	double_vector ans;
+
+	for (int i = 0; i < div; ++i)
+	{
+		double step = 360.0 / div;
+		Vector2 ahead(0, -radius);
+		Vector2 move = Quaternion::GetRotation(ahead, i * step);
+		ans.push_back(GetBilinearLight(x + move.x, y + move.y));
+	}
+
+	return ans;
 }

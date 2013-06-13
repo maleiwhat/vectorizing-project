@@ -282,12 +282,13 @@ void CMainFrame::OnFileNew()
 
 		if (filename.GetLength() > 1)
 		{
-			m_vavImage.ReadImage(ConvStr::GetStr(filename.GetString()));
+			vavImage* Image = new vavImage;
+			Image->ReadImage(ConvStr::GetStr(filename.GetString()));
 			//d3dApp.ClearTriangles();
 			//d3dApp.SetPictureSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
 			static int idx = 0;
 			
-			g_MainView->AddPicturedata(L"test", &m_vavImage, idx++);
+			g_MainView->AddPicturedata(dlg.GetFileName(), Image, idx++);
 		}
 	}
 }

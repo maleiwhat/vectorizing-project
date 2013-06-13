@@ -31,6 +31,7 @@ protected: // 僅從序列化建立
 public:
 	CImageFeatureDetectionDoc* GetDocument() const;
 	ViewMap m_ViewMap;
+
 // 作業
 public:
 

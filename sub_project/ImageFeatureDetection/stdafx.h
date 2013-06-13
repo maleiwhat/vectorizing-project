@@ -3,7 +3,7 @@
 // MFC 參考及 MFC C++ 程式庫軟體
 // 隨附相關電子文件的補充。
 // 關於 Fluent UI 之複製、使用或散發的授權條款則分別提供。
-// 如需 Fluent UI 授權計劃的詳細資訊，請造訪 
+// 如需 Fluent UI 授權計劃的詳細資訊，請造訪
 // http://go.microsoft.com/fwlink/?LinkId=238214。
 //
 // Copyright (C) Microsoft Corporation
@@ -61,6 +61,71 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <vtkSphereSource.h>
+#include <vtkMath.h>
+#include <vtkDoubleArray.h>
+#include <vtkFieldData.h>
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkXYPlotActor.h>
+#include <vtkCubeSource.h>
+#include <vtkPolyData.h>
+#include <vtkCommand.h>
+#include <vtkRenderer.h>
+#include <vtkRendererCollection.h>
+#include <vtkTesting.h>
+
+#define VTK_SMART_POINTER(x) \
+	typedef vtkSmartPointer< x >    x##_Sptr; \
+	typedef std::vector< x##_Sptr > x##_Sptrs;
+class vtkTimerCallback;
+VTK_SMART_POINTER(vtkTimerCallback);
+VTK_SMART_POINTER(vtkXYPlotActor);
+VTK_SMART_POINTER(vtkRenderWindow);
+VTK_SMART_POINTER(vtkRenderWindowInteractor);
+
+template<typename T, typename U> class has_member_Initialize_tester
+{
+private:
+	template<U> struct helper;
+	template<typename T> static char check(helper < &T::Initialize >*);
+	template<typename T> static char(&check(...))[2];
+public:
+	enum { value = (sizeof(check<T> (0)) == sizeof(char)) };
+};
+template<char Doit, class T> struct static_Check_To_Initialize
+{
+	static void Do(T& ic)   { ic; }
+};
+template<class T> struct static_Check_To_Initialize<1, T>
+{
+	static void Do(T& ic)   { ic->Initialize(); }
+};
+static struct
+{
+	template<class T> operator vtkSmartPointer<T> ()
+	{
+		vtkSmartPointer<T> ptr = vtkSmartPointer<T>::New();
+		static_Check_To_Initialize<has_member_Initialize_tester<T, void(T::*)()>::value, vtkSmartPointer<T> >::Do(
+		    ptr);
+		return ptr;
+	}
+}
+vtkSmartNew;
+static struct
+{
+	template<class T> operator vtkSmartPointer<T> ()
+	{
+		return vtkSmartPointer<T>::New();
+	}
+}
+vtkOnlyNew;
+
 //全域巨集
 #define ReleaseCOM(x) { if(x){ x->Release();x = 0; }}
 
@@ -68,10 +133,10 @@
 #ifndef HR
 #define HR(x)                                      \
 	{                                                  \
-	HRESULT hr = x;                                \
-	if(FAILED(hr))                                 \
+		HRESULT hr = x;                                \
+		if(FAILED(hr))                                 \
 		{                                              \
-		DXTrace(__FILE__, __LINE__, hr, _T(#x), TRUE); \
+			DXTrace(__FILE__, __LINE__, hr, _T(#x), TRUE); \
 		}                                              \
 	}
 #endif

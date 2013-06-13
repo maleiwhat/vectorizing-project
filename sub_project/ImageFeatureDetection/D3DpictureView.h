@@ -3,8 +3,80 @@
 #include "DX11\D3DApp_Picture.h"
 #include "math\Vector2.h"
 
-// CD3DpictureView ÀËµø
+#include <vtkSphereSource.h>
+#include <vtkMath.h>
+#include <vtkDoubleArray.h>
+#include <vtkFieldData.h>
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkXYPlotActor.h>
+#include <vtkCubeSource.h>
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
+#include <vtkCommand.h>
+#include <vtkRenderer.h>
+#include <vtkRendererCollection.h>
+#include <vtkRenderWindow.h>
+#include <vtkTesting.h>
+#include "vavImage.h"
 
+
+class vtkTimerCallback : public vtkCommand
+{
+public:
+	double_vector2d m_data;
+	vtkXYPlotActor_Sptr m_plot;
+	vtkRenderWindow_Sptr m_renderWindow;
+	vtkRenderWindowInteractor_Sptr m_interactor;
+	static vtkTimerCallback* New()
+	{
+		vtkTimerCallback* cb = new vtkTimerCallback;
+		cb->m_data.push_back(double_vector());
+		cb->m_data.push_back(double_vector());
+		cb->m_data[0].push_back(0);
+		cb->m_data[0].push_back(0);
+		cb->m_data[1].push_back(0);
+		cb->m_data[1].push_back(0);
+		return cb;
+	}
+
+	virtual void Execute(vtkObject* vtkNotUsed(caller), unsigned long eventId,
+		void* vtkNotUsed(callData))
+	{
+		m_plot->RemoveAllInputs();
+
+		for (unsigned int i = 0 ; i < m_data.size() ; i++)
+		{
+			vtkSmartPointer<vtkDoubleArray> array_s =
+				vtkSmartPointer<vtkDoubleArray>::New();
+			vtkSmartPointer<vtkFieldData> field =
+				vtkSmartPointer<vtkFieldData>::New();
+			vtkSmartPointer<vtkDataObject> data =
+				vtkSmartPointer<vtkDataObject>::New();
+
+			for (int b = 0; b < m_data[i].size(); b++)
+			{
+				array_s->InsertValue(b, m_data[i][b]);
+			}
+
+			field->AddArray(array_s);
+			data->SetFieldData(field);
+			m_plot->AddDataObjectInput(data);
+		}
+
+		m_renderWindow->Render();
+	}
+
+
+};
+
+
+// CD3DpictureView ÀËµø
 
 class CD3DpictureView : public CView
 {
@@ -18,15 +90,23 @@ private:
 	int     m_PicW;
 	int     m_PicH;
 	float	m_Scale;
-public:
-	int     m_PictureID;
+
+	vtkTimerCallback_Sptr m_vtkTimerCallback;
+	vtkXYPlotActor_Sptr m_plot;
+	vtkRenderWindow_Sptr m_renderWindow;
+	vtkRenderWindowInteractor_Sptr m_interactor;
+
 	HWND        m_hWndDX11;
 	D3DApp_Picture  m_D3DApp;
 	bool        m_MButtonDown;
 	bool        m_LButtonDown;
+	vavImage*	m_vavImage;
+public:
+	
 	void Init();
-	void SetTexture(ID3D11ShaderResourceView* tex)
+	void SetImage(vavImage* img, ID3D11ShaderResourceView* tex)
 	{
+		m_vavImage = img;
 		m_D3DApp.SetScale(m_Scale);
 		m_D3DApp.SetTexture(tex);
 		m_D3DApp.BuildPoint();
@@ -45,6 +125,57 @@ public:
 	ID3D11DeviceContext* GetDeviceContext()
 	{
 		return m_D3DApp.GetDeviceContext();
+	}
+
+
+	static unsigned __stdcall MyThreadFunc(LPVOID lpParam)
+	{
+		CD3DpictureView* me = (CD3DpictureView*)lpParam;
+		me->m_plot->ExchangeAxesOff();
+		me->m_plot->SetLabelFormat("%g");
+		//  me->m_plot->SetXTitle( "Level" );
+		//  me->m_plot->SetYTitle( "Frequency" );
+		me->m_plot->SetXValuesToIndex();
+
+		for (unsigned int i = 0 ; i < me->m_vtkTimerCallback->m_data.size() ; i++)
+		{
+			vtkSmartPointer<vtkDoubleArray> array_s =
+				vtkSmartPointer<vtkDoubleArray>::New();
+			vtkSmartPointer<vtkFieldData> field =
+				vtkSmartPointer<vtkFieldData>::New();
+			vtkSmartPointer<vtkDataObject> data =
+				vtkSmartPointer<vtkDataObject>::New();
+
+			for (int b = 0; b < me->m_vtkTimerCallback->m_data[i].size(); b++)
+			{
+				array_s->InsertValue(b, me->m_vtkTimerCallback->m_data[i][b]);
+			}
+
+			field->AddArray(array_s);
+			data->SetFieldData(field);
+			me->m_plot->AddDataObjectInput(data);
+		}
+
+		me->m_plot->SetPlotColor(0, 1, 0, 0);
+		me->m_plot->SetPlotColor(1, 0, 1, 0);
+		me->m_plot->SetWidth(1);
+		me->m_plot->SetHeight(1);
+		me->m_plot->SetPosition(0, 0);
+		me->m_plot->SetPlotRange(0, 0, 64, 256);
+		vtkSmartPointer<vtkRenderer> renderer =
+			vtkSmartPointer<vtkRenderer>::New();
+		renderer->AddActor(me->m_plot);
+		me->m_renderWindow->AddRenderer(renderer);
+		me->m_renderWindow->SetSize(500, 500);
+		me->m_interactor->SetRenderWindow(me->m_renderWindow);
+		// Initialize the event loop and then start it
+		me->m_interactor->Initialize();
+		// Sign up to receive TimerEvent
+		me->m_interactor->AddObserver(vtkCommand::TimerEvent, me->m_vtkTimerCallback);
+		int timerId = me->m_interactor->CreateRepeatingTimer(30);
+		std::cout << "timerId: " << timerId << std::endl;
+		me->m_interactor->Start();
+		return 0;
 	}
 protected:
 	void InitDx11(HWND hWnd);

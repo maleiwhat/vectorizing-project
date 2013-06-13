@@ -22,6 +22,8 @@
 #include "ImageFeatureDetectionDoc.h"
 #include "ImageFeatureDetectionView.h"
 
+#include <auto_link_vtk.hpp>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -47,7 +49,6 @@ END_MESSAGE_MAP()
 
 CImageFeatureDetectionView::CImageFeatureDetectionView()
 {
-	// TODO: 在此加入建構程式碼
 	g_MainView = this;
 }
 
@@ -178,13 +179,11 @@ void CImageFeatureDetectionView::AddPicturedata(CString name, vavImage* pic,
 	if (m_ViewMap.find(pic) == m_ViewMap.end())
 	{
 		AddView(RUNTIME_CLASS(CD3DpictureView), name, index);
-		g_NewPictureView->m_PictureID = index;
 		g_NewPictureView->OnInitialUpdate();
-		//g_NewPictureView->Refresh( pic );
 		SetActiveView(index);
 		m_ViewMap[pic] = g_NewPictureView;
 		g_NewPictureView->SetPictureSize(pic->GetWidth(), pic->GetHeight());
-		g_NewPictureView->SetTexture(pic->GetDx11Texture(g_NewPictureView->GetDevice(),
+		g_NewPictureView->SetImage(pic, pic->GetDx11Texture(g_NewPictureView->GetDevice(),
 			g_NewPictureView->GetDeviceContext()));
 	}
 }
