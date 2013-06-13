@@ -259,5 +259,8 @@
     <FxCompile Include="shader\picture.fx">
       <Filter>shader</Filter>
     </FxCompile>
+    <FxCompile Include="shader\bigpoint.fx">
+      <Filter>shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

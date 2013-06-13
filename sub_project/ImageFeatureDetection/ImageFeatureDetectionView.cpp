@@ -36,7 +36,7 @@ BEGIN_MESSAGE_MAP(CImageFeatureDetectionView, CTabView)
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW,
-	           &CImageFeatureDetectionView::OnFilePrintPreview)
+			   &CImageFeatureDetectionView::OnFilePrintPreview)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
 	ON_WM_CREATE()
@@ -91,13 +91,13 @@ BOOL CImageFeatureDetectionView::OnPreparePrinting(CPrintInfo* pInfo)
 }
 
 void CImageFeatureDetectionView::OnBeginPrinting(CDC* /*pDC*/,
-        CPrintInfo* /*pInfo*/)
+		CPrintInfo* /*pInfo*/)
 {
 	// TODO: 加入列印前額外的初始設定
 }
 
 void CImageFeatureDetectionView::OnEndPrinting(CDC* /*pDC*/,
-        CPrintInfo* /*pInfo*/)
+		CPrintInfo* /*pInfo*/)
 {
 	// TODO: 加入列印後的清除程式碼
 }
@@ -112,7 +112,7 @@ void CImageFeatureDetectionView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 {
 #ifndef SHARED_HANDLERS
 	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y,
-	        this, TRUE);
+			this, TRUE);
 #endif
 }
 

@@ -14,6 +14,15 @@ struct PictureVertex
 	D3DXVECTOR2 size;
 };
 typedef std::vector<PictureVertex> PictureVertices;
+//Point Vertex format
+struct PointVertex
+{
+	D3DXVECTOR2 position;
+	D3DXVECTOR2 size;
+	D3DXVECTOR3 color;
+};
+typedef std::vector<PointVertex> PointVertices;
 
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_PICVertex[];
+extern D3D11_INPUT_ELEMENT_DESC VertexDesc_PointVertex[];
 

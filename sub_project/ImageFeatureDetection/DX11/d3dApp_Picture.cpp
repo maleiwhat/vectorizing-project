@@ -15,6 +15,26 @@ D3DApp_Picture::D3DApp_Picture()
 	m_PicH = 0;
 	m_d3dDevice = NULL;
 	m_SwapChain = NULL;
+	m_Pics_Texture = NULL;
+	m_Pics_Buffer = NULL;
+	m_Pics_Effect = NULL;
+	m_Pics_PTech = NULL;
+	m_Pics_PLayout = NULL;
+	m_Pics_Width = NULL;
+	m_Pics_Height = NULL;
+	m_Pics_Scale = NULL;
+	m_Pics_CenterX = NULL;
+	m_Pics_CenterY = NULL;
+	m_Points_Buffer = NULL;
+	m_Points_Effect = NULL;
+	m_Points_PTech = NULL;
+	m_Points_PLayout = NULL;
+	m_Points_Width = NULL;
+	m_Points_Height = NULL;
+	m_Points_Scale = NULL;
+	m_Points_CenterX = NULL;
+	m_Points_CenterY = NULL;
+	m_Points_Transparency = NULL;
 	m_DepthStencilBuffer = NULL;
 	m_DepthStencilView2 = NULL;
 	m_RenderTargetView = NULL;
@@ -72,8 +92,8 @@ void D3DApp_Picture::initApp(HWND hWnd, int w, int h)
 
 	initDirect3D();
 	LoadBlend();
-// 	float BlendFactor[4] = {0, 0, 0, 0};
-// 	m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
+	float BlendFactor[4] = {0, 0, 0, 0};
+	m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
 }
 
 void D3DApp_Picture::initDirect3D()
@@ -167,12 +187,7 @@ void D3DApp_Picture::OnResize(int w, int h)
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	m_DeviceContext->RSSetViewports(1, &vp);
-
-	if (m_Pics_Width != NULL && m_Pics_Height != NULL)
-	{
-		m_Pics_Width->SetFloat((float)m_ClientWidth);
-		m_Pics_Height->SetFloat((float)m_ClientHeight);
-	}
+	InterSetSize(m_ClientWidth, m_ClientHeight);
 }
 
 void D3DApp_Picture::DrawScene()
@@ -203,10 +218,20 @@ void D3DApp_Picture::DrawScene()
 		m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
 	}
 
+	m_PointsVertices.push_back(m_MousePoint);
+	m_Points_Transparency->SetFloat(0.9);
+	UINT offset = 0;
+	UINT stride2 = sizeof(PointVertex);
+	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	m_DeviceContext->IASetInputLayout(m_Points_PLayout);
+	m_DeviceContext->IASetVertexBuffers(0, 1, &m_Points_Buffer, &stride2, &offset);
+	m_Points_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+	m_DeviceContext->Draw((UINT)m_PointsVertices.size(), 0);
+	m_PointsVertices.pop_back();
 	m_SwapChain->Present(0, 0);
 }
 
-void D3DApp_Picture::buildShaderFX()
+void D3DApp_Picture::BuildShaderFX()
 {
 	ID3D10Blob* pCode;
 	ID3D10Blob* pError;
@@ -242,6 +267,36 @@ void D3DApp_Picture::buildShaderFX()
 	m_Pics_PTech->GetPassByIndex(0)->GetDesc(&PassDesc);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PICVertex, 2,
 	                                  PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_Pics_PLayout));
+	hr = D3DX11CompileFromFile(_T("shader\\bigpoint.fx"), NULL, NULL, NULL,
+	                           "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
+	                           &pCode, &pError, NULL);
+
+	if (FAILED(hr))
+	{
+		if (pError)
+		{
+			MessageBoxA(0, (char*)pError->GetBufferPointer(), 0, 0);
+			ReleaseCOM(pError);
+		}
+
+		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
+	}
+
+	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
+	                                pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Points_Effect));
+	m_Points_PTech = m_Points_Effect->GetTechniqueByName("PointTech");
+	m_Points_Width = m_Points_Effect->GetVariableByName("width")->AsScalar();
+	m_Points_Height = m_Points_Effect->GetVariableByName("height")->AsScalar();
+	m_Points_CenterX = m_Points_Effect->GetVariableByName("centerX")->AsScalar();
+	m_Points_CenterY = m_Points_Effect->GetVariableByName("centerY")->AsScalar();
+	m_Points_Scale = m_Points_Effect->GetVariableByName("scale")->AsScalar();
+	m_Points_Transparency =
+	    m_Points_Effect->GetVariableByName("transparency")->AsScalar();
+	D3DX11_PASS_DESC PassDescTri4;
+	m_Points_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri4);
+	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PointVertex, 3,
+	                                  PassDescTri4.pIAInputSignature,
+	                                  PassDescTri4.IAInputSignatureSize, &m_Points_PLayout));
 	m_vbd.Usage = D3D11_USAGE_IMMUTABLE;
 	m_vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	m_vbd.CPUAccessFlags = 0;
@@ -251,6 +306,7 @@ void D3DApp_Picture::buildShaderFX()
 void D3DApp_Picture::BuildPoint()
 {
 	ReleaseCOM(m_Pics_Buffer);
+	ReleaseCOM(m_Points_Buffer);
 
 	if (!m_DeviceContext) { return; }
 
@@ -275,6 +331,14 @@ void D3DApp_Picture::BuildPoint()
 		vinitData.pSysMem = &m_PicsVertices[0];
 		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Pics_Buffer));
 	}
+
+	m_PointsVertices.push_back(m_MousePoint);
+	m_vbd.ByteWidth = (UINT)(sizeof(PointVertex) * m_PointsVertices.size());
+	m_vbd.StructureByteStride = sizeof(PointVertex);
+	D3D11_SUBRESOURCE_DATA vinitData;
+	vinitData.pSysMem = &m_PointsVertices[0];
+	HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Points_Buffer));
+	m_PointsVertices.pop_back();
 }
 
 void D3DApp_Picture::LoadBlend()
@@ -359,4 +423,73 @@ void D3DApp_Picture::SetPictureSize(int w, int h)
 		m_PicW = w;
 		m_PicH = h;
 	}
+}
+
+void D3DApp_Picture::InterSetSize(float w, float h)
+{
+	if (m_Pics_Width != NULL && m_Points_Width != NULL)
+	{
+		m_Pics_Width->SetFloat(w);
+		m_Pics_Height->SetFloat(h);
+		m_Points_Width->SetFloat(w);
+		m_Points_Height->SetFloat(h);
+	}
+}
+
+void D3DApp_Picture::InterSetLookCenter(float x, float y)
+{
+	m_Pics_CenterX->SetFloat(x);
+	m_Pics_CenterY->SetFloat(y);
+	m_Points_CenterX->SetFloat(x);
+	m_Points_CenterY->SetFloat(y);
+}
+
+void D3DApp_Picture::InterSetScale(float s)
+{
+	m_Pics_Scale->SetFloat(s);
+	m_Points_Scale->SetFloat(s);
+}
+
+void D3DApp_Picture::SetScale(float s)
+{
+	m_Scale = s;
+}
+
+void D3DApp_Picture::SetLookCenter(float x, float y)
+{
+	m_LookCenterX = x;
+	m_LookCenterY = y;
+	BuildPoint();
+	DrawScene();
+}
+
+ID3D11Device* D3DApp_Picture::GetDevice()
+{
+	return m_d3dDevice;
+}
+
+ID3D11DeviceContext* D3DApp_Picture::GetDeviceContext()
+{
+	return m_DeviceContext;
+}
+
+void D3DApp_Picture::AddBigPoint(float x, float y, D3DXVECTOR3 color)
+{
+	PointVertex pv;
+	pv.color = color;
+	pv.size.x = 1;
+	pv.size.y = 1;
+	pv.position.x = x;
+	pv.position.y = m_PicH - y;
+	m_PointsVertices.push_back(pv);
+}
+
+void D3DApp_Picture::SetMousePoint(float x, float y, float radius,
+                                   D3DXVECTOR3 color)
+{
+	m_MousePoint.color = color;
+	m_MousePoint.size.x = radius;
+	m_MousePoint.size.y = radius;
+	m_MousePoint.position.x = x;
+	m_MousePoint.position.y = m_PicH - y;
 }
