@@ -219,7 +219,7 @@ void D3DApp_Picture::DrawScene()
 	}
 
 	m_PointsVertices.push_back(m_MousePoint);
-	m_Points_Transparency->SetFloat(0.3);
+	m_Points_Transparency->SetFloat(0.4);
 	UINT offset = 0;
 	UINT stride2 = sizeof(PointVertex);
 	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);

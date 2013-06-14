@@ -139,26 +139,18 @@ void CD3DpictureView::OnMouseMove(UINT nFlags, CPoint point)
 		double realx = (point.x - m_LookCenter.x) / m_Scale - m_LookCenter.x * 0.5;
 		double realy = (m_PicH * m_Scale - m_D3DApp.Height() + point.y
 		                - m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
-		double_vector data = m_vavImage->GetRingLight(realx, realy, 4, 32);
-		int size = data.size();
-		for (int i=0;i<size;++i)
-		{
-			data.push_back(data[i]);
-		}
+		double r = 4;
+		double_vector data = m_hsvImage->GetRingLight(realx, realy, r, 360);
+// 		int size = data.size();
+// 		for (int i=0;i<size;++i)
+// 		{
+// 			data.push_back(data[i]);
+// 		}
 		m_vtkTimerCallback->m_data[0] = data;
-		for (int i=0;i<size*2;++i)
-		{
-			if (i<size)
-			{
-				data[i] = 300;
-			}
-			else
-			{
-				data[i] = -1;
-			}
-		}
-		m_vtkTimerCallback->m_data[1] = data;
-		m_D3DApp.SetMousePoint(realx, realy, 8, color);
+		m_vtkTimerCallback->m_data[1] = m_hsvImage->GetRingR(realx, realy, r, 360);
+		m_vtkTimerCallback->m_data[2] = m_hsvImage->GetRingG(realx, realy, r, 360);
+		m_vtkTimerCallback->m_data[3] = m_hsvImage->GetRingB(realx, realy, r, 360);
+		m_D3DApp.SetMousePoint(realx, realy, r*2, color);
 		m_D3DApp.BuildPoint();
 		m_D3DApp.DrawScene();
 		printf("px: %3.1f py: %3.1f Center.x %3.1f Center3.y %3.1f\n",
@@ -248,4 +240,56 @@ void CD3DpictureView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	m_LButtonDown = false;
 	CView::OnLButtonUp(nFlags, point);
+}
+
+unsigned __stdcall CD3DpictureView::MyThreadFunc( LPVOID lpParam )
+{
+	CD3DpictureView* me = (CD3DpictureView*)lpParam;
+	me->m_plot->ExchangeAxesOff();
+	me->m_plot->SetLabelFormat("%g");
+	//  me->m_plot->SetXTitle( "Level" );
+	//  me->m_plot->SetYTitle( "Frequency" );
+	me->m_plot->SetXValuesToIndex();
+
+	for (unsigned int i = 0 ; i < me->m_vtkTimerCallback->m_data.size() ; i++)
+	{
+		vtkSmartPointer<vtkDoubleArray> array_s =
+			vtkSmartPointer<vtkDoubleArray>::New();
+		vtkSmartPointer<vtkFieldData> field =
+			vtkSmartPointer<vtkFieldData>::New();
+		vtkSmartPointer<vtkDataObject> data =
+			vtkSmartPointer<vtkDataObject>::New();
+
+		for (int b = 0; b < me->m_vtkTimerCallback->m_data[i].size(); b++)
+		{
+			array_s->InsertValue(b, me->m_vtkTimerCallback->m_data[i][b]);
+		}
+
+		field->AddArray(array_s);
+		data->SetFieldData(field);
+		me->m_plot->AddDataObjectInput(data);
+	}
+
+	me->m_plot->SetPlotColor(0, 1, 1, 1);
+	me->m_plot->SetPlotColor(1, 1, 0, 0);
+	me->m_plot->SetPlotColor(2, 0, 1, 0);
+	me->m_plot->SetPlotColor(3, 0, 0, 1);
+	me->m_plot->SetWidth(1);
+	me->m_plot->SetHeight(1);
+	me->m_plot->SetPosition(0, 0);
+	me->m_plot->SetPlotRange(0, 0, 360, 256);
+	vtkSmartPointer<vtkRenderer> renderer =
+		vtkSmartPointer<vtkRenderer>::New();
+	renderer->AddActor(me->m_plot);
+	me->m_renderWindow->AddRenderer(renderer);
+	me->m_renderWindow->SetSize(500, 500);
+	me->m_interactor->SetRenderWindow(me->m_renderWindow);
+	// Initialize the event loop and then start it
+	me->m_interactor->Initialize();
+	// Sign up to receive TimerEvent
+	me->m_interactor->AddObserver(vtkCommand::TimerEvent, me->m_vtkTimerCallback);
+	int timerId = me->m_interactor->CreateRepeatingTimer(30);
+	std::cout << "timerId: " << timerId << std::endl;
+	me->m_interactor->Start();
+	return 0;
 }

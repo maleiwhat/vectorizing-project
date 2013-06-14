@@ -32,28 +32,15 @@ public:
 
 // §@·~
 public:
-	enum ViewState
-	{
-	    VIEW_NORMAL_SELECT = 999,
-	    VIEW_CREATE_WALL,
-	    VIEW_CREATE_FLOOR,
-	    VIEW_MOUSE_DOWN,
-	    VIEW_MOUSE_UP,
-	    VIEW_MOVE_START
-	};
 	CPalette    m_cPalette;
 	CPalette*   m_pOldPalette;
 	CRect       m_oldRect;
 	float       m_fRadius;
 	CClientDC*  m_pDC;
-	ViewState   m_ViewState;
-	ViewState   m_MouseState;
 	float       m_Scale;
 	CPoint      m_MouseDown,
 	            m_MouseUp,
-	            m_MouseMove,
-	            m_MouseMDown,
-	            m_LastMPoint;
+	            m_MouseMove;
 	Vector2     m_LookCenter;
 	Vector2     m_LookDown;
 	HWND        m_hWndDX11;

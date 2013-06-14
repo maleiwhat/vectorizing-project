@@ -38,10 +38,12 @@ public:
 		vtkTimerCallback* cb = new vtkTimerCallback;
 		cb->m_data.push_back(double_vector());
 		cb->m_data.push_back(double_vector());
-		cb->m_data[0].push_back(0);
+		cb->m_data.push_back(double_vector());
+		cb->m_data.push_back(double_vector());
 		cb->m_data[0].push_back(0);
 		cb->m_data[1].push_back(0);
-		cb->m_data[1].push_back(0);
+		cb->m_data[2].push_back(0);
+		cb->m_data[3].push_back(0);
 		return cb;
 	}
 
@@ -101,12 +103,16 @@ private:
 	bool        m_MButtonDown;
 	bool        m_LButtonDown;
 	vavImage*	m_vavImage;
+	vavImage*	m_hsvImage;
 public:
 	
 	void Init();
 	void SetImage(vavImage* img, ID3D11ShaderResourceView* tex)
 	{
 		m_vavImage = img;
+		m_hsvImage = new vavImage;
+		*m_hsvImage = m_vavImage->Clone();
+		m_hsvImage->ConvertToHSV();
 		m_D3DApp.SetScale(m_Scale);
 		m_D3DApp.SetTexture(tex);
 		m_D3DApp.BuildPoint();
@@ -128,55 +134,7 @@ public:
 	}
 
 
-	static unsigned __stdcall MyThreadFunc(LPVOID lpParam)
-	{
-		CD3DpictureView* me = (CD3DpictureView*)lpParam;
-		me->m_plot->ExchangeAxesOff();
-		me->m_plot->SetLabelFormat("%g");
-		//  me->m_plot->SetXTitle( "Level" );
-		//  me->m_plot->SetYTitle( "Frequency" );
-		me->m_plot->SetXValuesToIndex();
-
-		for (unsigned int i = 0 ; i < me->m_vtkTimerCallback->m_data.size() ; i++)
-		{
-			vtkSmartPointer<vtkDoubleArray> array_s =
-				vtkSmartPointer<vtkDoubleArray>::New();
-			vtkSmartPointer<vtkFieldData> field =
-				vtkSmartPointer<vtkFieldData>::New();
-			vtkSmartPointer<vtkDataObject> data =
-				vtkSmartPointer<vtkDataObject>::New();
-
-			for (int b = 0; b < me->m_vtkTimerCallback->m_data[i].size(); b++)
-			{
-				array_s->InsertValue(b, me->m_vtkTimerCallback->m_data[i][b]);
-			}
-
-			field->AddArray(array_s);
-			data->SetFieldData(field);
-			me->m_plot->AddDataObjectInput(data);
-		}
-
-		me->m_plot->SetPlotColor(0, 1, 0, 0);
-		me->m_plot->SetPlotColor(1, 0, 1, 0);
-		me->m_plot->SetWidth(1);
-		me->m_plot->SetHeight(1);
-		me->m_plot->SetPosition(0, 0);
-		me->m_plot->SetPlotRange(0, 0, 64, 256);
-		vtkSmartPointer<vtkRenderer> renderer =
-			vtkSmartPointer<vtkRenderer>::New();
-		renderer->AddActor(me->m_plot);
-		me->m_renderWindow->AddRenderer(renderer);
-		me->m_renderWindow->SetSize(500, 500);
-		me->m_interactor->SetRenderWindow(me->m_renderWindow);
-		// Initialize the event loop and then start it
-		me->m_interactor->Initialize();
-		// Sign up to receive TimerEvent
-		me->m_interactor->AddObserver(vtkCommand::TimerEvent, me->m_vtkTimerCallback);
-		int timerId = me->m_interactor->CreateRepeatingTimer(30);
-		std::cout << "timerId: " << timerId << std::endl;
-		me->m_interactor->Start();
-		return 0;
-	}
+	static unsigned __stdcall MyThreadFunc(LPVOID lpParam);
 protected:
 	void InitDx11(HWND hWnd);
 private:

@@ -283,8 +283,6 @@ bool vavImage::CorrectPosition(int x, int y)
 
 double vavImage::GetBilinearLight(double x, double y)
 {
-	x += 0.0001;
-	y += 0.0001;
 	if (y < 0) { return 0; }
 
 	if (y >= m_Image.rows) { return 0; }
@@ -295,14 +293,14 @@ double vavImage::GetBilinearLight(double x, double y)
 
 	Vector2 left_up, left_down;
 	Vector2 right_up, right_down;
-	left_up.x = ceil(x);
-	left_up.y = ceil(y);
-	left_down.x = ceil(x);
-	left_down.y = floor(y);
-	right_up.x = floor(x);
-	right_up.y = ceil(y);
-	right_down.x = floor(x);
-	right_down.y = floor(y);
+	left_up.x = floor(x);
+	left_up.y = floor(y);
+	left_down.x = left_up.x;
+	left_down.y = left_up.y + 1;
+	right_up.x = left_up.x + 1;
+	right_up.y = left_up.y;
+	right_down.x = left_up.x + 1;
+	right_down.y = left_up.y + 1;
 	double v[4];
 	v[0] = GetLight(left_up.x, left_up.y);
 	v[1] = GetLight(left_down.x, left_down.y);
@@ -335,4 +333,153 @@ double_vector vavImage::GetRingLight(double x, double y, double radius, int div)
 	}
 
 	return ans;
+}
+
+double vavImage::GetBilinearR(double x, double y)
+{
+	if (y < 0) { return 0; }
+
+	if (y >= m_Image.rows) { return 0; }
+
+	if (x < 0) { return 0; }
+
+	if (x >= m_Image.cols) { return 0; }
+
+	Vector2 left_up, left_down;
+	Vector2 right_up, right_down;
+	left_up.x = floor(x);
+	left_up.y = floor(y);
+	left_down.x = left_up.x;
+	left_down.y = left_up.y + 1;
+	right_up.x = left_up.x + 1;
+	right_up.y = left_up.y;
+	right_down.x = left_up.x + 1;
+	right_down.y = left_up.y + 1;
+	double v[4];
+	v[0] = m_Image.at<cv::Vec3b>(left_up.y, left_up.x)[2];
+	v[1] = m_Image.at<cv::Vec3b>(left_down.y, left_down.x)[2];
+	v[2] = m_Image.at<cv::Vec3b>(right_up.y, right_up.x)[2];
+	v[3] = m_Image.at<cv::Vec3b>(right_down.y, right_down.x)[2];
+	// bilinear interpolation
+	double ans = v[0] * ((2 - abs(x - left_up.x) - abs(y - left_up.y)) * 0.5);
+	ans += v[1] * ((2 - abs(x - left_down.x) - abs(y - left_down.y)) * 0.5);
+	ans += v[2] * ((2 - abs(x - right_up.x) - abs(y - right_up.y)) * 0.5);
+	ans += v[3] * ((2 - abs(x - right_down.x) - abs(y - right_down.y)) * 0.5);
+	return ans * 0.5;
+}
+
+double vavImage::GetBilinearG( double x, double y )
+{
+	if (y < 0) { return 0; }
+
+	if (y >= m_Image.rows) { return 0; }
+
+	if (x < 0) { return 0; }
+
+	if (x >= m_Image.cols) { return 0; }
+
+	Vector2 left_up, left_down;
+	Vector2 right_up, right_down;
+	left_up.x = floor(x);
+	left_up.y = floor(y);
+	left_down.x = left_up.x;
+	left_down.y = left_up.y + 1;
+	right_up.x = left_up.x + 1;
+	right_up.y = left_up.y;
+	right_down.x = left_up.x + 1;
+	right_down.y = left_up.y + 1;
+	double v[4];
+	v[0] = m_Image.at<cv::Vec3b>(left_up.y, left_up.x)[1];
+	v[1] = m_Image.at<cv::Vec3b>(left_down.y, left_down.x)[1];
+	v[2] = m_Image.at<cv::Vec3b>(right_up.y, right_up.x)[1];
+	v[3] = m_Image.at<cv::Vec3b>(right_down.y, right_down.x)[1];
+	// bilinear interpolation
+	double ans = v[0] * ((2 - abs(x - left_up.x) - abs(y - left_up.y)) * 0.5);
+	ans += v[1] * ((2 - abs(x - left_down.x) - abs(y - left_down.y)) * 0.5);
+	ans += v[2] * ((2 - abs(x - right_up.x) - abs(y - right_up.y)) * 0.5);
+	ans += v[3] * ((2 - abs(x - right_down.x) - abs(y - right_down.y)) * 0.5);
+	return ans * 0.5;
+}
+
+double vavImage::GetBilinearB( double x, double y )
+{
+	if (y < 0) { return 0; }
+
+	if (y >= m_Image.rows) { return 0; }
+
+	if (x < 0) { return 0; }
+
+	if (x >= m_Image.cols) { return 0; }
+
+	Vector2 left_up, left_down;
+	Vector2 right_up, right_down;
+	left_up.x = floor(x);
+	left_up.y = floor(y);
+	left_down.x = left_up.x;
+	left_down.y = left_up.y + 1;
+	right_up.x = left_up.x + 1;
+	right_up.y = left_up.y;
+	right_down.x = left_up.x + 1;
+	right_down.y = left_up.y + 1;
+	double v[4];
+	v[0] = m_Image.at<cv::Vec3b>(left_up.y, left_up.x)[0];
+	v[1] = m_Image.at<cv::Vec3b>(left_down.y, left_down.x)[0];
+	v[2] = m_Image.at<cv::Vec3b>(right_up.y, right_up.x)[0];
+	v[3] = m_Image.at<cv::Vec3b>(right_down.y, right_down.x)[0];
+	// bilinear interpolation
+	double ans = v[0] * ((2 - abs(x - left_up.x) - abs(y - left_up.y)) * 0.5);
+	ans += v[1] * ((2 - abs(x - left_down.x) - abs(y - left_down.y)) * 0.5);
+	ans += v[2] * ((2 - abs(x - right_up.x) - abs(y - right_up.y)) * 0.5);
+	ans += v[3] * ((2 - abs(x - right_down.x) - abs(y - right_down.y)) * 0.5);
+	return ans * 0.5;
+}
+
+double_vector vavImage::GetRingR( double x, double y, double radius, int div )
+{
+	double_vector ans;
+
+	for (int i = 0; i < div; ++i)
+	{
+		double step = 360.0 / div;
+		Vector2 ahead(0, -radius);
+		Vector2 move = Quaternion::GetRotation(ahead, i * step);
+		ans.push_back(GetBilinearR(x + move.x, y + move.y));
+	}
+
+	return ans;
+}
+
+double_vector vavImage::GetRingG( double x, double y, double radius, int div )
+{
+	double_vector ans;
+
+	for (int i = 0; i < div; ++i)
+	{
+		double step = 360.0 / div;
+		Vector2 ahead(0, -radius);
+		Vector2 move = Quaternion::GetRotation(ahead, i * step);
+		ans.push_back(GetBilinearG(x + move.x, y + move.y));
+	}
+
+	return ans;
+}
+
+double_vector vavImage::GetRingB( double x, double y, double radius, int div )
+{
+	double_vector ans;
+
+	for (int i = 0; i < div; ++i)
+	{
+		double step = 360.0 / div;
+		Vector2 ahead(0, -radius);
+		Vector2 move = Quaternion::GetRotation(ahead, i * step);
+		ans.push_back(GetBilinearB(x + move.x, y + move.y));
+	}
+
+	return ans;
+}
+
+void vavImage::ConvertToHSV()
+{
+	 cv::cvtColor( m_Image, m_Image, CV_BGR2YUV );
 }

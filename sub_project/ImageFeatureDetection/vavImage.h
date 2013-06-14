@@ -25,8 +25,19 @@ public:
 	void    ShowEdgeLine(const Lines& lines);
 	void    Resize(int x, int y, int method = cv::INTER_LINEAR);
 	bool    CorrectPosition(int x, int y);
+	void	ConvertToHSV();
 	double  GetBilinearLight(double x, double y);
+	double  GetBilinearR(double x, double y);
+	double  GetBilinearG(double x, double y);
+	double  GetBilinearB(double x, double y);
 	double_vector GetRingLight(double x, double y, double radius, int div);
+	double_vector GetRingR(double x, double y, double radius, int div);
+	double_vector GetRingG(double x, double y, double radius, int div);
+	double_vector GetRingB(double x, double y, double radius, int div);
+	cv::Mat Clone()
+	{
+		return m_Image.clone();
+	}
 	operator cv::Mat& ()
 	{
 		return m_Image;

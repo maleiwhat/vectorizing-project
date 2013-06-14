@@ -85,7 +85,7 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 		DXTRACE_MSG(L"vavImage: Failed to create ShaderResourceView!");
 		return 0;
 	}
-
+	if (0)
 	{	// take draw texture
 		ID3D11Texture2D* pTextureRead;
 		D3D11_TEXTURE2D_DESC texDescCV;
@@ -126,6 +126,7 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 				intensity[0] = pimg[offset + 2] * 255.0f;
 			}
 		}
+		cv::imshow("simg", simg);
 	}
 
 	return pShaderResView;

@@ -568,7 +568,6 @@ void D3DApp::BuildPoint()
 	ReleaseCOM(m_Points_Buffer);
 	ReleaseCOM(m_Lines_Buffer);
 	ReleaseCOM(m_SkeletonLines_Buffer);
-	ReleaseCOM(m_Backup_Buffer);
 
 	if (!m_DeviceContext) { return; }
 

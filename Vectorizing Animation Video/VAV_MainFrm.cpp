@@ -619,10 +619,10 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	D3DApp& d3dApp = ((VAV_View*)this->GetActiveView())->GetD3DApp();
 	ImageSpline is;
 	const bool DRAW_PATCH = false;
-	const bool DRAW_SEPARATE_PATCH = true;
-	const bool DRAW_CONTOUR = false;
-	const bool DRAW_CONTOUR_CONTROL_POINT = false;
-	const bool DRAW_CONTOUR_SKELETON_POINT = false;
+	const bool DRAW_SEPARATE_PATCH = false;
+	const bool DRAW_CONTOUR = true;
+	const bool DRAW_CONTOUR_CONTROL_POINT = true;
+	const bool DRAW_CONTOUR_SKELETON_POINT = true;
 	const bool DRAW_ISOSURFACE = true;
 
 	if (DRAW_ISOSURFACE)
