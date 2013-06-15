@@ -168,7 +168,7 @@ ColorConstraint_sptr Patch::GetColorConstraint()
 
 void Patch::SmoothPatch()
 {
-	for (int count = 0; count < 4; count++)
+	for (int count = 0; count < 1; count++)
 	{
 		Vector2s& cps = m_Outer;
 		Vector2s newcps;
@@ -194,7 +194,7 @@ void Patch::SmoothPatch()
 		cps = newcps;
 	}
 
-	for (int count = 0; count < 4; count++)
+	for (int count = 0; count < 1; count++)
 	{
 		for (int i = 0; i < m_Inter.size(); ++i)
 		{

@@ -55,7 +55,7 @@ CImageFeatureDetectionView::CImageFeatureDetectionView()
 CImageFeatureDetectionView::~CImageFeatureDetectionView()
 {
 }
-
+ 
 BOOL CImageFeatureDetectionView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// TODO: 在此經由修改 CREATESTRUCT cs

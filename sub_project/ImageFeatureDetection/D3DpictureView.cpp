@@ -140,16 +140,16 @@ void CD3DpictureView::OnMouseMove(UINT nFlags, CPoint point)
 		double realy = (m_PicH * m_Scale - m_D3DApp.Height() + point.y
 		                - m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
 		double r = 4;
-		double_vector data = m_hsvImage->GetRingLight(realx, realy, r, 360);
+		double_vector data = m_vavImage->GetRingLight(realx, realy, r, 360);
 // 		int size = data.size();
 // 		for (int i=0;i<size;++i)
 // 		{
 // 			data.push_back(data[i]);
 // 		}
 		m_vtkTimerCallback->m_data[0] = data;
-		m_vtkTimerCallback->m_data[1] = m_hsvImage->GetRingR(realx, realy, r, 360);
-		m_vtkTimerCallback->m_data[2] = m_hsvImage->GetRingG(realx, realy, r, 360);
-		m_vtkTimerCallback->m_data[3] = m_hsvImage->GetRingB(realx, realy, r, 360);
+		m_vtkTimerCallback->m_data[1] = m_vavImage->GetRingR(realx, realy, r, 360);
+		m_vtkTimerCallback->m_data[2] = m_vavImage->GetRingG(realx, realy, r, 360);
+		m_vtkTimerCallback->m_data[3] = m_vavImage->GetRingB(realx, realy, r, 360);
 		m_D3DApp.SetMousePoint(realx, realy, r*2, color);
 		m_D3DApp.BuildPoint();
 		m_D3DApp.DrawScene();
