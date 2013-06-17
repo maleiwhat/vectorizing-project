@@ -525,7 +525,7 @@ void    TriangulationCgal_Sideline::mark_domains(Triangulation& cdt)
 		else if (n->info().nesting_level == TRIANGLE_NOT_INIT)
 		{
 			//mark_domains(cdt, n, e.first->info().nesting_level + 1, border);
-			printf("domain: %d\n", domain);
+			//printf("domain: %d\n", domain);
 
 			if (domain != -1)
 			{

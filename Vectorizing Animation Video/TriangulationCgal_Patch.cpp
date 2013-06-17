@@ -173,7 +173,7 @@ void TriangulationCgal_Patch::Compute()
 
 	m_PositionGraph.ComputeJoints();
 	m_PositionGraph.MakeGraphLines();
-	printf("joints: %d\n", m_PositionGraph.m_Joints.size());
+	//printf("joints: %d\n", m_PositionGraph.m_Joints.size());
 	m_OriginLines = m_PositionGraph.m_Lines;
 	m_PositionGraph.SmoothGraphLines();
 	m_Lines = m_PositionGraph.m_Lines;
@@ -548,7 +548,7 @@ void    TriangulationCgal_Patch::mark_domains(Triangulation& cdt)
 		else if (n->info().nesting_level == TRIANGLE_NOT_INIT)
 		{
 			//mark_domains(cdt, n, e.first->info().nesting_level + 1, border);
-			printf("domain: %d\n", domain);
+			//printf("domain: %d\n", domain);
 
 			if (domain != -1)
 			{

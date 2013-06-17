@@ -824,7 +824,7 @@ void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2)
 	//cv::waitKey();
 }
 
-ImageSpline S3GetPatchs(cv::Mat& image0, int dilation, int erosion,
+ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold,
 						cv::Mat& image1)
 {
 	assert(image0.type() == CV_8UC3);
@@ -851,7 +851,7 @@ ImageSpline S3GetPatchs(cv::Mat& image0, int dilation, int erosion,
 	{
 		for (int j = 1; j < image.cols - 1; j++)
 		{
-			S2FloodFill(image, mask, Der2, 5, j, i, dilation, erosion);
+			S2FloodFill(image, mask, Der2, 5, j, i, 0, 0);
 		}
 	}
 
@@ -873,7 +873,7 @@ ImageSpline S3GetPatchs(cv::Mat& image0, int dilation, int erosion,
 		cv::Mat tmp_image2;
 		joint_mask = cv::Scalar::all(0);
 		image1.convertTo(tmp_image2, CV_32FC3, 1 / 255.0);
-		Collect_Water(tmp_image2, tmp_image2, 5, 5, 1);
+		Collect_Water(tmp_image2, tmp_image2, 5, 5, BlackRegionThreshold);
 		cv::Mat mask_tmp;
 		mask_tmp.create(image.rows + 2, image.cols + 2, CV_8UC1);
 		// create bigger image to fix border problem
@@ -917,7 +917,7 @@ ImageSpline S3GetPatchs(cv::Mat& image0, int dilation, int erosion,
 	{
 		for (int j = 1; j < image.cols - 1; j++)
 		{
-			S2FloodFill(cc, image, mask, Der2, 0, j, i, cvps, dilation);
+			S2FloodFill(cc, image, mask, Der2, 0, j, i, cvps, 0);
 		}
 	}
 
@@ -1531,7 +1531,6 @@ void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 
 	cv::Point seed(x, y);
 	cv::Rect ccomp;
-	printf("cc %d\n", cc);
 	int b = cc % 255;
 	int g = cc / 255 ;
 	int r = cc / (255 * 255);
@@ -1636,7 +1635,6 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 
 	cv::Point seed(x, y);
 	cv::Rect ccomp;
-	printf("bcc %d\n", cc);
 	cc++;
 	cv::Scalar newVal(b, g, r);
 	int area;
@@ -1744,7 +1742,6 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 
 	cv::Point seed(x, y);
 	cv::Rect ccomp;
-	printf("bcc %d\n", cc);
 	cc++;
 	cv::Scalar newVal(b, g, r);
 	int area;
@@ -2194,7 +2191,7 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
 
 	normalize(MaxCapacity, MaxCapacity, 0, 1, cv::NORM_MINMAX);
 	imshow("MaxCapacity", MaxCapacity);
-	FillSmallHole(MaxCapacity2);
+	//FillSmallHole(MaxCapacity2);
 	imshow("MaxCapacity2", MaxCapacity2);
 
 	for (int i = 0; i < ans.rows; i++)
@@ -2672,7 +2669,6 @@ void S5FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 
 	cv::Point seed(x, y);
 	cv::Rect ccomp;
-	printf("cc %d\n", cc);
 	cc++;
 	cv::Scalar newVal(0, 0, 0);
 	int area;

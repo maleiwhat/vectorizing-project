@@ -214,7 +214,7 @@ void VoronoiCgal_Patch::Compute()
 	}
 
 	m_PositionGraph.ComputeJoints();
-	printf("joints: %d\n", m_PositionGraph.m_Joints.size());
+	//printf("joints: %d\n", m_PositionGraph.m_Joints.size());
 	//MakeLines();
 	MakeGraphLines();
 }

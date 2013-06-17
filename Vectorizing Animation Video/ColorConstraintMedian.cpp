@@ -67,5 +67,5 @@ void ColorConstraintMedian::ComputeMedian()
 		m_Median = m_Colors[m_Colors.size() / 2];
 	}
 
-	printf("color r: %f g: %f b: %f\n", m_Median[0], m_Median[1], m_Median[2]);
+	//printf("color r: %f g: %f b: %f\n", m_Median[0], m_Median[1], m_Median[2]);
 }

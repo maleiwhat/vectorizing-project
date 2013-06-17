@@ -288,7 +288,7 @@ unsigned __stdcall CD3DpictureView::MyThreadFunc( LPVOID lpParam )
 	me->m_interactor->Initialize();
 	// Sign up to receive TimerEvent
 	me->m_interactor->AddObserver(vtkCommand::TimerEvent, me->m_vtkTimerCallback);
-	int timerId = me->m_interactor->CreateRepeatingTimer(30);
+	int timerId = me->m_interactor->CreateRepeatingTimer(100);
 	std::cout << "timerId: " << timerId << std::endl;
 	me->m_interactor->Start();
 	return 0;

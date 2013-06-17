@@ -44,7 +44,7 @@ void    S5FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 void    LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y);
 
 CvPatchs S2GetPatchs(const cv::Mat& image, int dilation = 0, int erosion = 0);
-ImageSpline S3GetPatchs(cv::Mat& image0, int dilation, int erosion, cv::Mat& image1);
+ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold, cv::Mat& image1);
 ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
                            cv::Mat lineImage);
 ImageSpline GetImageSpline(CvPatchs& patchs);
