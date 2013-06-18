@@ -22,7 +22,14 @@ struct PointVertex
 	D3DXVECTOR3 color;
 };
 typedef std::vector<PointVertex> PointVertices;
+struct SkeletonLineVertex
+{
+	D3DXVECTOR2 p1;
+	D3DXVECTOR2 p2;
+	D3DXVECTOR3 color;
+};
+typedef std::vector<SkeletonLineVertex> SkeletonLineVertexes;
 
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_PICVertex[];
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_PointVertex[];
-
+extern D3D11_INPUT_ELEMENT_DESC VertexDesc_SkeletonLineVertex[];

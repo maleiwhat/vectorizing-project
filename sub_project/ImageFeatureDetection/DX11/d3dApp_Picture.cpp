@@ -35,6 +35,26 @@ D3DApp_Picture::D3DApp_Picture()
 	m_Points_CenterX = NULL;
 	m_Points_CenterY = NULL;
 	m_Points_Transparency = NULL;
+	m_CircleLine_Buffer = NULL;
+	m_CircleLine_Effect = NULL;
+	m_CircleLine_PTech = NULL;
+	m_CircleLine_PLayout = NULL;
+	m_CircleLine_Width = NULL;
+	m_CircleLine_Height = NULL;
+	m_CircleLine_Scale = NULL;
+	m_CircleLine_CenterX = NULL;
+	m_CircleLine_CenterY = NULL;
+	m_CircleLine_Transparency = NULL;
+	m_SkeletonLines_Buffer = NULL;
+	m_SkeletonLines_Effect = NULL;
+	m_SkeletonLines_PTech = NULL;
+	m_SkeletonLines_PLayout = NULL;
+	m_SkeletonLines_Width = NULL;
+	m_SkeletonLines_Height = NULL;
+	m_SkeletonLines_Scale = NULL;
+	m_SkeletonLines_CenterX = NULL;
+	m_SkeletonLines_CenterY = NULL;
+	m_SkeletonLines_Transparency = NULL;
 	m_DepthStencilBuffer = NULL;
 	m_DepthStencilView2 = NULL;
 	m_RenderTargetView = NULL;
@@ -66,6 +86,24 @@ D3DApp_Picture::~D3DApp_Picture()
 	ReleaseCOM(m_RenderTargetView);
 	ReleaseCOM(m_DepthStencilView);
 	ReleaseCOM(m_DeviceContext);
+	ReleaseCOM(m_Pics_Buffer);
+	ReleaseCOM(m_Points_Buffer);
+	ReleaseCOM(m_CircleLine_Buffer);
+	ReleaseCOM(m_SkeletonLines_Buffer);
+	ReleaseCOM(m_Backup_Buffer);
+	ReleaseCOM(m_Pics_Texture);
+	ReleaseCOM(m_Pics_Effect);
+	ReleaseCOM(m_Points_Effect);
+	ReleaseCOM(m_CircleLine_Effect);
+	ReleaseCOM(m_SkeletonLines_Effect);
+	ReleaseCOM(m_Pics_PLayout);
+	ReleaseCOM(m_Points_PLayout);
+	ReleaseCOM(m_CircleLine_PLayout);
+	ReleaseCOM(m_SkeletonLines_PLayout);
+	ReleaseCOM(m_pBlendState_BLEND);
+	ReleaseCOM(m_pBlendState_ADD);
+	ReleaseCOM(m_pDepthStencil_ZWriteON);
+	ReleaseCOM(m_pDepthStencil_ZWriteOFF);
 }
 
 HINSTANCE D3DApp_Picture::getAppInst()
@@ -83,13 +121,11 @@ void D3DApp_Picture::initApp(HWND hWnd, int w, int h)
 	m_hMainWnd = hWnd;
 	m_ClientWidth = w;
 	m_ClientHeight = h;
-
 	if (m_ClientWidth == 0)
 	{
 		m_ClientWidth = 100;
 		m_ClientHeight = 100;
 	}
-
 	initDirect3D();
 	LoadBlend();
 	float BlendFactor[4] = {0, 0, 0, 0};
@@ -143,8 +179,10 @@ void D3DApp_Picture::initDirect3D()
 
 void D3DApp_Picture::OnResize(int w, int h)
 {
-	if (!m_d3dDevice) { return; }
-
+	if (!m_d3dDevice)
+	{
+		return;
+	}
 	m_ClientWidth = w;
 	m_ClientHeight = h;
 	// Release the old views, as they hold references to the buffers we
@@ -196,38 +234,11 @@ void D3DApp_Picture::DrawScene()
 	{
 		return;
 	}
-
-	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, m_ClearColor);
-	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView,
-										   D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
 	InterSetSize(m_ClientWidth, m_ClientHeight);
 	InterSetLookCenter(m_LookCenterX, m_LookCenterY);
 	printf("scale: %f \n", m_Scale);
 	InterSetScale(m_Scale);
-
-	if (m_PicsVertices.size() > 0)
-	{
-		m_Pics_PMap->SetResource(m_Pics_Texture);
-		UINT offset = 0;
-		UINT stride2 = sizeof(PictureVertex);
-		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-		m_DeviceContext->IASetInputLayout(m_Pics_PLayout);
-		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Pics_Buffer, &stride2, &offset);
-		m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-		m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
-	}
-
-	m_PointsVertices.push_back(m_MousePoint);
-	m_Points_Transparency->SetFloat(0.4);
-	UINT offset = 0;
-	UINT stride2 = sizeof(PointVertex);
-	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-	m_DeviceContext->IASetInputLayout(m_Points_PLayout);
-	m_DeviceContext->IASetVertexBuffers(0, 1, &m_Points_Buffer, &stride2, &offset);
-	m_Points_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-	m_DeviceContext->Draw((UINT)m_PointsVertices.size(), 0);
-	m_PointsVertices.pop_back();
+	InterDraw();
 	m_SwapChain->Present(0, 0);
 }
 
@@ -236,23 +247,12 @@ void D3DApp_Picture::BuildShaderFX()
 	ID3D10Blob* pCode;
 	ID3D10Blob* pError;
 	HRESULT hr = 0;
-	hr = D3DX11CompileFromFile(_T("shader\\picture.fx"), NULL, NULL, NULL,
-							   "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
-							   &pCode, &pError, NULL);
-
-	if (FAILED(hr))
-	{
-		if (pError)
-		{
-			MessageBoxA(0, (char*)pError->GetBufferPointer(), 0, 0);
-			ReleaseCOM(pError);
-		}
-
-		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
-	}
-
+	HR(D3DX11CompileFromFile(_T("shader\\picture.fx"), NULL, NULL, NULL,
+							 "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
+							 &pCode, &pError, NULL));
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
 									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Pics_Effect));
+	pCode->Release();
 	m_Pics_PTech = m_Pics_Effect->GetTechniqueByName("PointTech");
 	m_Pics_Width = m_Pics_Effect->GetVariableByName("width")->AsScalar();
 	m_Pics_Height = m_Pics_Effect->GetVariableByName("height")->AsScalar();
@@ -260,30 +260,19 @@ void D3DApp_Picture::BuildShaderFX()
 	m_Pics_CenterY = m_Pics_Effect->GetVariableByName("centerY")->AsScalar();
 	m_Pics_Scale = m_Pics_Effect->GetVariableByName("scale")->AsScalar();
 	m_Pics_PMap  = m_Pics_Effect->GetVariableByName("gMap")->AsShaderResource();
-	m_TransparencySV_Picture =
+	m_Pics_Transparency =
 		m_Pics_Effect->GetVariableByName("transparency")->AsScalar();
-	m_TransparencySV_Picture->SetFloat(1);
+	m_Pics_Transparency->SetFloat(1);
 	D3DX11_PASS_DESC PassDesc;
 	m_Pics_PTech->GetPassByIndex(0)->GetDesc(&PassDesc);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PICVertex, 2,
 									  PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_Pics_PLayout));
-	hr = D3DX11CompileFromFile(_T("shader\\bigpoint.fx"), NULL, NULL, NULL,
-							   "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
-							   &pCode, &pError, NULL);
-
-	if (FAILED(hr))
-	{
-		if (pError)
-		{
-			MessageBoxA(0, (char*)pError->GetBufferPointer(), 0, 0);
-			ReleaseCOM(pError);
-		}
-
-		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
-	}
-
+	HR(D3DX11CompileFromFile(_T("shader\\bigpoint.fx"), NULL, NULL, NULL,
+							 "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
+							 &pCode, &pError, NULL));
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
 									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Points_Effect));
+	pCode->Release();
 	m_Points_PTech = m_Points_Effect->GetTechniqueByName("PointTech");
 	m_Points_Width = m_Points_Effect->GetVariableByName("width")->AsScalar();
 	m_Points_Height = m_Points_Effect->GetVariableByName("height")->AsScalar();
@@ -292,26 +281,72 @@ void D3DApp_Picture::BuildShaderFX()
 	m_Points_Scale = m_Points_Effect->GetVariableByName("scale")->AsScalar();
 	m_Points_Transparency =
 		m_Points_Effect->GetVariableByName("transparency")->AsScalar();
+	D3DX11_PASS_DESC PassDescTri3;
+	m_Points_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri3);
+	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PointVertex, 3,
+									  PassDescTri3.pIAInputSignature,
+									  PassDescTri3.IAInputSignatureSize, &m_Points_PLayout));
+	HR(D3DX11CompileFromFile(_T("shader\\CircleLine.fx"), NULL, NULL, NULL,
+							 "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
+							 &pCode, &pError, NULL));
+	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
+									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_CircleLine_Effect));
+	pCode->Release();
+	m_CircleLine_PTech = m_CircleLine_Effect->GetTechniqueByName("PointTech");
+	m_CircleLine_Width =
+		m_CircleLine_Effect->GetVariableByName("width")->AsScalar();
+	m_CircleLine_Height =
+		m_CircleLine_Effect->GetVariableByName("height")->AsScalar();
+	m_CircleLine_CenterX =
+		m_CircleLine_Effect->GetVariableByName("centerX")->AsScalar();
+	m_CircleLine_CenterY =
+		m_CircleLine_Effect->GetVariableByName("centerY")->AsScalar();
+	m_CircleLine_Scale =
+		m_CircleLine_Effect->GetVariableByName("scale")->AsScalar();
+	m_CircleLine_Transparency =
+		m_CircleLine_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri4;
-	m_Points_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri4);
+	m_CircleLine_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri4);
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PointVertex, 3,
 									  PassDescTri4.pIAInputSignature,
-									  PassDescTri4.IAInputSignatureSize, &m_Points_PLayout));
-	m_vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	m_vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	m_vbd.CPUAccessFlags = 0;
-	m_vbd.MiscFlags = 0;
+									  PassDescTri4.IAInputSignatureSize, &m_CircleLine_PLayout));
+	HR(D3DX11CompileFromFile(_T("shader\\SkeletonLine.fx"), NULL, NULL, NULL,
+							 "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
+							 &pCode, &pError, NULL));
+	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
+									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_SkeletonLines_Effect));
+	pCode->Release();
+	m_SkeletonLines_PTech = m_SkeletonLines_Effect->GetTechniqueByName("PointTech");
+	m_SkeletonLines_Width =
+		m_SkeletonLines_Effect->GetVariableByName("width")->AsScalar();
+	m_SkeletonLines_Height =
+		m_SkeletonLines_Effect->GetVariableByName("height")->AsScalar();
+	m_SkeletonLines_CenterX =
+		m_SkeletonLines_Effect->GetVariableByName("centerX")->AsScalar();
+	m_SkeletonLines_CenterY =
+		m_SkeletonLines_Effect->GetVariableByName("centerY")->AsScalar();
+	m_SkeletonLines_Scale =
+		m_SkeletonLines_Effect->GetVariableByName("scale")->AsScalar();
+	m_SkeletonLines_Transparency =
+		m_SkeletonLines_Effect->GetVariableByName("transparency")->AsScalar();
+	D3DX11_PASS_DESC PassDescTri5;
+	m_SkeletonLines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri5);
+	HR(m_d3dDevice->CreateInputLayout(VertexDesc_SkeletonLineVertex, 3,
+									  PassDescTri5.pIAInputSignature,
+									  PassDescTri5.IAInputSignatureSize, &m_SkeletonLines_PLayout));
 }
 
 void D3DApp_Picture::BuildPoint()
 {
 	ReleaseCOM(m_Pics_Buffer);
 	ReleaseCOM(m_Points_Buffer);
-
-	if (!m_DeviceContext) { return; }
-
+	ReleaseCOM(m_CircleLine_Buffer);
+	ReleaseCOM(m_SkeletonLines_Buffer);
+	if (!m_DeviceContext)
+	{
+		return;
+	}
 	m_PicsVertices.clear();
-
 	if (m_Pics_Texture)
 	{
 		PictureVertex pv;
@@ -322,7 +357,6 @@ void D3DApp_Picture::BuildPoint()
 		pv.size.y = m_PicH;
 		m_PicsVertices.push_back(pv);
 	}
-
 	if (!m_PicsVertices.empty())
 	{
 		m_vbd.ByteWidth = (UINT)(sizeof(PictureVertex) * m_PicsVertices.size());
@@ -331,14 +365,24 @@ void D3DApp_Picture::BuildPoint()
 		vinitData.pSysMem = &m_PicsVertices[0];
 		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Pics_Buffer));
 	}
-
 	m_PointsVertices.push_back(m_MousePoint);
-	m_vbd.ByteWidth = (UINT)(sizeof(PointVertex) * m_PointsVertices.size());
-	m_vbd.StructureByteStride = sizeof(PointVertex);
-	D3D11_SUBRESOURCE_DATA vinitData;
-	vinitData.pSysMem = &m_PointsVertices[0];
-	HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Points_Buffer));
+	if (!m_PointsVertices.empty())
+	{
+		m_vbd.ByteWidth = (UINT)(sizeof(PointVertex) * m_PointsVertices.size());
+		m_vbd.StructureByteStride = sizeof(PointVertex);
+		D3D11_SUBRESOURCE_DATA vinitData;
+		vinitData.pSysMem = &m_PointsVertices[0];
+		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Points_Buffer));
+	}
 	m_PointsVertices.pop_back();
+	if (!m_CircleLineVertices.empty())
+	{
+		m_vbd.ByteWidth = (UINT)(sizeof(PointVertex) * m_CircleLineVertices.size());
+		m_vbd.StructureByteStride = sizeof(PointVertex);
+		D3D11_SUBRESOURCE_DATA vinitData;
+		vinitData.pSysMem = &m_CircleLineVertices[0];
+		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_CircleLine_Buffer));
+	}
 }
 
 void D3DApp_Picture::LoadBlend()
@@ -351,23 +395,19 @@ void D3DApp_Picture::LoadBlend()
 	depth_stencil_desc.StencilEnable = FALSE;
 	depth_stencil_desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
 	depth_stencil_desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
-
 	// 開啟zbuffer write
 	if (D3D_OK != m_d3dDevice->CreateDepthStencilState(&depth_stencil_desc,
 			&m_pDepthStencil_ZWriteON))
 	{
 		return ;
 	}
-
 	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-
 	// 關閉zbuffer write
 	if (D3D_OK != m_d3dDevice->CreateDepthStencilState(&depth_stencil_desc,
 			&m_pDepthStencil_ZWriteOFF))
 	{
 		return ;
 	}
-
 	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteON, 0);
 	CD3D11_BLEND_DESCX blend_state_desc(
 		FALSE,
@@ -380,19 +420,16 @@ void D3DApp_Picture::LoadBlend()
 		D3D11_BLEND_ONE,
 		D3D11_BLEND_OP_ADD,
 		D3D11_COLOR_WRITE_ENABLE_ALL);
-
 	// ADD混色模式
 	if (D3D_OK != m_d3dDevice->CreateBlendState(&blend_state_desc,
 			&m_pBlendState_ADD))
 	{
 		return;
 	}
-
 	blend_state_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA ;
 	blend_state_desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	blend_state_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
 	blend_state_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
-
 	// Alpha Blend混色模式
 	if (D3D_OK != m_d3dDevice->CreateBlendState(&blend_state_desc,
 			&m_pBlendState_BLEND))
@@ -403,8 +440,10 @@ void D3DApp_Picture::LoadBlend()
 
 void D3DApp_Picture::SetTexture(ID3D11ShaderResourceView* tex)
 {
-	if (!tex) { return; }
-
+	if (!tex)
+	{
+		return;
+	}
 	//ReleaseCOM(m_Pics_Texture);
 	m_Pics_PMap->SetResource(tex);
 	m_Pics_Texture = tex;
@@ -427,27 +466,46 @@ void D3DApp_Picture::SetPictureSize(int w, int h)
 
 void D3DApp_Picture::InterSetSize(float w, float h)
 {
-	if (m_Pics_Width != NULL && m_Points_Width != NULL)
+	// if initialize ok
+	if (m_Pics_Width != NULL && m_SkeletonLines_Width != NULL)
 	{
 		m_Pics_Width->SetFloat(w);
 		m_Pics_Height->SetFloat(h);
 		m_Points_Width->SetFloat(w);
 		m_Points_Height->SetFloat(h);
+		m_CircleLine_Width->SetFloat(w);
+		m_CircleLine_Height->SetFloat(h);
+		m_SkeletonLines_Width->SetFloat(w);
+		m_SkeletonLines_Height->SetFloat(h);
 	}
 }
 
 void D3DApp_Picture::InterSetLookCenter(float x, float y)
 {
-	m_Pics_CenterX->SetFloat(x);
-	m_Pics_CenterY->SetFloat(y);
-	m_Points_CenterX->SetFloat(x);
-	m_Points_CenterY->SetFloat(y);
+	// if initialize ok
+	if (m_Pics_CenterX != NULL && m_SkeletonLines_CenterX != NULL)
+	{
+		m_Pics_CenterX->SetFloat(x);
+		m_Pics_CenterY->SetFloat(y);
+		m_Points_CenterX->SetFloat(x);
+		m_Points_CenterY->SetFloat(y);
+		m_CircleLine_CenterX->SetFloat(x);
+		m_CircleLine_CenterY->SetFloat(y);
+		m_SkeletonLines_CenterX->SetFloat(x);
+		m_SkeletonLines_CenterY->SetFloat(y);
+	}
 }
 
 void D3DApp_Picture::InterSetScale(float s)
 {
-	m_Pics_Scale->SetFloat(s);
-	m_Points_Scale->SetFloat(s);
+	// if initialize ok
+	if (m_Pics_Scale != NULL && m_SkeletonLines_Scale != NULL)
+	{
+		m_Pics_Scale->SetFloat(s);
+		m_Points_Scale->SetFloat(s);
+		m_CircleLine_Scale->SetFloat(s);
+		m_SkeletonLines_Scale->SetFloat(s);
+	}
 }
 
 void D3DApp_Picture::SetScale(float s)
@@ -492,4 +550,70 @@ void D3DApp_Picture::SetMousePoint(float x, float y, float radius,
 	m_MousePoint.size.y = radius;
 	m_MousePoint.position.x = x;
 	m_MousePoint.position.y = m_PicH - y;
+}
+
+void D3DApp_Picture::ClearTriangles()
+{
+	ReleaseCOM(m_Pics_Buffer);
+	m_PicsVertices.clear();
+	ReleaseCOM(m_Points_Buffer);
+	m_PointsVertices.clear();
+	ReleaseCOM(m_CircleLine_Buffer);
+	m_CircleLineVertices.clear();
+	ReleaseCOM(m_SkeletonLines_Buffer);
+	m_SkeletonLinesVertices.clear();
+}
+
+void D3DApp_Picture::InterDraw()
+{
+	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, m_ClearColor);
+	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView,
+										   D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
+	if (m_PicsVertices.size() > 0)
+	{
+		m_Pics_PMap->SetResource(m_Pics_Texture);
+		UINT offset = 0;
+		UINT stride2 = sizeof(PictureVertex);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		m_DeviceContext->IASetInputLayout(m_Pics_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Pics_Buffer, &stride2, &offset);
+		m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
+	}
+	m_PointsVertices.push_back(m_MousePoint);
+	if (m_PointsVertices.size() > 0)
+	{
+		m_Points_Transparency->SetFloat(0.4);
+		UINT offset = 0;
+		UINT stride2 = sizeof(PointVertex);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		m_DeviceContext->IASetInputLayout(m_Points_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Points_Buffer, &stride2, &offset);
+		m_Points_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw((UINT)m_PointsVertices.size(), 0);
+	}
+	m_PointsVertices.pop_back();
+	if (m_CircleLineVertices.size() > 0)
+	{
+		UINT offset = 0;
+		UINT stride2 = sizeof(PointVertex);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		m_DeviceContext->IASetInputLayout(m_CircleLine_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_CircleLine_Buffer, &stride2,
+											&offset);
+		m_CircleLine_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
+	}
+	if (m_SkeletonLinesVertices.size() > 0)
+	{
+		UINT offset = 0;
+		UINT stride2 = sizeof(SkeletonLineVertex);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		m_DeviceContext->IASetInputLayout(m_SkeletonLines_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_SkeletonLines_Buffer, &stride2,
+											&offset);
+		m_SkeletonLines_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw((UINT)m_SkeletonLinesVertices.size(), 0);
+	}
 }

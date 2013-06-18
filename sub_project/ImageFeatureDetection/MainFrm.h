@@ -19,8 +19,19 @@
 
 class COutlookBar : public CMFCOutlookBar
 {
-	virtual BOOL AllowShowOnPaneMenu() const { return TRUE; }
-	virtual void GetPaneName(CString& strName) const { BOOL bNameValid = strName.LoadString(IDS_OUTLOOKBAR); ASSERT(bNameValid); if (!bNameValid) { strName.Empty(); } }
+	virtual BOOL AllowShowOnPaneMenu() const
+	{
+		return TRUE;
+	}
+	virtual void GetPaneName(CString& strName) const
+	{
+		BOOL bNameValid = strName.LoadString(IDS_OUTLOOKBAR);
+		ASSERT(bNameValid);
+		if (!bNameValid)
+		{
+			strName.Empty();
+		}
+	}
 };
 
 class CMainFrame : public CFrameWndEx
@@ -58,6 +69,9 @@ protected:  // 控制列內嵌的成員
 	CMFCShellTreeCtrl m_wndTree;
 	CCalendarBar      m_wndCalendar;
 	CMFCCaptionBar    m_wndCaptionBar;
+	bool			m_CheckCircleline;
+	bool			m_CheckVerticalline;
+	bool			m_CheckHorizontalline;
 
 // 產生的訊息對應函式
 protected:
@@ -71,7 +85,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	BOOL CreateOutlookBar(CMFCOutlookBar& bar, UINT uiID, CMFCShellTreeCtrl& tree,
-	                      CCalendarBar& calendar, int nInitialWidth);
+						  CCalendarBar& calendar, int nInitialWidth);
 	BOOL CreateCaptionBar();
 
 	int FindFocusedOutlookWnd(CMFCOutlookBarTabCtrl** ppOutlookWnd);
@@ -81,6 +95,12 @@ protected:
 	CMFCOutlookBarPane*    m_pCurrOutlookPage;
 public:
 	afx_msg void OnFileNew();
+	afx_msg void OnCheckCircleline();
+	afx_msg void OnCheckVerticalline();
+	afx_msg void OnCheckHorizontalline();
+	afx_msg void OnUpdateCheckCircleline(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateCheckVerticalline(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateCheckHorizontalline(CCmdUI *pCmdUI);
 };
 
 

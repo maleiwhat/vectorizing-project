@@ -262,5 +262,11 @@
     <FxCompile Include="shader\bigpoint.fx">
       <Filter>shader</Filter>
     </FxCompile>
+    <FxCompile Include="shader\SkeletonLine.fx">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\CircleLine.fx">
+      <Filter>shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

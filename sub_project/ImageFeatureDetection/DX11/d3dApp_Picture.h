@@ -36,7 +36,8 @@ public:
 	void SetMousePoint(float x, float y, float radius, D3DXVECTOR3 color);
 	int  Width() { return m_ClientWidth;}
 	int  Height() {return m_ClientHeight;};
-
+	void ClearTriangles();
+	void InterDraw();
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
 protected:
@@ -70,32 +71,56 @@ protected:
 	ID3D11DepthStencilState* m_pDepthStencil_ZWriteON;
 	ID3D11DepthStencilState* m_pDepthStencil_ZWriteOFF;
 
-	ID3D11Buffer*           m_Backup_Buffer;
-	ID3D11Buffer*           m_Pics_Buffer;
-	ID3DX11Effect*          m_Pics_Effect;
-	ID3DX11EffectTechnique*     m_Pics_PTech;
-	ID3D11InputLayout*      m_Pics_PLayout;
+	ID3D11Buffer*					m_Backup_Buffer;
+	ID3D11Buffer*					m_Pics_Buffer;
+	ID3DX11Effect*					m_Pics_Effect;
+	ID3DX11EffectTechnique*			m_Pics_PTech;
+	ID3D11InputLayout*				m_Pics_PLayout;
 	ID3DX11EffectScalarVariable*    m_Pics_Width;
 	ID3DX11EffectScalarVariable*    m_Pics_Height;
 	ID3DX11EffectScalarVariable*    m_Pics_CenterX;
 	ID3DX11EffectScalarVariable*    m_Pics_CenterY;
 	ID3DX11EffectScalarVariable*    m_Pics_Scale;
-	ID3DX11EffectScalarVariable*    m_TransparencySV_Picture;
+	ID3DX11EffectScalarVariable*    m_Pics_Transparency;
 	ID3DX11EffectShaderResourceVariable*  m_Pics_PMap;
-	ID3D11ShaderResourceView*   m_Pics_Texture;
-	PictureVertices         m_PicsVertices;
+	ID3D11ShaderResourceView*		m_Pics_Texture;
+	PictureVertices					m_PicsVertices;
 
-	ID3D11Buffer*           m_Points_Buffer;
-	ID3DX11Effect*          m_Points_Effect;
-	ID3DX11EffectTechnique*     m_Points_PTech;
-	ID3D11InputLayout*      m_Points_PLayout;
+	ID3D11Buffer*					m_Points_Buffer;
+	ID3DX11Effect*					m_Points_Effect;
+	ID3DX11EffectTechnique*			m_Points_PTech;
+	ID3D11InputLayout*				m_Points_PLayout;
 	ID3DX11EffectScalarVariable*    m_Points_Width;
 	ID3DX11EffectScalarVariable*    m_Points_Height;
 	ID3DX11EffectScalarVariable*    m_Points_Scale;
 	ID3DX11EffectScalarVariable*    m_Points_CenterX;
 	ID3DX11EffectScalarVariable*    m_Points_CenterY;
 	ID3DX11EffectScalarVariable*    m_Points_Transparency;
-	PointVertices           m_PointsVertices;
+	PointVertices					m_PointsVertices;
+
+	ID3D11Buffer*					m_CircleLine_Buffer;
+	ID3DX11Effect*					m_CircleLine_Effect;
+	ID3DX11EffectTechnique*			m_CircleLine_PTech;
+	ID3D11InputLayout*				m_CircleLine_PLayout;
+	ID3DX11EffectScalarVariable*    m_CircleLine_Width;
+	ID3DX11EffectScalarVariable*    m_CircleLine_Height;
+	ID3DX11EffectScalarVariable*    m_CircleLine_Scale;
+	ID3DX11EffectScalarVariable*    m_CircleLine_CenterX;
+	ID3DX11EffectScalarVariable*    m_CircleLine_CenterY;
+	ID3DX11EffectScalarVariable*    m_CircleLine_Transparency;
+	PointVertices					m_CircleLineVertices;
+
+	ID3D11Buffer*					m_SkeletonLines_Buffer;
+	ID3DX11Effect*					m_SkeletonLines_Effect;
+	ID3DX11EffectTechnique*			m_SkeletonLines_PTech;
+	ID3D11InputLayout*				m_SkeletonLines_PLayout;
+	ID3DX11EffectScalarVariable*    m_SkeletonLines_Width;
+	ID3DX11EffectScalarVariable*    m_SkeletonLines_Height;
+	ID3DX11EffectScalarVariable*    m_SkeletonLines_Scale;
+	ID3DX11EffectScalarVariable*    m_SkeletonLines_CenterX;
+	ID3DX11EffectScalarVariable*    m_SkeletonLines_CenterY;
+	ID3DX11EffectScalarVariable*    m_SkeletonLines_Transparency;
+	SkeletonLineVertexes			m_SkeletonLinesVertices;
 
 	D3D11_BUFFER_DESC       m_vbd;
 	// Derived class should set these in derived constructor to customize starting values.

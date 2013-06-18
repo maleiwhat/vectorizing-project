@@ -43,6 +43,12 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_UPDATE_COMMAND_UI(ID_FILE_PRINT_PREVIEW,
 						 &CMainFrame::OnUpdateFilePrintPreview)
 	ON_COMMAND(ID_FILE_NEW, &CMainFrame::OnFileNew)
+	ON_COMMAND(ID_CHECK_CircleLine, &CMainFrame::OnCheckCircleline)
+	ON_COMMAND(ID_CHECK_VerticalLine, &CMainFrame::OnCheckVerticalline)
+	ON_COMMAND(ID_CHECK_HorizontalLine, &CMainFrame::OnCheckHorizontalline)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_CircleLine, &CMainFrame::OnUpdateCheckCircleline)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_VerticalLine, &CMainFrame::OnUpdateCheckVerticalline)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_HorizontalLine, &CMainFrame::OnUpdateCheckHorizontalline)
 END_MESSAGE_MAP()
 
 // CMainFrame «Øºc/¸Ñºc
@@ -290,4 +296,47 @@ void CMainFrame::OnFileNew()
 			g_MainView->AddPicturedata(dlg.GetFileName(), Image, idx++);
 		}
 	}
+}
+
+
+void CMainFrame::OnCheckCircleline()
+{
+	m_CheckCircleline = true;
+	m_CheckVerticalline = false;
+	m_CheckHorizontalline = false;
+}
+
+
+void CMainFrame::OnCheckVerticalline()
+{
+	m_CheckCircleline = false;
+	m_CheckVerticalline = true;
+	m_CheckHorizontalline = false;
+}
+
+
+void CMainFrame::OnCheckHorizontalline()
+{
+	m_CheckCircleline = false;
+	m_CheckVerticalline = false;
+	m_CheckHorizontalline = true;
+}
+
+
+
+void CMainFrame::OnUpdateCheckCircleline(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(m_CheckCircleline);
+}
+
+
+void CMainFrame::OnUpdateCheckVerticalline(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(m_CheckVerticalline);
+}
+
+
+void CMainFrame::OnUpdateCheckHorizontalline(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(m_CheckHorizontalline);
 }
