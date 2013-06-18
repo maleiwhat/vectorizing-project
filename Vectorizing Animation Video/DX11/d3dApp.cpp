@@ -39,7 +39,7 @@ D3DApp::D3DApp()
 	m_Triangle_Scale = NULL;
 	m_Triangle_CenterX = NULL;
 	m_Triangle_CenterY = NULL;
-	m_TransparencySV_Triangle = NULL;
+	m_Triangle_Transparency = NULL;
 	m_TriangleLine_Buffer = NULL;
 	m_TriangleLine_Effect = NULL;
 	m_TriangleLine_PTech = NULL;
@@ -49,7 +49,7 @@ D3DApp::D3DApp()
 	m_TriangleLine_Scale = NULL;
 	m_TriangleLine_CenterX = NULL;
 	m_TriangleLine_CenterY = NULL;
-	m_TransparencySV_TriangleLine = NULL;
+	m_TriangleLine_Transparency = NULL;
 	m_Patch_Buffer = NULL;
 	m_Patch_Effect = NULL;
 	m_Patch_PTech = NULL;
@@ -59,7 +59,7 @@ D3DApp::D3DApp()
 	m_Patch_Scale = NULL;
 	m_Patch_CenterX = NULL;
 	m_Patch_CenterY = NULL;
-	m_TransparencySV_SelectPatch = NULL;
+	m_SelectPatch_Transparency = NULL;
 	m_Points_Buffer = NULL;
 	m_Points_Effect = NULL;
 	m_Points_PTech = NULL;
@@ -79,7 +79,7 @@ D3DApp::D3DApp()
 	m_Lines_Scale = NULL;
 	m_Lines_CenterX = NULL;
 	m_Lines_CenterY = NULL;
-	m_TransparencySV_Lines = NULL;
+	m_Lines_Transparency = NULL;
 	m_SkeletonLines_Buffer = NULL;
 	m_SkeletonLines_Effect = NULL;
 	m_SkeletonLines_PTech = NULL;
@@ -90,7 +90,7 @@ D3DApp::D3DApp()
 	m_SkeletonLines_CenterX = NULL;
 	m_SkeletonLines_CenterY = NULL;
 	m_BackBuffer = NULL;
-	m_TransparencySV_SkeletonLines = NULL;
+	m_SkeletonLines_Transparency = NULL;
 	m_Transparency_Triangle = 0;
 	m_Transparency_SelectPatch = 0;
 	m_Transparency_TriangleLine = 0;
@@ -364,7 +364,7 @@ void D3DApp::BuildShaderFX()
 	m_Triangle_CenterY =
 		m_Triangle_Effect->GetVariableByName("centerY")->AsScalar();
 	m_Triangle_Scale = m_Triangle_Effect->GetVariableByName("scale")->AsScalar();
-	m_TransparencySV_Triangle =
+	m_Triangle_Transparency =
 		m_Triangle_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri;
 	m_Triangle_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri);
@@ -399,7 +399,7 @@ void D3DApp::BuildShaderFX()
 		m_TriangleLine_Effect->GetVariableByName("centerY")->AsScalar();
 	m_TriangleLine_Scale =
 		m_TriangleLine_Effect->GetVariableByName("scale")->AsScalar();
-	m_TransparencySV_TriangleLine =
+	m_TriangleLine_Transparency =
 		m_TriangleLine_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri2;
 	m_TriangleLine_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri2);
@@ -429,7 +429,7 @@ void D3DApp::BuildShaderFX()
 	m_Patch_CenterX = m_Patch_Effect->GetVariableByName("centerX")->AsScalar();
 	m_Patch_CenterY = m_Patch_Effect->GetVariableByName("centerY")->AsScalar();
 	m_Patch_Scale = m_Patch_Effect->GetVariableByName("scale")->AsScalar();
-	m_TransparencySV_SelectPatch =
+	m_SelectPatch_Transparency =
 		m_Patch_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri3;
 	m_Patch_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri3);
@@ -489,7 +489,7 @@ void D3DApp::BuildShaderFX()
 	m_Lines_CenterX = m_Lines_Effect->GetVariableByName("centerX")->AsScalar();
 	m_Lines_CenterY = m_Lines_Effect->GetVariableByName("centerY")->AsScalar();
 	m_Lines_Scale = m_Lines_Effect->GetVariableByName("scale")->AsScalar();
-	m_TransparencySV_Lines =
+	m_Lines_Transparency =
 		m_Lines_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri5;
 	m_Lines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri5);
@@ -524,7 +524,7 @@ void D3DApp::BuildShaderFX()
 		m_SkeletonLines_Effect->GetVariableByName("centerY")->AsScalar();
 	m_SkeletonLines_Scale =
 		m_SkeletonLines_Effect->GetVariableByName("scale")->AsScalar();
-	m_TransparencySV_SkeletonLines =
+	m_SkeletonLines_Transparency =
 		m_SkeletonLines_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri6;
 	m_SkeletonLines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri6);
@@ -908,31 +908,31 @@ void D3DApp::ClearPatchs()
 void D3DApp::SetTransparency_Triangle(float t)
 {
 	m_Transparency_Triangle = t;
-	m_TransparencySV_Triangle->SetFloat(t);
+	m_Triangle_Transparency->SetFloat(t);
 }
 
 void D3DApp::SetTransparency_SelectPatch(float t)
 {
 	m_Transparency_SelectPatch = t;
-	m_TransparencySV_SelectPatch->SetFloat(t);
+	m_SelectPatch_Transparency->SetFloat(t);
 }
 
 void D3DApp::SetTransparency_TriangleLine(float t)
 {
 	m_Transparency_TriangleLine = t;
-	m_TransparencySV_TriangleLine->SetFloat(t);
+	m_TriangleLine_Transparency->SetFloat(t);
 }
 
 void D3DApp::SetTransparency_Line(float t)
 {
 	m_Transparency_Lines = t;
-	m_TransparencySV_Lines->SetFloat(t);
+	m_Lines_Transparency->SetFloat(t);
 }
 
 void D3DApp::SetTransparency_LineSkeleton(float t)
 {
 	m_Transparency_LineSkeleton = t;
-	m_TransparencySV_SkeletonLines->SetFloat(t);
+	m_SkeletonLines_Transparency->SetFloat(t);
 }
 
 void D3DApp::SetTransparency_Picture(float t)
@@ -1493,21 +1493,21 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 
 void D3DApp::InterSetRenderTransparencyOutput()
 {
-	m_TransparencySV_Triangle->SetFloat(1);
-	m_TransparencySV_SelectPatch->SetFloat(0);
-	m_TransparencySV_TriangleLine->SetFloat(0);
-	m_TransparencySV_Lines->SetFloat(1);
-	m_TransparencySV_SkeletonLines->SetFloat(0);
+	m_Triangle_Transparency->SetFloat(1);
+	m_SelectPatch_Transparency->SetFloat(0);
+	m_TriangleLine_Transparency->SetFloat(0);
+	m_Lines_Transparency->SetFloat(1);
+	m_SkeletonLines_Transparency->SetFloat(0);
 	m_TransparencySV_Picture->SetFloat(0);
 }
 
 void D3DApp::InterSetRenderTransparencyDefault()
 {
-	m_TransparencySV_Triangle->SetFloat(m_Transparency_Triangle);
-	m_TransparencySV_SelectPatch->SetFloat(m_Transparency_SelectPatch);
-	m_TransparencySV_TriangleLine->SetFloat(m_Transparency_TriangleLine);
-	m_TransparencySV_Lines->SetFloat(m_Transparency_Lines);
-	m_TransparencySV_SkeletonLines->SetFloat(m_Transparency_LineSkeleton);
+	m_Triangle_Transparency->SetFloat(m_Transparency_Triangle);
+	m_SelectPatch_Transparency->SetFloat(m_Transparency_SelectPatch);
+	m_TriangleLine_Transparency->SetFloat(m_Transparency_TriangleLine);
+	m_Lines_Transparency->SetFloat(m_Transparency_Lines);
+	m_SkeletonLines_Transparency->SetFloat(m_Transparency_LineSkeleton);
 	m_TransparencySV_Picture->SetFloat(m_Transparency_Picture);
 }
 

@@ -141,7 +141,7 @@ protected:
 	ID3DX11EffectScalarVariable*    m_Triangle_CenterX;
 	ID3DX11EffectScalarVariable*    m_Triangle_CenterY;
 	ID3DX11EffectScalarVariable*    m_Triangle_Scale;
-	ID3DX11EffectScalarVariable*    m_TransparencySV_Triangle;
+	ID3DX11EffectScalarVariable*    m_Triangle_Transparency;
 	TriangleVertices        m_TriangleVertices;
 
 	ID3D11Buffer*           m_TriangleLine_Buffer;
@@ -153,7 +153,7 @@ protected:
 	ID3DX11EffectScalarVariable*    m_TriangleLine_CenterX;
 	ID3DX11EffectScalarVariable*    m_TriangleLine_CenterY;
 	ID3DX11EffectScalarVariable*    m_TriangleLine_Scale;
-	ID3DX11EffectScalarVariable*    m_TransparencySV_TriangleLine;
+	ID3DX11EffectScalarVariable*    m_TriangleLine_Transparency;
 	TriangleVertices        m_TriangleLineVertices;
 
 	ID3D11Buffer*           m_Patch_Buffer;
@@ -165,7 +165,7 @@ protected:
 	ID3DX11EffectScalarVariable*    m_Patch_CenterX;
 	ID3DX11EffectScalarVariable*    m_Patch_CenterY;
 	ID3DX11EffectScalarVariable*    m_Patch_Scale;
-	ID3DX11EffectScalarVariable*    m_TransparencySV_SelectPatch;
+	ID3DX11EffectScalarVariable*    m_SelectPatch_Transparency;
 	TriangleVertices        m_PatchVertices;
 
 	ID3D11Buffer*           m_Points_Buffer;
@@ -189,7 +189,7 @@ protected:
 	ID3DX11EffectScalarVariable*    m_Lines_Scale;
 	ID3DX11EffectScalarVariable*    m_Lines_CenterX;
 	ID3DX11EffectScalarVariable*    m_Lines_CenterY;
-	ID3DX11EffectScalarVariable*    m_TransparencySV_Lines;
+	ID3DX11EffectScalarVariable*    m_Lines_Transparency;
 	LineVertices            m_LinesVertices;
 
 	ID3D11Buffer*           m_SkeletonLines_Buffer;
@@ -201,7 +201,7 @@ protected:
 	ID3DX11EffectScalarVariable*    m_SkeletonLines_Scale;
 	ID3DX11EffectScalarVariable*    m_SkeletonLines_CenterX;
 	ID3DX11EffectScalarVariable*    m_SkeletonLines_CenterY;
-	ID3DX11EffectScalarVariable*    m_TransparencySV_SkeletonLines;
+	ID3DX11EffectScalarVariable*    m_SkeletonLines_Transparency;
 	SkeletonLineVertexes        m_SkeletonLinesVertices;
 
 	D3D11_BUFFER_DESC       m_vbd;
