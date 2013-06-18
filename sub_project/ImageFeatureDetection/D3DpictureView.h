@@ -1,82 +1,9 @@
 #pragma once
-
+#include <windows.h>
 #include "DX11\D3DApp_Picture.h"
 #include "math\Vector2.h"
-
-#include <vtkSphereSource.h>
-#include <vtkMath.h>
-#include <vtkDoubleArray.h>
-#include <vtkFieldData.h>
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkActor.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkXYPlotActor.h>
-#include <vtkCubeSource.h>
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
-#include <vtkCommand.h>
-#include <vtkRenderer.h>
-#include <vtkRendererCollection.h>
-#include <vtkRenderWindow.h>
-#include <vtkTesting.h>
 #include "vavImage.h"
-
-
-class vtkTimerCallback : public vtkCommand
-{
-public:
-	double_vector2d m_data;
-	vtkXYPlotActor_Sptr m_plot;
-	vtkRenderWindow_Sptr m_renderWindow;
-	vtkRenderWindowInteractor_Sptr m_interactor;
-	static vtkTimerCallback* New()
-	{
-		vtkTimerCallback* cb = new vtkTimerCallback;
-		cb->m_data.push_back(double_vector());
-		cb->m_data.push_back(double_vector());
-		cb->m_data.push_back(double_vector());
-		cb->m_data.push_back(double_vector());
-		cb->m_data[0].push_back(0);
-		cb->m_data[1].push_back(0);
-		cb->m_data[2].push_back(0);
-		cb->m_data[3].push_back(0);
-		return cb;
-	}
-
-	virtual void Execute(vtkObject* vtkNotUsed(caller), unsigned long eventId,
-		void* vtkNotUsed(callData))
-	{
-		m_plot->RemoveAllInputs();
-
-		for (unsigned int i = 0 ; i < m_data.size() ; i++)
-		{
-			vtkSmartPointer<vtkDoubleArray> array_s =
-				vtkSmartPointer<vtkDoubleArray>::New();
-			vtkSmartPointer<vtkFieldData> field =
-				vtkSmartPointer<vtkFieldData>::New();
-			vtkSmartPointer<vtkDataObject> data =
-				vtkSmartPointer<vtkDataObject>::New();
-
-			for (int b = 0; b < m_data[i].size(); b++)
-			{
-				array_s->InsertValue(b, m_data[i][b]);
-			}
-
-			field->AddArray(array_s);
-			data->SetFieldData(field);
-			m_plot->AddDataObjectInput(data);
-		}
-
-		m_renderWindow->Render();
-	}
-
-
-};
-
+#include "vtkShowHistogramTimerCallback.h"
 
 // CD3DpictureView ÀËµø
 
@@ -85,15 +12,16 @@ class CD3DpictureView : public CView
 	DECLARE_DYNCREATE(CD3DpictureView)
 private:
 	CPoint      m_MouseDown,
-	            m_MouseUp,
-	            m_MouseMove;
+				m_MouseUp,
+				m_MouseMove;
 	Vector2     m_LookCenter;
 	Vector2     m_LookDown;
 	int     m_PicW;
 	int     m_PicH;
 	float	m_Scale;
+	HANDLE	m_thread;
 
-	vtkTimerCallback_Sptr m_vtkTimerCallback;
+	vtkShowHistogramTimerCallback_Sptr m_TimerCallback;
 	vtkXYPlotActor_Sptr m_plot;
 	vtkRenderWindow_Sptr m_renderWindow;
 	vtkRenderWindowInteractor_Sptr m_interactor;
@@ -105,7 +33,7 @@ private:
 	vavImage*	m_vavImage;
 	vavImage*	m_hsvImage;
 public:
-	
+
 	void Init();
 	void SetImage(vavImage* img, ID3D11ShaderResourceView* tex)
 	{

@@ -49,5 +49,7 @@ public:
 	}
 private:
 	cv::Mat m_Image;
+	ID3D11Texture2D* m_pTextureDraw;
+	ID3D11ShaderResourceView* m_pShaderResView;
 };
 

@@ -79,19 +79,14 @@ D3DApp_Picture::D3DApp_Picture()
 
 D3DApp_Picture::~D3DApp_Picture()
 {
-	ReleaseCOM(m_d3dDevice);
-	ReleaseCOM(m_SwapChain);
 	ReleaseCOM(m_DepthStencilBuffer);
 	ReleaseCOM(m_DepthStencilView2);
 	ReleaseCOM(m_RenderTargetView);
 	ReleaseCOM(m_DepthStencilView);
-	ReleaseCOM(m_DeviceContext);
 	ReleaseCOM(m_Pics_Buffer);
 	ReleaseCOM(m_Points_Buffer);
 	ReleaseCOM(m_CircleLine_Buffer);
 	ReleaseCOM(m_SkeletonLines_Buffer);
-	ReleaseCOM(m_Backup_Buffer);
-	ReleaseCOM(m_Pics_Texture);
 	ReleaseCOM(m_Pics_Effect);
 	ReleaseCOM(m_Points_Effect);
 	ReleaseCOM(m_CircleLine_Effect);
@@ -104,6 +99,10 @@ D3DApp_Picture::~D3DApp_Picture()
 	ReleaseCOM(m_pBlendState_ADD);
 	ReleaseCOM(m_pDepthStencil_ZWriteON);
 	ReleaseCOM(m_pDepthStencil_ZWriteOFF);
+	ReleaseCOM(m_Backup_Buffer);
+	ReleaseCOM(m_DeviceContext);
+	ReleaseCOM(m_d3dDevice);
+	ReleaseCOM(m_SwapChain);
 }
 
 HINSTANCE D3DApp_Picture::getAppInst()
@@ -128,8 +127,6 @@ void D3DApp_Picture::initApp(HWND hWnd, int w, int h)
 	}
 	initDirect3D();
 	LoadBlend();
-	float BlendFactor[4] = {0, 0, 0, 0};
-	m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
 }
 
 void D3DApp_Picture::initDirect3D()
@@ -436,6 +433,8 @@ void D3DApp_Picture::LoadBlend()
 	{
 		return ;
 	}
+	float BlendFactor[4] = {0, 0, 0, 0};
+	m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
 }
 
 void D3DApp_Picture::SetTexture(ID3D11ShaderResourceView* tex)
@@ -444,9 +443,8 @@ void D3DApp_Picture::SetTexture(ID3D11ShaderResourceView* tex)
 	{
 		return;
 	}
-	//ReleaseCOM(m_Pics_Texture);
-	m_Pics_PMap->SetResource(tex);
 	m_Pics_Texture = tex;
+	m_Pics_PMap->SetResource(tex);
 	OnResize(m_ClientWidth, m_ClientHeight);
 }
 

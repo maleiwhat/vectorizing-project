@@ -15,20 +15,31 @@ CD3DpictureView::CD3DpictureView():
 {
 	g_NewPictureView = this;
 	m_vavImage = NULL;
-	m_vtkTimerCallback = vtkSmartNew;
+	m_hsvImage = NULL;
+	m_TimerCallback = vtkSmartNew;
 	m_plot = vtkSmartNew;
-	m_vtkTimerCallback->m_plot = m_plot;
+	m_TimerCallback->m_plot = m_plot;
 	m_renderWindow = vtkSmartNew;
-	m_vtkTimerCallback->m_renderWindow = m_renderWindow;
-	m_interactor = vtkSmartNew;
-	m_vtkTimerCallback->m_interactor = m_interactor;
-	_beginthreadex(NULL, 0, MyThreadFunc, this, 0, NULL);
+	m_TimerCallback->m_renderWindow = m_renderWindow;
+	m_interactor = vtkOnlyNew;
+	m_TimerCallback->m_interactor = m_interactor;
+	m_thread = (HANDLE)_beginthreadex(NULL, 0, MyThreadFunc, this, 0, NULL);
 }
 
 CD3DpictureView::~CD3DpictureView()
 {
-	m_interactor->RemoveAllObservers();
-	m_interactor->Disable();
+	m_TimerCallback->Stop();
+	if (m_vavImage)
+	{
+		delete m_vavImage;
+	}
+	if (m_hsvImage)
+	{
+		delete m_hsvImage;
+	}
+	WaitForSingleObject( 
+		m_thread,    // handle to mutex
+		INFINITE);  // no time-out interval
 }
 
 BEGIN_MESSAGE_MAP(CD3DpictureView, CView)
@@ -146,10 +157,10 @@ void CD3DpictureView::OnMouseMove(UINT nFlags, CPoint point)
 // 		{
 // 			data.push_back(data[i]);
 // 		}
-		m_vtkTimerCallback->m_data[0] = data;
-		m_vtkTimerCallback->m_data[1] = m_vavImage->GetRingR(realx, realy, r, 360);
-		m_vtkTimerCallback->m_data[2] = m_vavImage->GetRingG(realx, realy, r, 360);
-		m_vtkTimerCallback->m_data[3] = m_vavImage->GetRingB(realx, realy, r, 360);
+		m_TimerCallback->m_data[0] = data;
+		m_TimerCallback->m_data[1] = m_vavImage->GetRingR(realx, realy, r, 360);
+		m_TimerCallback->m_data[2] = m_vavImage->GetRingG(realx, realy, r, 360);
+		m_TimerCallback->m_data[3] = m_vavImage->GetRingB(realx, realy, r, 360);
 		m_D3DApp.SetMousePoint(realx, realy, r*2, color);
 		m_D3DApp.BuildPoint();
 		m_D3DApp.DrawScene();
@@ -251,7 +262,7 @@ unsigned __stdcall CD3DpictureView::MyThreadFunc( LPVOID lpParam )
 	//  me->m_plot->SetYTitle( "Frequency" );
 	me->m_plot->SetXValuesToIndex();
 
-	for (unsigned int i = 0 ; i < me->m_vtkTimerCallback->m_data.size() ; i++)
+	for (unsigned int i = 0 ; i < me->m_TimerCallback->m_data.size() ; i++)
 	{
 		vtkSmartPointer<vtkDoubleArray> array_s =
 			vtkSmartPointer<vtkDoubleArray>::New();
@@ -260,9 +271,9 @@ unsigned __stdcall CD3DpictureView::MyThreadFunc( LPVOID lpParam )
 		vtkSmartPointer<vtkDataObject> data =
 			vtkSmartPointer<vtkDataObject>::New();
 
-		for (int b = 0; b < me->m_vtkTimerCallback->m_data[i].size(); b++)
+		for (int b = 0; b < me->m_TimerCallback->m_data[i].size(); b++)
 		{
-			array_s->InsertValue(b, me->m_vtkTimerCallback->m_data[i][b]);
+			array_s->InsertValue(b, me->m_TimerCallback->m_data[i][b]);
 		}
 
 		field->AddArray(array_s);
@@ -287,7 +298,7 @@ unsigned __stdcall CD3DpictureView::MyThreadFunc( LPVOID lpParam )
 	// Initialize the event loop and then start it
 	me->m_interactor->Initialize();
 	// Sign up to receive TimerEvent
-	me->m_interactor->AddObserver(vtkCommand::TimerEvent, me->m_vtkTimerCallback);
+	me->m_interactor->AddObserver(vtkCommand::TimerEvent, me->m_TimerCallback);
 	int timerId = me->m_interactor->CreateRepeatingTimer(100);
 	std::cout << "timerId: " << timerId << std::endl;
 	me->m_interactor->Start();

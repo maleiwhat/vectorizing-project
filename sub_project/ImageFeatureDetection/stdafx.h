@@ -83,8 +83,6 @@
 #define VTK_SMART_POINTER(x) \
 	typedef vtkSmartPointer< x >    x##_Sptr; \
 	typedef std::vector< x##_Sptr > x##_Sptrs;
-class vtkTimerCallback;
-VTK_SMART_POINTER(vtkTimerCallback);
 VTK_SMART_POINTER(vtkXYPlotActor);
 VTK_SMART_POINTER(vtkRenderWindow);
 VTK_SMART_POINTER(vtkRenderWindowInteractor);
