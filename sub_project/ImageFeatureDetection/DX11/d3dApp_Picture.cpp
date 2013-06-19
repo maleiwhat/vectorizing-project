@@ -698,3 +698,8 @@ void D3DApp_Picture::SetMouseType(Shape s)
 {
 	m_MouseType = s;
 }
+
+D3DApp_Picture::Shape D3DApp_Picture::GetMouseType()
+{
+	return m_MouseType;
+}

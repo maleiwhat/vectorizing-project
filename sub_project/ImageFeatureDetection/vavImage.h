@@ -34,6 +34,14 @@ public:
 	double_vector GetRingR(double x, double y, double radius, int div);
 	double_vector GetRingG(double x, double y, double radius, int div);
 	double_vector GetRingB(double x, double y, double radius, int div);
+	double_vector GetVerticalLight(double x, double y, double radius, int div);
+	double_vector GetVerticalR(double x, double y, double radius, int div);
+	double_vector GetVerticalG(double x, double y, double radius, int div);
+	double_vector GetVerticalB(double x, double y, double radius, int div);
+	double_vector GetHorizontalLight(double x, double y, double radius, int div);
+	double_vector GetHorizontalR(double x, double y, double radius, int div);
+	double_vector GetHorizontalG(double x, double y, double radius, int div);
+	double_vector GetHorizontalB(double x, double y, double radius, int div);
 	cv::Mat Clone()
 	{
 		return m_Image.clone();

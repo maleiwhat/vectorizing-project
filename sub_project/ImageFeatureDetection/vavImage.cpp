@@ -288,19 +288,6 @@ double vavImage::GetLight(int x, int y) const
 	return 0.299 * v[2] + 0.587 * v[1] + 0.114 * v[0];
 }
 
-double_vector vavImage::GetRingLight(double x, double y, double radius, int div)
-{
-	double_vector ans;
-	for (int i = 0; i < div; ++i)
-	{
-		double step = 360.0 / div;
-		Vector2 ahead(0, -radius);
-		Vector2 move = Quaternion::GetRotation(ahead, i * step);
-		ans.push_back(GetBilinearLight(x + move.x, y + move.y));
-	}
-	return ans;
-}
-
 double vavImage::GetBilinearR(double x, double y)
 {
 	if (y < 0)
@@ -424,12 +411,25 @@ double vavImage::GetBilinearB(double x, double y)
 	return ans * 0.5;
 }
 
+double_vector vavImage::GetRingLight(double x, double y, double radius, int div)
+{
+	double_vector ans;
+	double step = 360.0 / div;
+	for (int i = 0; i < div; ++i)
+	{
+		Vector2 ahead(0, -radius);
+		Vector2 move = Quaternion::GetRotation(ahead, i * step);
+		ans.push_back(GetBilinearLight(x + move.x, y + move.y));
+	}
+	return ans;
+}
+
 double_vector vavImage::GetRingR(double x, double y, double radius, int div)
 {
 	double_vector ans;
+	double step = 360.0 / div;
 	for (int i = 0; i < div; ++i)
 	{
-		double step = 360.0 / div;
 		Vector2 ahead(0, -radius);
 		Vector2 move = Quaternion::GetRotation(ahead, i * step);
 		ans.push_back(GetBilinearR(x + move.x, y + move.y));
@@ -440,9 +440,9 @@ double_vector vavImage::GetRingR(double x, double y, double radius, int div)
 double_vector vavImage::GetRingG(double x, double y, double radius, int div)
 {
 	double_vector ans;
+	double step = 360.0 / div;
 	for (int i = 0; i < div; ++i)
 	{
-		double step = 360.0 / div;
 		Vector2 ahead(0, -radius);
 		Vector2 move = Quaternion::GetRotation(ahead, i * step);
 		ans.push_back(GetBilinearG(x + move.x, y + move.y));
@@ -453,9 +453,9 @@ double_vector vavImage::GetRingG(double x, double y, double radius, int div)
 double_vector vavImage::GetRingB(double x, double y, double radius, int div)
 {
 	double_vector ans;
+	double step = 360.0 / div;
 	for (int i = 0; i < div; ++i)
 	{
-		double step = 360.0 / div;
 		Vector2 ahead(0, -radius);
 		Vector2 move = Quaternion::GetRotation(ahead, i * step);
 		ans.push_back(GetBilinearB(x + move.x, y + move.y));
@@ -466,4 +466,93 @@ double_vector vavImage::GetRingB(double x, double y, double radius, int div)
 void vavImage::ConvertToHSV()
 {
 	cv::cvtColor(m_Image, m_Image, CV_BGR2YUV);
+}
+
+double_vector vavImage::GetVerticalLight(double x, double y, double radius,
+		int div)
+{
+	double_vector ans;
+	double step = radius / div;
+	for (int i = 0; i < div; ++i)
+	{
+		ans.push_back(GetBilinearLight(x, y - radius * 0.5 + i * step));
+	}
+	return ans;
+}
+
+double_vector vavImage::GetVerticalR( double x, double y, double radius, int div )
+{
+	double_vector ans;
+	double step = radius / div;
+	for (int i = 0; i < div; ++i)
+	{
+		ans.push_back(GetBilinearR(x, y - radius * 0.5 + i * step));
+	}
+	return ans;
+}
+
+double_vector vavImage::GetVerticalG( double x, double y, double radius, int div )
+{
+	double_vector ans;
+	double step = radius / div;
+	for (int i = 0; i < div; ++i)
+	{
+		ans.push_back(GetBilinearG(x, y - radius * 0.5 + i * step));
+	}
+	return ans;
+}
+
+double_vector vavImage::GetVerticalB( double x, double y, double radius, int div )
+{
+	double_vector ans;
+	double step = radius / div;
+	for (int i = 0; i < div; ++i)
+	{
+		ans.push_back(GetBilinearB(x, y - radius * 0.5 + i * step));
+	}
+	return ans;
+}
+
+double_vector vavImage::GetHorizontalLight( double x, double y, double radius, int div )
+{
+	double_vector ans;
+	double step = radius / div;
+	for (int i = 0; i < div; ++i)
+	{
+		ans.push_back(GetBilinearLight(x - radius * 0.5 + i * step, y));
+	}
+	return ans;
+}
+
+double_vector vavImage::GetHorizontalR( double x, double y, double radius, int div )
+{
+	double_vector ans;
+	double step = radius / div;
+	for (int i = 0; i < div; ++i)
+	{
+		ans.push_back(GetBilinearR(x - radius * 0.5 + i * step, y));
+	}
+	return ans;
+}
+
+double_vector vavImage::GetHorizontalG( double x, double y, double radius, int div )
+{
+	double_vector ans;
+	double step = radius / div;
+	for (int i = 0; i < div; ++i)
+	{
+		ans.push_back(GetBilinearG(x - radius * 0.5 + i * step, y));
+	}
+	return ans;
+}
+
+double_vector vavImage::GetHorizontalB( double x, double y, double radius, int div )
+{
+	double_vector ans;
+	double step = radius / div;
+	for (int i = 0; i < div; ++i)
+	{
+		ans.push_back(GetBilinearB(x - radius * 0.5 + i * step, y));
+	}
+	return ans;
 }

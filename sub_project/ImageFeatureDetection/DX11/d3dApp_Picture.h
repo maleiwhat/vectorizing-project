@@ -42,6 +42,7 @@ public:
 	void AddBigPoint(float x, float y, D3DXVECTOR3 color);
 	void SetMousePoint(float x, float y, float radius, D3DXVECTOR3 color);
 	void SetMouseType(Shape s);
+	Shape GetMouseType();
 	int  Width() { return m_ClientWidth;}
 	int  Height() {return m_ClientHeight;};
 	void ClearTriangles();

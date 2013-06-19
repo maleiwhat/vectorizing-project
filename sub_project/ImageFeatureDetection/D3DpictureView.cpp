@@ -331,15 +331,50 @@ void CD3DpictureView::UpdateImageFeature()
 				   0.5;
 	double realy = (m_PicH * m_Scale - m_D3DApp.Height() + m_MouseMove.y
 					- m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
-	double_vector data = m_vavImage->GetRingLight(realx, realy, m_LineRadius, 360);
 	LockDraw();
-	m_TimerCallback->m_data[0] = data;
-	m_TimerCallback->m_data[1] = m_vavImage->GetRingR(realx, realy, m_LineRadius,
-								 360);
-	m_TimerCallback->m_data[2] = m_vavImage->GetRingG(realx, realy, m_LineRadius,
-								 360);
-	m_TimerCallback->m_data[3] = m_vavImage->GetRingB(realx, realy, m_LineRadius,
-								 360);
+	switch (m_D3DApp.GetMouseType())
+	{
+	case D3DApp_Picture::CIRCLE_LINE:
+		m_TimerCallback->m_data[0] = m_vavImage->GetRingLight(realx, realy,
+									 m_LineRadius, 360);
+		m_TimerCallback->m_data[1] = m_vavImage->GetRingR(realx, realy, m_LineRadius,
+									 360);
+		m_TimerCallback->m_data[2] = m_vavImage->GetRingG(realx, realy, m_LineRadius,
+									 360);
+		m_TimerCallback->m_data[3] = m_vavImage->GetRingB(realx, realy, m_LineRadius,
+									 360);
+		break;
+	case D3DApp_Picture::VERTICAL_LINE:
+		m_TimerCallback->m_data[0] = m_vavImage->GetVerticalLight(realx, realy,
+									 m_LineRadius, 360);
+		m_TimerCallback->m_data[1] = m_vavImage->GetVerticalR(realx, realy,
+									 m_LineRadius, 360);
+		m_TimerCallback->m_data[2] = m_vavImage->GetVerticalG(realx, realy,
+									 m_LineRadius, 360);
+		m_TimerCallback->m_data[3] = m_vavImage->GetVerticalB(realx, realy,
+									 m_LineRadius, 360);
+		break;
+	case D3DApp_Picture::HORIZONTAL_LINE:
+		m_TimerCallback->m_data[0] = m_vavImage->GetHorizontalLight(realx, realy,
+									 m_LineRadius, 360);
+		m_TimerCallback->m_data[1] = m_vavImage->GetHorizontalR(realx, realy,
+									 m_LineRadius, 360);
+		m_TimerCallback->m_data[2] = m_vavImage->GetHorizontalG(realx, realy,
+									 m_LineRadius, 360);
+		m_TimerCallback->m_data[3] = m_vavImage->GetHorizontalB(realx, realy,
+									 m_LineRadius, 360);
+		break;
+	case D3DApp_Picture::NONE_LINE:
+	{
+		double_vector data;
+		data.push_back(0);
+		m_TimerCallback->m_data[0] = data;
+		m_TimerCallback->m_data[1] = data;
+		m_TimerCallback->m_data[2] = data;
+		m_TimerCallback->m_data[3] = data;
+	}
+	break;
+	}
 	UnlockDraw();
 	m_D3DApp.SetMousePoint(realx, realy, m_LineRadius * 2, color);
 	m_D3DApp.BuildPoint();
