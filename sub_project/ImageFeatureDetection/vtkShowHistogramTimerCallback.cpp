@@ -58,3 +58,8 @@ void vtkShowHistogramTimerCallback::Stop()
 {
 	m_Stop = true;
 }
+
+vtkShowHistogramTimerCallback::~vtkShowHistogramTimerCallback()
+{
+	CloseHandle(m_hMutex);
+}

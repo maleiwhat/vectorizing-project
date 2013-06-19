@@ -11,6 +11,13 @@ class D3DApp_Picture
 public:
 	int     m_PicW;
 	int     m_PicH;
+	enum Shape
+	{
+		CIRCLE_LINE = 1,
+		VERTICAL_LINE,
+		HORIZONTAL_LINE,
+		NONE_LINE
+	};
 private:
 public:
 	D3DApp_Picture();
@@ -34,17 +41,22 @@ public:
 	void SetLookCenter(float x, float y);
 	void AddBigPoint(float x, float y, D3DXVECTOR3 color);
 	void SetMousePoint(float x, float y, float radius, D3DXVECTOR3 color);
+	void SetMouseType(Shape s);
 	int  Width() { return m_ClientWidth;}
 	int  Height() {return m_ClientHeight;};
 	void ClearTriangles();
 	void InterDraw();
+	void SetLineRadius(float r);
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
 protected:
 	void initDirect3D();
-
 protected:
+	Shape		m_MouseType;
+	float		m_LineRadius;
 	PointVertex m_MousePoint;
+	SkeletonLineVertex m_MouseVertical;
+	SkeletonLineVertex m_MouseHorizontal;
 	HINSTANCE   m_hAppInst;
 	HWND        m_hMainWnd;
 	bool        m_AppPaused;

@@ -13,6 +13,7 @@ D3DApp_Picture::D3DApp_Picture()
 	m_Pics_Texture = 0;
 	m_PicW = 0;
 	m_PicH = 0;
+	m_MouseType = NONE_LINE;
 	m_d3dDevice = NULL;
 	m_SwapChain = NULL;
 	m_Pics_Texture = NULL;
@@ -233,7 +234,6 @@ void D3DApp_Picture::DrawScene()
 	}
 	InterSetSize(m_ClientWidth, m_ClientHeight);
 	InterSetLookCenter(m_LookCenterX, m_LookCenterY);
-	printf("scale: %f \n", m_Scale);
 	InterSetScale(m_Scale);
 	InterDraw();
 	m_SwapChain->Present(0, 0);
@@ -354,6 +354,20 @@ void D3DApp_Picture::BuildPoint()
 		pv.size.y = m_PicH;
 		m_PicsVertices.push_back(pv);
 	}
+	switch (m_MouseType)
+	{
+	case NONE_LINE:
+		break;
+	case CIRCLE_LINE:
+		m_CircleLineVertices.push_back(m_MousePoint);
+		break;
+	case VERTICAL_LINE:
+		m_SkeletonLinesVertices.push_back(m_MouseVertical);
+		break;
+	case HORIZONTAL_LINE:
+		m_SkeletonLinesVertices.push_back(m_MouseHorizontal);
+		break;
+	}
 	if (!m_PicsVertices.empty())
 	{
 		m_vbd.ByteWidth = (UINT)(sizeof(PictureVertex) * m_PicsVertices.size());
@@ -362,7 +376,6 @@ void D3DApp_Picture::BuildPoint()
 		vinitData.pSysMem = &m_PicsVertices[0];
 		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Pics_Buffer));
 	}
-	m_PointsVertices.push_back(m_MousePoint);
 	if (!m_PointsVertices.empty())
 	{
 		m_vbd.ByteWidth = (UINT)(sizeof(PointVertex) * m_PointsVertices.size());
@@ -371,7 +384,6 @@ void D3DApp_Picture::BuildPoint()
 		vinitData.pSysMem = &m_PointsVertices[0];
 		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Points_Buffer));
 	}
-	m_PointsVertices.pop_back();
 	if (!m_CircleLineVertices.empty())
 	{
 		m_vbd.ByteWidth = (UINT)(sizeof(PointVertex) * m_CircleLineVertices.size());
@@ -379,6 +391,29 @@ void D3DApp_Picture::BuildPoint()
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_CircleLineVertices[0];
 		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_CircleLine_Buffer));
+	}
+	if (!m_SkeletonLinesVertices.empty())
+	{
+		m_vbd.ByteWidth = (UINT)(sizeof(SkeletonLineVertex) *
+								 m_SkeletonLinesVertices.size());
+		m_vbd.StructureByteStride = sizeof(SkeletonLineVertex);
+		D3D11_SUBRESOURCE_DATA vinitData;
+		vinitData.pSysMem = &m_SkeletonLinesVertices[0];
+		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_SkeletonLines_Buffer));
+	}
+	switch (m_MouseType)
+	{
+	case NONE_LINE:
+		break;
+	case CIRCLE_LINE:
+		m_CircleLineVertices.pop_back();
+		break;
+	case VERTICAL_LINE:
+		m_SkeletonLinesVertices.pop_back();
+		break;
+	case HORIZONTAL_LINE:
+		m_SkeletonLinesVertices.pop_back();
+		break;
 	}
 }
 
@@ -548,6 +583,16 @@ void D3DApp_Picture::SetMousePoint(float x, float y, float radius,
 	m_MousePoint.size.y = radius;
 	m_MousePoint.position.x = x;
 	m_MousePoint.position.y = m_PicH - y;
+	m_MouseVertical.color = color;
+	m_MouseVertical.p1.x = x;
+	m_MouseVertical.p2.x = x;
+	m_MouseVertical.p1.y = m_PicH - y - radius * 0.5;
+	m_MouseVertical.p2.y = m_PicH - y + radius * 0.5;
+	m_MouseHorizontal.color = color;
+	m_MouseHorizontal.p1.x = x - radius * 0.5;
+	m_MouseHorizontal.p2.x = x + radius * 0.5;
+	m_MouseHorizontal.p1.y = m_PicH - y;
+	m_MouseHorizontal.p2.y = m_PicH - y;
 }
 
 void D3DApp_Picture::ClearTriangles()
@@ -568,6 +613,20 @@ void D3DApp_Picture::InterDraw()
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView,
 										   D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
+	switch (m_MouseType)
+	{
+	case NONE_LINE:
+		break;
+	case CIRCLE_LINE:
+		m_CircleLineVertices.push_back(m_MousePoint);
+		break;
+	case VERTICAL_LINE:
+		m_SkeletonLinesVertices.push_back(m_MouseVertical);
+		break;
+	case HORIZONTAL_LINE:
+		m_SkeletonLinesVertices.push_back(m_MouseHorizontal);
+		break;
+	}
 	if (m_PicsVertices.size() > 0)
 	{
 		m_Pics_PMap->SetResource(m_Pics_Texture);
@@ -579,7 +638,6 @@ void D3DApp_Picture::InterDraw()
 		m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
 		m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
 	}
-	m_PointsVertices.push_back(m_MousePoint);
 	if (m_PointsVertices.size() > 0)
 	{
 		m_Points_Transparency->SetFloat(0.4);
@@ -591,9 +649,9 @@ void D3DApp_Picture::InterDraw()
 		m_Points_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
 		m_DeviceContext->Draw((UINT)m_PointsVertices.size(), 0);
 	}
-	m_PointsVertices.pop_back();
 	if (m_CircleLineVertices.size() > 0)
 	{
+		m_CircleLine_Transparency->SetFloat(1);
 		UINT offset = 0;
 		UINT stride2 = sizeof(PointVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
@@ -605,6 +663,7 @@ void D3DApp_Picture::InterDraw()
 	}
 	if (m_SkeletonLinesVertices.size() > 0)
 	{
+		m_SkeletonLines_Transparency->SetFloat(1);
 		UINT offset = 0;
 		UINT stride2 = sizeof(SkeletonLineVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
@@ -614,4 +673,28 @@ void D3DApp_Picture::InterDraw()
 		m_SkeletonLines_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
 		m_DeviceContext->Draw((UINT)m_SkeletonLinesVertices.size(), 0);
 	}
+	switch (m_MouseType)
+	{
+	case NONE_LINE:
+		break;
+	case CIRCLE_LINE:
+		m_CircleLineVertices.pop_back();
+		break;
+	case VERTICAL_LINE:
+		m_SkeletonLinesVertices.pop_back();
+		break;
+	case HORIZONTAL_LINE:
+		m_SkeletonLinesVertices.pop_back();
+		break;
+	}
+}
+
+void D3DApp_Picture::SetLineRadius(float r)
+{
+	m_LineRadius = r;
+}
+
+void D3DApp_Picture::SetMouseType(Shape s)
+{
+	m_MouseType = s;
 }

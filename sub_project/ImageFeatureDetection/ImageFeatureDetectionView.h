@@ -18,8 +18,6 @@
 #include "D3DpictureView.h"
 #include "vavImage.h"
 
-typedef std::map<vavImage*, CD3DpictureView*> ViewMap;
-
 class CImageFeatureDetectionDoc;
 class CImageFeatureDetectionView : public CTabView
 {
@@ -30,7 +28,7 @@ protected: // 僅從序列化建立
 // 屬性
 public:
 	CImageFeatureDetectionDoc* GetDocument() const;
-	ViewMap m_ViewMap;
+	
 
 // 作業
 public:

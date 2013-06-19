@@ -176,12 +176,12 @@ void CImageFeatureDetectionView::OnSize(UINT nType, int cx, int cy)
 void CImageFeatureDetectionView::AddPicturedata(CString name, vavImage* pic,
 												int index)
 {
-	if (m_ViewMap.find(pic) == m_ViewMap.end())
+	if (g_ViewMap.find(pic) == g_ViewMap.end())
 	{
 		AddView(RUNTIME_CLASS(CD3DpictureView), name, index);
 		g_NewPictureView->OnInitialUpdate();
 		SetActiveView(index);
-		m_ViewMap[pic] = g_NewPictureView;
+		g_ViewMap[pic] = g_NewPictureView;
 		g_NewPictureView->SetPictureSize(pic->GetWidth(), pic->GetHeight());
 		g_NewPictureView->SetImage(pic, pic->GetDx11Texture(g_NewPictureView->GetDevice(),
 			g_NewPictureView->GetDeviceContext()));

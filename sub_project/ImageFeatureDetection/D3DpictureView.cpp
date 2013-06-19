@@ -5,7 +5,7 @@
 #include "D3DpictureView.h"
 #include "MainFrm.h"
 // CD3DpictureView
-
+ViewMap g_ViewMap;
 
 IMPLEMENT_DYNCREATE(CD3DpictureView, CView)
 CD3DpictureView* g_NewPictureView = NULL;
@@ -13,6 +13,7 @@ CD3DpictureView* g_NewPictureView = NULL;
 CD3DpictureView::CD3DpictureView():
 	m_MButtonDown(false), m_Scale(1), m_LButtonDown(false)
 {
+	m_LineRadius = 5;
 	g_NewPictureView = this;
 	m_vavImage = NULL;
 	m_hsvImage = NULL;
@@ -37,7 +38,7 @@ CD3DpictureView::~CD3DpictureView()
 	{
 		delete m_hsvImage;
 	}
-	WaitForSingleObject( 
+	WaitForSingleObject(
 		m_thread,    // handle to mutex
 		INFINITE);  // no time-out interval
 }
@@ -96,6 +97,7 @@ void CD3DpictureView::InitDx11(HWND hWnd)
 	::UpdateWindow(m_hWndDX11);
 	m_D3DApp.initApp(m_hWndDX11, rect.Width(), rect.Height());
 	m_D3DApp.BuildShaderFX();
+	m_D3DApp.SetLineRadius(m_LineRadius);
 }
 
 // CD3DpictureView 訊息處理常式
@@ -113,7 +115,6 @@ int CD3DpictureView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	{
 		return -1;
 	}
-
 	// TODO:  在此加入特別建立的程式碼
 	return 0;
 }
@@ -121,7 +122,6 @@ int CD3DpictureView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CD3DpictureView::OnSize(UINT nType, int cx, int cy)
 {
 	CView::OnSize(nType, cx, cy);
-
 	// TODO: 在此加入您的訊息處理常式程式碼
 	if (cx > 0 && cy > 0)
 	{
@@ -132,7 +132,6 @@ void CD3DpictureView::OnSize(UINT nType, int cx, int cy)
 void CD3DpictureView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	CView::OnMouseMove(nFlags, point);
-
 	if (m_MButtonDown)
 	{
 		//printf("%f %f\n", m_LookCenter.x, m_LookCenter.y);
@@ -140,32 +139,10 @@ void CD3DpictureView::OnMouseMove(UINT nFlags, CPoint point)
 		m_LookCenter.y = m_LookDown.y + point.y - m_MouseDown.y;
 		m_D3DApp.SetLookCenter(m_LookCenter.x , m_LookCenter.y);
 	}
-
 	if (m_LButtonDown)
 	{
-		D3DXVECTOR3 color;
-		color.x = 1;
-		color.y = 0;
-		color.z = 0.5;
-		double realx = (point.x - m_LookCenter.x) / m_Scale - m_LookCenter.x * 0.5;
-		double realy = (m_PicH * m_Scale - m_D3DApp.Height() + point.y
-		                - m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
-		double r = 4;
-		double_vector data = m_vavImage->GetRingLight(realx, realy, r, 360);
-// 		int size = data.size();
-// 		for (int i=0;i<size;++i)
-// 		{
-// 			data.push_back(data[i]);
-// 		}
-		m_TimerCallback->m_data[0] = data;
-		m_TimerCallback->m_data[1] = m_vavImage->GetRingR(realx, realy, r, 360);
-		m_TimerCallback->m_data[2] = m_vavImage->GetRingG(realx, realy, r, 360);
-		m_TimerCallback->m_data[3] = m_vavImage->GetRingB(realx, realy, r, 360);
-		m_D3DApp.SetMousePoint(realx, realy, r*2, color);
-		m_D3DApp.BuildPoint();
-		m_D3DApp.DrawScene();
-		printf("px: %3.1f py: %3.1f Center.x %3.1f Center3.y %3.1f\n",
-		       realx, realy, m_LookCenter.x, m_LookCenter.y);
+		m_MouseMove = point;
+		UpdateImageFeature();
 	}
 }
 
@@ -181,7 +158,6 @@ BOOL CD3DpictureView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	{
 		m_Scale -= 0.1;
 	}
-
 	m_D3DApp.SetScale(m_Scale);
 	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
@@ -244,6 +220,7 @@ void CD3DpictureView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	m_LButtonDown = true;
 	CView::OnLButtonDown(nFlags, point);
+	UpdateImageFeature();
 }
 
 
@@ -251,9 +228,10 @@ void CD3DpictureView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	m_LButtonDown = false;
 	CView::OnLButtonUp(nFlags, point);
+	m_MouseMove = point;
 }
 
-unsigned __stdcall CD3DpictureView::MyThreadFunc( LPVOID lpParam )
+unsigned __stdcall CD3DpictureView::MyThreadFunc(LPVOID lpParam)
 {
 	CD3DpictureView* me = (CD3DpictureView*)lpParam;
 	me->m_plot->ExchangeAxesOff();
@@ -261,7 +239,6 @@ unsigned __stdcall CD3DpictureView::MyThreadFunc( LPVOID lpParam )
 	//  me->m_plot->SetXTitle( "Level" );
 	//  me->m_plot->SetYTitle( "Frequency" );
 	me->m_plot->SetXValuesToIndex();
-
 	for (unsigned int i = 0 ; i < me->m_TimerCallback->m_data.size() ; i++)
 	{
 		vtkSmartPointer<vtkDoubleArray> array_s =
@@ -270,17 +247,14 @@ unsigned __stdcall CD3DpictureView::MyThreadFunc( LPVOID lpParam )
 			vtkSmartPointer<vtkFieldData>::New();
 		vtkSmartPointer<vtkDataObject> data =
 			vtkSmartPointer<vtkDataObject>::New();
-
 		for (int b = 0; b < me->m_TimerCallback->m_data[i].size(); b++)
 		{
 			array_s->InsertValue(b, me->m_TimerCallback->m_data[i][b]);
 		}
-
 		field->AddArray(array_s);
 		data->SetFieldData(field);
 		me->m_plot->AddDataObjectInput(data);
 	}
-
 	me->m_plot->SetPlotColor(0, 1, 1, 1);
 	me->m_plot->SetPlotColor(1, 1, 0, 0);
 	me->m_plot->SetPlotColor(2, 0, 1, 0);
@@ -303,4 +277,83 @@ unsigned __stdcall CD3DpictureView::MyThreadFunc( LPVOID lpParam )
 	std::cout << "timerId: " << timerId << std::endl;
 	me->m_interactor->Start();
 	return 0;
+}
+
+void CD3DpictureView::SetImage(vavImage* img, ID3D11ShaderResourceView* tex)
+{
+	m_vavImage = img;
+	m_hsvImage = new vavImage;
+	*m_hsvImage = m_vavImage->Clone();
+	m_hsvImage->ConvertToHSV();
+	m_D3DApp.SetScale(m_Scale);
+	m_D3DApp.SetTexture(tex);
+	m_D3DApp.BuildPoint();
+	m_D3DApp.DrawScene();
+}
+
+void CD3DpictureView::SetPictureSize(int w, int h)
+{
+	m_PicW = w;
+	m_PicH = h;
+	m_D3DApp.SetPictureSize(w, h);
+}
+
+ID3D11Device* CD3DpictureView::GetDevice()
+{
+	return m_D3DApp.GetDevice();
+}
+
+ID3D11DeviceContext* CD3DpictureView::GetDeviceContext()
+{
+	return m_D3DApp.GetDeviceContext();
+}
+
+void CD3DpictureView::SetLineRadius(float r)
+{
+	m_LineRadius = r;
+	m_D3DApp.SetLineRadius(m_LineRadius);
+	UpdateImageFeature();
+}
+
+void CD3DpictureView::SetMouseType(D3DApp_Picture::Shape s)
+{
+	m_D3DApp.SetMouseType(s);
+	UpdateImageFeature();
+}
+
+void CD3DpictureView::UpdateImageFeature()
+{
+	D3DXVECTOR3 color;
+	color.x = 1;
+	color.y = 0;
+	color.z = 0.5;
+	double realx = (m_MouseMove.x - m_LookCenter.x) / m_Scale - m_LookCenter.x *
+				   0.5;
+	double realy = (m_PicH * m_Scale - m_D3DApp.Height() + m_MouseMove.y
+					- m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
+	double_vector data = m_vavImage->GetRingLight(realx, realy, m_LineRadius, 360);
+	LockDraw();
+	m_TimerCallback->m_data[0] = data;
+	m_TimerCallback->m_data[1] = m_vavImage->GetRingR(realx, realy, m_LineRadius,
+								 360);
+	m_TimerCallback->m_data[2] = m_vavImage->GetRingG(realx, realy, m_LineRadius,
+								 360);
+	m_TimerCallback->m_data[3] = m_vavImage->GetRingB(realx, realy, m_LineRadius,
+								 360);
+	UnlockDraw();
+	m_D3DApp.SetMousePoint(realx, realy, m_LineRadius * 2, color);
+	m_D3DApp.BuildPoint();
+	m_D3DApp.DrawScene();
+// 	printf("px: %3.1f py: %3.1f Center.x %3.1f Center3.y %3.1f\n",
+// 		realx, realy, m_LookCenter.x, m_LookCenter.y);
+}
+
+void CD3DpictureView::LockDraw()
+{
+	m_TimerCallback->Lock();
+}
+
+void CD3DpictureView::UnlockDraw()
+{
+	m_TimerCallback->Unlock();
 }

@@ -44,6 +44,9 @@ protected: // 僅從序列化建立
 // 屬性
 public:
 
+private:
+	int		m_LineRadius;
+
 // 作業
 public:
 
@@ -101,6 +104,8 @@ public:
 	afx_msg void OnUpdateCheckCircleline(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateCheckVerticalline(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateCheckHorizontalline(CCmdUI *pCmdUI);
+	afx_msg void OnSpinRadius();
+	afx_msg void OnUpdateSpinRadius(CCmdUI *pCmdUI);
 };
 
 

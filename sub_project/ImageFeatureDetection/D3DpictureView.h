@@ -19,6 +19,7 @@ private:
 	int     m_PicW;
 	int     m_PicH;
 	float	m_Scale;
+	float	m_LineRadius;
 	HANDLE	m_thread;
 
 	vtkShowHistogramTimerCallback_Sptr m_TimerCallback;
@@ -33,35 +34,16 @@ private:
 	vavImage*	m_vavImage;
 	vavImage*	m_hsvImage;
 public:
-
+	void LockDraw();
+	void UnlockDraw();
+	void UpdateImageFeature();
 	void Init();
-	void SetImage(vavImage* img, ID3D11ShaderResourceView* tex)
-	{
-		m_vavImage = img;
-		m_hsvImage = new vavImage;
-		*m_hsvImage = m_vavImage->Clone();
-		m_hsvImage->ConvertToHSV();
-		m_D3DApp.SetScale(m_Scale);
-		m_D3DApp.SetTexture(tex);
-		m_D3DApp.BuildPoint();
-		m_D3DApp.DrawScene();
-	}
-	void SetPictureSize(int w, int h)
-	{
-		m_PicW = w;
-		m_PicH = h;
-		m_D3DApp.SetPictureSize(w, h);
-	}
-	ID3D11Device* GetDevice()
-	{
-		return m_D3DApp.GetDevice();
-	}
-	ID3D11DeviceContext* GetDeviceContext()
-	{
-		return m_D3DApp.GetDeviceContext();
-	}
-
-
+	void SetImage(vavImage* img, ID3D11ShaderResourceView* tex);
+	void SetPictureSize(int w, int h);
+	ID3D11Device* GetDevice();
+	ID3D11DeviceContext* GetDeviceContext();
+	void SetLineRadius(float r);
+	void SetMouseType(D3DApp_Picture::Shape s);
 	static unsigned __stdcall MyThreadFunc(LPVOID lpParam);
 protected:
 	void InitDx11(HWND hWnd);
@@ -98,3 +80,5 @@ public:
 };
 extern CD3DpictureView* g_NewPictureView;
 
+typedef std::map<vavImage*, CD3DpictureView*> ViewMap;
+extern ViewMap g_ViewMap;

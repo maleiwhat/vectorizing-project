@@ -32,12 +32,13 @@ public:
 	HANDLE m_hMutex;
 	void Lock()
 	{
-		WaitForSingleObject(m_hMutex, 0);
+		WaitForSingleObject(m_hMutex, INFINITE);
 	}
 	void Unlock()
 	{
 		ReleaseMutex(m_hMutex);
 	}
+	virtual ~vtkShowHistogramTimerCallback();
 	static vtkShowHistogramTimerCallback* New();
 	void Stop();
 	virtual void Execute(vtkObject* vtkNotUsed(caller), unsigned long eventId,

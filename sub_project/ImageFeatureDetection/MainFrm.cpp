@@ -1,3 +1,4 @@
+iterator
 // 這個 MFC 範例原始程式碼會示範如何使用 MFC Microsoft Office Fluent 使用者介面
 // (「Fluent UI」)，並且僅提供為參考資料，做為
 // MFC 參考及 MFC C++ 程式庫軟體
@@ -19,6 +20,7 @@
 #include "ConvStr.h"
 #include "DX11\d3dApp_Picture.h"
 #include "ImageFeatureDetectionView.h"
+#include "D3DpictureView.h"
 
 
 #ifdef _DEBUG
@@ -49,13 +51,17 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_UPDATE_COMMAND_UI(ID_CHECK_CircleLine, &CMainFrame::OnUpdateCheckCircleline)
 	ON_UPDATE_COMMAND_UI(ID_CHECK_VerticalLine, &CMainFrame::OnUpdateCheckVerticalline)
 	ON_UPDATE_COMMAND_UI(ID_CHECK_HorizontalLine, &CMainFrame::OnUpdateCheckHorizontalline)
+	ON_COMMAND(ID_SPIN_Radius, &CMainFrame::OnSpinRadius)
+	ON_UPDATE_COMMAND_UI(ID_SPIN_Radius, &CMainFrame::OnUpdateSpinRadius)
 END_MESSAGE_MAP()
 
 // CMainFrame 建構/解構
 
 CMainFrame::CMainFrame()
 {
-	// TODO: 在此加入成員初始化程式碼
+	m_CheckCircleline = false;
+	m_CheckVerticalline = false;
+	m_CheckHorizontalline = false;
 }
 
 CMainFrame::~CMainFrame()
@@ -304,6 +310,10 @@ void CMainFrame::OnCheckCircleline()
 	m_CheckCircleline = true;
 	m_CheckVerticalline = false;
 	m_CheckHorizontalline = false;
+	for (ViewMap::iterator it = g_ViewMap.begin();it!=g_ViewMap.end();++it)
+	{
+		it->second->SetMouseType(D3DApp_Picture::CIRCLE_LINE);
+	}
 }
 
 
@@ -312,6 +322,10 @@ void CMainFrame::OnCheckVerticalline()
 	m_CheckCircleline = false;
 	m_CheckVerticalline = true;
 	m_CheckHorizontalline = false;
+	for (ViewMap::iterator it = g_ViewMap.begin();it!=g_ViewMap.end();++it)
+	{
+		it->second->SetMouseType(D3DApp_Picture::VERTICAL_LINE);
+	}
 }
 
 
@@ -320,6 +334,10 @@ void CMainFrame::OnCheckHorizontalline()
 	m_CheckCircleline = false;
 	m_CheckVerticalline = false;
 	m_CheckHorizontalline = true;
+	for (ViewMap::iterator it = g_ViewMap.begin();it!=g_ViewMap.end();++it)
+	{
+		it->second->SetMouseType(D3DApp_Picture::HORIZONTAL_LINE);
+	}
 }
 
 
@@ -339,4 +357,42 @@ void CMainFrame::OnUpdateCheckVerticalline(CCmdUI *pCmdUI)
 void CMainFrame::OnUpdateCheckHorizontalline(CCmdUI *pCmdUI)
 {
 	pCmdUI->SetCheck(m_CheckHorizontalline);
+}
+
+
+void CMainFrame::OnSpinRadius()
+{
+	CMFCRibbonEdit* re;
+	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(1)->FindByID(
+		ID_SPIN_Radius);
+	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
+
+	if (NULL != re)
+	{
+		m_LineRadius = atoi(ConvStr::GetStr(
+			re->GetEditText().GetString()).c_str());
+	}
+	for (ViewMap::iterator it = g_ViewMap.begin();it!=g_ViewMap.end();++it)
+	{
+		it->second->SetLineRadius(m_LineRadius*0.1);
+	}
+}
+
+
+void CMainFrame::OnUpdateSpinRadius(CCmdUI *pCmdUI)
+{
+	CMFCRibbonEdit* re;
+	CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(1)->FindByID(
+		ID_SPIN_Radius);
+	re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
+
+	if (NULL != re)
+	{
+		m_LineRadius = atoi(ConvStr::GetStr(
+			re->GetEditText().GetString()).c_str());
+	}
+	for (ViewMap::iterator it = g_ViewMap.begin();it!=g_ViewMap.end();++it)
+	{
+		it->second->SetLineRadius(m_LineRadius*0.1);
+	}
 }

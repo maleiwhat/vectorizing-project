@@ -247,7 +247,7 @@ double vavImage::GetBilinearLight(double x, double y)
 	{
 		return 0;
 	}
-	if (y+1 >= m_Image.rows)
+	if (y + 1 >= m_Image.rows)
 	{
 		return 0;
 	}
@@ -255,7 +255,7 @@ double vavImage::GetBilinearLight(double x, double y)
 	{
 		return 0;
 	}
-	if (x+1 >= m_Image.cols)
+	if (x + 1 >= m_Image.cols)
 	{
 		return 0;
 	}
@@ -307,7 +307,7 @@ double vavImage::GetBilinearR(double x, double y)
 	{
 		return 0;
 	}
-	if (y >= m_Image.rows)
+	if (y + 1 >= m_Image.rows)
 	{
 		return 0;
 	}
@@ -315,7 +315,7 @@ double vavImage::GetBilinearR(double x, double y)
 	{
 		return 0;
 	}
-	if (x >= m_Image.cols)
+	if (x + 1 >= m_Image.cols)
 	{
 		return 0;
 	}
@@ -348,7 +348,7 @@ double vavImage::GetBilinearG(double x, double y)
 	{
 		return 0;
 	}
-	if (y >= m_Image.rows)
+	if (y + 1 >= m_Image.rows)
 	{
 		return 0;
 	}
@@ -356,7 +356,7 @@ double vavImage::GetBilinearG(double x, double y)
 	{
 		return 0;
 	}
-	if (x >= m_Image.cols)
+	if (x + 1 >= m_Image.cols)
 	{
 		return 0;
 	}
@@ -389,7 +389,7 @@ double vavImage::GetBilinearB(double x, double y)
 	{
 		return 0;
 	}
-	if (y >= m_Image.rows)
+	if (y + 1 >= m_Image.rows)
 	{
 		return 0;
 	}
@@ -397,7 +397,7 @@ double vavImage::GetBilinearB(double x, double y)
 	{
 		return 0;
 	}
-	if (x >= m_Image.cols)
+	if (x + 1 >= m_Image.cols)
 	{
 		return 0;
 	}
