@@ -472,10 +472,10 @@ double_vector vavImage::GetVerticalLight(double x, double y, double radius,
 		int div)
 {
 	double_vector ans;
-	double step = radius / div;
+	double step = radius / div * 2;
 	for (int i = 0; i < div; ++i)
 	{
-		ans.push_back(GetBilinearLight(x, y - radius * 0.5 + i * step));
+		ans.push_back(GetBilinearLight(x, y - radius + i * step));
 	}
 	return ans;
 }
@@ -483,10 +483,10 @@ double_vector vavImage::GetVerticalLight(double x, double y, double radius,
 double_vector vavImage::GetVerticalR( double x, double y, double radius, int div )
 {
 	double_vector ans;
-	double step = radius / div;
+	double step = radius / div * 2;
 	for (int i = 0; i < div; ++i)
 	{
-		ans.push_back(GetBilinearR(x, y - radius * 0.5 + i * step));
+		ans.push_back(GetBilinearR(x, y - radius + i * step));
 	}
 	return ans;
 }
@@ -494,10 +494,10 @@ double_vector vavImage::GetVerticalR( double x, double y, double radius, int div
 double_vector vavImage::GetVerticalG( double x, double y, double radius, int div )
 {
 	double_vector ans;
-	double step = radius / div;
+	double step = radius / div * 2;
 	for (int i = 0; i < div; ++i)
 	{
-		ans.push_back(GetBilinearG(x, y - radius * 0.5 + i * step));
+		ans.push_back(GetBilinearG(x, y - radius + i * step));
 	}
 	return ans;
 }
@@ -505,10 +505,10 @@ double_vector vavImage::GetVerticalG( double x, double y, double radius, int div
 double_vector vavImage::GetVerticalB( double x, double y, double radius, int div )
 {
 	double_vector ans;
-	double step = radius / div;
+	double step = radius / div * 2;
 	for (int i = 0; i < div; ++i)
 	{
-		ans.push_back(GetBilinearB(x, y - radius * 0.5 + i * step));
+		ans.push_back(GetBilinearB(x, y - radius + i * step));
 	}
 	return ans;
 }
@@ -516,10 +516,10 @@ double_vector vavImage::GetVerticalB( double x, double y, double radius, int div
 double_vector vavImage::GetHorizontalLight( double x, double y, double radius, int div )
 {
 	double_vector ans;
-	double step = radius / div;
+	double step = radius / div * 2;
 	for (int i = 0; i < div; ++i)
 	{
-		ans.push_back(GetBilinearLight(x - radius * 0.5 + i * step, y));
+		ans.push_back(GetBilinearLight(x - radius + i * step, y));
 	}
 	return ans;
 }
@@ -527,10 +527,10 @@ double_vector vavImage::GetHorizontalLight( double x, double y, double radius, i
 double_vector vavImage::GetHorizontalR( double x, double y, double radius, int div )
 {
 	double_vector ans;
-	double step = radius / div;
+	double step = radius / div * 2;
 	for (int i = 0; i < div; ++i)
 	{
-		ans.push_back(GetBilinearR(x - radius * 0.5 + i * step, y));
+		ans.push_back(GetBilinearR(x - radius + i * step, y));
 	}
 	return ans;
 }
@@ -538,10 +538,10 @@ double_vector vavImage::GetHorizontalR( double x, double y, double radius, int d
 double_vector vavImage::GetHorizontalG( double x, double y, double radius, int div )
 {
 	double_vector ans;
-	double step = radius / div;
+	double step = radius / div * 2;
 	for (int i = 0; i < div; ++i)
 	{
-		ans.push_back(GetBilinearG(x - radius * 0.5 + i * step, y));
+		ans.push_back(GetBilinearG(x - radius + i * step, y));
 	}
 	return ans;
 }
@@ -549,10 +549,10 @@ double_vector vavImage::GetHorizontalG( double x, double y, double radius, int d
 double_vector vavImage::GetHorizontalB( double x, double y, double radius, int div )
 {
 	double_vector ans;
-	double step = radius / div;
+	double step = radius / div * 2;
 	for (int i = 0; i < div; ++i)
 	{
-		ans.push_back(GetBilinearB(x - radius * 0.5 + i * step, y));
+		ans.push_back(GetBilinearB(x - radius + i * step, y));
 	}
 	return ans;
 }
