@@ -280,16 +280,18 @@ void CD3DpictureView::UpdateImageFeature()
 	color.x = 1;
 	color.y = 0;
 	color.z = 0.5;
+	const int circle_length = 360;
 	double realx = (m_MouseMove.x - m_LookCenter.x) / m_Scale - m_LookCenter.x *
 				   0.5;
 	double realy = (m_PicH * m_Scale - m_D3DApp.Height() + m_MouseMove.y
 					- m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
-	double_vector checkdata = ConvertToAngle(m_vavImage->GetRingLight(realx, realy,
-		m_LineRadius, 360));
+	double_vector checkdata = ConvertToSquareWave(ConvertToAngle(m_vavImage->GetRingLight(realx, realy,
+							  m_LineRadius, circle_length)), 10, 50);
 	if (IsBlackLine(checkdata))
 	{
 		color.x = 0;
 		color.y = 1;
+		color.z = 0;
 	}
 	else if (IsShading(checkdata))
 	{
@@ -297,52 +299,48 @@ void CD3DpictureView::UpdateImageFeature()
 		color.y = 0.3;
 		color.z = 1;
 	}
-	else if (IsBrightLine(checkdata))
-	{
-		color.x = 0.3;
-		color.y = 0.7;
-		color.z = 0.7;
-	}
 	LockDraw();
 	switch (m_D3DApp.GetMouseType())
 	{
 	case D3DApp_Picture::CIRCLE_LINE:
 		m_TimerCallback->m_data[0] = (m_vavImage->GetRingLight(realx, realy,
-									  m_LineRadius, 360));
+									  m_LineRadius, circle_length));
 		m_TimerCallback->m_data[1] = (m_vavImage->GetRingR(realx, realy, m_LineRadius,
-									  360));
+									  circle_length));
 		m_TimerCallback->m_data[2] = (m_vavImage->GetRingG(realx, realy, m_LineRadius,
-									  360));
+									  circle_length));
 		m_TimerCallback->m_data[3] = (m_vavImage->GetRingB(realx, realy, m_LineRadius,
-									  360));
+									  circle_length));
 		m_TimerCallback->m_data[4] = ConvertToAngle(m_vavImage->GetRingLight(realx,
-									 realy,m_LineRadius, 360));
-		m_TimerCallback->m_data[5] = ConvertToAngle(m_vavImage->GetRingR(realx, realy,
-									 m_LineRadius,360));
-		m_TimerCallback->m_data[6] = ConvertToAngle(m_vavImage->GetRingG(realx, realy,
-									 m_LineRadius,360));
-		m_TimerCallback->m_data[7] = ConvertToAngle(m_vavImage->GetRingB(realx, realy,
-									 m_LineRadius,360));
+									 realy, m_LineRadius, circle_length));
+		m_TimerCallback->m_data[5] = ConvertToSquareWave(ConvertToAngle(
+										 m_vavImage->GetRingLight(realx, realy, m_LineRadius, circle_length)), 10, 50);
+// 		m_TimerCallback->m_data[5] = ConvertToAngle(m_vavImage->GetRingR(realx, realy,
+// 									 m_LineRadius, circle_length));
+// 		m_TimerCallback->m_data[6] = ConvertToAngle(m_vavImage->GetRingG(realx, realy,
+// 									 m_LineRadius, circle_length));
+// 		m_TimerCallback->m_data[7] = ConvertToAngle(m_vavImage->GetRingB(realx, realy,
+// 									 m_LineRadius, circle_length));
 		break;
 	case D3DApp_Picture::VERTICAL_LINE:
 		m_TimerCallback->m_data[0] = m_vavImage->GetVerticalLight(realx, realy,
-									 m_LineRadius, 360);
+									 m_LineRadius, circle_length);
 		m_TimerCallback->m_data[1] = m_vavImage->GetVerticalR(realx, realy,
-									 m_LineRadius, 360);
+									 m_LineRadius, circle_length);
 		m_TimerCallback->m_data[2] = m_vavImage->GetVerticalG(realx, realy,
-									 m_LineRadius, 360);
+									 m_LineRadius, circle_length);
 		m_TimerCallback->m_data[3] = m_vavImage->GetVerticalB(realx, realy,
-									 m_LineRadius, 360);
+									 m_LineRadius, circle_length);
 		break;
 	case D3DApp_Picture::HORIZONTAL_LINE:
 		m_TimerCallback->m_data[0] = m_vavImage->GetHorizontalLight(realx, realy,
-									 m_LineRadius, 360);
+									 m_LineRadius, circle_length);
 		m_TimerCallback->m_data[1] = m_vavImage->GetHorizontalR(realx, realy,
-									 m_LineRadius, 360);
+									 m_LineRadius, circle_length);
 		m_TimerCallback->m_data[2] = m_vavImage->GetHorizontalG(realx, realy,
-									 m_LineRadius, 360);
+									 m_LineRadius, circle_length);
 		m_TimerCallback->m_data[3] = m_vavImage->GetHorizontalB(realx, realy,
-									 m_LineRadius, 360);
+									 m_LineRadius, circle_length);
 		break;
 	case D3DApp_Picture::NONE_LINE:
 	{
@@ -357,6 +355,52 @@ void CD3DpictureView::UpdateImageFeature()
 	}
 	UnlockDraw();
 	m_D3DApp.SetMousePoint(realx, realy, m_LineRadius * 2, color);
+	m_D3DApp.ClearTriangles();
+//	m_LineRadius += 1;
+// 	{
+// 		// big circle 1
+// 		double_vector cdata = ConvertToAngle(m_vavImage->GetRingLight(realx, realy,
+// 											 m_LineRadius, circle_length));
+// 		color.x = 1;
+// 		color.y = 0;
+// 		color.z = 0.5;
+// 		if (IsBlackLine(cdata))
+// 		{
+// 			color.x = 0;
+// 			color.y = 1;
+// 			color.z = 0;
+// 		}
+// 		else if (IsShading(cdata))
+// 		{
+// 			color.x = 0.3;
+// 			color.y = 0.3;
+// 			color.z = 1;
+// 		}
+// 		m_D3DApp.AddBigPoint(realx, realy, m_LineRadius * 2, color);
+// 	}
+// 	m_LineRadius += 1;
+// 	{
+// 		// big circle 1
+// 		double_vector cdata = ConvertToAngle(m_vavImage->GetRingLight(realx, realy,
+// 			m_LineRadius, circle_length));
+// 		color.x = 1;
+// 		color.y = 0;
+// 		color.z = 0.5;
+// 		if (IsBlackLine(cdata))
+// 		{
+// 			color.x = 0;
+// 			color.y = 1;
+// 			color.z = 0;
+// 		}
+// 		else if (IsShading(cdata))
+// 		{
+// 			color.x = 0.3;
+// 			color.y = 0.3;
+// 			color.z = 1;
+// 		}
+// 		m_D3DApp.AddBigPoint(realx, realy, m_LineRadius * 2, color);
+// 	}
+//	m_LineRadius -= 2;
 	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
 // 	printf("px: %3.1f py: %3.1f Center.x %3.1f Center3.y %3.1f\n",

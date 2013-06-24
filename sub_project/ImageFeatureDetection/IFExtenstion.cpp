@@ -15,18 +15,17 @@ double_vector ConvertToAngle(const double_vector& data)
 		int ileft = (i + 2) % size;
 		int iright = (i - 2 + size) % size;
 		double dy = tmp[iright] - tmp[ileft];
-		double angle = atan2f(3, dy) / M_PI * 180 + 200;
+		double angle = atan2f(5, dy) / M_PI * 180 + 200;
 		ans.push_back(angle);
 	}
-	return ConvertToSquareWave(Smoothing(ans), 10, 50);
-	//return Smoothing(ans);
+	return Smoothing(ans);
 }
 
 double_vector Smoothing(const double_vector& data)
 {
 	double_vector cps = data;
 	double_vector newcps;
-	for (int count = 0; count < 10; ++count)
+	for (int count = 0; count < 5; ++count)
 	{
 		newcps.clear();
 		int last = cps.size() - 1;
@@ -34,17 +33,16 @@ double_vector Smoothing(const double_vector& data)
 		{
 			continue;
 		}
-		newcps.push_back(cps.front());
-		newcps.push_back((cps[0] + cps[1] * 2 + cps[2] + cps[3]) / 5.0f);
+		newcps.push_back((cps[last] + cps[0] + cps[1]) / 3.0f);
+		newcps.push_back((cps[0] + cps[1] + cps[2]) / 3.0f);
 		for (int j = 2; j < cps.size() - 2; j ++)
 		{
-			auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
-					   6.0f;
+			auto vec = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
+					   5.0f;
 			newcps.push_back(vec);
 		}
-		newcps.push_back((cps[last - 3] + cps[last - 2] + cps[last - 1] * 2 +
-						  cps[last]) / 5.0f);
-		newcps.push_back(cps.back());
+		newcps.push_back((cps[last - 2] + cps[last - 1] + cps[last]) / 3.0f);
+		newcps.push_back((cps[last - 1] + cps[last] + cps[0]) / 3.0f);
 		cps = newcps;
 	}
 	return newcps;
@@ -77,14 +75,22 @@ bool IsBlackLine(const double_vector& data, double zero)
 {
 	bool end = false;
 	int lookline = 0;
+	const int check_length = 15;
 	const int size = data.size();
 	for (int i = 0; i < size && !end; ++i)
 	{
 		if (data[i] < zero)
 		{
-			if (i == 0 && data.back() < zero)
+			if (i == 0)
 			{
-				lookline--;
+				for (int j = size - check_length; j < size; ++j)
+				{
+					if (data[j] < zero)
+					{
+						lookline--;
+						break;
+					}
+				}
 			}
 			// find zero point
 			for (int j = i; j < size * 2; ++j)
@@ -99,7 +105,7 @@ bool IsBlackLine(const double_vector& data, double zero)
 					break;
 				}
 			}
-			for (int j = i; j < i + 25; ++j)
+			for (int j = i; j < i + check_length; ++j)
 			{
 				if (data[j % size] > zero)
 				{
@@ -113,6 +119,7 @@ bool IsBlackLine(const double_vector& data, double zero)
 			}
 		}
 	}
+	printf("lookline: %d\n", lookline);
 	if (lookline == 2)
 	{
 		return true;
@@ -127,6 +134,7 @@ bool IsBrightLine(const double_vector& data, double zero /*= 290*/)
 {
 	bool end = false;
 	int lookline = 0;
+	const int check_length = 15;
 	const int size = data.size();
 	for (int i = 0; i < size && !end; ++i)
 	{
@@ -149,7 +157,7 @@ bool IsBrightLine(const double_vector& data, double zero /*= 290*/)
 					break;
 				}
 			}
-			for (int j = i; j < i + 25; ++j)
+			for (int j = i; j < i + check_length; ++j)
 			{
 				if (data[j % size] < zero)
 				{
@@ -205,7 +213,7 @@ bool IsShading(const double_vector& data, double zero)
 			}
 		}
 	}
-	if (jump > 0 && jump <= 2)
+	if (jump == 1 || jump == 2)
 	{
 		return true;
 	}

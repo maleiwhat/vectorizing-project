@@ -564,15 +564,15 @@ ID3D11DeviceContext* D3DApp_Picture::GetDeviceContext()
 	return m_DeviceContext;
 }
 
-void D3DApp_Picture::AddBigPoint(float x, float y, D3DXVECTOR3 color)
+void D3DApp_Picture::AddBigPoint(float x, float y, float radius, D3DXVECTOR3 color)
 {
 	PointVertex pv;
 	pv.color = color;
-	pv.size.x = 1;
-	pv.size.y = 1;
+	pv.size.x = radius;
+	pv.size.y = radius;
 	pv.position.x = x;
 	pv.position.y = m_PicH - y;
-	m_PointsVertices.push_back(pv);
+	m_CircleLineVertices.push_back(pv);
 }
 
 void D3DApp_Picture::SetMousePoint(float x, float y, float radius,
@@ -659,7 +659,7 @@ void D3DApp_Picture::InterDraw()
 		m_DeviceContext->IASetVertexBuffers(0, 1, &m_CircleLine_Buffer, &stride2,
 											&offset);
 		m_CircleLine_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-		m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
+		m_DeviceContext->Draw((UINT)m_CircleLineVertices.size(), 0);
 	}
 	if (m_SkeletonLinesVertices.size() > 0)
 	{

@@ -39,7 +39,7 @@ public:
 	void SetTexture(ID3D11ShaderResourceView* tex);
 	void SetScale(float s);
 	void SetLookCenter(float x, float y);
-	void AddBigPoint(float x, float y, D3DXVECTOR3 color);
+	void AddBigPoint(float x, float y, float radius, D3DXVECTOR3 color);
 	void SetMousePoint(float x, float y, float radius, D3DXVECTOR3 color);
 	void SetMouseType(Shape s);
 	Shape GetMouseType();
