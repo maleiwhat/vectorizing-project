@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "D3DpictureView.h"
 #include "MainFrm.h"
+#include "IFExtenstion.h"
 // CD3DpictureView
 ViewMap g_ViewMap;
 
@@ -231,54 +232,6 @@ void CD3DpictureView::OnLButtonUp(UINT nFlags, CPoint point)
 	m_MouseMove = point;
 }
 
-unsigned __stdcall CD3DpictureView::MyThreadFunc(LPVOID lpParam)
-{
-	CD3DpictureView* me = (CD3DpictureView*)lpParam;
-	me->m_plot->ExchangeAxesOff();
-	me->m_plot->SetLabelFormat("%g");
-	//  me->m_plot->SetXTitle( "Level" );
-	//  me->m_plot->SetYTitle( "Frequency" );
-	me->m_plot->SetXValuesToIndex();
-	for (unsigned int i = 0 ; i < me->m_TimerCallback->m_data.size() ; i++)
-	{
-		vtkSmartPointer<vtkDoubleArray> array_s =
-			vtkSmartPointer<vtkDoubleArray>::New();
-		vtkSmartPointer<vtkFieldData> field =
-			vtkSmartPointer<vtkFieldData>::New();
-		vtkSmartPointer<vtkDataObject> data =
-			vtkSmartPointer<vtkDataObject>::New();
-		for (int b = 0; b < me->m_TimerCallback->m_data[i].size(); b++)
-		{
-			array_s->InsertValue(b, me->m_TimerCallback->m_data[i][b]);
-		}
-		field->AddArray(array_s);
-		data->SetFieldData(field);
-		me->m_plot->AddDataObjectInput(data);
-	}
-	me->m_plot->SetPlotColor(0, 1, 1, 1);
-	me->m_plot->SetPlotColor(1, 1, 0, 0);
-	me->m_plot->SetPlotColor(2, 0, 1, 0);
-	me->m_plot->SetPlotColor(3, 0, 0, 1);
-	me->m_plot->SetWidth(1);
-	me->m_plot->SetHeight(1);
-	me->m_plot->SetPosition(0, 0);
-	me->m_plot->SetPlotRange(0, 0, 360, 256);
-	vtkSmartPointer<vtkRenderer> renderer =
-		vtkSmartPointer<vtkRenderer>::New();
-	renderer->AddActor(me->m_plot);
-	me->m_renderWindow->AddRenderer(renderer);
-	me->m_renderWindow->SetSize(500, 500);
-	me->m_interactor->SetRenderWindow(me->m_renderWindow);
-	// Initialize the event loop and then start it
-	me->m_interactor->Initialize();
-	// Sign up to receive TimerEvent
-	me->m_interactor->AddObserver(vtkCommand::TimerEvent, me->m_TimerCallback);
-	int timerId = me->m_interactor->CreateRepeatingTimer(100);
-	std::cout << "timerId: " << timerId << std::endl;
-	me->m_interactor->Start();
-	return 0;
-}
-
 void CD3DpictureView::SetImage(vavImage* img, ID3D11ShaderResourceView* tex)
 {
 	m_vavImage = img;
@@ -331,18 +284,45 @@ void CD3DpictureView::UpdateImageFeature()
 				   0.5;
 	double realy = (m_PicH * m_Scale - m_D3DApp.Height() + m_MouseMove.y
 					- m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
+	double_vector checkdata = ConvertToAngle(m_vavImage->GetRingLight(realx, realy,
+		m_LineRadius, 360));
+	if (IsBlackLine(checkdata))
+	{
+		color.x = 0;
+		color.y = 1;
+	}
+	else if (IsShading(checkdata))
+	{
+		color.x = 0.3;
+		color.y = 0.3;
+		color.z = 1;
+	}
+	else if (IsBrightLine(checkdata))
+	{
+		color.x = 0.3;
+		color.y = 0.7;
+		color.z = 0.7;
+	}
 	LockDraw();
 	switch (m_D3DApp.GetMouseType())
 	{
 	case D3DApp_Picture::CIRCLE_LINE:
-		m_TimerCallback->m_data[0] = m_vavImage->GetRingLight(realx, realy,
-									 m_LineRadius, 360);
-		m_TimerCallback->m_data[1] = m_vavImage->GetRingR(realx, realy, m_LineRadius,
-									 360);
-		m_TimerCallback->m_data[2] = m_vavImage->GetRingG(realx, realy, m_LineRadius,
-									 360);
-		m_TimerCallback->m_data[3] = m_vavImage->GetRingB(realx, realy, m_LineRadius,
-									 360);
+		m_TimerCallback->m_data[0] = (m_vavImage->GetRingLight(realx, realy,
+									  m_LineRadius, 360));
+		m_TimerCallback->m_data[1] = (m_vavImage->GetRingR(realx, realy, m_LineRadius,
+									  360));
+		m_TimerCallback->m_data[2] = (m_vavImage->GetRingG(realx, realy, m_LineRadius,
+									  360));
+		m_TimerCallback->m_data[3] = (m_vavImage->GetRingB(realx, realy, m_LineRadius,
+									  360));
+		m_TimerCallback->m_data[4] = ConvertToAngle(m_vavImage->GetRingLight(realx,
+									 realy,m_LineRadius, 360));
+		m_TimerCallback->m_data[5] = ConvertToAngle(m_vavImage->GetRingR(realx, realy,
+									 m_LineRadius,360));
+		m_TimerCallback->m_data[6] = ConvertToAngle(m_vavImage->GetRingG(realx, realy,
+									 m_LineRadius,360));
+		m_TimerCallback->m_data[7] = ConvertToAngle(m_vavImage->GetRingB(realx, realy,
+									 m_LineRadius,360));
 		break;
 	case D3DApp_Picture::VERTICAL_LINE:
 		m_TimerCallback->m_data[0] = m_vavImage->GetVerticalLight(realx, realy,
@@ -391,4 +371,56 @@ void CD3DpictureView::LockDraw()
 void CD3DpictureView::UnlockDraw()
 {
 	m_TimerCallback->Unlock();
+}
+
+unsigned __stdcall CD3DpictureView::MyThreadFunc(LPVOID lpParam)
+{
+	CD3DpictureView* me = (CD3DpictureView*)lpParam;
+	me->m_plot->ExchangeAxesOff();
+	me->m_plot->SetLabelFormat("%g");
+	//  me->m_plot->SetXTitle( "Level" );
+	//  me->m_plot->SetYTitle( "Frequency" );
+	me->m_plot->SetXValuesToIndex();
+	for (unsigned int i = 0 ; i < me->m_TimerCallback->m_data.size() ; i++)
+	{
+		vtkSmartPointer<vtkDoubleArray> array_s =
+			vtkSmartPointer<vtkDoubleArray>::New();
+		vtkSmartPointer<vtkFieldData> field =
+			vtkSmartPointer<vtkFieldData>::New();
+		vtkSmartPointer<vtkDataObject> data =
+			vtkSmartPointer<vtkDataObject>::New();
+		for (int b = 0; b < me->m_TimerCallback->m_data[i].size(); b++)
+		{
+			array_s->InsertValue(b, me->m_TimerCallback->m_data[i][b]);
+		}
+		field->AddArray(array_s);
+		data->SetFieldData(field);
+		me->m_plot->AddDataObjectInput(data);
+	}
+	me->m_plot->SetPlotColor(0, 1, 1, 1);
+	me->m_plot->SetPlotColor(1, 1, 0, 0);
+	me->m_plot->SetPlotColor(2, 0, 1, 0);
+	me->m_plot->SetPlotColor(3, 0, 0, 1);
+	me->m_plot->SetPlotColor(4, 1, 1, 1);
+	me->m_plot->SetPlotColor(5, 1, 0, 0);
+	me->m_plot->SetPlotColor(6, 0, 1, 0);
+	me->m_plot->SetPlotColor(7, 0, 0, 1);
+	me->m_plot->SetWidth(1);
+	me->m_plot->SetHeight(1);
+	me->m_plot->SetPosition(0, 0);
+	me->m_plot->SetPlotRange(0, 0, 360, 400);
+	vtkSmartPointer<vtkRenderer> renderer =
+		vtkSmartPointer<vtkRenderer>::New();
+	renderer->AddActor(me->m_plot);
+	me->m_renderWindow->AddRenderer(renderer);
+	me->m_renderWindow->SetSize(500, 500);
+	me->m_interactor->SetRenderWindow(me->m_renderWindow);
+	// Initialize the event loop and then start it
+	me->m_interactor->Initialize();
+	// Sign up to receive TimerEvent
+	me->m_interactor->AddObserver(vtkCommand::TimerEvent, me->m_TimerCallback);
+	int timerId = me->m_interactor->CreateRepeatingTimer(100);
+	std::cout << "timerId: " << timerId << std::endl;
+	me->m_interactor->Start();
+	return 0;
 }

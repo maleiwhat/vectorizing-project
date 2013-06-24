@@ -4,14 +4,11 @@
 vtkShowHistogramTimerCallback* vtkShowHistogramTimerCallback::New()
 {
 	vtkShowHistogramTimerCallback* cb = new vtkShowHistogramTimerCallback;
-	cb->m_data.push_back(double_vector());
-	cb->m_data.push_back(double_vector());
-	cb->m_data.push_back(double_vector());
-	cb->m_data.push_back(double_vector());
-	cb->m_data[0].push_back(0);
-	cb->m_data[1].push_back(0);
-	cb->m_data[2].push_back(0);
-	cb->m_data[3].push_back(0);
+	for ( int i=0;i<8;i++)
+	{
+		cb->m_data.push_back(double_vector());
+		cb->m_data[i].push_back(0);
+	}
 	cb->m_hMutex = CreateMutex(
 					   NULL,              // default security attributes
 					   FALSE,             // initially not owned

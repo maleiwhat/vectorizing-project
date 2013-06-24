@@ -1,3 +1,17 @@
+#include <vtkSphereSource.h>
+#include <vtkMath.h>
+#include <vtkDoubleArray.h>
+#include <vtkFieldData.h>
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkXYPlotActor.h>
+#include <auto_link_vtk.hpp>
+
 #include <iostream>
 #include <vector>
 #include <auto_link_fftw.hpp>
@@ -117,7 +131,6 @@ struct Matrix2
 	Matrix2 operator/(const Matrix& rhs) const
 	{
 		Matrix2 tmp(rhs.size1(), rhs.size2());
-
 		for (int i = 0; i < rhs.size1(); ++i)
 		{
 			for (int j = 0; j < rhs.size2(); ++j)
@@ -126,30 +139,27 @@ struct Matrix2
 				tmp.real(i, j) = real(i, j) / rhs(i, j);
 			}
 		}
-
 		return tmp;
 	}
 };
 
 Matrix padarray(Matrix& pad, Matrix& outSize)
 {
-	Matrix out = ZMatrix(pad.size1() + outSize(0, 0), pad.size2() + outSize(0, 1));
-
+	int size2 = std::min((int)pad.size2(), (int)(pad.size2() + outSize(0, 1)));
+	Matrix out = ZMatrix(pad.size1() + outSize(0, 0), size2);
 	for (int i = 0; i < pad.size1(); ++i)
 	{
-		for (int j = 0; j < pad.size2(); ++j)
+		for (int j = 0; j < size2; ++j)
 		{
 			out(i, j) = pad(i, j);
 		}
 	}
-
 	return out;
 }
 
 Matrix Matfloor(const Matrix& mat)
 {
 	Matrix out(mat.size1(), mat.size2());
-
 	for (int i = 0; i < mat.size1(); ++i)
 	{
 		for (int j = 0; j < mat.size2(); ++j)
@@ -157,7 +167,6 @@ Matrix Matfloor(const Matrix& mat)
 			out(i, j) = floor(mat(i, j));
 		}
 	}
-
 	return out;
 }
 
@@ -169,17 +178,14 @@ Matrix circshift(const Matrix& a, const Matrix& p)
 	sizeA(0, 0) = a.size1();
 	sizeA(0, 1) = a.size2();
 	int_vector idx0, idx1;
-
 	for (int i = 0; i < a.size1(); ++i)
 	{
 		idx0.push_back((i + a.size1() - (int)p(0, 0)) % a.size1());
 	}
-
 	for (int i = 0; i < a.size2(); ++i)
 	{
 		idx1.push_back((i + a.size2() - (int)p(0, 1)) % a.size2());
 	}
-
 	for (int i = 0; i < a.size1(); ++i)
 	{
 		for (int j = 0; j < a.size2(); ++j)
@@ -187,14 +193,12 @@ Matrix circshift(const Matrix& a, const Matrix& p)
 			out(i, j) = a(idx0[i], idx1[j]);
 		}
 	}
-
 	return out;
 }
 
 Matrix Matdiffinv(const Matrix& mat, int dim)
 {
 	Matrix out = ZMatrix(mat.size1(), mat.size2());
-
 //  if (dim == 1)
 //  {
 //      for (int i = 0; i < mat.size1(); ++i)
@@ -235,14 +239,12 @@ Matrix Matdiffinv(const Matrix& mat, int dim)
 			}
 		}
 	}
-
 	return out;
 }
 
 Matrix Matdiff(const Matrix& mat, int dim)
 {
 	Matrix out = ZMatrix(mat.size1(), mat.size2());
-
 	if (dim == 1)
 	{
 		for (int i = 0; i < mat.size1(); ++i)
@@ -263,14 +265,12 @@ Matrix Matdiff(const Matrix& mat, int dim)
 			}
 		}
 	}
-
 	return out;
 }
 
 Matrix MatPow2(Matrix& mat)
 {
 	Matrix out(mat.size1(), mat.size2());
-
 	for (int i = 0; i < mat.size1(); ++i)
 	{
 		for (int j = 0; j < mat.size2(); ++j)
@@ -279,7 +279,6 @@ Matrix MatPow2(Matrix& mat)
 			out(i, j) = tmp * tmp;
 		}
 	}
-
 	return out;
 }
 
@@ -297,7 +296,6 @@ void MatAdd(Matrix& mat, double val)
 Matrix MatAbsPow2(Matrix2& mat)
 {
 	Matrix out = ZMatrix(mat.real.size1(), mat.real.size2());
-
 	for (int i = 0; i < out.size1(); ++i)
 	{
 		for (int j = 0; j < out.size2(); ++j)
@@ -305,7 +303,6 @@ Matrix MatAbsPow2(Matrix2& mat)
 			out(i, j) = mat.real(i, j) * mat.real(i, j) + mat.imge(i, j) * mat.imge(i, j);
 		}
 	}
-
 	return out;
 }
 
@@ -315,12 +312,11 @@ Matrix2 fft2(const Matrix& mat)
 	fftw_complex*   fft;
 	fftw_plan       plan_f;
 	data_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.size1() *
-	                                     mat.size2());
+										 mat.size2());
 	fft     = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.size1() *
-	                                     mat.size2());
+										 mat.size2());
 	plan_f = fftw_plan_dft_2d(mat.size1(), mat.size2(), data_in, fft,  FFTW_FORWARD,
-	                          FFTW_ESTIMATE);
-
+							  FFTW_ESTIMATE);
 	for (int i = 0, k = 0; i < mat.size1(); ++i)
 	{
 		for (int j = 0; j < mat.size2(); ++j)
@@ -330,11 +326,9 @@ Matrix2 fft2(const Matrix& mat)
 			k++;
 		}
 	}
-
 	/* perform FFT */
 	fftw_execute(plan_f);
 	Matrix2 out(mat.size1(), mat.size2());
-
 	for (int i = 0, k = 0; i < mat.size1(); ++i)
 	{
 		for (int j = 0; j < mat.size2(); ++j)
@@ -344,7 +338,38 @@ Matrix2 fft2(const Matrix& mat)
 			k++;
 		}
 	}
+	fftw_destroy_plan(plan_f);
+	fftw_free(data_in);
+	fftw_free(fft);
+	return out;
+}
 
+Matrix2 fft2_1D(const Matrix& mat)
+{
+	fftw_complex*   data_in;
+	fftw_complex*   fft;
+	fftw_plan       plan_f;
+	data_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.size1() *
+										 mat.size2());
+	fft     = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.size1() *
+										 mat.size2());
+	plan_f = fftw_plan_dft_1d(mat.size1(), data_in, fft,  FFTW_FORWARD,
+							  FFTW_ESTIMATE);
+	for (int i = 0, k = 0; i < mat.size1(); ++i)
+	{
+		data_in[k][0] = mat(i, 0);
+		data_in[k][1] = 0.0;
+		k++;
+	}
+	/* perform FFT */
+	fftw_execute(plan_f);
+	Matrix2 out(mat.size1(), mat.size2());
+	for (int i = 0, k = 0; i < mat.size1(); ++i)
+	{
+		out.real(i, 0) = fft[k][0];
+		out.imge(i, 0) = fft[k][1];
+		k++;
+	}
 	fftw_destroy_plan(plan_f);
 	fftw_free(data_in);
 	fftw_free(fft);
@@ -357,12 +382,11 @@ Matrix ifft2(const Matrix2& mat)
 	fftw_complex*   ifft;
 	fftw_plan       plan_b;
 	data_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.imge.size1() *
-	                                     mat.imge.size2());
+										 mat.imge.size2());
 	ifft    = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.imge.size1() *
-	                                     mat.imge.size2());
+										 mat.imge.size2());
 	plan_b = fftw_plan_dft_2d(mat.imge.size1(), mat.imge.size2(), data_in, ifft,
-	                          FFTW_BACKWARD,  FFTW_ESTIMATE);
-
+							  FFTW_BACKWARD,  FFTW_ESTIMATE);
 	for (int i = 0, k = 0; i < mat.imge.size1(); ++i)
 	{
 		for (int j = 0; j < mat.imge.size2(); ++j)
@@ -372,12 +396,10 @@ Matrix ifft2(const Matrix2& mat)
 			k++;
 		}
 	}
-
 	/* perform FFT */
 	fftw_execute(plan_b);
 	double normal_val = 1.0 / (mat.imge.size1() * mat.imge.size2());
 	Matrix out(mat.imge.size1(), mat.imge.size2());
-
 	for (int i = 0, k = 0; i < mat.imge.size1(); ++i)
 	{
 		for (int j = 0; j < mat.imge.size2(); ++j)
@@ -386,7 +408,39 @@ Matrix ifft2(const Matrix2& mat)
 			k++;
 		}
 	}
+	fftw_destroy_plan(plan_b);
+	fftw_free(data_in);
+	fftw_free(ifft);
+	return out;
+}
 
+Matrix ifft2_1D(const Matrix2& mat)
+{
+	fftw_complex*   data_in;
+	fftw_complex*   ifft;
+	fftw_plan       plan_b;
+	data_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.imge.size1());
+	ifft    = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * mat.imge.size1());
+	plan_b = fftw_plan_dft_1d(mat.imge.size1(), data_in, ifft,
+							  FFTW_BACKWARD,  FFTW_ESTIMATE);
+	for (int i = 0, k = 0; i < mat.imge.size1(); ++i)
+	{
+		data_in[k][0] = mat.real(i, 0);
+		data_in[k][1] = mat.imge(i, 0);
+		k++;
+	}
+	/* perform FFT */
+	fftw_execute(plan_b);
+	double normal_val = 1.0 / (mat.imge.size1() * mat.imge.size2());
+	Matrix out(mat.imge.size1(), mat.imge.size2());
+	for (int i = 0, k = 0; i < mat.imge.size1(); ++i)
+	{
+		for (int j = 0; j < mat.imge.size2(); ++j)
+		{
+			out(i, j) = ifft[k][0] * normal_val;
+			k++;
+		}
+	}
 	fftw_destroy_plan(plan_b);
 	fftw_free(data_in);
 	fftw_free(ifft);
@@ -412,7 +466,6 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.02, double kappa = 2.0)
 	Matrix SR(Im.rows, Im.cols);
 	Matrix SG(Im.rows, Im.cols);
 	Matrix SB(Im.rows, Im.cols);
-
 	for (int j = 0; j < Im.cols; ++j)
 	{
 		for (int i = 0; i < Im.rows; ++i)
@@ -423,7 +476,6 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.02, double kappa = 2.0)
 			SB(i, j) = v1[2];
 		}
 	}
-
 	double betamax = 1e2;
 	Matrix fx(1, 2);
 	fx(0, 0) = 1;
@@ -443,7 +495,6 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.02, double kappa = 2.0)
 	Matrix2 Normin1B = fft2(SB);
 	Matrix Denormin2 = otfFx2 + otfFy2;
 	float beta = 2 * lambda;
-
 	while (beta < betamax)
 	{
 		float lb = lambda / beta;
@@ -456,9 +507,8 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.02, double kappa = 2.0)
 		Matrix hB = Matdiff(SB, 2);
 		Matrix vB = Matdiff(SB, 1);
 		Matrix Pos2Sum = MatPow2(hR) + MatPow2(vR) +
-		                 MatPow2(hG) + MatPow2(vG) +
-		                 MatPow2(hB) + MatPow2(vB);
-
+						 MatPow2(hG) + MatPow2(vG) +
+						 MatPow2(hB) + MatPow2(vB);
 		for (int j = 0; j < Im.cols; ++j)
 		{
 			for (int i = 0; i < Im.rows; ++i)
@@ -474,7 +524,6 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.02, double kappa = 2.0)
 				}
 			}
 		}
-
 		Matrix Normin2R = Matdiffinv(hR, 2) + Matdiffinv(vR, 1);
 		Matrix Normin2G = Matdiffinv(hG, 2) + Matdiffinv(vG, 1);
 		Matrix Normin2B = Matdiffinv(hB, 2) + Matdiffinv(vB, 1);
@@ -486,7 +535,6 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.02, double kappa = 2.0)
 		SB = ifft2(FSB);
 		beta = beta * kappa;
 		printf(".");
-
 		for (uint i = 0; i < out.rows; ++i)
 		{
 			for (uint j = 0; j < out.cols; ++j)
@@ -497,11 +545,9 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.02, double kappa = 2.0)
 				v1[2] = SB(i, j);
 			}
 		}
-
 		cv::imshow("out", out);
 		cv::waitKey(1);
 	}
-
 	for (uint j = 0; j < out.cols; ++j)
 	{
 		for (uint i = 0; i < out.rows; ++i)
@@ -512,7 +558,69 @@ cv::Mat L0Smoothing(cv::Mat Im, double lambda = 0.02, double kappa = 2.0)
 			v1[2] = SB(i, j);
 		}
 	}
+	return out;
+}
 
+double_vector L0Smoothing_1D(double_vector data, int jump)
+{
+	double lambda = 0.01, kappa = 2.0;
+	double_vector out(data.size());
+	Matrix SR(data.size(), 1);
+	for (int j = 0; j < 1; ++j)
+	{
+		for (int i = 0; i < data.size(); ++i)
+		{
+			SR(i, j) = data[i];
+		}
+	}
+	double betamax = 1;
+	Matrix fx(1, 2);
+	fx(0, 0) = 1;
+	fx(0, 1) = -1;
+	Matrix fy(2, 1);
+	fy(0, 0) = 1;
+	fy(1, 0) = -1;
+	Matrix sizeI2D(1, 2);
+	sizeI2D(0, 0) = data.size();
+	sizeI2D(0, 1) = 1;
+	Matrix2 otfFx = psf2otf(fx, sizeI2D);
+	Matrix2 otfFy = psf2otf(fy, sizeI2D);
+	Matrix otfFx2 = MatAbsPow2(otfFx);
+	Matrix otfFy2 = MatAbsPow2(otfFy);
+	Matrix2 Normin1R = fft2_1D(SR);
+	Matrix Denormin2 = otfFx2;
+	float beta = 2 * lambda;
+	while (beta < betamax)
+	{
+		float lb = lambda / beta;
+		Matrix Denormin = ZMatrix(data.size(), 1);
+		Denormin = beta * Denormin2;
+		MatAdd(Denormin, 1);
+		Matrix vR = Matdiff(SR, 1);
+		Matrix Pos2Sum = MatPow2(vR);
+		for (int j = 0; j < 1; ++j)
+		{
+			for (int i = 0; i < data.size(); ++i)
+			{
+				if (Pos2Sum(i, j) < lb)
+				{
+					vR(i, j) = 0;
+				}
+			}
+		}
+		Matrix Normin2R = Matdiffinv(vR, 1);
+		Matrix2 FSR = (Normin1R + fft2_1D(vR) * beta)/Denormin;
+		SR = ifft2_1D(FSR);
+		beta = beta * kappa;
+		printf(".");
+		for (uint i = 0; i < data.size(); ++i)
+		{
+			for (uint j = 0; j < 1; ++j)
+			{
+				out[i] = SR(i, j);
+			}
+		}
+	}
 	return out;
 }
 
@@ -539,3 +647,109 @@ int main(int argc, char** argv)
 	return 0;
 }
 
+
+/*
+int main(int, char *[])
+{
+	vtkSmartPointer<vtkXYPlotActor> plot =
+		vtkSmartPointer<vtkXYPlotActor>::New();
+	plot->ExchangeAxesOff();
+	plot->SetLabelFormat("%g");
+	plot->SetXValuesToIndex();
+	double_vector2d data;
+	double_vector data1;
+	// up flat
+	double now = 190.0;
+	for (int b = 0; b < 80; b++)
+	{
+		now += vtkMath::Random(-1, 1);
+		data1.push_back(now);
+	}
+	// down
+	for (int b = 0; b < 80; b += 4)
+	{
+		now -= 4;
+		data1.push_back(now);
+	}
+	// down flat
+	for (int b = 0; b < 10; b++)
+	{
+		now += vtkMath::Random(-1, 1);
+		data1.push_back(now);
+	}
+	// up
+	for (int b = 0; b < 80; b += 4)
+	{
+		now += 4;
+		data1.push_back(now);
+	}
+	// up flat
+	for (int b = 0; b < 80; b++)
+	{
+		now += vtkMath::Random(-1, 1);
+		data1.push_back(now);
+	}
+	// down
+	for (int b = 0; b < 80; b += 4)
+	{
+		now -= 4;
+		data1.push_back(now);
+	}
+	// down flat
+	for (int b = 0; b < 10; b++)
+	{
+		now += vtkMath::Random(-1, 1);
+		data1.push_back(now);
+	}
+	// up
+	for (int b = 0; b < 80; b += 4)
+	{
+		now += 4;
+		data1.push_back(now);
+	}
+	// up flat
+	for (int b = 0; b < 80; b++)
+	{
+		now += vtkMath::Random(-1, 1);
+		data1.push_back(now);
+	}
+	data.push_back(data1);
+	data.push_back(L0Smoothing_1D(data1, 4));
+	for (unsigned int i = 0 ; i < 2 ; i++)
+	{
+		vtkSmartPointer<vtkDoubleArray> array_s =
+			vtkSmartPointer<vtkDoubleArray>::New();
+		vtkSmartPointer<vtkFieldData> field =
+			vtkSmartPointer<vtkFieldData>::New();
+		vtkSmartPointer<vtkDataObject> dd =
+			vtkSmartPointer<vtkDataObject>::New();
+		for (int b = 0; b < data[i].size(); b++)
+		{
+			array_s->InsertValue(b, data[i][b]);
+		}
+		field->AddArray(array_s);
+		dd->SetFieldData(field);
+		plot->AddDataObjectInput(dd);
+	}
+	plot->SetPlotColor(0, 1, 0, 0);
+	plot->SetPlotColor(1, 0, 1, 0);
+	plot->SetWidth(1);
+	plot->SetHeight(1);
+	plot->SetPosition(0, 0);
+	plot->SetPlotRange(0, 0, 360, 256);
+	vtkSmartPointer<vtkRenderer> renderer =
+		vtkSmartPointer<vtkRenderer>::New();
+	renderer->AddActor(plot);
+	vtkSmartPointer<vtkRenderWindow> renderWindow =
+		vtkSmartPointer<vtkRenderWindow>::New();
+	renderWindow->AddRenderer(renderer);
+	renderWindow->SetSize(500, 500);
+	vtkSmartPointer<vtkRenderWindowInteractor> interactor =
+		vtkSmartPointer<vtkRenderWindowInteractor>::New();
+	interactor->SetRenderWindow(renderWindow);
+	// Initialize the event loop and then start it
+	interactor->Initialize();
+	interactor->Start();
+	return EXIT_SUCCESS;
+}
+*/

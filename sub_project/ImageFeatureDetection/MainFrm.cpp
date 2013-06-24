@@ -119,8 +119,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	EnableDocking(CBRS_ALIGN_LEFT);
 	EnableAutoHidePanes(CBRS_ALIGN_RIGHT);
 	// 設定用來繪製所有使用者介面項目的視覺化管理員
-	CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(
-			CMFCVisualManagerOffice2007));
+	CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerOffice2007));
 	// 設定視覺化管理員所使用的視覺化樣式
 	CMFCVisualManagerOffice2007::SetStyle(
 		CMFCVisualManagerOffice2007::Office2007_ObsidianBlack);
