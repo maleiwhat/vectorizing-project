@@ -5,6 +5,7 @@
 #include <d3dx11effect.h>
 #include "Timer.h"
 #include "Vertex.h"
+#include "../Line.h"
 
 class D3DApp_Picture
 {
@@ -41,10 +42,11 @@ public:
 	void SetLookCenter(float x, float y);
 	void AddBigPoint(float x, float y, float radius, D3DXVECTOR3 color);
 	void SetMousePoint(float x, float y, float radius, D3DXVECTOR3 color);
+	void AddLine(const Line& lines);
 	void SetMouseType(Shape s);
 	Shape GetMouseType();
 	int  Width() { return m_ClientWidth;}
-	int  Height() {return m_ClientHeight;};
+	int  Height() {return m_ClientHeight;}
 	void ClearTriangles();
 	void InterDraw();
 	void SetLineRadius(float r);

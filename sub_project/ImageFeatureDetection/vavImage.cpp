@@ -5,6 +5,8 @@
 #include "vavImage.h"
 #include "math\Quaternion.h"
 #include <cmath>
+#include "IFExtenstion.h"
+#include <cmath>
 
 vavImage::vavImage(void): m_pTextureDraw(0), m_pShaderResView(0)
 {
@@ -192,7 +194,6 @@ void vavImage::GetFeatureEdge(Lines& lines)
 
 void vavImage::Threshold(int v)
 {
-	v *= 3;
 	for (int j = 1; j < m_Image.cols - 1; ++j)
 	{
 		for (int i = 1; i < m_Image.rows - 1; ++i)
@@ -480,7 +481,7 @@ double_vector vavImage::GetVerticalLight(double x, double y, double radius,
 	return ans;
 }
 
-double_vector vavImage::GetVerticalR( double x, double y, double radius, int div )
+double_vector vavImage::GetVerticalR(double x, double y, double radius, int div)
 {
 	double_vector ans;
 	double step = radius / div * 2;
@@ -491,7 +492,7 @@ double_vector vavImage::GetVerticalR( double x, double y, double radius, int div
 	return ans;
 }
 
-double_vector vavImage::GetVerticalG( double x, double y, double radius, int div )
+double_vector vavImage::GetVerticalG(double x, double y, double radius, int div)
 {
 	double_vector ans;
 	double step = radius / div * 2;
@@ -502,7 +503,7 @@ double_vector vavImage::GetVerticalG( double x, double y, double radius, int div
 	return ans;
 }
 
-double_vector vavImage::GetVerticalB( double x, double y, double radius, int div )
+double_vector vavImage::GetVerticalB(double x, double y, double radius, int div)
 {
 	double_vector ans;
 	double step = radius / div * 2;
@@ -513,7 +514,8 @@ double_vector vavImage::GetVerticalB( double x, double y, double radius, int div
 	return ans;
 }
 
-double_vector vavImage::GetHorizontalLight( double x, double y, double radius, int div )
+double_vector vavImage::GetHorizontalLight(double x, double y, double radius,
+		int div)
 {
 	double_vector ans;
 	double step = radius / div * 2;
@@ -524,7 +526,8 @@ double_vector vavImage::GetHorizontalLight( double x, double y, double radius, i
 	return ans;
 }
 
-double_vector vavImage::GetHorizontalR( double x, double y, double radius, int div )
+double_vector vavImage::GetHorizontalR(double x, double y, double radius,
+									   int div)
 {
 	double_vector ans;
 	double step = radius / div * 2;
@@ -535,7 +538,8 @@ double_vector vavImage::GetHorizontalR( double x, double y, double radius, int d
 	return ans;
 }
 
-double_vector vavImage::GetHorizontalG( double x, double y, double radius, int div )
+double_vector vavImage::GetHorizontalG(double x, double y, double radius,
+									   int div)
 {
 	double_vector ans;
 	double step = radius / div * 2;
@@ -546,7 +550,8 @@ double_vector vavImage::GetHorizontalG( double x, double y, double radius, int d
 	return ans;
 }
 
-double_vector vavImage::GetHorizontalB( double x, double y, double radius, int div )
+double_vector vavImage::GetHorizontalB(double x, double y, double radius,
+									   int div)
 {
 	double_vector ans;
 	double step = radius / div * 2;
@@ -555,4 +560,33 @@ double_vector vavImage::GetHorizontalB( double x, double y, double radius, int d
 		ans.push_back(GetBilinearB(x - radius + i * step, y));
 	}
 	return ans;
+}
+
+bool vavImage::IsBlackLine(double x, double y, double radius)
+{
+	double_vector checkdata = ConvertToSquareWave(ConvertToAngle(
+								  GetRingLight(x, y, radius, 25)), 10, 50);
+	if (::IsBlackLine(checkdata))
+	{
+		return true;
+	}
+	return false;
+}
+
+void vavImage::ToExpImage()
+{
+	cv::Mat imgf;
+	m_Image.convertTo(imgf, CV_32FC3, 1.0 / 255);
+	for (int j = 0; j < m_Image.cols ; ++j)
+	{
+		for (int i = 0; i < m_Image.rows ; ++i)
+		{
+			cv::Vec3f& intensity = imgf.at<cv::Vec3f>(i, j);
+			intensity[0] = intensity[0] - exp((1 - intensity[0])*2);
+			intensity[1] = intensity[1] - exp((1 - intensity[1])*2);
+			intensity[2] = intensity[2] - exp((1 - intensity[2])*2);
+		}
+	}
+	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
+	imgf.convertTo(m_Image, CV_8UC3, 255);
 }

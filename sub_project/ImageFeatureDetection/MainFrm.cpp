@@ -295,6 +295,7 @@ void CMainFrame::OnFileNew()
 		{
 			vavImage* Image = new vavImage;
 			Image->ReadImage(ConvStr::GetStr(filename.GetString()));
+			Image->ToExpImage();
 			//d3dApp.ClearTriangles();
 			//d3dApp.SetPictureSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
 			static int idx = 0;

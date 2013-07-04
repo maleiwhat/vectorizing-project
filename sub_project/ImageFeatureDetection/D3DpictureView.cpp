@@ -240,40 +240,64 @@ void CD3DpictureView::SetImage(vavImage* img, ID3D11ShaderResourceView* tex)
 	m_hsvImage->ConvertToHSV();
 	m_D3DApp.SetScale(m_Scale);
 	m_D3DApp.SetTexture(tex);
+	const int circle_length = 360;
+	m_LineRadius = 4;
+	for (int x = 0; x < m_PicW; x++)
+	{
+		for (int y = 0; y < m_PicH; y++)
+		{
+			double_vector checkdata = ConvertToSquareWave(ConvertToAngle(
+										  m_vavImage->GetRingLight(x, y,
+												  m_LineRadius, circle_length)), 5, 50);
+			if (IsBlackLine(checkdata))
+			{
+				double_vector line = GetBlackLine(checkdata);
+				Line oneLine;
+				Vector2 start(sin(line[0]), cos(line[0]));
+				start *= m_LineRadius;
+				start.x += x;
+				start.y += y;
+				Vector2 end(sin(line[1]), cos(line[1]));
+				end *= m_LineRadius;
+				end.x += x;
+				end.y += y;
+				oneLine.push_back(start);
+				oneLine.push_back(end);
+				if (start.distance(end) > 2)
+				{
+					m_D3DApp.AddLine(oneLine);
+				}
+			}
+		}
+	}
 	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
 }
-
 void CD3DpictureView::SetPictureSize(int w, int h)
 {
 	m_PicW = w;
 	m_PicH = h;
 	m_D3DApp.SetPictureSize(w, h);
 }
-
 ID3D11Device* CD3DpictureView::GetDevice()
 {
 	return m_D3DApp.GetDevice();
 }
-
 ID3D11DeviceContext* CD3DpictureView::GetDeviceContext()
 {
 	return m_D3DApp.GetDeviceContext();
 }
-
 void CD3DpictureView::SetLineRadius(float r)
 {
 	m_LineRadius = r;
 	m_D3DApp.SetLineRadius(m_LineRadius);
 	UpdateImageFeature();
 }
-
 void CD3DpictureView::SetMouseType(D3DApp_Picture::Shape s)
 {
 	m_D3DApp.SetMouseType(s);
 	UpdateImageFeature();
 }
-
 void CD3DpictureView::UpdateImageFeature()
 {
 	D3DXVECTOR3 color;
@@ -285,10 +309,24 @@ void CD3DpictureView::UpdateImageFeature()
 				   0.5;
 	double realy = (m_PicH * m_Scale - m_D3DApp.Height() + m_MouseMove.y
 					- m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
-	double_vector checkdata = ConvertToSquareWave(ConvertToAngle(m_vavImage->GetRingLight(realx, realy,
-							  m_LineRadius, circle_length)), 10, 50);
+	double_vector checkdata = ConvertToSquareWave(ConvertToAngle(
+								  m_vavImage->GetRingLight(realx, realy,
+										  m_LineRadius, circle_length)), 10, 50);
 	if (IsBlackLine(checkdata))
 	{
+		double_vector line = GetBlackLine(checkdata);
+		Line oneLine;
+		Vector2 start(sin(line[0]), cos(line[0]));
+		start *= m_LineRadius;
+		start.x += realx;
+		start.y += realy;
+		Vector2 end(sin(line[1]), cos(line[1]));
+		end *= m_LineRadius;
+		end.x += realx;
+		end.y += realy;
+		oneLine.push_back(start);
+		oneLine.push_back(end);
+		m_D3DApp.AddLine(oneLine);
 		color.x = 0;
 		color.y = 1;
 		color.z = 0;
@@ -406,17 +444,14 @@ void CD3DpictureView::UpdateImageFeature()
 // 	printf("px: %3.1f py: %3.1f Center.x %3.1f Center3.y %3.1f\n",
 // 		realx, realy, m_LookCenter.x, m_LookCenter.y);
 }
-
 void CD3DpictureView::LockDraw()
 {
 	m_TimerCallback->Lock();
 }
-
 void CD3DpictureView::UnlockDraw()
 {
 	m_TimerCallback->Unlock();
 }
-
 unsigned __stdcall CD3DpictureView::MyThreadFunc(LPVOID lpParam)
 {
 	CD3DpictureView* me = (CD3DpictureView*)lpParam;

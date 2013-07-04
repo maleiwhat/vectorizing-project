@@ -564,7 +564,8 @@ ID3D11DeviceContext* D3DApp_Picture::GetDeviceContext()
 	return m_DeviceContext;
 }
 
-void D3DApp_Picture::AddBigPoint(float x, float y, float radius, D3DXVECTOR3 color)
+void D3DApp_Picture::AddBigPoint(float x, float y, float radius,
+								 D3DXVECTOR3 color)
 {
 	PointVertex pv;
 	pv.color = color;
@@ -603,8 +604,8 @@ void D3DApp_Picture::ClearTriangles()
 	m_PointsVertices.clear();
 	ReleaseCOM(m_CircleLine_Buffer);
 	m_CircleLineVertices.clear();
-	ReleaseCOM(m_SkeletonLines_Buffer);
-	m_SkeletonLinesVertices.clear();
+// 	ReleaseCOM(m_SkeletonLines_Buffer);
+// 	m_SkeletonLinesVertices.clear();
 }
 
 void D3DApp_Picture::InterDraw()
@@ -702,4 +703,20 @@ void D3DApp_Picture::SetMouseType(Shape s)
 D3DApp_Picture::Shape D3DApp_Picture::GetMouseType()
 {
 	return m_MouseType;
+}
+
+void D3DApp_Picture::AddLine(const Line& lines)
+{
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		SkeletonLineVertex slv;
+		slv.color.x = 0;
+		slv.color.y = 1;
+		slv.color.z = 0;
+		slv.p1.x = lines[0].x;
+		slv.p1.y = m_PicH - lines[0].y;
+		slv.p2.x = lines[1].x;
+		slv.p2.y = m_PicH - lines[1].y;
+		m_SkeletonLinesVertices.push_back(slv);
+	}
 }

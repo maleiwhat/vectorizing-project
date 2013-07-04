@@ -42,6 +42,8 @@ public:
 	double_vector GetHorizontalR(double x, double y, double radius, int div);
 	double_vector GetHorizontalG(double x, double y, double radius, int div);
 	double_vector GetHorizontalB(double x, double y, double radius, int div);
+	bool	IsBlackLine(double x, double y, double radius);
+	void	ToExpImage();
 	cv::Mat Clone()
 	{
 		return m_Image.clone();
