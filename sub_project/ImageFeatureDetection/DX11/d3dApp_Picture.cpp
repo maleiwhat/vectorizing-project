@@ -664,7 +664,7 @@ void D3DApp_Picture::InterDraw()
 	}
 	if (m_SkeletonLinesVertices.size() > 0)
 	{
-		m_SkeletonLines_Transparency->SetFloat(1);
+		m_SkeletonLines_Transparency->SetFloat(0.1);
 		UINT offset = 0;
 		UINT stride2 = sizeof(SkeletonLineVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
@@ -705,14 +705,12 @@ D3DApp_Picture::Shape D3DApp_Picture::GetMouseType()
 	return m_MouseType;
 }
 
-void D3DApp_Picture::AddLine(const Line& lines)
+void D3DApp_Picture::AddLine(const Line& lines, D3DXVECTOR3 color)
 {
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		SkeletonLineVertex slv;
-		slv.color.x = 0;
-		slv.color.y = 1;
-		slv.color.z = 0;
+		slv.color = color;
 		slv.p1.x = lines[0].x;
 		slv.p1.y = m_PicH - lines[0].y;
 		slv.p2.x = lines[1].x;

@@ -416,9 +416,9 @@ double_vector vavImage::GetRingLight(double x, double y, double radius, int div)
 {
 	double_vector ans;
 	double step = 360.0 / div;
+	Vector2 ahead(0, -radius);
 	for (int i = 0; i < div; ++i)
 	{
-		Vector2 ahead(0, -radius);
 		Vector2 move = Quaternion::GetRotation(ahead, i * step);
 		ans.push_back(GetBilinearLight(x + move.x, y + move.y));
 	}
@@ -429,9 +429,9 @@ double_vector vavImage::GetRingR(double x, double y, double radius, int div)
 {
 	double_vector ans;
 	double step = 360.0 / div;
+	Vector2 ahead(0, -radius);
 	for (int i = 0; i < div; ++i)
 	{
-		Vector2 ahead(0, -radius);
 		Vector2 move = Quaternion::GetRotation(ahead, i * step);
 		ans.push_back(GetBilinearR(x + move.x, y + move.y));
 	}
@@ -442,9 +442,9 @@ double_vector vavImage::GetRingG(double x, double y, double radius, int div)
 {
 	double_vector ans;
 	double step = 360.0 / div;
+	Vector2 ahead(0, -radius);
 	for (int i = 0; i < div; ++i)
 	{
-		Vector2 ahead(0, -radius);
 		Vector2 move = Quaternion::GetRotation(ahead, i * step);
 		ans.push_back(GetBilinearG(x + move.x, y + move.y));
 	}
@@ -455,9 +455,9 @@ double_vector vavImage::GetRingB(double x, double y, double radius, int div)
 {
 	double_vector ans;
 	double step = 360.0 / div;
+	Vector2 ahead(0, -radius);
 	for (int i = 0; i < div; ++i)
 	{
-		Vector2 ahead(0, -radius);
 		Vector2 move = Quaternion::GetRotation(ahead, i * step);
 		ans.push_back(GetBilinearB(x + move.x, y + move.y));
 	}
@@ -577,16 +577,90 @@ void vavImage::ToExpImage()
 {
 	cv::Mat imgf;
 	m_Image.convertTo(imgf, CV_32FC3, 1.0 / 255);
+	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
 	for (int j = 0; j < m_Image.cols ; ++j)
 	{
 		for (int i = 0; i < m_Image.rows ; ++i)
 		{
 			cv::Vec3f& intensity = imgf.at<cv::Vec3f>(i, j);
-			intensity[0] = intensity[0] - exp((1 - intensity[0])*2);
-			intensity[1] = intensity[1] - exp((1 - intensity[1])*2);
-			intensity[2] = intensity[2] - exp((1 - intensity[2])*2);
+			intensity[0] = - pow((1 - intensity[0]), 2);
+			intensity[1] = - pow((1 - intensity[1]), 2);
+			intensity[2] = - pow((1 - intensity[2]), 2);
 		}
 	}
-	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
-	imgf.convertTo(m_Image, CV_8UC3, 255);
+	normalize(imgf, imgf, 0, 255, cv::NORM_MINMAX);
+	imgf.convertTo(m_Image, CV_8UC3);
+	int tmin = 255, tmax = 0;
+	for (int j = 0; j < m_Image.cols ; ++j)
+	{
+		for (int i = 0; i < m_Image.rows ; ++i)
+		{
+			cv::Vec3f& intensity = imgf.at<cv::Vec3f>(i, j);
+			if (tmin > intensity[0])
+			{
+				tmin = intensity[0];
+			}
+			if (tmax < intensity[0])
+			{
+				tmax = intensity[0];
+			}
+		}
+	}
+	printf("max %d min %d\n", tmax, tmin);
+}
+
+double_vector vavImage::GetLineLight(double x1, double y1, double x2, double y2,
+									 int div)
+{
+	double_vector ans;
+	double step = 1.0 / (div - 1);
+	Vector2 ahead(x2 - x1, y2 - y1);
+	ahead *= step;
+	for (int i = 0; i < div; ++i)
+	{
+		ans.push_back(GetBilinearLight(x1 +  ahead.x * i, y1 +  ahead.y * i));
+	}
+	return ans;
+}
+
+double_vector vavImage::GetLineR(double x1, double y1, double x2, double y2,
+								 int div)
+{
+	double_vector ans;
+	double step = 1.0 / (div - 1);
+	Vector2 ahead(x2 - x1, y2 - y1);
+	ahead *= step;
+	for (int i = 0; i < div; ++i)
+	{
+		ans.push_back(GetBilinearR(x1 +  ahead.x * i, y1 +  ahead.y * i));
+	}
+	return ans;
+}
+
+double_vector vavImage::GetLineG(double x1, double y1, double x2, double y2,
+								 int div)
+{
+	double_vector ans;
+	double step = 1.0 / (div - 1);
+	Vector2 ahead(x2 - x1, y2 - y1);
+	ahead *= step;
+	for (int i = 0; i < div; ++i)
+	{
+		ans.push_back(GetBilinearG(x1 +  ahead.x * i, y1 +  ahead.y * i));
+	}
+	return ans;
+}
+
+double_vector vavImage::GetLineB(double x1, double y1, double x2, double y2,
+								 int div)
+{
+	double_vector ans;
+	double step = 1.0 / (div - 1);
+	Vector2 ahead(x2 - x1, y2 - y1);
+	ahead *= step;
+	for (int i = 0; i < div; ++i)
+	{
+		ans.push_back(GetBilinearB(x1 +  ahead.x * i, y1 +  ahead.y * i));
+	}
+	return ans;
 }

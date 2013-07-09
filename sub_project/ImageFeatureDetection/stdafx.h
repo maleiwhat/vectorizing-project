@@ -42,6 +42,8 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 #include <afxcontrolbars.h>     // 功能區和控制列的 MFC 支援
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <d3d11.h>

@@ -240,36 +240,121 @@ void CD3DpictureView::SetImage(vavImage* img, ID3D11ShaderResourceView* tex)
 	m_hsvImage->ConvertToHSV();
 	m_D3DApp.SetScale(m_Scale);
 	m_D3DApp.SetTexture(tex);
+#if 0
 	const int circle_length = 360;
-	m_LineRadius = 4;
-	for (int x = 0; x < m_PicW; x++)
+	int lineRadius = 3;
+	const int picW = m_vavImage->GetWidth();
+	const int picH = m_vavImage->GetHeight();
+	for (int x = 0; x < picW; x++)
 	{
-		for (int y = 0; y < m_PicH; y++)
+		for (int y = 0; y < picH; y++)
 		{
 			double_vector checkdata = ConvertToSquareWave(ConvertToAngle(
 										  m_vavImage->GetRingLight(x, y,
-												  m_LineRadius, circle_length)), 5, 50);
+												  lineRadius, circle_length)), 5, 50);
 			if (IsBlackLine(checkdata))
 			{
 				double_vector line = GetBlackLine(checkdata);
 				Line oneLine;
 				Vector2 start(sin(line[0]), cos(line[0]));
-				start *= m_LineRadius;
+				start *= lineRadius;
 				start.x += x;
 				start.y += y;
 				Vector2 end(sin(line[1]), cos(line[1]));
-				end *= m_LineRadius;
+				end *= lineRadius;
 				end.x += x;
 				end.y += y;
 				oneLine.push_back(start);
 				oneLine.push_back(end);
+				// 找到的切線長大於3
 				if (start.distance(end) > 2)
 				{
-					m_D3DApp.AddLine(oneLine);
+					double_vector line1 = m_vavImage->GetLineLight(start.x, start.y, end.x, end.y,
+										  360);
+					double variance1 = GetVariance(line1);
+					line[0] += 0.5 * M_PI;
+					line[1] += 0.5 * M_PI;
+					Vector2 start2(sin(line[0]), cos(line[0]));
+					start2 *= lineRadius;
+					start2.x += x;
+					start2.y += y;
+					Vector2 end2(sin(line[1]), cos(line[1]));
+					end2 *= lineRadius;
+					end2.x += x;
+					end2.y += y;
+					double_vector line2 = m_vavImage->GetLineLight(start2.x, start2.y, end2.x,
+										  end2.y, 360);
+					double variance2 = GetVariance(line2);
+					D3DXVECTOR3 cc(0, 1, 0);
+					if (variance1 > 10000 || variance2 < 10000)
+					{
+						cc.x = 1;
+						cc.y = 0;
+					}
+					else
+					{
+						m_D3DApp.AddLine(oneLine, cc);
+					}
 				}
 			}
 		}
 	}
+	lineRadius = 4;
+	for (int x = 0; x < picW; x++)
+	{
+		for (int y = 0; y < picH; y++)
+		{
+			double_vector checkdata = ConvertToSquareWave(ConvertToAngle(
+										  m_vavImage->GetRingLight(x, y,
+												  lineRadius, circle_length)), 5, 50);
+			if (IsBlackLine(checkdata))
+			{
+				double_vector line = GetBlackLine(checkdata);
+				Line oneLine;
+				Vector2 start(sin(line[0]), cos(line[0]));
+				start *= lineRadius;
+				start.x += x;
+				start.y += y;
+				Vector2 end(sin(line[1]), cos(line[1]));
+				end *= lineRadius;
+				end.x += x;
+				end.y += y;
+				oneLine.push_back(start);
+				oneLine.push_back(end);
+				// 找到的切線長大於3
+				if (start.distance(end) > 2)
+				{
+					double_vector line1 = m_vavImage->GetLineLight(start.x, start.y, end.x, end.y,
+										  360);
+					double variance1 = GetVariance(line1);
+					line[0] += 0.5 * M_PI;
+					line[1] += 0.5 * M_PI;
+					Vector2 start2(sin(line[0]), cos(line[0]));
+					start2 *= lineRadius;
+					start2.x += x;
+					start2.y += y;
+					Vector2 end2(sin(line[1]), cos(line[1]));
+					end2 *= lineRadius;
+					end2.x += x;
+					end2.y += y;
+					double_vector line2 = m_vavImage->GetLineLight(start2.x, start2.y, end2.x,
+										  end2.y, 360);
+					double variance2 = GetVariance(line2);
+					D3DXVECTOR3 cc(0, 1, 0);
+					if (variance1 > 10000 || variance2 < 10000)
+					{
+						cc.x = 1;
+						cc.y = 0;
+					}
+					else
+					{
+						m_D3DApp.AddLine(oneLine, cc);
+					}
+				}
+			}
+		}
+	}
+#endif
 	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
 }
@@ -314,19 +399,30 @@ void CD3DpictureView::UpdateImageFeature()
 										  m_LineRadius, circle_length)), 10, 50);
 	if (IsBlackLine(checkdata))
 	{
-		double_vector line = GetBlackLine(checkdata);
+		double_vector linePoint = GetBlackLine(checkdata);
 		Line oneLine;
-		Vector2 start(sin(line[0]), cos(line[0]));
+		Vector2 start(sin(linePoint[0]), cos(linePoint[0]));
 		start *= m_LineRadius;
 		start.x += realx;
 		start.y += realy;
-		Vector2 end(sin(line[1]), cos(line[1]));
+		Vector2 end(sin(linePoint[1]), cos(linePoint[1]));
 		end *= m_LineRadius;
 		end.x += realx;
 		end.y += realy;
 		oneLine.push_back(start);
 		oneLine.push_back(end);
-		m_D3DApp.AddLine(oneLine);
+		double_vector line1 = m_vavImage->GetLineLight(start.x, start.y, end.x, end.y,
+							  360);
+		m_TimerCallback->m_data[1] = line1;
+		double variance = GetVariance(line1);
+		printf("variance: %f\n", variance);
+		D3DXVECTOR3 cc(0, 1, 0);
+		if (variance > 50000)
+		{
+			cc.x = 1;
+			cc.y = 0;
+		}
+		m_D3DApp.AddLine(oneLine, cc);
 		color.x = 0;
 		color.y = 1;
 		color.z = 0;
@@ -343,12 +439,12 @@ void CD3DpictureView::UpdateImageFeature()
 	case D3DApp_Picture::CIRCLE_LINE:
 		m_TimerCallback->m_data[0] = (m_vavImage->GetRingLight(realx, realy,
 									  m_LineRadius, circle_length));
-		m_TimerCallback->m_data[1] = (m_vavImage->GetRingR(realx, realy, m_LineRadius,
-									  circle_length));
-		m_TimerCallback->m_data[2] = (m_vavImage->GetRingG(realx, realy, m_LineRadius,
-									  circle_length));
-		m_TimerCallback->m_data[3] = (m_vavImage->GetRingB(realx, realy, m_LineRadius,
-									  circle_length));
+// 		m_TimerCallback->m_data[1] = (m_vavImage->GetRingR(realx, realy, m_LineRadius,
+// 									  circle_length));
+// 		m_TimerCallback->m_data[2] = (m_vavImage->GetRingG(realx, realy, m_LineRadius,
+// 									  circle_length));
+// 		m_TimerCallback->m_data[3] = (m_vavImage->GetRingB(realx, realy, m_LineRadius,
+// 									  circle_length));
 		m_TimerCallback->m_data[4] = ConvertToAngle(m_vavImage->GetRingLight(realx,
 									 realy, m_LineRadius, circle_length));
 		m_TimerCallback->m_data[5] = ConvertToSquareWave(ConvertToAngle(

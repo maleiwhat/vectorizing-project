@@ -984,8 +984,6 @@ void Demo(const Mat& img1u)
 
 	imshow("Derivativs", dEdge.GetDer());
 	imshow("GetDer2", dEdge.GetDer2());
-	//imshow("GetOrnt", dEdge.GetOrnt());
-	//imshow("Image", img1u);
 	imshow("Curv1", show3u);
 	waitKey(0);
 }

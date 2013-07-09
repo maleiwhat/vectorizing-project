@@ -42,7 +42,7 @@ public:
 	void SetLookCenter(float x, float y);
 	void AddBigPoint(float x, float y, float radius, D3DXVECTOR3 color);
 	void SetMousePoint(float x, float y, float radius, D3DXVECTOR3 color);
-	void AddLine(const Line& lines);
+	void AddLine(const Line& lines, D3DXVECTOR3 color);
 	void SetMouseType(Shape s);
 	Shape GetMouseType();
 	int  Width() { return m_ClientWidth;}

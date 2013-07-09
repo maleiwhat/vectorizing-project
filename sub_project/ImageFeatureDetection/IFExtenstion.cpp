@@ -265,7 +265,7 @@ double_vector ConvertToTest(const double_vector& data, double zero)
 	return tmp;
 }
 
-double_vector GetBlackLine( const double_vector& data, double zero /*= 290*/ )
+double_vector GetBlackLine(const double_vector& data, double zero /*= 290*/)
 {
 	double_vector ans;
 	bool end = false;
@@ -292,7 +292,7 @@ double_vector GetBlackLine( const double_vector& data, double zero /*= 290*/ )
 			{
 				if (data[j % size] > zero)
 				{
-					ans.push_back(((j % size)*360.0/size+180)/180*M_PI);
+					ans.push_back(((j % size) * 360.0 / size + 180) / 180 * M_PI);
 					if (j >= size)
 					{
 						end = true;
@@ -303,4 +303,21 @@ double_vector GetBlackLine( const double_vector& data, double zero /*= 290*/ )
 		}
 	}
 	return ans;
+}
+
+double GetVariance(const double_vector& data)
+{
+	double sum = 0;
+	for (int i = 0; i < data.size(); ++i)
+	{
+		sum += data[i];
+	}
+	sum /= data.size();
+	double variance = 0;
+	for (int i = 0; i < data.size(); ++i)
+	{
+		double v = sum - data[i];
+		variance += v * v;
+	}
+	return variance;
 }

@@ -3,7 +3,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerWorkingDirectory>C:\Users\damody\Desktop\畢業相關\vectorizing-project\sub_project\CurveExtraction\CurveExtraction\data</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>oda2.png</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>oda3.png</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerWorkingDirectory>C:\Users\damody\Desktop\畢業相關\vectorizing-project\sub_project\CurveExtraction\CurveExtraction</LocalDebuggerWorkingDirectory>
