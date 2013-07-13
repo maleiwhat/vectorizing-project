@@ -28,14 +28,14 @@ void    Dilation(cv::Mat& image, int dilation_elem = 2, int dilation_size = 2);
 // ²Ó¤Æ
 void    Erosion(cv::Mat& image, int erosion_elem, int erosion_size);
 void    S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
-                    int range, int x, int y, CvPatchs& out_array, int dilation = 0);
+					int range, int x, int y, CvPatchs& out_array, int dilation = 0);
 void    S2FloodFill(cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range,
-                    int x, int y, int dilation = 0, int erosion = 0);
+					int x, int y, int dilation = 0, int erosion = 0);
 void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
-                    int range, int x, int y, CvPatchs& out_array, int dilation = 0,
-                    int erosion = 0);
+					int range, int x, int y, CvPatchs& out_array, int dilation = 0,
+					int erosion = 0);
 void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
-                    int range, int x, int y, int dilation = 0, int erosion = 0);
+					int range, int x, int y, int dilation = 0, int erosion = 0);
 void    S4FloodFill(cv::Mat& image, cv::Mat& mask01, int range,
 					int x, int y);
 void    S5FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
@@ -46,7 +46,7 @@ void    LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y);
 CvPatchs S2GetPatchs(const cv::Mat& image, int dilation = 0, int erosion = 0);
 ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold, cv::Mat& image1);
 ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
-                           cv::Mat lineImage);
+						   cv::Mat lineImage);
 ImageSpline GetImageSpline(CvPatchs& patchs);
 Line CvPointToLine(const CvPoints& cvps);
 
@@ -120,7 +120,7 @@ typedef std::vector<ColorPtrf> floatptrs;
 typedef std::vector<floatptrs> floatptrs2d;
 void GetMatrixb(int w, int h, Vec3bptrs& ary, int x, int y, cv::Mat& img);
 void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
-                   double BlackRegionThreshold);
+				   double BlackRegionThreshold);
 
 ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold);
 void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2);

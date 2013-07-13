@@ -23,6 +23,8 @@ public:
 	// Input kernel size for calculating derivatives, kSize should be 1, 3, 5 or 7
 	const cv::Mat& CalSecDer(int kSize = 5, float linkEndBound = 0.01f,
 	                         float linkStartBound = 0.1f);
+	const cv::Mat& CalSecDer(cv::Mat engery, int kSize = 5, float linkEndBound = 0.01f,
+		float linkStartBound = 0.1f);
 	const cv::Mat& CalFirDer(int kSize = 5, float linkEndBound = 0.01f,
 	                         float linkStartBound = 0.1f);
 	const std::vector<CEdge>& Link(int shortRemoveBound = 3);

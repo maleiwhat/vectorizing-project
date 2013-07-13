@@ -72,24 +72,20 @@ void GetMatrixf(int w, int h, floatptrs& ary, int x, int y, cv::Mat& img)
 {
 	const int xend = x + w / 2;
 	const int yend = y + h / 2;
-
 	for (int i = x - w / 2, i2 = 0; i <= xend; ++i, ++i2)
 	{
 		for (int j = y - h / 2, j2 = 0; j <= yend; ++j, ++j2)
 		{
 			int ix = abs(i);
 			int jy = abs(j);
-
 			if (ix >= img.cols - 1)
 			{
 				ix -= ix - (img.cols - 1) + 1;
 			}
-
 			if (jy >= img.rows - 1)
 			{
 				jy -= jy - (img.rows - 1) + 1;
 			}
-
 			float& v = img.at<float>(jy, ix);
 			ary[j2 * w + i2].c = &v;
 			ary[j2 * w + i2].x = ix;
@@ -102,24 +98,20 @@ void GetMatrix(int w, int h, Vec3fptrs& ary, int x, int y, cv::Mat& img)
 {
 	const int xend = x + w / 2;
 	const int yend = y + h / 2;
-
 	for (int i = x - w / 2, i2 = 0; i <= xend; ++i, ++i2)
 	{
 		for (int j = y - h / 2, j2 = 0; j <= yend; ++j, ++j2)
 		{
 			int ix = abs(i);
 			int jy = abs(j);
-
 			if (ix >= img.cols - 1)
 			{
 				ix -= ix - (img.cols - 1) + 1;
 			}
-
 			if (jy >= img.rows - 1)
 			{
 				jy -= jy - (img.rows - 1) + 1;
 			}
-
 			cv::Vec3f& v = img.at<cv::Vec3f>(jy, ix);
 			ary[j2 * w + i2].c = &v;
 			ary[j2 * w + i2].x = ix;
@@ -132,7 +124,6 @@ void RarePixel(cv::Mat& src, cv::Mat& dst, int rectw, int recth)
 {
 	Vec3fptrs ary(rectw * recth);
 	int median = rectw * recth / 2;
-
 	for (int x = 0; x < src.cols; ++x)
 	{
 		for (int y = 0; y < src.rows; ++y)
@@ -141,13 +132,11 @@ void RarePixel(cv::Mat& src, cv::Mat& dst, int rectw, int recth)
 			std::sort(ary.begin(), ary.end(), LightCompare);
 			float v1 = GetLight(ary[median].c) - GetLight(ary.front().c);
 			float v2 = GetLight(ary.back().c) - GetLight(ary.front().c);
-
 			if (v1 > 10 / 255.0)
 			{
 				float& v = dst.at<float>(ary[0].y, ary[0].x);
 				v += v1;
 			}
-
 			if (v2 > 10 / 255.0)
 			{
 				float& v = dst.at<float>(ary.front().y, ary.front().x);
@@ -155,7 +144,6 @@ void RarePixel(cv::Mat& src, cv::Mat& dst, int rectw, int recth)
 			}
 		}
 	}
-
 	for (int x = 0; x < src.cols; ++x)
 	{
 		for (int y = 0; y < src.rows; ++y)
@@ -164,7 +152,6 @@ void RarePixel(cv::Mat& src, cv::Mat& dst, int rectw, int recth)
 			v = pow(v, 0.4f);
 		}
 	}
-
 	normalize(dst, dst, 0, 1, cv::NORM_MINMAX);
 }
 
@@ -207,32 +194,29 @@ void UnsharpMask1(cv::Mat& img, double amount, double radius, double threshold)
 	img32F.convertTo(img, CV_8U);
 }
 
-void AdjustContrast(cv::Mat& src, cv::Mat& dst, float contrast)
+void AdjustContrast(cv::Mat& img32F, cv::Mat& dst, float contrast)
 {
 	//求原圖均值
 	cv::Vec3f mean(0, 0, 0);
-
-	for (int y = 0; y < src.rows; y++)
+	for (int y = 0; y < img32F.rows; y++)
 	{
-		for (int x = 0; x < src.cols; x++)
+		for (int x = 0; x < img32F.cols; x++)
 		{
-			const cv::Vec3f& ori = src.at<cv::Vec3f>(y, x);
+			const cv::Vec3f& ori = img32F.at<cv::Vec3f>(y, x);
 			mean += ori;
 		}
 	}
-
 	for (int k = 0; k < 3; k++)
 	{
-		mean[k] /= src.rows * src.cols;
+		mean[k] /= img32F.rows * img32F.cols;
 	}
-
 	//調整對比度
 	if (contrast <= -255)
 	{
 		//當增量等於-255時，是圖像對比度的下端極限，此時，圖像RGB各份量都等於閥值，圖像呈全灰色，灰度圖上只有1條線，即閥值灰度；
-		for (int y = 0; y < src.rows; y++)
+		for (int y = 0; y < img32F.rows; y++)
 		{
-			for (int x = 0; x < src.cols; x++)
+			for (int x = 0; x < img32F.cols; x++)
 			{
 				cv::Vec3f& v = dst.at<cv::Vec3f>(y, x);
 				v = mean;
@@ -244,18 +228,16 @@ void AdjustContrast(cv::Mat& src, cv::Mat& dst, float contrast)
 		//(1)nRGB = RGB + (RGB - Threshold) * Contrast / 255
 		// 當增量大於-255且小於0時，直接用上面的公式計算圖像像素各份量
 		//公式中，nRGB表示調整後的R、G、B份量，RGB表示原圖R、G、B份量，Threshold為給定的閥值，Contrast為處理過的對比度增量。
-		for (int y = 0; y < src.rows; y++)
+		for (int y = 0; y < img32F.rows; y++)
 		{
-			for (int x = 0; x < src.cols; x++)
+			for (int x = 0; x < img32F.cols; x++)
 			{
 				cv::Vec3f nRGB;
-				cv::Vec3f& ori = src.at<cv::Vec3f>(y, x);
-
+				cv::Vec3f& ori = img32F.at<cv::Vec3f>(y, x);
 				for (int k = 0; k < 3; k++)
 				{
 					nRGB[k] = ori[k] + (ori[k] - mean[k]) * contrast / 255;
 				}
-
 				cv::Vec3f& v = dst.at<cv::Vec3f>(y, x);
 				v = nRGB;
 			}
@@ -268,18 +250,15 @@ void AdjustContrast(cv::Mat& src, cv::Mat& dst, float contrast)
 		//公式中的nContrast為處理後的對比度增量，Contrast為給定的對比度增量。
 		cv::Vec3f nRGB;
 		int nContrast = 255 * 255 / (255 - contrast) - 255;
-
-		for (int y = 0; y < src.rows; y++)
+		for (int y = 0; y < img32F.rows; y++)
 		{
-			for (int x = 0; x < src.cols; x++)
+			for (int x = 0; x < img32F.cols; x++)
 			{
-				cv::Vec3f& ori = src.at<cv::Vec3f>(y, x);
-
+				cv::Vec3f& ori = img32F.at<cv::Vec3f>(y, x);
 				for (int k = 0; k < 3; k++)
 				{
 					nRGB[k] = ori[k] + (ori[k] - mean[k]) * nContrast / 255;
 				}
-
 				cv::Vec3f& v = dst.at<cv::Vec3f>(y, x);
 				v = nRGB;
 			}
@@ -289,13 +268,12 @@ void AdjustContrast(cv::Mat& src, cv::Mat& dst, float contrast)
 	{
 		//當增量等於 255時，是圖像對比度的上端極限，實際等於設置圖像閥值，圖像由最多八種顏色組成，灰度圖上最多8條線，
 		//即紅、黃、綠、青、藍、紫及黑與白；
-		for (int y = 0; y < src.rows; y++)
+		for (int y = 0; y < img32F.rows; y++)
 		{
-			for (int x = 0; x < src.cols; x++)
+			for (int x = 0; x < img32F.cols; x++)
 			{
 				cv::Vec3f rgb;
-				cv::Vec3f& ori = src.at<cv::Vec3f>(y, x);
-
+				cv::Vec3f& ori = img32F.at<cv::Vec3f>(y, x);
 				for (int k = 0; k < 3; k++)
 				{
 					if (ori[k] > mean[k])
@@ -307,7 +285,6 @@ void AdjustContrast(cv::Mat& src, cv::Mat& dst, float contrast)
 						rgb[k] = 0;
 					}
 				}
-
 				cv::Vec3f& v = dst.at<cv::Vec3f>(y, x);
 				v = rgb;
 			}
@@ -315,24 +292,27 @@ void AdjustContrast(cv::Mat& src, cv::Mat& dst, float contrast)
 	}
 }
 
-void UnsharpMask2(cv::Mat& src, float amount, float radius, float threshold)
+void UnsharpMask2(cv::Mat& img, float amount, float radius, float threshold)
 {
 	threshold /= 255.0;
-	cv::Mat dst = src.clone();
-	cv::Mat blurimage(src.rows, src.cols, src.type(), cv::Scalar(0));
-	cv::Mat DiffImage(src.rows, src.cols, src.type(), cv::Scalar(0));
+	cv::Mat img32F, dst;
+	img.convertTo(img32F, CV_32F, 1 / 255.0);
+	img.convertTo(dst, CV_32F, 1 / 255.0);
+	cv::Mat blurimage(img32F.rows, img32F.cols, img32F.type(), cv::Scalar(0));
+	cv::Mat DiffImage(img32F.rows, img32F.cols, img32F.type(), cv::Scalar(0));
 	//原圖的高對比度圖像
-	cv::Mat highcontrast(src.rows, src.cols, src.type(), cv::Scalar(0));
-	AdjustContrast(src, highcontrast, amount);
-	//原圖的模糊圖像
-	cv::GaussianBlur(src, blurimage, cv::Size(0, 0), radius);
+	cv::Mat highcontrast(img32F.rows, img32F.cols, img32F.type(), cv::Scalar(0));
+	AdjustContrast(img32F, highcontrast, amount);
+	imshow("img32F", highcontrast);
 
+	//原圖的模糊圖像
+	cv::GaussianBlur(img32F, blurimage, cv::Size(0, 0), radius);
 	//原圖與模糊圖作差
-	for (int y = 0; y < src.rows; y++)
+	for (int y = 0; y < img32F.rows; y++)
 	{
-		for (int x = 0; x < src.cols; x++)
+		for (int x = 0; x < img32F.cols; x++)
 		{
-			cv::Vec3f& ori = src.at<cv::Vec3f>(y, x);
+			cv::Vec3f& ori = img32F.at<cv::Vec3f>(y, x);
 			cv::Vec3f& blur = blurimage.at<cv::Vec3f>(y, x);
 			cv::Vec3f val;
 			val[0] = abs(ori[0] - blur[0]);
@@ -341,17 +321,15 @@ void UnsharpMask2(cv::Mat& src, float amount, float radius, float threshold)
 			DiffImage.at<cv::Vec3f>(y, x) = val;
 		}
 	}
-
 	//銳化
-	for (int y = 0; y < src.rows; y++)
+	for (int y = 0; y < img32F.rows; y++)
 	{
-		for (int x = 0; x < src.cols; x++)
+		for (int x = 0; x < img32F.cols; x++)
 		{
 			cv::Vec3f& hc = highcontrast.at<cv::Vec3f>(y, x);
 			cv::Vec3f& diff = DiffImage.at<cv::Vec3f>(y, x);
-			cv::Vec3f& ori = src.at<cv::Vec3f>(y, x);
+			cv::Vec3f& ori = img32F.at<cv::Vec3f>(y, x);
 			cv::Vec3f val;
-
 			for (int k = 0; k < 3; k++)
 			{
 				if (diff[k] > threshold)
@@ -365,13 +343,11 @@ void UnsharpMask2(cv::Mat& src, float amount, float radius, float threshold)
 					val[k] = ori[k];
 				}
 			}
-
 			dst.at<cv::Vec3f>(y, x) = val;
 		}
 	}
-
-	normalize(dst, dst, 0, 1, cv::NORM_MINMAX);
-	src = dst;
+	normalize(dst, dst, 0, 255, cv::NORM_MINMAX);
+	dst.convertTo(img, CV_8U);
 }
 
 #include "math/Vector2.h"
@@ -431,54 +407,53 @@ struct _tmp_function
 void EdgeLink2(cv::Mat& image, Line& now_line)
 {
 	bool    edgefail = false;
-
 	for (; !edgefail;)
 	{
 		edgefail = true;
 		Weights wm = wm_init;
-
 		if (now_line.size() > 1)
 		{
 			int x, y;
 			Vector2 move = now_line.back() - *(now_line.end() - 2);
-
 			for (int i = 0; i < wm.size(); i++)
 			{
 				if (move.y != 0 && move.y == wm[i].pos.y)
 				{
 					wm[i].weight++;
 				}
-
 				if (move.x != 0 && move.x == wm[i].pos.x)
 				{
 					wm[i].weight++;
 				}
-
 				if (wm[i].pos == move)
 				{
 					wm[i].weight++;
 				}
 			}
 		}
-
 		std::sort(wm.begin(), wm.end());
 		const Vector2& v = now_line.back();
-
 		for (int i = 0; i < wm.size(); i++)
 		{
 			int x = v.x + wm[i].pos.x;
 			int y = v.y + wm[i].pos.y;
-
-			if (y < 0) { y = 0; }
-
-			if (y >= image.rows) { y = image.rows - 1; }
-
-			if (x < 0) { x = 0; }
-
-			if (x >= image.cols) { x = image.cols - 1; }
-
+			if (y < 0)
+			{
+				y = 0;
+			}
+			if (y >= image.rows)
+			{
+				y = image.rows - 1;
+			}
+			if (x < 0)
+			{
+				x = 0;
+			}
+			if (x >= image.cols)
+			{
+				x = image.cols - 1;
+			}
 			char& intensity = image.at<char>(y, x);
-
 			if (intensity != 0)
 			{
 				now_line.push_back(Vector2(x, y));
@@ -487,24 +462,29 @@ void EdgeLink2(cv::Mat& image, Line& now_line)
 				break;
 			}
 		}
-
 		if (edgefail)
 		{
 			for (int i = 0; i < wm_init2.size(); i++)
 			{
 				int x = v.x + wm_init2[i].pos.x;
 				int y = v.y + wm_init2[i].pos.y;
-
-				if (y < 0) { y = 0; }
-
-				if (y >= image.rows) { y = image.rows - 1; }
-
-				if (x < 0) { x = 0; }
-
-				if (x >= image.cols) { x = image.cols - 1; }
-
+				if (y < 0)
+				{
+					y = 0;
+				}
+				if (y >= image.rows)
+				{
+					y = image.rows - 1;
+				}
+				if (x < 0)
+				{
+					x = 0;
+				}
+				if (x >= image.cols)
+				{
+					x = image.cols - 1;
+				}
 				char& intensity = image.at<char>(y, x);
-
 				if (intensity != 0)
 				{
 					now_line.push_back(Vector2(x, y));
@@ -515,57 +495,55 @@ void EdgeLink2(cv::Mat& image, Line& now_line)
 			}
 		}
 	}
-
 	std::reverse(now_line.begin(), now_line.end());
 	edgefail = false;
-
 	for (; !edgefail;)
 	{
 		edgefail = true;
 		Weights wm = wm_init;
-
 		if (now_line.size() > 1)
 		{
 			int x, y;
 			Vector2 move = now_line.back() - *(now_line.end() - 2);
-
 			for (int i = 0; i < wm.size(); i++)
 			{
 				if (move.y != 0 && move.y == wm[i].pos.y)
 				{
 					wm[i].weight++;
 				}
-
 				if (move.x != 0 && move.x == wm[i].pos.x)
 				{
 					wm[i].weight++;
 				}
-
 				if (wm[i].pos == move)
 				{
 					wm[i].weight++;
 				}
 			}
 		}
-
 		std::sort(wm.begin(), wm.end());
 		const Vector2& v = now_line.back();
-
 		for (int i = 0; i < wm.size(); i++)
 		{
 			int x = v.x + wm[i].pos.x;
 			int y = v.y + wm[i].pos.y;
-
-			if (x < 0) { x = 0; }
-
-			if (x >= image.cols) { x = image.cols - 1; }
-
-			if (y < 0) { y = 0; }
-
-			if (y >= image.rows) { y = image.rows - 1; }
-
+			if (x < 0)
+			{
+				x = 0;
+			}
+			if (x >= image.cols)
+			{
+				x = image.cols - 1;
+			}
+			if (y < 0)
+			{
+				y = 0;
+			}
+			if (y >= image.rows)
+			{
+				y = image.rows - 1;
+			}
 			char& intensity = image.at<char>(y, x);
-
 			if (intensity != 0)
 			{
 				now_line.push_back(Vector2(x, y));
@@ -574,24 +552,29 @@ void EdgeLink2(cv::Mat& image, Line& now_line)
 				break;
 			}
 		}
-
 		if (edgefail)
 		{
 			for (int i = 0; i < wm_init2.size(); i++)
 			{
 				int x = v.x + wm_init2[i].pos.x;
 				int y = v.y + wm_init2[i].pos.y;
-
-				if (x < 0) { x = 0; }
-
-				if (x >= image.cols) { x = image.cols - 1; }
-
-				if (y < 0) { y = 0; }
-
-				if (y >= image.rows) { y = image.rows - 1; }
-
+				if (x < 0)
+				{
+					x = 0;
+				}
+				if (x >= image.cols)
+				{
+					x = image.cols - 1;
+				}
+				if (y < 0)
+				{
+					y = 0;
+				}
+				if (y >= image.rows)
+				{
+					y = image.rows - 1;
+				}
 				char& intensity = image.at<char>(y, x);
-
 				if (intensity != 0)
 				{
 					now_line.push_back(Vector2(x, y));
@@ -608,13 +591,11 @@ Lines ComputeEdgeLine2(const cv::Mat& image)
 {
 	cv::Mat tImage = image;
 	Lines   res;
-
 	for (int i = 0; i < tImage.rows; ++i)
 	{
 		for (int j = 0; j < tImage.cols; ++j)
 		{
 			char& intensity = tImage.at<char>(i, j);
-
 			if (intensity != 0)
 			{
 				Line line;
@@ -625,7 +606,6 @@ Lines ComputeEdgeLine2(const cv::Mat& image)
 			}
 		}
 	}
-
 	return res;
 }
 
@@ -634,14 +614,12 @@ void SmoothThreshold(cv::Mat src, cv::Mat& dst)
 {
 	//cv::resize(src, dst, cv::Size(src.cols * 2, src.rows * 2), 0, 0, CV_INTER_CUBIC);
 	dst = src.clone();
-
 	for (int r = 0; r < dst.rows; r++)
 	{
 		for (int c = 0; c < dst.cols; c++)
 		{
 			float s = dst.at<float>(r, c);
 			float& v = dst.at<float>(r, c);
-
 			if (s < 0.65)
 			{
 				v = 0;
@@ -652,7 +630,6 @@ void SmoothThreshold(cv::Mat src, cv::Mat& dst)
 			}
 		}
 	}
-
 	cv::Mat skeleton;
 	dst.convertTo(skeleton, CV_8U, 1);
 	dst.convertTo(dst, CV_8U, 255);
@@ -676,33 +653,29 @@ void SmoothThreshold(cv::Mat src, cv::Mat& dst)
 	std::vector<cv::Vec4i> hierarchy;
 	std::vector<std::vector<cv::Point>> contours;
 	findContours(dst, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE,
-	             cv::Point(0, 0));
+				 cv::Point(0, 0));
 	cv::Mat drawing = cv::Mat::zeros(dst.size(), CV_8UC3);
 	cv::RNG rng(12345);
-
 	for (int i = 0; i < contours.size(); i++)
 	{
 		cv::Scalar color = cv::Scalar(rng.uniform(50, 255), rng.uniform(50, 255),
-		                              rng.uniform(50, 255));
+									  rng.uniform(50, 255));
 		//drawContours( drawing, contours, i, color, 1, 8, hierarchy, 0, cv::Point() );
 		//if ( hierarchy[i][3] != -1 ) {
 		drawContours(drawing, contours, i, color, -1);
 		//}
 	}
-
 	imshow("FillContours", drawing);
 	drawing = cv::Scalar(0);
-
 	for (int i = 0; i < contours.size(); i++)
 	{
 		cv::Scalar color = cv::Scalar(rng.uniform(50, 255), rng.uniform(50, 255),
-		                              rng.uniform(50, 255));
+									  rng.uniform(50, 255));
 		//drawContours( drawing, contours, i, color, 1, 8, hierarchy, 0, cv::Point() );
 		//if ( hierarchy[i][3] != -1 ) {
 		drawContours(drawing, contours, i, color, 1);
 		//}
 	}
-
 	imshow("Contours",  drawing);
 	imwrite("Contours.png", drawing);
 	cv::waitKey();
@@ -718,7 +691,6 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 	RealMap.create(src.rows, src.cols, CV_32F);
 	ThresholdMap.create(src.rows, src.cols, CV_32F);
 	//WaterMap = cv::Scalar(1);
-
 	for (int y = 0; y < src.rows; ++y)
 	{
 		for (int x = 0; x < src.cols; ++x)
@@ -729,7 +701,6 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 			wmax = GetLight(ary.back().c) - GetLight(src.at<cv::Vec3f>(y, x));
 		}
 	}
-
 	for (int y = 0; y < src.rows; ++y)
 	{
 		for (int x = 0; x < src.cols; ++x)
@@ -742,11 +713,9 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 			r = w + GetLight(v);
 		}
 	}
-
 	normalize(MaxCapacity, MaxCapacity, 0, 1, cv::NORM_MINMAX);
 	floatptrs aryf(rectw * recth);
 	floatptrs aryr(rectw * recth);
-
 	for (int count = 0; count < 1000; ++count)
 	{
 //      if (count % 3 == 0)
@@ -784,7 +753,6 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 		cv::waitKey(1);
 		int start1 = 0, step1 = 1, end1 = src.rows;
 		int start2 = 0, step2 = 1, end2 = src.cols;
-
 		if (count % 2 == 1)
 		{
 			start1 = src.rows - 1;
@@ -794,7 +762,6 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 			step2 = -1;
 			end2 = -1;
 		}
-
 		for (int y = start1; y != end1; y += step1)
 		{
 			for (int x = start2; x != end2; x += step2)
@@ -802,13 +769,13 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 				float& wmax = MaxCapacity.at<float>(y, x);
 				float& w = WaterMap.at<float>(y, x);
 				float& r = RealMap.at<float>(y, x);
-
-				if (w == 0) { continue; }
-
+				if (w == 0)
+				{
+					continue;
+				}
 				GetMatrixf(rectw, recth, aryr, x, y, RealMap);
 				std::sort(aryr.begin(), aryr.end(), LightComparef);
 				int_vector can_add;
-
 				for (int i = 0; i < 9; ++i)
 				{
 					if (r > aryr[i].value())
@@ -816,18 +783,14 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 						can_add.push_back(i);
 					}
 				}
-
 				float ww = w / can_add.size();
-
 				for (auto it = can_add.begin(); it != can_add.end(); ++it)
 				{
 					int i = *it;
-
 					if (r > aryr[i].value())
 					{
 						float wmax2 = MaxCapacity.at<float>(aryr[i].y, aryr[i].x);
 						float maxadd = wmax2 - aryr[i].value();
-
 						if (maxadd > 0)
 						{
 							if (maxadd >= ww)
@@ -855,7 +818,6 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 						{
 							float newr = (r + aryr[i].value()) * 0.5;
 							float mover = r - newr;
-
 							if (mover > 0)
 							{
 								float& w2 = WaterMap.at<float>(aryr[i].y, aryr[i].x);
@@ -871,25 +833,20 @@ void Flood_CollectWater(cv::Mat src, cv::Mat& dst, int rectw, int recth)
 			}
 		}
 	}
-
 	// END
 	normalize(MaxCapacity, MaxCapacity, 0, 1, cv::NORM_MINMAX);
-
 	for (int r = 0; r < MaxCapacity.rows; r++)
 	{
 		for (int c = 0; c < MaxCapacity.cols; c++)
 		{
 			float& s = MaxCapacity.at<float>(r, c);
-
 			if (s > 0.4)
 			{
 				s = 0.4;
 			}
-
 			s = pow(s, 0.9f);
 		}
 	}
-
 	normalize(MaxCapacity, MaxCapacity, 0, 1, cv::NORM_MINMAX);
 	SmoothThreshold(MaxCapacity, MaxCapacity2);
 //  float garma = 2;
@@ -967,23 +924,20 @@ void Demo(const Mat& img1u)
 	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
 	//srcImg1f = img1u.clone();
 	CmCurveEx dEdge(srcImg1f);
-	dEdge.CalSecDer(7, 0.01f);
+	dEdge.CalSecDer(5, 0.01f);
 	dEdge.Link();
 	const vector<CmEdge>& edges = dEdge.GetEdges();
-
 	for (size_t i = 0; i < edges.size(); i++)
 	{
 		Vec3b color(rand() % 155 + 100, rand() % 155 + 100, rand() % 155 + 100);
 		const vector<Point>& pnts = edges[i].pnts;
-
 		for (size_t j = 0; j < pnts.size(); j++)
 		{
 			show3u.at<Vec3b>(pnts[j]) = color;
 		}
 	}
-
-	imshow("Derivativs", dEdge.GetDer());
-	imshow("GetDer2", dEdge.GetDer2());
+// 	imshow("Derivativs", dEdge.GetDer());
+// 	imshow("GetDer2", dEdge.GetDer2());
 	imshow("Curv1", show3u);
 	waitKey(0);
 }
@@ -991,7 +945,26 @@ void Demo(const Mat& img1u)
 int main(int argc, char* argv[])
 {
 	cv::Mat cImg = cv::imread(argv[1]), cImg2;
+	cv::Mat imgf;
+	cImg.convertTo(imgf, CV_32FC3, 1.0 / 255);
+	//AdjustContrast(imgf, imgf, -60);
+	for (int j = 0; j < cImg.cols ; ++j)
+	{
+		for (int i = 0; i < cImg.rows ; ++i)
+		{
+			cv::Vec3f& intensity = imgf.at<cv::Vec3f>(i, j);
+			intensity[0] = - pow((1 - intensity[0]), 2);
+			intensity[1] = - pow((1 - intensity[1]), 2);
+			intensity[2] = - pow((1 - intensity[2]), 2);
+		}
+	}
+	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
 
+	//UnsharpMask0(cImg, 20, 2, 0);
+	//UnsharpMask1(cImg, 105,2,0);
+	//UnsharpMask2(cImg, 150, 2, 0);
+	
+	imgf.convertTo(cImg, CV_8UC3, 255);
 // 	for (int r = 0; r < cImg.rows; r++)
 // 	{
 // 		for (int c = 0; c < cImg.cols; c++)
@@ -1002,7 +975,6 @@ int main(int argc, char* argv[])
 // 			s[2] = int(s[2] * 3) % 255;
 // 		}
 // 	}
-
 	imshow("orgin", cImg);
 	//CmCurveEx::Demo( cImg, 1 );
 //  cImg.convertTo(cImg, CV_32FC3, 1.0 / 255);

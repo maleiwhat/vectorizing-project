@@ -45,6 +45,7 @@ public:
 	void AddLines(const Lines& lines);
 	void AddLineSegs(const LineSegs& lines);
 	void AddLines(const Points2d& lines);
+	void AddLines(const CvPoints& lines);
 	void ClearPatchs();
 	void SetTransparency_Triangle(float t);
 	void SetTransparency_SelectPatch(float t);

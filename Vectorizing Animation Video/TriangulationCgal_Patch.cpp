@@ -79,15 +79,15 @@ void TriangulationCgal_Patch::Compute()
 	for (; fc != m_Triangulation.finite_faces_end(); ++fc)
 	{
 		if (fc->is_in_domain() && fc->info().in_domain()
-		        && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
+				&& fc->info().nesting_level != TRIANGLE_TRANSPARENT)
 		{
 			t.m_Points[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
 			t.m_Points[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
 			t.m_Points[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
 
 			if (fc->info().nesting_level >= 0
-			        && m_ColorConstraint.size() > fc->info().nesting_level
-			        && m_ColorConstraint[fc->info().nesting_level].get())
+					&& m_ColorConstraint.size() > fc->info().nesting_level
+					&& m_ColorConstraint[fc->info().nesting_level].get())
 			{
 // 				t.m_Colors[0] = m_ColorConstraint[fc->info().nesting_level]->
 // 				                GetColorVector3(t.m_Points[0].x, t.m_Points[0].y);
@@ -117,10 +117,10 @@ void TriangulationCgal_Patch::Compute()
 	double_vector   LinesWidth;
 
 	for (fc = m_Triangulation.finite_faces_begin();
-	        fc != m_Triangulation.finite_faces_end(); ++fc)
+			fc != m_Triangulation.finite_faces_end(); ++fc)
 	{
 		if (fc->is_in_domain() && fc->info().in_domain()
-		        && fc->info().nesting_level != TRIANGLE_TRANSPARENT)
+				&& fc->info().nesting_level != TRIANGLE_TRANSPARENT)
 		{
 			Vector2s pts;
 			int constrained = 0;
@@ -133,9 +133,9 @@ void TriangulationCgal_Patch::Compute()
 				if (!m_Triangulation.is_constrained(e))
 				{
 					Vector2 e1(e.first->vertex(m_Triangulation.ccw(e.second))->point().hx(),
-					           e.first->vertex(m_Triangulation.ccw(e.second))->point().hy());
+							   e.first->vertex(m_Triangulation.ccw(e.second))->point().hy());
 					Vector2 e2(e.first->vertex(m_Triangulation.cw(e.second))->point().hx(),
-					           e.first->vertex(m_Triangulation.cw(e.second))->point().hy());
+							   e.first->vertex(m_Triangulation.cw(e.second))->point().hy());
 					pts.push_back(e1.midPoint(e2));
 					widths.push_back(e1.distance(e2));
 					++constrained;
@@ -232,7 +232,7 @@ void TriangulationCgal_Patch::Clear()
 }
 
 void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt,
-        ImageSpline& m_ImageSpline, int idx)
+		ImageSpline& m_ImageSpline, int idx)
 {
 	PatchSpline& ps = m_ImageSpline.m_PatchSplines[idx];
 	LineIndex start_idx = ps.m_LineIndexs.front();
@@ -330,7 +330,7 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt,
 }
 
 void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt,
-        ImageSpline& is, PatchSpline& ps)
+		ImageSpline& is, PatchSpline& ps)
 {
 	const int NESTING_LEVEL = 0;
 	//const int NESTING_LEVEL = TRIANGLE_TRANSPARENT;
@@ -423,7 +423,7 @@ void TriangulationCgal_Patch::insert_polygonInter2(Triangulation& cdt,
 }
 
 void TriangulationCgal_Patch::insert_polygonInter(Triangulation& cdt,
-        ImageSpline& is, int idx)
+		ImageSpline& is, int idx)
 {
 	PatchSplines& pss = is.m_PatchSplinesInter[idx];
 
@@ -434,15 +434,15 @@ void TriangulationCgal_Patch::insert_polygonInter(Triangulation& cdt,
 }
 
 void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt,
-        const Polygon& polygon, int domain)
+		const Polygon& polygon, int domain)
 {
 	if (polygon.is_empty()) { return; }
 
 	Triangulation::Vertex_handle v_prev = cdt.insert(*CGAL::cpp0x::prev(
-	        polygon.vertices_end()));
+			polygon.vertices_end()));
 
 	for (Polygon::Vertex_iterator vit = polygon.vertices_begin();
-	        vit != polygon.vertices_end(); ++vit)
+			vit != polygon.vertices_end(); ++vit)
 	{
 		Triangulation::Vertex_handle vh = cdt.insert(*vit);
 		vh->info().nesting_level = domain;
@@ -452,8 +452,8 @@ void TriangulationCgal_Patch::insert_polygon(Triangulation& cdt,
 }
 
 void    TriangulationCgal_Patch::mark_domains(Triangulation& ct,
-        Triangulation::Face_handle start, int index,
-        std::list<Triangulation::Edge>& border)
+		Triangulation::Face_handle start, int index,
+		std::list<Triangulation::Edge>& border)
 {
 	if (start->info().nesting_level != TRIANGLE_NOT_INIT)
 	{
@@ -502,7 +502,7 @@ void    TriangulationCgal_Patch::mark_domains(Triangulation& ct,
 void    TriangulationCgal_Patch::mark_domains(Triangulation& cdt)
 {
 	for (Triangulation::All_faces_iterator it = cdt.all_faces_begin();
-	        it != cdt.all_faces_end(); ++it)
+			it != cdt.all_faces_end(); ++it)
 	{
 		it->info().nesting_level = TRIANGLE_NOT_INIT;
 	}
@@ -515,9 +515,9 @@ void    TriangulationCgal_Patch::mark_domains(Triangulation& cdt)
 	{
 		int domain = fc->vertex(0)->info().nesting_level;
 		domain = fc->vertex(1)->info().nesting_level == 0 ? fc->vertex(
-		             1)->info().nesting_level : domain;
+					 1)->info().nesting_level : domain;
 		domain = fc->vertex(2)->info().nesting_level == 0 ? fc->vertex(
-		             2)->info().nesting_level : domain;
+					 2)->info().nesting_level : domain;
 
 		if (TRIANGLE_NOT_INIT == fc->info().nesting_level && domain == 0)
 		{
@@ -533,11 +533,11 @@ void    TriangulationCgal_Patch::mark_domains(Triangulation& cdt)
 		Triangulation::Face_handle n = e.first->neighbor(e.second);
 		int domain = e.first->vertex(0)->info().nesting_level;
 		domain = e.first->vertex(1)->info().nesting_level > domain ? e.first->vertex(
-		             1)->info().nesting_level : domain;
+					 1)->info().nesting_level : domain;
 		domain = e.first->vertex(2)->info().nesting_level > domain ? e.first->vertex(
-		             2)->info().nesting_level : domain;
+					 2)->info().nesting_level : domain;
 		int transparent = e.first->vertex(0)->info().nesting_level ==
-		                  TRIANGLE_TRANSPARENT;
+						  TRIANGLE_TRANSPARENT;
 		transparent += e.first->vertex(1)->info().nesting_level == TRIANGLE_TRANSPARENT;
 		transparent += e.first->vertex(2)->info().nesting_level == TRIANGLE_TRANSPARENT;
 
@@ -564,7 +564,7 @@ void TriangulationCgal_Patch::AddPatch(Patch& cvps)
 }
 
 void TriangulationCgal_Patch::AddColorConstraint(ColorConstraint_sptr
-        constraint)
+		constraint)
 {
 	m_ColorConstraint.push_back(constraint);
 }

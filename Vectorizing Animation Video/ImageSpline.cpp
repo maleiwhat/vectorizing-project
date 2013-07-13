@@ -364,3 +364,25 @@ bool ImageSpline::CheckOnSide(int x, int y)
 
 	return false;
 }
+
+void ImageSpline::RemoveShadingLine( vavImage& vimg )
+{
+	for (int i = 0; i < m_LineFragments.size(); ++i)
+	{
+		Line& cps = m_LineFragments[i].m_Points;
+		int isBlack = 0;
+		for (int j = 0; j < cps.size(); j ++)
+		{
+			if (vimg.IsBlackLine(cps[j].x, cps[j].y, 6))
+			{
+				isBlack++;
+			}
+		}
+		printf("isBlack: %d now_line.size(): %d\n", isBlack, cps.size());
+		if (isBlack < cps.size() / 2)
+		{
+			m_LineFragments.erase(m_LineFragments.begin() + i);
+			i--;
+		}
+	}
+}

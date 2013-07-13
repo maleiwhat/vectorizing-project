@@ -80,7 +80,7 @@ CmCurveEx::CmCurveEx(const cv::Mat& srcImg1f, float maxOrntDif)
 dfdrr, dfdrc, and dfdcc, and sort them in descending order according to
 their absolute values. */
 void CmCurveEx::compute_eigenvals(double dfdrr, double dfdrc, double dfdcc,
-                                  double eigval[2], double eigvec[2][2])
+								  double eigval[2], double eigvec[2][2])
 {
 	double theta, t, c, s, e1, e2, n1, n2; /* , phi; */
 
@@ -153,7 +153,7 @@ void CmCurveEx::compute_eigenvals(double dfdrr, double dfdrc, double dfdcc,
 }
 
 const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
-                                    float linkStartBound)
+									float linkStartBound)
 {
 	cv::Mat dxx, dxy, dyy;
 	Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
@@ -209,8 +209,64 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
 	return m_pDer1f;
 }
 
+const cv::Mat& CmCurveEx::CalSecDer( cv::Mat engery, int kSize /*= 5*/, float linkEndBound /*= 0.01f*/, float linkStartBound /*= 0.1f*/ )
+{
+	cv::Mat dxx, dxy, dyy;
+	Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
+	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
+	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
+	double eigval[2], eigvec[2][2];
+
+	for (int y = 0; y < m_h; y++)
+	{
+		float* xx = dxx.ptr<float>(y);
+		float* xy = dxy.ptr<float>(y);
+		float* yy = dyy.ptr<float>(y);
+		float* pOrnt = m_pOrnt1f.ptr<float>(y);
+		float* pDer = m_pDer1f.ptr<float>(y);
+
+		for (int x = 0; x < m_w; x++)
+		{
+			compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
+			pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
+
+			if (pOrnt[x] < 0.0f)
+			{
+				pOrnt[x] += PI2;
+			}
+
+			pDer[x] = float(eigval[0] > 0.0f ? pow(eigval[0], 0.45) : 0.0f);//計算二階導數
+		}
+	}
+	m_pDer1f = engery;
+	GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0);
+	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
+
+	for (int y = 0; y < m_h; y++)
+	{
+		float* pDer = m_pDer1f.ptr<float>(y);
+		uchar* pDer2 = m_pDer2.ptr<uchar>(y);
+
+		for (int x = 0; x < m_w; x++)
+		{
+			if (pDer[x] > 0.2)
+			{
+				pDer2[x] = 1;
+			}
+			else
+			{
+				pDer2[x] = 0;
+			}
+		}
+	}
+
+	normalize(m_pDer2, m_pDer2, 0, 255, cv::NORM_MINMAX);
+	NoneMaximalSuppress(linkEndBound, linkStartBound);
+	return m_pDer1f;
+}
+
 const cv::Mat& CmCurveEx::CalFirDer(int kSize, float linkEndBound,
-                                    float linkStartBound)
+									float linkStartBound)
 {
 	cv::Mat dxMat, dyMat;
 	Sobel(m_img1f, dxMat, CV_32F, 1, 0, kSize);
@@ -271,7 +327,7 @@ void CmCurveEx::NoneMaximalSuppress(float linkEndBound, float linkStartBound)
 			sinN *= sinN;
 
 			if (pDer[c] >= (pDer[c + xSgn] * cosN + m_pDer1f.at<float>(r + ySgn, c) * sinN)
-			        && pDer[c] >= (pDer[c - xSgn] * cosN + m_pDer1f.at<float>(r - ySgn, c) * sinN))
+					&& pDer[c] >= (pDer[c - xSgn] * cosN + m_pDer1f.at<float>(r - ySgn, c) * sinN))
 			{
 				pLineInd[c] = IND_NMS;
 
@@ -299,7 +355,7 @@ const CEdges& CmCurveEx::Link(int shortRemoveBound /* = 3 */)
 	CEdge crtEdge(0);//當前邊
 
 	for (std::vector<PntImp>::iterator it = m_StartPnt.begin();
-	        it != m_StartPnt.end(); it++)
+			it != m_StartPnt.end(); it++)
 	{
 		cv::Point pnt = it->second;
 
@@ -631,7 +687,7 @@ void CmCurveEx::refreshOrnt(float& ornt, float& newOrnt)
 }
 
 bool CmCurveEx::goNext(cv::Point& pnt, float& ornt, CEdge& crtEdge, int orntInd,
-                       bool isBackward)
+					   bool isBackward)
 {
 	cv::Point pntN = pnt + DIRECTION8[orntInd];
 	int& label = m_pLabel1i.at<int>(pntN);
@@ -666,14 +722,14 @@ bool CmCurveEx::goNext(cv::Point& pnt, float& ornt, CEdge& crtEdge, int orntInd,
 }
 
 bool CmCurveEx::jumpNext(cv::Point& pnt, float& ornt, CEdge& crtEdge,
-                         int orntInd, bool isBackward)
+						 int orntInd, bool isBackward)
 {
 	cv::Point pnt2 = pnt + DIRECTION16[orntInd];
 
 	if (CHK_IND(pnt2) && m_pLabel1i.at<int>(pnt2) <= IND_NMS)
 	{
 		if (angle(ornt, m_pOrnt1f.at<float>(pnt2)) >
-		        m_maxAngDif) //如果該點方向與當前線方向差別比較大則不加入
+				m_maxAngDif) //如果該點方向與當前線方向差別比較大則不加入
 		{
 			return false;
 		}

@@ -228,6 +228,7 @@
     <ClInclude Include="DXUT\SDKmisc.h" />
     <ClInclude Include="Edge.h" />
     <ClInclude Include="FileView.h" />
+    <ClInclude Include="IFExtenstion.h" />
     <ClInclude Include="ImageSpline.h" />
     <ClInclude Include="imath.h" />
     <ClInclude Include="Line.h" />
@@ -331,6 +332,7 @@
     <ClCompile Include="DXUT\SDKmisc.cpp" />
     <ClCompile Include="Edge.cpp" />
     <ClCompile Include="FileView.cpp" />
+    <ClCompile Include="IFExtenstion.cpp" />
     <ClCompile Include="ImageSpline.cpp" />
     <ClCompile Include="imath.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>

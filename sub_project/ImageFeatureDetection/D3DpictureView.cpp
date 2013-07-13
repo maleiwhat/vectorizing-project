@@ -242,7 +242,7 @@ void CD3DpictureView::SetImage(vavImage* img, ID3D11ShaderResourceView* tex)
 	m_D3DApp.SetTexture(tex);
 #if 0
 	const int circle_length = 360;
-	int lineRadius = 3;
+	double lineRadius = 3;
 	const int picW = m_vavImage->GetWidth();
 	const int picH = m_vavImage->GetHeight();
 	for (int x = 0; x < picW; x++)
@@ -266,7 +266,7 @@ void CD3DpictureView::SetImage(vavImage* img, ID3D11ShaderResourceView* tex)
 				end.y += y;
 				oneLine.push_back(start);
 				oneLine.push_back(end);
-				// §ä¨ìªº¤Á½uªø¤j©ó3
+				// §ä¨ìªº¤Á½uªø¤j©ó2
 				if (start.distance(end) > 2)
 				{
 					double_vector line1 = m_vavImage->GetLineLight(start.x, start.y, end.x, end.y,
@@ -321,7 +321,7 @@ void CD3DpictureView::SetImage(vavImage* img, ID3D11ShaderResourceView* tex)
 				end.y += y;
 				oneLine.push_back(start);
 				oneLine.push_back(end);
-				// §ä¨ìªº¤Á½uªø¤j©ó3
+				// §ä¨ìªº¤Á½uªø¤j©ó2
 				if (start.distance(end) > 2)
 				{
 					double_vector line1 = m_vavImage->GetLineLight(start.x, start.y, end.x, end.y,

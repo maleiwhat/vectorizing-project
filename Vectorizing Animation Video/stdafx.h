@@ -47,6 +47,8 @@
 
 #include <afxcontrolbars.h>     // 功能區和控制列的 MFC 支援
 
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <d3d11.h>
 #include <windows.h>
 #include <d3dx11.h>

@@ -18,7 +18,7 @@
 #include "ImageSpline.h"
 #include "PositionGraph.h"
 #include "Line.h"
-
+#include "vavImage.h"
 
 
 class TriangulationCgal_Sideline : public TriangulationBase
@@ -90,6 +90,7 @@ public:
 	void insert_polygonInter(Triangulation& cdt, ImageSpline& is, int idx);
 	void insert_polygonInter2(Triangulation& cdt, ImageSpline& is, PatchSpline& ps);
 	void SetColor( ColorConstraint_sptrs& colors );
+	void RemoveShadingLine(vavImage& img);
 	static const int TRIANGLE_NOT_INIT = -1;
 	static const int TRIANGLE_TRANSPARENT = -2;
 

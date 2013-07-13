@@ -2,6 +2,7 @@
 #include "PatchSpline.h"
 #include "SplineFragment.h"
 #include "Patch.h"
+#include "vavImage.h"
 
 // 將多個 PatchSpline 整合成一個 ImageSpline
 // 裡面存著多個 SplineFragment
@@ -16,6 +17,7 @@ public:
 	void SmoothingFragments();
 	bool CheckOnSide(int x, int y);
 	void SetSize(int w, int h);
+	void RemoveShadingLine(vavImage& img);
 	CvPatchs    m_CvPatchs;
 	SplineFragments& GetSplineFragments();
 	Lines       m_Controls;

@@ -264,3 +264,60 @@ double_vector ConvertToTest(const double_vector& data, double zero)
 	}
 	return tmp;
 }
+
+double_vector GetBlackLine(const double_vector& data, double zero /*= 290*/)
+{
+	double_vector ans;
+	bool end = false;
+	const int check_length = 15;
+	const int size = data.size();
+	for (int i = 0; i < size && !end; ++i)
+	{
+		if (data[i] < zero)
+		{
+			// find zero point
+			for (int j = i; j < size * 2; ++j)
+			{
+				if (abs(data[j % size] - zero) < 1)
+				{
+					i = j % size;
+					if (j >= size)
+					{
+						end = true;
+					}
+					break;
+				}
+			}
+			for (int j = i; j < i + check_length; ++j)
+			{
+				if (data[j % size] > zero)
+				{
+					ans.push_back(((j % size) * 360.0 / size + 180) / 180 * M_PI);
+					if (j >= size)
+					{
+						end = true;
+					}
+					break;
+				}
+			}
+		}
+	}
+	return ans;
+}
+
+double GetVariance(const double_vector& data)
+{
+	double sum = 0;
+	for (int i = 0; i < data.size(); ++i)
+	{
+		sum += data[i];
+	}
+	sum /= data.size();
+	double variance = 0;
+	for (int i = 0; i < data.size(); ++i)
+	{
+		double v = sum - data[i];
+		variance += v * v;
+	}
+	return variance;
+}

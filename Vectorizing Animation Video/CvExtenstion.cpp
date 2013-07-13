@@ -1751,26 +1751,6 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
 	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
 					 cv::Scalar(up, up, up), flags);
-	// get Contour line
-	cv::Mat mask2 = mask01.clone();
-	ClearEdge(mask2);
-
-	for (int i = 1; i < mask2.rows - 1; i++)
-	{
-		for (int j = 1; j < mask2.cols - 1; j++)
-		{
-			uchar& v = mask2.at<uchar>(i, j);
-
-			if (v > 128)
-			{
-				v = 255;
-			}
-			else
-			{
-				v = 0;
-			}
-		}
-	}
 }
 
 void LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y)
@@ -2151,7 +2131,7 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
 				s *= 0.3;
 			}
 
-			s = pow(s, 2.0f);
+			//s = pow(s, 2.0f);
 		}
 	}
 
@@ -2242,7 +2222,7 @@ void FillSmallHole(cv::Mat& patchImage)
 ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold)
 {
 	cv::Mat image;
-	img.convertTo(image, CV_32FC3, 1 / 255.0);
+	img.convertTo(image, CV_32FC3);
 	Collect_Water(image, image, 5, 5, BlackRegionThreshold);
 	ImageSpline is = S4GetPatchs(image, 0, 0);
 	return is;
@@ -2267,6 +2247,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	mask = cv::Scalar::all(0);
 	int cc = 1;
 
+	imshow("image", image);
 	for (int i = 1; i < image.rows - 1; i++)
 	{
 		for (int j = 1; j < image.cols - 1; j++)

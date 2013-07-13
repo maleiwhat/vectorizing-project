@@ -1173,9 +1173,12 @@ void D3DApp::AddLines(const Lines& lines)
 		}
 
 		float r, g, b;
-		r = (rand() % 155 + 100) / 255.0f;
-		g = (rand() % 155 + 100) / 255.0f;
-		b = (rand() % 155 + 100) / 255.0f;
+// 		r = (rand() % 155 + 100) / 255.0f;
+// 		g = (rand() % 155 + 100) / 255.0f;
+// 		b = (rand() % 155 + 100) / 255.0f;
+		r = 1;
+		g = 1;
+		b = 1;
 		SkeletonLineVertex slv;
 		slv.color.x = r;
 		slv.color.y = g;
@@ -1220,6 +1223,32 @@ void D3DApp::AddLines(const Points2d& lines)
 			slv.p2.y = m_PicH - now_line[j - 1].hy();
 			m_SkeletonLinesVertices.push_back(slv);
 		}
+	}
+}
+
+void D3DApp::AddLines( const CvPoints& now_line )
+{
+	if (now_line.size() < 2)
+	{
+		return;
+	}
+
+	float r, g, b;
+	r = (rand() % 155 + 100) / 255.0f;
+	g = (rand() % 155 + 100) / 255.0f;
+	b = (rand() % 155 + 100) / 255.0f;
+	SkeletonLineVertex slv;
+	slv.color.x = r;
+	slv.color.y = g;
+	slv.color.z = b;
+
+	for (int j = 1; j < now_line.size(); ++j)
+	{
+		slv.p1.x = now_line[j].x;
+		slv.p1.y = m_PicH - now_line[j].y;
+		slv.p2.x = now_line[j - 1].x;
+		slv.p2.y = m_PicH - now_line[j - 1].y;
+		m_SkeletonLinesVertices.push_back(slv);
 	}
 }
 
@@ -1497,7 +1526,7 @@ void D3DApp::InterSetRenderTransparencyOutput()
 	m_SelectPatch_Transparency->SetFloat(0);
 	m_TriangleLine_Transparency->SetFloat(0);
 	m_Lines_Transparency->SetFloat(1);
-	m_SkeletonLines_Transparency->SetFloat(0);
+	m_SkeletonLines_Transparency->SetFloat(0.1);
 	m_TransparencySV_Picture->SetFloat(0);
 }
 
