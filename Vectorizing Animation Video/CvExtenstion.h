@@ -48,13 +48,13 @@ ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold, cv::Mat& i
 ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
 						   cv::Mat lineImage);
 ImageSpline GetImageSpline(CvPatchs& patchs);
-Line CvPointToLine(const CvPoints& cvps);
+Line CvPointToLine(const CvLine& cvps);
 
 PatchLines GetPatchSplines(CvPatchs& patchs, cv::Mat& patchImage);
 Lines GetAllLineFromLineImage(cv::Mat& lineImage);
 void    FixHole(cv::Mat& patchImage);
 void    FillSmallHole(cv::Mat& patchImage);
-Lines   GetLines(const CvPoints2d& cvp);
+Lines   GetLines(const CvLines& cvp);
 cv::Mat MakeLineImage(const cv::Mat& image, const Lines& lines);
 cv::Mat MakeLineImage(const cv::Mat& image, Patch& patch);
 
@@ -71,7 +71,7 @@ inline bool CorrectPosition(cv::Mat& image, int x, int y)
 void ClearEdge(cv::Mat& image);
 void EdgeLink_LineFragment(cv::Mat& image, Line& now_line, int now_value);
 void AddCathetus(CvPatchs& cvps);
-void AddCathetus(CvPoints& cps);
+void AddCathetus(CvLine& cps);
 void AddCathetus(Lines& cvps);
 void AddCathetus(Line& cps);
 

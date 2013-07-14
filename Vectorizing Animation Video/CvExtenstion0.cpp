@@ -792,7 +792,7 @@ cv::Mat Laplace(const cv::Mat& image, int aperture_size)
 }
 
 void S1FloodFill(cv::Mat& image, cv::Mat& mask, int x, int y,
-				 CvPoints2d& out_array)
+				 CvLines& out_array)
 {
 	cv::Vec3b& c = image.at<cv::Vec3b>(y, x);
 
@@ -839,7 +839,7 @@ void S1FloodFill(cv::Mat& image, cv::Mat& mask, int x, int y,
 		}
 	}
 
-	CvPoints2d points;
+	CvLines points;
 	cv::findContours(mask2, points, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 	double tarea = cv::contourArea(points.front());
 
@@ -881,7 +881,7 @@ void S1FloodFill(cv::Mat& image, cv::Mat& mask, int x, int y,
 
 	cv::imshow("image", image);
 	//cv::waitKey();
-	CvPoints2d points;
+	CvLines points;
 	cv::findContours(mask2, points, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
 	double tarea = cv::contourArea(points.front());
 
@@ -901,7 +901,7 @@ void S1FloodFill(cv::Mat& image, cv::Mat& mask, int x, int y,
 		Erosion(mask2, 2, erosion);
 	}
 
-	CvPoints2d points2;
+	CvLines points2;
 	cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
 
 	for (int i = erosion - 1; i >= 0 && points2.empty(); --i)
@@ -935,13 +935,13 @@ void S1FloodFill(cv::Mat& image, cv::Mat& mask, int x, int y,
 	out_array.push_back(cvp);
 }
 
-CvPoints2d GetSidelines(const cv::Mat& image0)
+CvLines GetSidelines(const cv::Mat& image0)
 {
 	cv::Mat mask, image;
 	image0.copyTo(image);
 	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
 	mask = cv::Scalar::all(0);
-	CvPoints2d cvp;
+	CvLines cvp;
 
 	for (int i = 1; i < image.rows - 1; i++)
 	{

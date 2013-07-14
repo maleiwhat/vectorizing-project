@@ -24,10 +24,10 @@ bool    LinkTrapBallBack(Line& li, const Vector2& ahead, cv::Mat& image,
 void    cvThin(cv::Mat& src, cv::Mat& dst, int iterations = 1);
 cv::Mat Laplace(const cv::Mat& image, int aperture_size = 3);
 void    S1FloodFill(cv::Mat& image,  cv::Mat& mask, int x, int y,
-                    CvPoints2d& out_array);
+                    CvLines& out_array);
 void    S1FloodFill(cv::Mat& image,  cv::Mat& mask, int x, int y,
                     CvPatchs& out_array, int dilation = 0, int erosion = 0);
-CvPoints2d GetSidelines(const cv::Mat& image);
+CvLines GetSidelines(const cv::Mat& image);
 CvPatchs S1GetPatchs(const cv::Mat& image);
 CvPatchs S1GetPatchs(const cv::Mat& image0, int dilation, int erosion);
 void GetSkeletonLine(cv::Mat bmap, Lines& lines, double_vector2d& linewidths);

@@ -1,16 +1,16 @@
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
 
-template<class K>
-void print_point(CGAL::Point_2<K> const& p)
+template<class CgalInexactKernel>
+void print_point(CGAL::Point_2<CgalInexactKernel> const& p)
 {
 	std::cout << "(" << p.x() << "," << p.y() << ")" ;
 }
 
-template<class K>
-void print_polygon(CGAL::Polygon_2<K> const& poly)
+template<class CgalInexactKernel>
+void print_polygon(CGAL::Polygon_2<CgalInexactKernel> const& poly)
 {
-	typedef CGAL::Polygon_2<K> Polygon ;
+	typedef CGAL::Polygon_2<CgalInexactKernel> Polygon ;
 	std::cout << "Polygon with " << poly.size() << " vertices" << std::endl ;
 
 	for (typename Polygon::Vertex_const_iterator vi = poly.vertices_begin() ;
@@ -20,11 +20,11 @@ void print_polygon(CGAL::Polygon_2<K> const& poly)
 	}
 }
 
-template<class K>
-void print_polygons(std::vector< boost::shared_ptr< CGAL::Polygon_2<K> > >
+template<class CgalInexactKernel>
+void print_polygons(std::vector< boost::shared_ptr< CGAL::Polygon_2<CgalInexactKernel> > >
                     const& polies)
 {
-	typedef std::vector< boost::shared_ptr< CGAL::Polygon_2<K> > > PolygonVector ;
+	typedef std::vector< boost::shared_ptr< CGAL::Polygon_2<CgalInexactKernel> > > PolygonVector ;
 	std::cout << "Polygon list with " << polies.size() << " polygons" << std::endl ;
 
 	for (typename PolygonVector::const_iterator pi = polies.begin() ;
@@ -34,10 +34,10 @@ void print_polygons(std::vector< boost::shared_ptr< CGAL::Polygon_2<K> > >
 	}
 }
 
-template<class K>
-void print_polygon_with_holes(CGAL::Polygon_with_holes_2<K> const& polywh)
+template<class CgalInexactKernel>
+void print_polygon_with_holes(CGAL::Polygon_with_holes_2<CgalInexactKernel> const& polywh)
 {
-	typedef CGAL::Polygon_with_holes_2<K> PolygonWithHoles ;
+	typedef CGAL::Polygon_with_holes_2<CgalInexactKernel> PolygonWithHoles ;
 	std::cout << "Polygon_with_holes having " << polywh.number_of_holes() <<
 	          " holes" << std::endl ;
 	print_polygon(polywh.outer_boundary());
@@ -49,11 +49,11 @@ void print_polygon_with_holes(CGAL::Polygon_with_holes_2<K> const& polywh)
 	}
 }
 
-template<class K>
+template<class CgalInexactKernel>
 void print_polygons_with_holes(
-    std::vector< boost::shared_ptr< CGAL::Polygon_with_holes_2<K> > > const& polies)
+    std::vector< boost::shared_ptr< CGAL::Polygon_with_holes_2<CgalInexactKernel> > > const& polies)
 {
-	typedef std::vector< boost::shared_ptr< CGAL::Polygon_with_holes_2<K> > >
+	typedef std::vector< boost::shared_ptr< CGAL::Polygon_with_holes_2<CgalInexactKernel> > >
 	PolygonWithHolesVector ;
 	std::cout << "Polygon_with_holes list with " << polies.size() << " element" <<
 	          std::endl ;
@@ -65,10 +65,10 @@ void print_polygons_with_holes(
 	}
 }
 
-template<class K>
-void print_straight_skeleton(CGAL::Straight_skeleton_2<K> const& ss)
+template<class CgalInexactKernel>
+void print_straight_skeleton(CGAL::Straight_skeleton_2<CgalInexactKernel> const& ss)
 {
-	typedef CGAL::Straight_skeleton_2<K> Ss ;
+	typedef CGAL::Straight_skeleton_2<CgalInexactKernel> Ss ;
 	typedef typename Ss::Vertex_const_handle     Vertex_const_handle ;
 	typedef typename Ss::Halfedge_const_handle   Halfedge_const_handle ;
 	typedef typename Ss::Halfedge_const_iterator Halfedge_const_iterator ;

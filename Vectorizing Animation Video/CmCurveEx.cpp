@@ -394,7 +394,7 @@ const CEdges& CmCurveEx::Link(int shortRemoveBound /* = 3 */)
 	for (int i = 0; i < edgNum; i++)
 	{
 		CEdge& edge = m_vEdge[i];
-		CvPoints& pnts = edge.pnts;
+		CvLine& pnts = edge.pnts;
 		pnts.resize(edge.pointNum);
 		pnts[0] = edge.start;
 
@@ -801,7 +801,7 @@ void CmCurveEx::Demo(const cv::Mat& img1u, bool isCartoon)
 	for (size_t i = 0; i < edges.size(); i++)
 	{
 		cv::Vec3b color(rand() % 255, rand() % 255, rand() % 255);
-		const CvPoints& pnts = edges[i].pnts;
+		const CvLine& pnts = edges[i].pnts;
 
 		for (size_t j = 0; j < pnts.size(); j++)
 		{

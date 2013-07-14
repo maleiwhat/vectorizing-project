@@ -12,10 +12,10 @@ class CvPatch
 {
 public:
 	void    AddOuterPoint(double x, double y);
-	CvPoints&   Outer();
-	CvPoints&   Outer2();
-	CvPoints2d& Inter();
-	CvPoints2d& Inter2();
+	CvLine&   Outer();
+	CvLine&   Outer2();
+	CvLines& Inter();
+	CvLines& Inter2();
 	Vec3bs&     OuterColor();
 	Vec3bs2d&   InterColor();
 	void    Clear();
@@ -25,11 +25,11 @@ public:
 	ColorConstraint_sptr GetColorConstraint2(cv::Mat& tmp);
 	bool    Inside(double x, double y);
 private:
-	CvPoints    m_Outer;
-	CvPoints    m_Outer2;
+	CvLine    m_Outer;
+	CvLine    m_Outer2;
 	Vec3bs      m_OuterColor;
-	CvPoints2d  m_Inter;
-	CvPoints2d  m_Inter2;
+	CvLines  m_Inter;
+	CvLines  m_Inter2;
 	Vec3bs2d    m_InterColor;
 	cv::Mat*    m_refImage;
 };

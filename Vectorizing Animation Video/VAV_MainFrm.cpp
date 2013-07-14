@@ -704,7 +704,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		CmCurveEx dEdge(imgf);
 		dEdge.CalSecDer(srcImg1f, 5, 0.01f);
 		dEdge.Link();
-		CvPoints2d tpnts2d;
+		CvLines tpnts2d;
 		const CEdges& edges = dEdge.GetEdges();
 		for (size_t i = 0; i < edges.size(); i++)
 		{

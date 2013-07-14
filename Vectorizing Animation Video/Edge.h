@@ -11,9 +11,9 @@ struct CEdge
 	int index;    // Start from 0
 	int pointNum;
 	cv::Point start, end;
-	CvPoints pnts;
+	CvLine pnts;
 };
 typedef std::vector<CEdge> CEdges;
 
 Lines GetLines(const CEdges& edges);
-Lines GetLine(CvPoints2d& cvline);
+

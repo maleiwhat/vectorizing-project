@@ -1195,11 +1195,11 @@ void D3DApp::AddLines(const Lines& lines)
 	}
 }
 
-void D3DApp::AddLines(const Points2d& lines)
+void D3DApp::AddLines(const CgalLines& lines)
 {
 	for (int i = 0; i < lines.size(); ++i)
 	{
-		const Points& now_line = lines[i];
+		const CgalLine& now_line = lines[i];
 
 		if (now_line.size() < 2)
 		{
@@ -1226,7 +1226,7 @@ void D3DApp::AddLines(const Points2d& lines)
 	}
 }
 
-void D3DApp::AddLines( const CvPoints& now_line )
+void D3DApp::AddLines( const CvLine& now_line )
 {
 	if (now_line.size() < 2)
 	{

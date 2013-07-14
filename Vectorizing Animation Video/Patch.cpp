@@ -229,7 +229,7 @@ void CvPatch::AddOuterPoint(double x, double y)
 	m_Outer.push_back(cv::Point(x, y));
 }
 
-CvPoints2d& CvPatch::Inter()
+CvLines& CvPatch::Inter()
 {
 	return m_Inter;
 }
@@ -240,7 +240,7 @@ void CvPatch::Clear()
 	m_Inter.clear();
 }
 
-CvPoints& CvPatch::Outer()
+CvLine& CvPatch::Outer()
 {
 	return m_Outer;
 }
@@ -328,12 +328,12 @@ ColorConstraint_sptr CvPatch::GetColorConstraint3()
 	}
 	return res;
 }
-CvPoints& CvPatch::Outer2()
+CvLine& CvPatch::Outer2()
 {
 	return m_Outer2;
 }
 
-CvPoints2d& CvPatch::Inter2()
+CvLines& CvPatch::Inter2()
 {
 	return m_Inter2;
 }
@@ -362,7 +362,7 @@ ColorConstraint_sptr CvPatch::GetColorConstraint2(cv::Mat& tmp)
 	cv::Rect rect = cv::boundingRect(m_Outer2);
 	cv::Scalar color = cv::Scalar(255);
 	tmp = cv::Scalar(0);
-	CvPoints2d tmpcvp;
+	CvLines tmpcvp;
 	tmpcvp.push_back(m_Outer2);
 	drawContours(tmp, tmpcvp, 0, color, -1, 8);
 	for (int i = rect.x; i < rect.x + rect.width - 1; i++)
@@ -436,7 +436,7 @@ CvPatch ToCvPatch(Patch& cvp)
 
 	for (auto it = cvp.Inter().begin(); it != cvp.Inter().end(); ++it)
 	{
-		CvPoints data;
+		CvLine data;
 
 		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
 		{

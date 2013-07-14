@@ -45,13 +45,13 @@ public:
 		VertexInfo2(): nesting_level(TRIANGLE_NOT_INIT) {}
 		int nesting_level;
 	};
-	typedef CGAL::Triangulation_vertex_base_with_info_2<VertexInfo2, K> Vb;
-	typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo2, K> Fbbb;
-	typedef CGAL::Constrained_triangulation_face_base_2<K, Fbbb>    Fbb;
-	typedef CGAL::Delaunay_mesh_face_base_2<K, Fbb>         Fb;
+	typedef CGAL::Triangulation_vertex_base_with_info_2<VertexInfo2, CgalInexactKernel> Vb;
+	typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo2, CgalInexactKernel> Fbbb;
+	typedef CGAL::Constrained_triangulation_face_base_2<CgalInexactKernel, Fbbb>    Fbb;
+	typedef CGAL::Delaunay_mesh_face_base_2<CgalInexactKernel, Fbb>         Fb;
 	typedef CGAL::Triangulation_data_structure_2<Vb, Fb>            TDS;
 	typedef CGAL::Exact_predicates_tag                              Itag;
-	typedef CGAL::Constrained_Delaunay_triangulation_2<K, TDS, Itag> Delaunay;
+	typedef CGAL::Constrained_Delaunay_triangulation_2<CgalInexactKernel, TDS, Itag> Delaunay;
 
 //  typedef CGAL::Triangulation_data_structure_2< CGAL::Triangulation_vertex_base_2<K>, CGAL::Triangulation_face_base_with_info_2<VFaceInfo2, K> > myface;
 //  typedef CGAL::Constrained_Delaunay_triangulation_2<K, myface> Delaunay;
@@ -65,11 +65,11 @@ public:
 	LineSegs    m_LineSegs;
 	Lines       m_Lines;
 	Lines       m_Controls;
-	Points      m_Points;
+	CgalLine      m_Points;
 	Delaunay    m_Delaunay;
 	ImageSpline m_ImageSpline;
 	CgalPatchs  m_CgalPatchs;
-	Points2d    m_OutLines;
+	CgalLines    m_OutLines;
 	PositionGraph   m_PositionGraph;
 
 	void MakeGraphLines();
@@ -86,7 +86,7 @@ public:
 	}
 	void AddPoint(double x, double y)
 	{
-		m_Points.push_back(Point(x, y));
+		m_Points.push_back(CgalPoint(x, y));
 	}
 	void Compute();
 	void Clear() {}

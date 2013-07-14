@@ -345,25 +345,6 @@ void Erosion(cv::Mat& image, int erosion_elem, int erosion_size)
 }
 
 
-
-
-Lines GetLines(const CvPoints2d& cvp)
-{
-	Lines lines;
-
-	for (auto it1 = cvp.begin(); it1 != cvp.end(); ++it1)
-	{
-		lines.push_back(Line());
-
-		for (auto it2 = it1->begin(); it2 != it1->end(); ++it2)
-		{
-			lines.back().push_back(Vector2(it2->x - 1, it2->y - 1));
-		}
-	}
-
-	return lines;
-}
-
 cv::Mat MakeLineImage(const cv::Mat& image0, const Lines& lines)
 {
 	cv::Mat image(image0.size(), CV_8UC3, cv::Scalar(0));
@@ -582,7 +563,7 @@ cv::Point GetCathetusPoint(cv::Point& p1, cv::Point& p2)
 	return p3;
 }
 
-void DrawCvPoints(CvPoints& tmp_cvps, cv::Mat tmp_image2)
+void DrawCvPoints(CvLine& tmp_cvps, cv::Mat tmp_image2)
 {
 	tmp_image2 = cv::Scalar(0);
 
@@ -599,7 +580,7 @@ void DrawCvPoints(CvPoints& tmp_cvps, cv::Mat tmp_image2)
 	//cv::waitKey();
 }
 
-void AddCathetus(CvPoints& cps)
+void AddCathetus(CvLine& cps)
 {
 	if (cps.size() == 4)
 	{
@@ -1170,8 +1151,8 @@ ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold,
 
 	for (int i = 0; i < tcvps.size(); ++i)
 	{
-		CvPoints& cps = tcvps[i].Outer2();
-		CvPoints newcps;
+		CvLine& cps = tcvps[i].Outer2();
+		CvLine newcps;
 
 		for (int j = 0; j < cps.size(); j ++)
 		{
@@ -1185,8 +1166,8 @@ ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold,
 
 		for (int j = 0; j < tcvps[i].Inter2().size(); ++j)
 		{
-			CvPoints& cps2 = tcvps[i].Inter2()[j];
-			CvPoints newcps2;
+			CvLine& cps2 = tcvps[i].Inter2()[j];
+			CvLine newcps2;
 
 			for (int k = 0; k < cps2.size(); ++k)
 			{
@@ -1572,7 +1553,7 @@ void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 		Dilation(mask2, 1, dilation);
 	}
 
-	CvPoints2d points2;
+	CvLines points2;
 	cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
 	CvPatch cvp;
 	cvp.Outer2() = points2.front();
@@ -1665,7 +1646,7 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 		}
 	}
 
-	CvPoints2d points;
+	CvLines points;
 	cv::findContours(mask2, points, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
 	double tarea = cv::contourArea(points.front());
 
@@ -1681,7 +1662,7 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 		Erosion(mask2, 1, erosion);
 	}
 
-	CvPoints2d points2;
+	CvLines points2;
 	cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
 
 	for (int i = erosion - 1; i >= 0 && points2.empty(); --i)
@@ -1853,7 +1834,7 @@ PatchLines GetPatchSplines(CvPatchs& patchs, cv::Mat& patchImage)
 	for (int i = 0; i < patchs.size(); ++i)
 	{
 		CvPatch& patch = patchs[i];
-		CvPoints& cps = patch.Outer();
+		CvLine& cps = patch.Outer();
 		cv::Vec3b& color = patchImage.at<cv::Vec3b>(cps[0].y - 1, cps[0].x - 1);
 		int last_near = color[0] + color[1] * 255 + color[2] * 255 * 255;
 		PatchLine ps;
@@ -2517,11 +2498,11 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 
 
 
-Line CvPointToLine(const CvPoints& cvps)
+Line CvPointToLine(const CvLine& cvps)
 {
 	Line ans;
 
-	for (CvPoints::const_iterator it = cvps.begin(); it != cvps.end(); ++it)
+	for (CvLine::const_iterator it = cvps.begin(); it != cvps.end(); ++it)
 	{
 		ans.push_back(Vector2(it->x, it->y));
 	}
@@ -2567,7 +2548,7 @@ ImageSpline GetImageSpline(CvPatchs& patchs)
 
 		PatchSplines patchInter;
 
-		for (CvPoints2d::iterator it2 = it->Inter2().begin(); it2 != it->Inter2().end();
+		for (CvLines::iterator it2 = it->Inter2().begin(); it2 != it->Inter2().end();
 				++it2)
 		{
 			if (it2->size() < 4)
