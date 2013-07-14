@@ -172,7 +172,7 @@ void Patch::SmoothPatch()
 	{
 		Vector2s& cps = m_Outer;
 		Vector2s newcps;
-		int last = cps.size() - 1;
+		size_t last = cps.size() - 1;
 
 		if (cps.size() < 5) { continue; }
 
@@ -200,7 +200,7 @@ void Patch::SmoothPatch()
 		{
 			Vector2s& cps = m_Inter[i];
 			Vector2s newcps;
-			int last = cps.size() - 1;
+			size_t last = cps.size() - 1;
 
 			if (cps.size() < 5) { continue; }
 

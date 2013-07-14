@@ -764,6 +764,6 @@ void vavImage::ToExpImage()
 			intensity[2] = - pow((1 - intensity[2]), 2);
 		}
 	}
-	normalize(imgf, imgf, 0, 255, cv::NORM_MINMAX);
-	imgf.convertTo(m_Image, CV_8UC3);
+	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
+	imgf.convertTo(m_Image, CV_8UC3, 255);
 }

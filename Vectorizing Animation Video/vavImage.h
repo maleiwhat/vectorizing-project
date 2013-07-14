@@ -61,6 +61,10 @@ public:
 
 	bool	IsBlackLine(double x, double y, double radius);
 	void	ToExpImage();
+	cv::Mat GetCvMat()
+	{
+		return m_Image;
+	}
 	cv::Mat Clone()
 	{
 		return m_Image.clone();

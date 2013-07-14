@@ -51,6 +51,7 @@ BEGIN_MESSAGE_MAP(VAV_View, CView)
 	ON_WM_MOUSELEAVE()
 	ON_WM_NCMOUSEMOVE()
 	ON_WM_NCMBUTTONUP()
+	ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
 // VAV_View 建構/解構
@@ -79,12 +80,10 @@ void VAV_View::OnDraw(CDC* /*pDC*/)
 {
 	VAV_Doc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-
 	if (!pDoc)
 	{
 		return;
 	}
-
 	// TODO: 在此加入原生資料的描繪程式碼
 	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
@@ -127,7 +126,7 @@ void VAV_View::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 {
 #ifndef SHARED_HANDLERS
 	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y,
-	        this, TRUE);
+			this, TRUE);
 #endif
 }
 
@@ -215,7 +214,6 @@ BOOL VAV_View::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 		m_Scale -= 0.25;
 		printf("m_Scale %f\n", m_Scale);
 	}
-
 	m_D3DApp.SetScale(m_Scale);
 	m_D3DApp.DrawScene();
 	//cv::imwrite("draw.png", m_D3DApp.DrawSceneToCvMat());
@@ -225,13 +223,17 @@ BOOL VAV_View::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 void VAV_View::OnMouseMove(UINT nFlags, CPoint point)
 {
 	CView::OnMouseMove(nFlags, point);
-
 	if (m_MButtonDown)
 	{
 		//printf("%f %f\n", m_LookCenter.x, m_LookCenter.y);
 		m_LookCenter.x = m_LookDown.x + point.x - m_MouseDown.x;
 		m_LookCenter.y = m_LookDown.y + point.y - m_MouseDown.y;
 		m_D3DApp.SetLookCenter(m_LookCenter.x , m_LookCenter.y);
+	}
+	if (m_LButtonDown)
+	{
+		m_MouseMove = point;
+		ShowLineNormal();
 	}
 }
 
@@ -254,48 +256,33 @@ void VAV_View::OnMButtonUp(UINT nFlags, CPoint point)
 
 void VAV_View::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	m_LButtonDown = true;
+	m_MouseMove = point;
 	CView::OnLButtonDown(nFlags, point);
-//  printf("%3d %3d ", point.x, m_D3DApp.Height()-point.y);
-//  printf("%3d %3d %3.2f %3.2f %3.2f\n", GetImage()->GetHeight(), m_D3DApp.Height(), m_Scale, m_LookCenter.x, m_LookCenter.y);
-	printf("%3.2f %3.2f\n", (point.x - m_LookCenter.x) / m_Scale,
-	       (GetImage()->GetHeight()*m_Scale - m_D3DApp.Height() + point.y - m_LookCenter.y)
-	       / m_Scale);
-	GetMainFrame()->ShowPatch((point.x - m_LookCenter.x) / m_Scale,
-	                          (GetImage()->GetHeight()*m_Scale - m_D3DApp.Height() + point.y - m_LookCenter.y)
-	                          / m_Scale);
-	m_D3DApp.SetLookCenter(m_LookCenter.x, m_LookCenter.y);
+	ShowLineNormal();
 }
-
 vavImage* VAV_View::GetImage()
 {
 	return &(GetMainFrame()->m_vavImage);
 }
-
-
 void VAV_View::OnKillFocus(CWnd* pNewWnd)
 {
 	CView::OnKillFocus(pNewWnd);
 	// TODO: 在此加入您的訊息處理常式程式碼
 	printf("OnMouseLeave\n");
 }
-
-
 void VAV_View::OnCaptureChanged(CWnd* pWnd)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼
 	CView::OnCaptureChanged(pWnd);
 	printf("OnMouseLeave\n");
 }
-
-
 void VAV_View::OnMouseLeave()
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
 	CView::OnMouseLeave();
 	printf("OnMouseLeave\n");
 }
-
-
 void VAV_View::OnNcMouseMove(UINT nHitTest, CPoint point)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
@@ -306,8 +293,6 @@ void VAV_View::OnNcMouseMove(UINT nHitTest, CPoint point)
 	m_MouseUp.x = m_LookDown.x;
 	m_MouseUp.y = m_LookDown.y;
 }
-
-
 void VAV_View::OnNcMButtonUp(UINT nHitTest, CPoint point)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
@@ -318,8 +303,66 @@ void VAV_View::OnNcMButtonUp(UINT nHitTest, CPoint point)
 	m_MouseUp.x = m_LookDown.x;
 	m_MouseUp.y = m_LookDown.y;
 }
-
 D3DApp& VAV_View::GetD3DApp()
 {
 	return m_D3DApp;
+}
+
+void VAV_View::SetPictureSize( int w, int h )
+{
+	m_PicW = w;
+	m_PicH = h;
+	m_D3DApp.SetPictureSize(w, h);
+}
+
+
+void VAV_View::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
+
+	CView::OnLButtonUp(nFlags, point);
+	m_LButtonDown = false;
+}
+
+void VAV_View::ShowLineNormal()
+{
+	double realX = (m_MouseMove.x - m_LookCenter.x) / m_Scale - m_LookCenter.x *
+		0.5;
+	double realY = (m_PicH * m_Scale - m_D3DApp.Height() + m_MouseMove.y
+		- m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
+	printf("%3.2f %3.2f\n", realX, realY);
+	m_D3DApp.SetLookCenter(m_LookCenter.x, m_LookCenter.y);
+	Vector2 click(realX, realY);
+	int idx1 = -1;
+	int idx2 = -1;
+	double dis = FLT_MAX;
+	int i = 0, j;
+	for (auto it1 = m_FeatureLines.begin(); it1 != m_FeatureLines.end(); ++it1, ++i)
+	{
+		j = 0;
+		for (auto it2 = it1->begin(); it2 != it1->end(); ++it2, ++j)
+		{
+			double nowDis = click.squaredDistance(*it2);
+			if (nowDis < dis)
+			{
+				idx1 = i;
+				idx2 = j;
+				dis = nowDis;
+			}
+		}
+	}
+	if (idx1 != -1)
+	{
+		Line twoPoint;
+		twoPoint.push_back(m_FeatureLines[idx1][idx2] - m_FeatureNormals[idx1][idx2]);
+		twoPoint.push_back(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2]);
+		Lines push;
+		push.push_back(twoPoint);
+		m_D3DApp.ClearTriangles();
+		m_D3DApp.AddLines(push);
+		m_D3DApp.AddLines(m_FeatureLines);
+		m_D3DApp.AddLines(push);
+		m_D3DApp.BuildPoint();
+		m_D3DApp.DrawScene();
+	}
 }

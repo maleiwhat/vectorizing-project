@@ -20,6 +20,7 @@
 #include "vavImage.h"
 #include "Patch.h"
 
+class VAV_View;
 class VAV_MainFrame : public CFrameWndEx
 {
 protected: // 僅從序列化建立
@@ -43,6 +44,7 @@ public:
 public:
 	void OnFileOpenVideo();
 	void OnFileOpenPicture();
+	VAV_View* GetVavView();
 // 覆寫
 public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);

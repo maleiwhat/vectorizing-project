@@ -15,6 +15,7 @@
 #pragma once
 #include "DX11/d3dApp.h"
 #include "math/Vector2.h"
+#include "Line.h"
 
 class VAV_Doc;
 class VAV_MainFrame;
@@ -44,18 +45,25 @@ public:
 	Vector2     m_LookCenter;
 	Vector2     m_LookDown;
 	HWND        m_hWndDX11;
+	Lines		m_FeatureLines;
+	Lines		m_FeatureNormals;
+	int			m_PicW;
+	int			m_PicH;
 	
 	bool        m_MButtonDown;
+	bool        m_LButtonDown;
 // 覆寫
 public:
 	virtual void OnDraw(CDC* pDC);  // 覆寫以描繪此檢視
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	D3DApp& GetD3DApp();
+	void SetPictureSize(int w, int h);
+
 protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
-
+	void	ShowLineNormal();
 // 程式碼實作
 public:
 	virtual ~VAV_View();
@@ -89,6 +97,7 @@ public:
 	afx_msg void OnMouseLeave();
 	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
 	afx_msg void OnNcMButtonUp(UINT nHitTest, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // VAV_View.cpp 中的偵錯版本

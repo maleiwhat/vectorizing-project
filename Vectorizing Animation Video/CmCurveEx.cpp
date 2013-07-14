@@ -160,7 +160,6 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
 	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
 	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
 	double eigval[2], eigvec[2][2];
-
 	for (int y = 0; y < m_h; y++)
 	{
 		float* xx = dxx.ptr<float>(y);
@@ -168,43 +167,19 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
 		float* yy = dyy.ptr<float>(y);
 		float* pOrnt = m_pOrnt1f.ptr<float>(y);
 		float* pDer = m_pDer1f.ptr<float>(y);
-
 		for (int x = 0; x < m_w; x++)
 		{
 			compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
 			pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
-
 			if (pOrnt[x] < 0.0f)
 			{
 				pOrnt[x] += PI2;
 			}
-
-			pDer[x] = float(eigval[0] > 0.0f ? pow(eigval[0], 0.45) : 0.0f);//計算二階導數
+			pDer[x] = float(eigval[0] > 0.0f ? powf(eigval[0], 1) : 0.0f);//計算二階導數
 		}
 	}
-
-	GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0);
+	//GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0);
 	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
-
-	for (int y = 0; y < m_h; y++)
-	{
-		float* pDer = m_pDer1f.ptr<float>(y);
-		uchar* pDer2 = m_pDer2.ptr<uchar>(y);
-
-		for (int x = 0; x < m_w; x++)
-		{
-			if (pDer[x] > 0.2)
-			{
-				pDer2[x] = 1;
-			}
-			else
-			{
-				pDer2[x] = 0;
-			}
-		}
-	}
-
-	normalize(m_pDer2, m_pDer2, 0, 255, cv::NORM_MINMAX);
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
 	return m_pDer1f;
 }

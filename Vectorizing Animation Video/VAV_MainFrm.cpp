@@ -24,6 +24,7 @@
 #include "CvExtenstion2.h"
 #include "IFExtenstion.h"
 #include "CmCurveEx.h"
+#include "Line.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -456,7 +457,7 @@ void VAV_MainFrame::OnFileOpenPicture()
 		filename = dlg.GetPathName(); // return full path and filename
 		if (filename.GetLength() > 1)
 		{
-			D3DApp& d3dApp = ((VAV_View*)this->GetActiveView())->GetD3DApp();
+			D3DApp& d3dApp = GetVavView()->GetD3DApp();
 			CMFCRibbonEdit* re;
 			CMFCRibbonBaseElement* tmp_ui = m_wndRibbonBar.GetCategory(0)->FindByID(
 												ID_SPIN_TransparencySelectPatch);
@@ -494,8 +495,8 @@ void VAV_MainFrame::OnFileOpenPicture()
 			d3dApp.SetTransparency_Picture((100 - m_PictureTransparency) * 0.01);
 			m_vavImage.ReadImage(ConvStr::GetStr(filename.GetString()));
 			d3dApp.ClearTriangles();
-			d3dApp.SetPictureSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-			((VAV_View*)this->GetActiveView())->SetTexture(m_vavImage.GetDx11Texture());
+			GetVavView()->SetPictureSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+			GetVavView()->SetTexture(m_vavImage.GetDx11Texture());
 		}
 	}
 }
@@ -543,7 +544,7 @@ void VAV_MainFrame::OnButtonCanny()
 	cw2.convertTo(cw, CV_32FC3);
 	Collect_Water(cw, cw, 5, 5, m_BlackRegionThreshold * 0.01);
 	m_cannyImage = cw;
-	((VAV_View*)this->GetActiveView())->SetTexture(m_cannyImage.GetDx11Texture());
+	GetVavView()->SetTexture(m_cannyImage.GetDx11Texture());
 }
 
 
@@ -572,7 +573,7 @@ void VAV_MainFrame::OnButtonControlPointInitialize()
 
 void VAV_MainFrame::OnButtonCGALTriangulation()
 {
-	D3DApp& d3dApp = ((VAV_View*)this->GetActiveView())->GetD3DApp();
+	D3DApp& d3dApp = GetVavView()->GetD3DApp();
 	ImageSpline is;
 	const bool DRAW_PATCH = false;
 	const bool DRAW_SEPARATE_PATCH = false;
@@ -583,126 +584,14 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	const bool DRAW_CURVE_EXTRACTION = true;
 	if (DRAW_CURVE_EXTRACTION)
 	{
-		const int circle_length = 360;
-		double lineRadius = 3;
 		vavImage vImage = m_vavImage.Clone();
 		vImage.ToExpImage();
-		const int picW = vImage.GetWidth();
-		const int picH = vImage.GetHeight();
-		Lines lines;
-		D3DXVECTOR3 cc(1, 1, 1);
-		for (int x = 0; x < picW; x++)
-		{
-			for (int y = 0; y < picH; y++)
-			{
-				double_vector checkdata = ConvertToSquareWave(ConvertToAngle(
-											  vImage.GetRingLight(x, y,
-													  lineRadius, circle_length)), 5, 50);
-				if (IsBlackLine(checkdata))
-				{
-					double_vector line = GetBlackLine(checkdata);
-					Line oneLine;
-					Vector2 start(sin(line[0]), cos(line[0]));
-					start *= lineRadius;
-					start.x += x + 1;
-					start.y += y + 1;
-					Vector2 end(sin(line[1]), cos(line[1]));
-					end *= lineRadius;
-					end.x += x + 1;
-					end.y += y + 1;
-					oneLine.push_back(start);
-					oneLine.push_back(end);
-					// 找到的切線長大於2
-					if (start.distance(end) > 2)
-					{
-						double_vector line1 = vImage.GetLineLight(start.x, start.y, end.x, end.y,
-											  360);
-						double variance1 = GetVariance(line1);
-						line[0] += 0.5 * M_PI;
-						line[1] += 0.5 * M_PI;
-						Vector2 start2(sin(line[0]), cos(line[0]));
-						start2 *= lineRadius;
-						start2.x += x;
-						start2.y += y;
-						Vector2 end2(sin(line[1]), cos(line[1]));
-						end2 *= lineRadius;
-						end2.x += x;
-						end2.y += y;
-						double_vector line2 = vImage.GetLineLight(start2.x, start2.y, end2.x,
-											  end2.y, 360);
-						double variance2 = GetVariance(line2);
-						if (!(variance1 > 10000 || variance2 < 10000))
-						{
-							lines.push_back(oneLine);
-						}
-					} // if (start.distance(end) > 2)
-				} // if (IsBlackLine(checkdata))
-			} // for (int y = 0; y < picH; y++)
-		} // for (int x = 0; x < picW; x++)
-		lineRadius = 4;
-		for (int x = 0; x < picW; x++)
-		{
-			for (int y = 0; y < picH; y++)
-			{
-				double_vector checkdata = ConvertToSquareWave(ConvertToAngle(
-											  vImage.GetRingLight(x, y,
-													  lineRadius, circle_length)), 5, 50);
-				if (IsBlackLine(checkdata))
-				{
-					double_vector line = GetBlackLine(checkdata);
-					Line oneLine;
-					Vector2 start(sin(line[0]), cos(line[0]));
-					start *= lineRadius;
-					start.x += x + 1;
-					start.y += y + 1;
-					Vector2 end(sin(line[1]), cos(line[1]));
-					end *= lineRadius;
-					end.x += x + 1;
-					end.y += y + 1;
-					oneLine.push_back(start);
-					oneLine.push_back(end);
-					// 找到的切線長大於2
-					if (start.distance(end) > 2)
-					{
-						double_vector line1 = vImage.GetLineLight(start.x, start.y, end.x, end.y,
-											  360);
-						double variance1 = GetVariance(line1);
-						line[0] += 0.5 * M_PI;
-						line[1] += 0.5 * M_PI;
-						Vector2 start2(sin(line[0]), cos(line[0]));
-						start2 *= lineRadius;
-						start2.x += x;
-						start2.y += y;
-						Vector2 end2(sin(line[1]), cos(line[1]));
-						end2 *= lineRadius;
-						end2.x += x;
-						end2.y += y;
-						double_vector line2 = vImage.GetLineLight(start2.x, start2.y, end2.x,
-											  end2.y, 360);
-						double variance2 = GetVariance(line2);
-						if (!(variance1 > 10000 || variance2 < 10000))
-						{
-							lines.push_back(oneLine);
-						}
-					} // if (start.distance(end) > 2)
-				} // if (IsBlackLine(checkdata))
-			} // for (int y = 0; y < picH; y++)
-		} // for (int x = 0; x < picW; x++)
-		d3dApp.AddLines(lines);
-		d3dApp.SetScaleTemporary(1);
-		d3dApp.BuildPoint();
-		cv::Mat simg = d3dApp.DrawSceneToCvMat();
-		d3dApp.SetScaleRecovery();
-		d3dApp.ClearTriangles();
-		cv::Mat imgf, srcImg1f, show3u = cv::Mat::zeros(simg.size(), CV_8UC3);
-		cvtColor(simg, simg, CV_BGR2GRAY);
-		simg.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
+		cv::Mat imgf, show3u = cv::Mat::zeros(vImage.GetCvMat().size(), CV_8UC3);
 		imgf = vImage;
-		cv::imshow("vImage", imgf);
 		cvtColor(imgf, imgf, CV_BGR2GRAY);
-		imgf.convertTo(imgf, CV_32FC1, 1.0 / 255);
+		imgf.convertTo(imgf, CV_32F, 1.0 / 255);
 		CmCurveEx dEdge(imgf);
-		dEdge.CalSecDer(srcImg1f, 5, 0.01f);
+		dEdge.CalSecDer(5, 0.01f);
 		dEdge.Link();
 		CvLines tpnts2d;
 		const CEdges& edges = dEdge.GetEdges();
@@ -715,11 +604,17 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 				show3u.at<cv::Vec3b>(pnts[j]) = color;
 			}
 			tpnts2d.push_back(edges[i].pnts);
-			d3dApp.AddLines(edges[i].pnts);
 		}
-
-		cv::imshow("Ornt", dEdge.GetOrnt());
-		cv::imshow("Curv1", show3u);
+		Lines showLine = GetLines(tpnts2d, 0.5, 0.5);
+		showLine = SmoothingLen5(showLine, 5);
+		Lines normals = GetNormalsLen2(showLine);
+		Lines normalLines = LinesAdd(showLine, normals);
+		Lines normalLines2 = LinesSub(showLine, normals);
+		GetVavView()->m_FeatureLines = showLine;
+		GetVavView()->m_FeatureNormals = normals;
+		d3dApp.AddLines(showLine);
+		d3dApp.AddLines(normalLines);
+		d3dApp.AddLines(normalLines2);
 	}
 	TriangulationCgal_Sideline cgal_contour;
 	ImageSpline is2;
@@ -907,7 +802,7 @@ void VAV_MainFrame::OnButtonSkeleton()
 		}
 	}
 	m_cannyImage = cw;
-	((VAV_View*)this->GetActiveView())->SetTexture(m_cannyImage.GetDx11Texture());
+	GetVavView()->SetTexture(m_cannyImage.GetDx11Texture());
 }
 
 
@@ -915,7 +810,7 @@ void VAV_MainFrame::OnButtonSobel()
 {
 	// TODO: 在此加入您的命令處理常式程式碼
 	m_cannyImage = m_vavImage;
-	((VAV_View*)this->GetActiveView())->SetTexture(m_cannyImage.GetDx11Texture());
+	GetVavView()->SetTexture(m_cannyImage.GetDx11Texture());
 }
 
 
@@ -927,7 +822,7 @@ void VAV_MainFrame::OnButtonLaplace()
 
 void VAV_MainFrame::OnSpinTransparencySelectPatch()
 {
-	((VAV_View*)this->GetActiveView())->
+	GetVavView()->
 	GetD3DApp().SetTransparency_SelectPatch((100 - m_SelectPatchTransparency) *
 											0.01);
 }
@@ -944,14 +839,14 @@ void VAV_MainFrame::OnUpdateSpinTransparencySelectPatch(CCmdUI* pCmdUI)
 		m_SelectPatchTransparency = atoi(ConvStr::GetStr(
 											 re->GetEditText().GetString()).c_str());
 	}
-	((VAV_View*)this->GetActiveView())->
+	GetVavView()->
 	GetD3DApp().SetTransparency_SelectPatch((100 - m_SelectPatchTransparency) *
 											0.01);
 }
 
 void VAV_MainFrame::ShowPatch(double x, double y)
 {
-	((VAV_View*)this->GetActiveView())->GetD3DApp().ClearPatchs();
+	GetVavView()->GetD3DApp().ClearPatchs();
 	for (int i = 0; i < m_CvPatchs.size(); ++i)
 	{
 //      if (m_CvPatchs[i].Inside(x, y))
@@ -979,7 +874,7 @@ void VAV_MainFrame::OnSpinTransparencyPatch()
 		m_PatchTransparency = atoi(ConvStr::GetStr(
 									   re->GetEditText().GetString()).c_str());
 	}
-	((VAV_View*)this->GetActiveView())->GetD3DApp().SetTransparency_Triangle((
+	GetVavView()->GetD3DApp().SetTransparency_Triangle((
 				100 - m_PatchTransparency) * 0.01);
 }
 
@@ -995,7 +890,7 @@ void VAV_MainFrame::OnUpdateSpinTransparencyPatch(CCmdUI* pCmdUI)
 		m_PatchTransparency = atoi(ConvStr::GetStr(
 									   re->GetEditText().GetString()).c_str());
 	}
-	((VAV_View*)this->GetActiveView())->GetD3DApp().SetTransparency_Triangle((
+	GetVavView()->GetD3DApp().SetTransparency_Triangle((
 				100 - m_PatchTransparency) * 0.01);
 }
 
@@ -1011,7 +906,7 @@ void VAV_MainFrame::OnSpinTransparencyline()
 		m_LineTransparency = atoi(ConvStr::GetStr(
 									  re->GetEditText().GetString()).c_str());
 	}
-	((VAV_View*)this->GetActiveView())->GetD3DApp().SetTransparency_Line((
+	GetVavView()->GetD3DApp().SetTransparency_Line((
 				100 - m_LineTransparency) * 0.01);
 }
 
@@ -1026,7 +921,7 @@ void VAV_MainFrame::OnUpdateSpinTransparencyline(CCmdUI* pCmdUI)
 		m_LineTransparency = atoi(ConvStr::GetStr(
 									  re->GetEditText().GetString()).c_str());
 	}
-	((VAV_View*)this->GetActiveView())->GetD3DApp().SetTransparency_Line((
+	GetVavView()->GetD3DApp().SetTransparency_Line((
 				100 - m_LineTransparency) * 0.01);
 }
 
@@ -1042,7 +937,7 @@ void VAV_MainFrame::OnUpdateSpinTransparencypicture(CCmdUI* pCmdUI)
 		m_PictureTransparency = atoi(ConvStr::GetStr(
 										 re->GetEditText().GetString()).c_str());
 	}
-	((VAV_View*)this->GetActiveView())->GetD3DApp().SetTransparency_Picture((
+	GetVavView()->GetD3DApp().SetTransparency_Picture((
 				100 - m_PictureTransparency) * 0.01);
 }
 
@@ -1058,7 +953,7 @@ void VAV_MainFrame::OnSpinTransparencypicture()
 		m_PictureTransparency = atoi(ConvStr::GetStr(
 										 re->GetEditText().GetString()).c_str());
 	}
-	((VAV_View*)this->GetActiveView())->GetD3DApp().SetTransparency_Picture((
+	GetVavView()->GetD3DApp().SetTransparency_Picture((
 				100 - m_PictureTransparency) * 0.01);
 }
 
@@ -1102,7 +997,7 @@ void VAV_MainFrame::OnSpinTransparencytriangleline()
 		m_TriangleLineTransparency = atoi(ConvStr::GetStr(
 											  re->GetEditText().GetString()).c_str());
 	}
-	((VAV_View*)this->GetActiveView())->GetD3DApp().SetTransparency_TriangleLine((
+	GetVavView()->GetD3DApp().SetTransparency_TriangleLine((
 				100 - m_TriangleLineTransparency) * 0.01);
 }
 
@@ -1118,7 +1013,7 @@ void VAV_MainFrame::OnUpdateSpinTransparencytriangleline(CCmdUI* pCmdUI)
 		m_TriangleLineTransparency = atoi(ConvStr::GetStr(
 											  re->GetEditText().GetString()).c_str());
 	}
-	((VAV_View*)this->GetActiveView())->GetD3DApp().SetTransparency_TriangleLine((
+	GetVavView()->GetD3DApp().SetTransparency_TriangleLine((
 				100 - m_TriangleLineTransparency) * 0.01);
 }
 
@@ -1134,7 +1029,7 @@ void VAV_MainFrame::OnSpinTransparencylineskeleton()
 		m_LineSkeletonTransparency = atoi(ConvStr::GetStr(
 											  re->GetEditText().GetString()).c_str());
 	}
-	((VAV_View*)this->GetActiveView())->GetD3DApp().SetTransparency_LineSkeleton((
+	GetVavView()->GetD3DApp().SetTransparency_LineSkeleton((
 				100 - m_LineSkeletonTransparency) * 0.01);
 }
 
@@ -1149,6 +1044,11 @@ void VAV_MainFrame::OnUpdateSpinTransparencylineskeleton(CCmdUI* pCmdUI)
 		m_LineSkeletonTransparency = atoi(ConvStr::GetStr(
 											  re->GetEditText().GetString()).c_str());
 	}
-	((VAV_View*)this->GetActiveView())->GetD3DApp().SetTransparency_LineSkeleton((
+	GetVavView()->GetD3DApp().SetTransparency_LineSkeleton((
 				100 - m_LineSkeletonTransparency) * 0.01);
+}
+
+VAV_View* VAV_MainFrame::GetVavView()
+{
+	return ((VAV_View*)this->GetActiveView());
 }

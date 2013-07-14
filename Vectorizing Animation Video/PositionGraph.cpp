@@ -314,6 +314,7 @@ bool PositionGraph::AddJoint(const Vector2& joint, const Vector2& p1,
 			out->m_Links.push_back(m_AllNodeptrs.back());
 		}
 	}
+	return false;
 }
 
 void PositionGraph::SmoothGraphLines()
@@ -457,12 +458,12 @@ void PositionGraph::MakeContourLines()
 			rights[j].normalise();
 		}
 		//lineSegs.push_back(now_line.front() + rights.front()*now_linewidth.front() * 0.5);
-		for (int j = 0; j < now_line.size(); ++j)
+		for (size_t j = 0; j < now_line.size(); ++j)
 		{
 			lineSegs.push_back(now_line[j] + rights[j] * (now_linewidth[j] - 0.2) * 0.5);
 		}
 		//lineSegs.push_back(now_line.back() + rights.back()*now_linewidth.back() * 0.5);
-		for (int j = now_line.size() - 1; j >= 0; --j)
+		for (size_t j = now_line.size() - 1; j >= 0; --j)
 		{
 			lineSegs.push_back(now_line[j] - rights[j] * (now_linewidth[j] - 0.2) * 0.5);
 		}

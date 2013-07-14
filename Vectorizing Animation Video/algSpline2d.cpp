@@ -35,7 +35,7 @@ void algSpline2d::CheckBuildSpline()
 		m_NeedBuildSpline = false;
 		m_data.setcontent(m_vV.size() / 3, 3, &m_vV[0]);
 		rbfsetpoints(m_model, m_data);
-		int new_size = m_vV.size() / 30;
+		size_t new_size = m_vV.size() / 30;
 
 		if (new_size < 10) { new_size = 10; }
 

@@ -39,7 +39,16 @@ CgalLines	GetCgalLines(const Lines& cvp, double xOffset=0, double yOffset=0);
 CgalLine	GetCgalLine(const CvLine& cvp, double xOffset=0, double yOffset=0);
 CgalLine	GetCgalLine(const Line& cvp, double xOffset=0, double yOffset=0);
 
-Line	SmoothingSize5(const Line& cvp, int repeat = 1);
-Line	SmoothingSize3(const Line& cvp, int repeat = 1);
-Lines	SmoothingSize5(const Lines& cvp, int repeat = 1);
-Lines	SmoothingSize3(const Lines& cvp, int repeat = 1);
+Line	SmoothingLen5(const Line& cvp, int repeat = 1);
+Line	SmoothingLen3(const Line& cvp, int repeat = 1);
+Lines	SmoothingLen5(const Lines& cvp, int repeat = 1);
+Lines	SmoothingLen3(const Lines& cvp, int repeat = 1);
+
+Line	GetNormalsLen2(const Line& cvp);
+Line	GetNormalsLen3(const Line& cvp);
+Lines	GetNormalsLen2(const Lines& cvp);
+Lines	GetNormalsLen3(const Lines& cvp);
+Line	LineAdd(const Line& aLine, const Line& bLine);
+Lines	LinesAdd(const Lines& aLine, const Lines& bLine);
+Line	LineSub(const Line& aLine, const Line& bLine);
+Lines	LinesSub(const Lines& aLine, const Lines& bLine);

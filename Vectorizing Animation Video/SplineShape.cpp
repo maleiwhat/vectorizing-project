@@ -97,7 +97,7 @@ void SplineShape::CheckBuildSpline()
 		}
 
 		m_aScale.setcontent(scale.size(), &scale[0]);
-		int nodes = m_vX.size() / 5;
+		size_t nodes = m_vX.size() / 5;
 
 		if (nodes < 5) { nodes = 5; }
 

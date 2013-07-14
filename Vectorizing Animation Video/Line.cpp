@@ -1,4 +1,5 @@
 #include "Line.h"
+#include "math/Quaternion.h"
 
 
 Lines GetLines(const CvLines& cvp)
@@ -167,7 +168,7 @@ CgalLine GetCgalLine(const Line& cvp, double xOffset/*=0*/,
 	return line;
 }
 
-Line SmoothingSize5(const Line& cvp, int repeat)
+Line SmoothingLen5(const Line& cvp, int repeat)
 {
 	if (cvp.size() <= 2)
 	{
@@ -208,18 +209,18 @@ Line SmoothingSize5(const Line& cvp, int repeat)
 	return cps;
 }
 
-Lines SmoothingSize5(const Lines& cvp, int repeat /*= 1*/)
+Lines SmoothingLen5(const Lines& cvp, int repeat /*= 1*/)
 {
 	Lines cps(cvp.size());
 	for (int i = 0; i < cvp.size(); ++i)
 	{
 		const Line& nowLine = cvp[i];
-		cps[i] = SmoothingSize5(nowLine, repeat);
+		cps[i] = SmoothingLen5(nowLine, repeat);
 	}
 	return cps;
 }
 
-Line SmoothingSize3(const Line& cvp, int repeat /*= 1*/)
+Line SmoothingLen3(const Line& cvp, int repeat /*= 1*/)
 {
 	if (cvp.size() <= 2)
 	{
@@ -242,13 +243,124 @@ Line SmoothingSize3(const Line& cvp, int repeat /*= 1*/)
 	return cps;
 }
 
-Lines SmoothingSize3(const Lines& cvp, int repeat /*= 1*/)
+Lines SmoothingLen3(const Lines& cvp, int repeat /*= 1*/)
 {
 	Lines cps(cvp.size());
 	for (int i = 0; i < cvp.size(); ++i)
 	{
 		const Line& nowLine = cvp[i];
-		cps[i] = SmoothingSize3(nowLine, repeat);
+		cps[i] = SmoothingLen3(nowLine, repeat);
 	}
 	return cps;
+}
+
+Line GetNormalsLen3(const Line& cvp)
+{
+	Line normals;
+	if (cvp.size() > 3)
+	{
+		normals.push_back(Quaternion::GetRotation(cvp[2] - cvp[0], -90));
+		for (int i = 1; i < cvp.size() - 1 ; ++i)
+		{
+			normals.push_back(Quaternion::GetRotation(cvp[i + 1] - cvp[i - 1],
+							  -90));
+		}
+		int last = cvp.size() - 1;
+		normals.push_back(Quaternion::GetRotation(cvp[last] - cvp[last - 2], -90));
+		for (int i = 0; i < normals.size() ; ++i)
+		{
+			normals[i].normalise();
+		}
+	}
+	else
+	{
+		normals = GetNormalsLen2(cvp);
+	}
+	return normals;
+}
+
+Line GetNormalsLen2(const Line& cvp)
+{
+	Line normals;
+	normals.push_back(Quaternion::GetRotation(cvp[1] - cvp[0], -90));
+	for (int i = 1; i < cvp.size(); ++i)
+	{
+		normals.push_back(Quaternion::GetRotation(cvp[i] - cvp[i - 1],
+						  -90));
+	}
+	for (int i = 0; i < normals.size() ; ++i)
+	{
+		normals[i].normalise();
+	}
+	return normals;
+}
+
+Lines GetNormalsLen2(const Lines& cvp)
+{
+	Lines cps(cvp.size());
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Line& nowLine = cvp[i];
+		cps[i] = GetNormalsLen2(nowLine);
+	}
+	return cps;
+}
+
+Lines GetNormalsLen3(const Lines& cvp)
+{
+	Lines cps(cvp.size());
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Line& nowLine = cvp[i];
+		cps[i] = GetNormalsLen3(nowLine);
+	}
+	return cps;
+}
+
+Line LineAdd(const Line& aLine, const Line& bLine)
+{
+	Line ans(aLine.size());
+	for (int i = 0; i < aLine.size(); ++i)
+	{
+		const Vector2& aa = aLine.at(i);
+		const Vector2& bb = bLine.at(i);
+		ans[i] = aa + bb;
+	}
+	return ans;
+}
+
+Lines LinesAdd( const Lines& aLine, const Lines& bLine )
+{
+	Lines ans(aLine.size());
+	for (int i = 0; i < aLine.size(); ++i)
+	{
+		const Line& aa = aLine.at(i);
+		const Line& bb = bLine.at(i);
+		ans[i] = LineAdd(aa, bb);
+	}
+	return ans;
+}
+
+Line LineSub( const Line& aLine, const Line& bLine )
+{
+	Line ans(aLine.size());
+	for (int i = 0; i < aLine.size(); ++i)
+	{
+		const Vector2& aa = aLine.at(i);
+		const Vector2& bb = bLine.at(i);
+		ans[i] = aa - bb;
+	}
+	return ans;
+}
+
+Lines LinesSub( const Lines& aLine, const Lines& bLine )
+{
+	Lines ans(aLine.size());
+	for (int i = 0; i < aLine.size(); ++i)
+	{
+		const Line& aa = aLine.at(i);
+		const Line& bb = bLine.at(i);
+		ans[i] = LineSub(aa, bb);
+	}
+	return ans;
 }

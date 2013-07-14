@@ -162,6 +162,7 @@ double getAofX_value(int index)
 	default:
 		assert(0);
 	}
+	return -1;
 }
 
 Matrix_row MakebasicA0123(int NumOfSegPoints)
