@@ -605,16 +605,56 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			}
 			tpnts2d.push_back(edges[i].pnts);
 		}
-		Lines showLine = GetLines(tpnts2d, 0.5, 0.5);
-		showLine = SmoothingLen5(showLine, 5);
+		Lines showLine = GetLines(tpnts2d, 0, 0);
+		showLine = SmoothingLen5(showLine, 1);
 		Lines normals = GetNormalsLen2(showLine);
-		Lines normalLines = LinesAdd(showLine, normals);
-		Lines normalLines2 = LinesSub(showLine, normals);
 		GetVavView()->m_FeatureLines = showLine;
 		GetVavView()->m_FeatureNormals = normals;
+		showLine = GetLines(tpnts2d, 0.5, 0.5);
+		showLine = SmoothingLen5(showLine, 5);
 		d3dApp.AddLines(showLine);
-		d3dApp.AddLines(normalLines);
-		d3dApp.AddLines(normalLines2);
+		Line twoPoint;
+		for (int idx1 = 0; idx1 < showLine.size(); ++idx1)
+		{
+			const Line& nowLine = showLine[idx1];
+			const Line& nowNormals = normals[idx1];
+			Lines push;
+			for (int idx2 = 0; idx2 < nowLine.size() - 1; ++idx2)
+			{
+				Vector2 start(nowLine[idx2] - nowNormals[idx2] * 5);
+				Vector2 end(nowLine[idx2] + nowNormals[idx2] * 5);
+				Vector2 start2(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * 5);
+				Vector2 end2(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * 5);
+				double_vector line1 = vImage.GetLineLight(start.x, start.y, end.x, end.y,
+									  360);
+				double_vector line2 = vImage.GetLineLight(start2.x, start2.y, end2.x, end2.y,
+									  360);
+				line1 = SmoothingLen5(line1, 3);
+				line2 = SmoothingLen5(line2, 3);
+				double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
+													10, 50));
+				double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
+													10, 50));
+				if (!width1.empty() && !width2.empty())
+				{
+					Line line1;
+					line1.push_back(nowLine[idx2] + nowNormals[idx2] * width1[0]);
+					line1.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[0]);
+					line1 = GetLine(line1, 0.5, 0.5);
+					Line line2;
+					line2.push_back(nowLine[idx2] + nowNormals[idx2] * width1[1]);
+					line2.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[1]);
+					line2 = GetLine(line2, 0.5, 0.5);
+					push.push_back(line1);
+					push.push_back(line2);
+				}
+			}
+			d3dApp.AddLines(push);
+		}
+// 		Lines normalLines = LinesAdd(showLine, normals);
+// 		Lines normalLines2 = LinesSub(showLine, normals);
+// 		d3dApp.AddLines(normalLines);
+// 		d3dApp.AddLines(normalLines2);
 	}
 	TriangulationCgal_Sideline cgal_contour;
 	ImageSpline is2;

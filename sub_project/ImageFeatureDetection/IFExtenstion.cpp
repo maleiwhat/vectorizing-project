@@ -9,13 +9,27 @@ double_vector ConvertToAngle(const double_vector& data)
 {
 	double_vector tmp = (data);
 	double_vector ans;
-	const int size = data.size();
-	for (int i = 0; i < size; ++i)
 	{
-		int ileft = (i + 2) % size;
-		int iright = (i - 2 + size) % size;
-		double dy = tmp[iright] - tmp[ileft];
+		double dy = tmp[1] - tmp[0];
+		double angle = atan2f(2, dy) / M_PI * 180 + 200;
+		ans.push_back(angle);
+		dy = tmp[2] - tmp[0];
+		angle = atan2f(3, dy) / M_PI * 180 + 200;
+		ans.push_back(angle);
+	}
+	for (int i = 2; i < data.size() - 2; ++i)
+	{
+		double dy = tmp[i + 2] - tmp[i - 2];
 		double angle = atan2f(5, dy) / M_PI * 180 + 200;
+		ans.push_back(angle);
+	}
+	{
+		int last = data.size() - 1;
+		double dy = tmp[last] - tmp[last - 2];
+		double angle = atan2f(3, dy) / M_PI * 180 + 200;
+		ans.push_back(angle);
+		dy = tmp[last] - tmp[last - 1];
+		angle = atan2f(2, dy) / M_PI * 180 + 200;
 		ans.push_back(angle);
 	}
 	return Smoothing(ans);
@@ -79,6 +93,58 @@ bool IsBlackLine(const double_vector& data, double zero)
 	const int size = data.size();
 	for (int i = 0; i < size && !end; ++i)
 	{
+		if (data[i] > zero)
+		{
+			if (i == 0 && data.back() < zero)
+			{
+				lookline--;
+			}
+			// find zero point
+			for (int j = i; j < size * 2; ++j)
+			{
+				if (abs(data[j % size] - zero) < 1)
+				{
+					i = j % size;
+					if (j >= size)
+					{
+						end = true;
+					}
+					break;
+				}
+			}
+			for (int j = i; j < i + check_length; ++j)
+			{
+				if (data[j % size] < zero)
+				{
+					lookline++;
+					if (j >= size)
+					{
+						end = true;
+					}
+					break;
+				}
+			}
+		}
+	}
+	if (lookline == 2)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool IsBrightLine(const double_vector& data, double zero /*= 290*/)
+{
+
+	bool end = false;
+	int lookline = 0;
+	const int check_length = 15;
+	const int size = data.size();
+	for (int i = 0; i < size && !end; ++i)
+	{
 		if (data[i] < zero)
 		{
 			if (i == 0)
@@ -108,57 +174,6 @@ bool IsBlackLine(const double_vector& data, double zero)
 			for (int j = i; j < i + check_length; ++j)
 			{
 				if (data[j % size] > zero)
-				{
-					lookline++;
-					if (j >= size)
-					{
-						end = true;
-					}
-					break;
-				}
-			}
-		}
-	}
-	if (lookline == 2)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool IsBrightLine(const double_vector& data, double zero /*= 290*/)
-{
-	bool end = false;
-	int lookline = 0;
-	const int check_length = 15;
-	const int size = data.size();
-	for (int i = 0; i < size && !end; ++i)
-	{
-		if (data[i] > zero)
-		{
-			if (i == 0 && data.back() < zero)
-			{
-				lookline--;
-			}
-			// find zero point
-			for (int j = i; j < size * 2; ++j)
-			{
-				if (abs(data[j % size] - zero) < 1)
-				{
-					i = j % size;
-					if (j >= size)
-					{
-						end = true;
-					}
-					break;
-				}
-			}
-			for (int j = i; j < i + check_length; ++j)
-			{
-				if (data[j % size] < zero)
 				{
 					lookline++;
 					if (j >= size)
@@ -218,53 +233,6 @@ bool IsShading(const double_vector& data, double zero)
 	}
 	return false;
 }
-
-double_vector ConvertToTest(const double_vector& data, double zero)
-{
-	const int size = data.size();
-	double_vector tmp, tmp2;
-	int bigger_zero = -1;
-	int smaller_zero = -1;
-	for (int i = 0; i < size; ++i)
-	{
-		if (data[i] > zero)
-		{
-			for (int j = i; j < size; ++j)
-			{
-				if (abs(data[j] - zero) < 1)
-				{
-					bigger_zero = i;
-				}
-			}
-			break;
-		}
-	}
-	if (bigger_zero == -1)
-	{
-		return data;
-	}
-	tmp2.insert(tmp2.end(), data.begin() + bigger_zero, data.end());
-	tmp2.insert(tmp2.end(), data.begin(), data.begin() + bigger_zero);
-	if (tmp2.back() > zero)
-	{
-		for (int i = size - 1; i > 0; --i)
-		{
-			if (abs(tmp2[i] - zero) < 1)
-			{
-				bigger_zero = i;
-				break;
-			}
-		}
-		tmp.insert(tmp.end(), tmp2.begin() + bigger_zero, tmp2.end());
-		tmp.insert(tmp.end(), tmp2.begin(), tmp2.begin() + bigger_zero);
-	}
-	else
-	{
-		tmp = tmp2;
-	}
-	return tmp;
-}
-
 double_vector GetBlackLine(const double_vector& data, double zero /*= 290*/)
 {
 	double_vector ans;
@@ -273,7 +241,7 @@ double_vector GetBlackLine(const double_vector& data, double zero /*= 290*/)
 	const int size = data.size();
 	for (int i = 0; i < size && !end; ++i)
 	{
-		if (data[i] < zero)
+		if (data[i] > zero)
 		{
 			// find zero point
 			for (int j = i; j < size * 2; ++j)
@@ -290,7 +258,7 @@ double_vector GetBlackLine(const double_vector& data, double zero /*= 290*/)
 			}
 			for (int j = i; j < i + check_length; ++j)
 			{
-				if (data[j % size] > zero)
+				if (data[j % size] < zero)
 				{
 					ans.push_back(((j % size) * 360.0 / size + 180) / 180 * M_PI);
 					if (j >= size)

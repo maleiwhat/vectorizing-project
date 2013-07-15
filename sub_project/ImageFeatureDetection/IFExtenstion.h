@@ -7,5 +7,4 @@ bool	IsBlackLine(const double_vector& data, double zero = 290);
 double_vector	GetBlackLine(const double_vector& data, double zero = 290);
 bool	IsBrightLine(const double_vector& data, double zero = 290);
 bool	IsShading(const double_vector& data, double zero = 290);
-double_vector	ConvertToTest(const double_vector& data, double zero = 290);
 double	GetVariance(const double_vector& data);

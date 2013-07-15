@@ -5,6 +5,7 @@
 #include "D3DpictureView.h"
 #include "MainFrm.h"
 #include "IFExtenstion.h"
+
 // CD3DpictureView
 ViewMap g_ViewMap;
 

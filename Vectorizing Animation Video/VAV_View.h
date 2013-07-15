@@ -13,9 +13,11 @@
 //
 
 #pragma once
+#include <windows.h>
 #include "DX11/d3dApp.h"
 #include "math/Vector2.h"
 #include "Line.h"
+#include "vtkShowHistogramTimerCallback.h"
 
 class VAV_Doc;
 class VAV_MainFrame;
@@ -52,13 +54,21 @@ public:
 	
 	bool        m_MButtonDown;
 	bool        m_LButtonDown;
+
+	HANDLE	m_thread;
+	vtkShowHistogramTimerCallback_Sptr m_TimerCallback;
+	vtkXYPlotActor_Sptr m_plot;
+	vtkRenderWindow_Sptr m_renderWindow;
+	vtkRenderWindowInteractor_Sptr m_interactor;
+	vavImage	m_ExpImage;
 // ÂÐ¼g
 public:
 	virtual void OnDraw(CDC* pDC);  // ÂÐ¼g¥H´yÃ¸¦¹ÀËµø
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+public:
 	D3DApp& GetD3DApp();
 	void SetPictureSize(int w, int h);
-
+	static unsigned __stdcall MyThreadFunc(LPVOID lpParam);
 protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);

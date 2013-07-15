@@ -276,10 +276,11 @@ double vavImage::GetBilinearLight(double x, double y)
 	v[2] = GetLight(right_up.x, right_up.y);
 	v[3] = GetLight(right_down.x, right_down.y);
 	// bilinear interpolation
-	double ans = v[0] * ((2 - abs(x - left_up.x) - abs(y - left_up.y)) * 0.5);
-	ans += v[1] * ((2 - abs(x - left_down.x) - abs(y - left_down.y)) * 0.5);
-	ans += v[2] * ((2 - abs(x - right_up.x) - abs(y - right_up.y)) * 0.5);
-	ans += v[3] * ((2 - abs(x - right_down.x) - abs(y - right_down.y)) * 0.5);
+	double up = v[0] * abs(x - right_down.x);
+	up += v[2] * abs(x - left_down.x);
+	double down = v[1] * abs(x - right_up.x);
+	down += v[3] * abs(x - left_up.x);
+	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
 	return ans * 0.5;
 }
 
@@ -323,10 +324,11 @@ double vavImage::GetBilinearR(double x, double y)
 	v[2] = m_Image.at<cv::Vec3b>(right_up.y, right_up.x)[2];
 	v[3] = m_Image.at<cv::Vec3b>(right_down.y, right_down.x)[2];
 	// bilinear interpolation
-	double ans = v[0] * ((2 - abs(x - left_up.x) - abs(y - left_up.y)) * 0.5);
-	ans += v[1] * ((2 - abs(x - left_down.x) - abs(y - left_down.y)) * 0.5);
-	ans += v[2] * ((2 - abs(x - right_up.x) - abs(y - right_up.y)) * 0.5);
-	ans += v[3] * ((2 - abs(x - right_down.x) - abs(y - right_down.y)) * 0.5);
+	double up = v[0] * abs(x - right_down.x);
+	up += v[2] * abs(x - left_down.x);
+	double down = v[1] * abs(x - right_up.x);
+	down += v[3] * abs(x - left_up.x);
+	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
 	return ans * 0.5;
 }
 
@@ -364,10 +366,11 @@ double vavImage::GetBilinearG(double x, double y)
 	v[2] = m_Image.at<cv::Vec3b>(right_up.y, right_up.x)[1];
 	v[3] = m_Image.at<cv::Vec3b>(right_down.y, right_down.x)[1];
 	// bilinear interpolation
-	double ans = v[0] * ((2 - abs(x - left_up.x) - abs(y - left_up.y)) * 0.5);
-	ans += v[1] * ((2 - abs(x - left_down.x) - abs(y - left_down.y)) * 0.5);
-	ans += v[2] * ((2 - abs(x - right_up.x) - abs(y - right_up.y)) * 0.5);
-	ans += v[3] * ((2 - abs(x - right_down.x) - abs(y - right_down.y)) * 0.5);
+	double up = v[0] * abs(x - right_down.x);
+	up += v[2] * abs(x - left_down.x);
+	double down = v[1] * abs(x - right_up.x);
+	down += v[3] * abs(x - left_up.x);
+	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
 	return ans * 0.5;
 }
 
@@ -405,10 +408,11 @@ double vavImage::GetBilinearB(double x, double y)
 	v[2] = m_Image.at<cv::Vec3b>(right_up.y, right_up.x)[0];
 	v[3] = m_Image.at<cv::Vec3b>(right_down.y, right_down.x)[0];
 	// bilinear interpolation
-	double ans = v[0] * ((2 - abs(x - left_up.x) - abs(y - left_up.y)) * 0.5);
-	ans += v[1] * ((2 - abs(x - left_down.x) - abs(y - left_down.y)) * 0.5);
-	ans += v[2] * ((2 - abs(x - right_up.x) - abs(y - right_up.y)) * 0.5);
-	ans += v[3] * ((2 - abs(x - right_down.x) - abs(y - right_down.y)) * 0.5);
+	double up = v[0] * abs(x - right_down.x);
+	up += v[2] * abs(x - left_down.x);
+	double down = v[1] * abs(x - right_up.x);
+	down += v[3] * abs(x - left_up.x);
+	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
 	return ans * 0.5;
 }
 

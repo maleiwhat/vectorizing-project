@@ -275,6 +275,7 @@
     <ClInclude Include="VAV_View.h" />
     <ClInclude Include="ViewTree.h" />
     <ClInclude Include="VoronoiCgal_Patch.h" />
+    <ClInclude Include="vtkShowHistogramTimerCallback.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="algSpline.cpp" />
@@ -390,6 +391,7 @@
     </ClCompile>
     <ClCompile Include="ViewTree.cpp" />
     <ClCompile Include="VoronoiCgal_Patch.cpp" />
+    <ClCompile Include="vtkShowHistogramTimerCallback.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\bigpoint.fx">

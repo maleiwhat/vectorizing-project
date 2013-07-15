@@ -17,6 +17,20 @@ Lines GetLines(const CvLines& cvp)
 	return res;
 }
 
+Lines GetLines(const Lines& cvp)
+{
+	Lines res;
+	for (auto it = cvp.begin(); it != cvp.end(); ++it)
+	{
+		Line li;
+		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
+		{
+			li.push_back(Vector2(it2->x, it2->y));
+		}
+		res.push_back(li);
+	}
+	return res;
+}
 
 Lines GetLines(const CvLines& cvp, double xOffset, double yOffset)
 {
@@ -47,6 +61,16 @@ Lines GetLines(const CgalLines& cvp, double xOffset, double yOffset)
 }
 
 Line GetLine(const CvLine& cvp, double xOffset, double yOffset)
+{
+	Line line;
+	for (auto it2 = cvp.begin(); it2 != cvp.end(); ++it2)
+	{
+		line.push_back(Vector2(it2->x + xOffset, it2->y + yOffset));
+	}
+	return line;
+}
+
+Line GetLine(const Line& cvp, double xOffset, double yOffset)
 {
 	Line line;
 	for (auto it2 = cvp.begin(); it2 != cvp.end(); ++it2)

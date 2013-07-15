@@ -25,8 +25,10 @@ struct LineSeg
 typedef std::deque<LineSeg> LineSegs;
 
 Lines	GetLines(const CvLines& cvp, double xOffset=0, double yOffset=0);
+Lines	GetLines(const Lines& cvp, double xOffset=0, double yOffset=0);
 Lines	GetLines(const CgalLines& cvp, double xOffset=0, double yOffset=0);
 Line	GetLine(const CvLine& cvp, double xOffset=0, double yOffset=0);
+Line	GetLine(const Line& cvp, double xOffset=0, double yOffset=0);
 Line	GetLine(const CgalLine& cvp, double xOffset=0, double yOffset=0);
 
 CvLines	GetCvLines(const Lines& cvp, double xOffset=0, double yOffset=0);

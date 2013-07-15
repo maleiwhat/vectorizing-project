@@ -9,23 +9,37 @@ double_vector ConvertToAngle(const double_vector& data)
 {
 	double_vector tmp = (data);
 	double_vector ans;
-	const int size = data.size();
-	for (int i = 0; i < size; ++i)
 	{
-		int ileft = (i + 2) % size;
-		int iright = (i - 2 + size) % size;
-		double dy = tmp[iright] - tmp[ileft];
+		double dy = tmp[1] - tmp[0];
+		double angle = atan2f(2, dy) / M_PI * 180 + 200;
+		ans.push_back(angle);
+		dy = tmp[2] - tmp[0];
+		angle = atan2f(3, dy) / M_PI * 180 + 200;
+		ans.push_back(angle);
+	}
+	for (int i = 2; i < data.size() - 2; ++i)
+	{
+		double dy = tmp[i + 2] - tmp[i - 2];
 		double angle = atan2f(5, dy) / M_PI * 180 + 200;
 		ans.push_back(angle);
 	}
-	return Smoothing(ans);
+	{
+		int last = data.size() - 1;
+		double dy = tmp[last] - tmp[last - 2];
+		double angle = atan2f(3, dy) / M_PI * 180 + 200;
+		ans.push_back(angle);
+		dy = tmp[last] - tmp[last - 1];
+		angle = atan2f(2, dy) / M_PI * 180 + 200;
+		ans.push_back(angle);
+	}
+	return SmoothingLen5(ans);
 }
 
-double_vector Smoothing(const double_vector& data)
+double_vector SmoothingLoop(const double_vector& data, int repeat)
 {
 	double_vector cps = data;
 	double_vector newcps;
-	for (int count = 0; count < 5; ++count)
+	for (int count = 0; count < repeat; ++count)
 	{
 		newcps.clear();
 		int last = cps.size() - 1;
@@ -43,6 +57,57 @@ double_vector Smoothing(const double_vector& data)
 		}
 		newcps.push_back((cps[last - 2] + cps[last - 1] + cps[last]) / 3.0f);
 		newcps.push_back((cps[last - 1] + cps[last] + cps[0]) / 3.0f);
+		cps = newcps;
+	}
+	return newcps;
+}
+
+double_vector SmoothingLen3(const double_vector& data, int repeat)
+{
+	double_vector cps = data;
+	double_vector newcps;
+	for (int count = 0; count < repeat; ++count)
+	{
+		newcps.clear();
+		int last = cps.size() - 1;
+		if (cps.size() < 5)
+		{
+			continue;
+		}
+		newcps.push_back((cps[0] * 2 + cps[1]) / 3.0f);
+		for (int j = 1; j < cps.size() - 1; j ++)
+		{
+			auto vec = (cps[j] * 2 + cps[j - 1] + cps[j + 1]) * 0.25;
+			newcps.push_back(vec);
+		}
+		newcps.push_back((cps[last - 1] + cps[last] * 2) / 3.0f);
+		cps = newcps;
+	}
+	return newcps;
+}
+
+double_vector SmoothingLen5(const double_vector& data, int repeat)
+{
+	double_vector cps = data;
+	double_vector newcps;
+	for (int count = 0; count < repeat; ++count)
+	{
+		newcps.clear();
+		int last = cps.size() - 1;
+		if (cps.size() < 5)
+		{
+			continue;
+		}
+		newcps.push_back((cps[0] * 2 + cps[1]) / 3.0f);
+		newcps.push_back((cps[1] * 2 + cps[0] + cps[2]) * 0.25f);
+		for (int j = 2; j < cps.size() - 2; j ++)
+		{
+			auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
+					   6.0f;
+			newcps.push_back(vec);
+		}
+		newcps.push_back((cps[last - 1] * 2 + cps[last] + cps[last - 2]) * 0.25f);
+		newcps.push_back((cps[last - 1] + cps[last] * 2) / 3.0f);
 		cps = newcps;
 	}
 	return newcps;
@@ -79,18 +144,11 @@ bool IsBlackLine(const double_vector& data, double zero)
 	const int size = data.size();
 	for (int i = 0; i < size && !end; ++i)
 	{
-		if (data[i] < zero)
+		if (data[i] > zero)
 		{
-			if (i == 0)
+			if (i == 0 && data.back() < zero)
 			{
-				for (int j = size - check_length; j < size; ++j)
-				{
-					if (data[j] < zero)
-					{
-						lookline--;
-						break;
-					}
-				}
+				lookline--;
 			}
 			// find zero point
 			for (int j = i; j < size * 2; ++j)
@@ -107,7 +165,7 @@ bool IsBlackLine(const double_vector& data, double zero)
 			}
 			for (int j = i; j < i + check_length; ++j)
 			{
-				if (data[j % size] > zero)
+				if (data[j % size] < zero)
 				{
 					lookline++;
 					if (j >= size)
@@ -137,11 +195,18 @@ bool IsBrightLine(const double_vector& data, double zero /*= 290*/)
 	const int size = data.size();
 	for (int i = 0; i < size && !end; ++i)
 	{
-		if (data[i] > zero)
+		if (data[i] < zero)
 		{
-			if (i == 0 && data.back() < zero)
+			if (i == 0)
 			{
-				lookline--;
+				for (int j = size - check_length; j < size; ++j)
+				{
+					if (data[j] < zero)
+					{
+						lookline--;
+						break;
+					}
+				}
 			}
 			// find zero point
 			for (int j = i; j < size * 2; ++j)
@@ -158,7 +223,7 @@ bool IsBrightLine(const double_vector& data, double zero /*= 290*/)
 			}
 			for (int j = i; j < i + check_length; ++j)
 			{
-				if (data[j % size] < zero)
+				if (data[j % size] > zero)
 				{
 					lookline++;
 					if (j >= size)
@@ -219,51 +284,6 @@ bool IsShading(const double_vector& data, double zero)
 	return false;
 }
 
-double_vector ConvertToTest(const double_vector& data, double zero)
-{
-	const int size = data.size();
-	double_vector tmp, tmp2;
-	int bigger_zero = -1;
-	int smaller_zero = -1;
-	for (int i = 0; i < size; ++i)
-	{
-		if (data[i] > zero)
-		{
-			for (int j = i; j < size; ++j)
-			{
-				if (abs(data[j] - zero) < 1)
-				{
-					bigger_zero = i;
-				}
-			}
-			break;
-		}
-	}
-	if (bigger_zero == -1)
-	{
-		return data;
-	}
-	tmp2.insert(tmp2.end(), data.begin() + bigger_zero, data.end());
-	tmp2.insert(tmp2.end(), data.begin(), data.begin() + bigger_zero);
-	if (tmp2.back() > zero)
-	{
-		for (int i = size - 1; i > 0; --i)
-		{
-			if (abs(tmp2[i] - zero) < 1)
-			{
-				bigger_zero = i;
-				break;
-			}
-		}
-		tmp.insert(tmp.end(), tmp2.begin() + bigger_zero, tmp2.end());
-		tmp.insert(tmp.end(), tmp2.begin(), tmp2.begin() + bigger_zero);
-	}
-	else
-	{
-		tmp = tmp2;
-	}
-	return tmp;
-}
 
 double_vector GetBlackLine(const double_vector& data, double zero /*= 290*/)
 {
@@ -273,7 +293,7 @@ double_vector GetBlackLine(const double_vector& data, double zero /*= 290*/)
 	const int size = data.size();
 	for (int i = 0; i < size && !end; ++i)
 	{
-		if (data[i] < zero)
+		if (data[i] > zero)
 		{
 			// find zero point
 			for (int j = i; j < size * 2; ++j)
@@ -290,7 +310,7 @@ double_vector GetBlackLine(const double_vector& data, double zero /*= 290*/)
 			}
 			for (int j = i; j < i + check_length; ++j)
 			{
-				if (data[j % size] > zero)
+				if (data[j % size] < zero)
 				{
 					ans.push_back(((j % size) * 360.0 / size + 180) / 180 * M_PI);
 					if (j >= size)
@@ -320,4 +340,58 @@ double GetVariance(const double_vector& data)
 		variance += v * v;
 	}
 	return variance;
+}
+
+double_vector LogSmooth(const double_vector& data, double zero)
+{
+	double_vector ans;
+	const int size = data.size();
+	for (int i = 0; i < size; ++i)
+	{
+		if (data[i] - zero >= 0)
+		{
+			ans.push_back(zero + 0.1*exp(0.4*(data[i] - zero)));
+		}
+		else
+		{
+			ans.push_back(zero - 0.1*exp(0.4*(zero - data[i])));
+		}
+	}
+	return ans;
+}
+
+double_vector GetLineWidth( const double_vector& data, double zero /*= 290*/ )
+{
+	double_vector ans;
+	bool end = false;
+	const int check_length = 100;
+	const int size = data.size();
+	for (int i = 0; i < size; ++i)
+	{
+		if (data[i] > zero)
+		{
+			for (int j = i; j < size && j < i + check_length; ++j)
+			{
+				if (data[j] < zero)
+				{
+					ans.push_back(i*10/360.0-5);
+					i = j;
+					end = true;
+					break;
+				}
+			}
+			if (end)
+			{
+				for (int j = i; j < size; ++j)
+				{
+					if (data[j] >= zero)
+					{
+						ans.push_back(j*10/360.0-5);
+						return ans;
+					}
+				}
+			}
+		}
+	}
+	return ans;
 }

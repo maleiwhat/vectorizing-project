@@ -239,7 +239,6 @@ void D3DApp::OnDrawToBimapResize()
 	ReleaseCOM(m_DrawTextureDepthStencilBuffer);
 	ReleaseCOM(m_DrawTextureDepthStencilView);
 	ReleaseCOM(m_DrawTexture);
-
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
 	depthStencilDesc.Width     = m_ClientWidth;
 	depthStencilDesc.Height    = m_ClientHeight;
@@ -629,6 +628,10 @@ void D3DApp::BuildPoint()
 		vinitData.pSysMem = &m_LinesVertices[0];
 		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Lines_Buffer));
 	}
+	int originSize = m_SkeletonLinesVertices.size();
+	m_SkeletonLinesVertices.insert(m_SkeletonLinesVertices.end(),
+								   m_SkeletonLinesVerticesCover.begin(),
+								   m_SkeletonLinesVerticesCover.end());
 	if (!m_SkeletonLinesVertices.empty())
 	{
 		m_vbd.ByteWidth = (UINT)(sizeof(SkeletonLineVertex) *
@@ -638,6 +641,8 @@ void D3DApp::BuildPoint()
 		vinitData.pSysMem = &m_SkeletonLinesVertices[0];
 		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_SkeletonLines_Buffer));
 	}
+	m_SkeletonLinesVertices.erase(m_SkeletonLinesVertices.begin() + originSize,
+								  m_SkeletonLinesVertices.end());
 }
 
 void D3DApp::SetPictureSize(int w, int h)
@@ -1135,9 +1140,7 @@ void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths)
 
 void D3DApp::AddLines(const Lines& lines)
 {
-	static int ii = 0;
-	ii ++;
-	for (int i = 0; i < lines.size() /*&& i < ii*/; ++i)
+	for (int i = 0; i < lines.size(); ++i)
 	{
 		const Line& now_line = lines[i];
 		if (now_line.size() < 2)
@@ -1350,7 +1353,8 @@ void D3DApp::InterDraw()
 		m_DeviceContext->IASetVertexBuffers(0, 1, &m_SkeletonLines_Buffer, &stride2,
 											&offset);
 		m_SkeletonLines_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-		m_DeviceContext->Draw((UINT)m_SkeletonLinesVertices.size(), 0);
+		m_DeviceContext->Draw((UINT)m_SkeletonLinesVertices.size() +
+							  m_SkeletonLinesVerticesCover.size(), 0);
 	}
 }
 
@@ -1497,4 +1501,37 @@ void D3DApp::SetScaleRecovery()
 {
 	m_Scale = m_ScaleSave;
 	OnDrawToBimapResize();
+}
+
+void D3DApp::AddLinesCover(const Lines& lines)
+{
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		const Line& now_line = lines[i];
+		if (now_line.size() < 2)
+		{
+			continue;
+		}
+		float r, g, b;
+		r = (rand() % 155 + 100) / 255.0f;
+		g = (rand() % 155 + 100) / 255.0f;
+		b = (rand() % 155 + 100) / 255.0f;
+		SkeletonLineVertex slv;
+		slv.color.x = r;
+		slv.color.y = g;
+		slv.color.z = b;
+		for (int j = 1; j < now_line.size(); ++j)
+		{
+			slv.p1.x = now_line[j].x;
+			slv.p1.y = m_PicH - now_line[j].y;
+			slv.p2.x = now_line[j - 1].x;
+			slv.p2.y = m_PicH - now_line[j - 1].y;
+			m_SkeletonLinesVerticesCover.push_back(slv);
+		}
+	}
+}
+
+void D3DApp::ClearCovers()
+{
+	m_SkeletonLinesVerticesCover.clear();
 }

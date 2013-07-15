@@ -20,8 +20,8 @@ private:
 	int     m_PicH;
 	float	m_Scale;
 	float	m_LineRadius;
-	HANDLE	m_thread;
 
+	HANDLE	m_thread;
 	vtkShowHistogramTimerCallback_Sptr m_TimerCallback;
 	vtkXYPlotActor_Sptr m_plot;
 	vtkRenderWindow_Sptr m_renderWindow;

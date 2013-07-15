@@ -664,7 +664,7 @@ void D3DApp_Picture::InterDraw()
 	}
 	if (m_SkeletonLinesVertices.size() > 0)
 	{
-		m_SkeletonLines_Transparency->SetFloat(0.1);
+		m_SkeletonLines_Transparency->SetFloat(1);
 		UINT offset = 0;
 		UINT stride2 = sizeof(SkeletonLineVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);

@@ -41,12 +41,14 @@ public:
 	void AddLines(const Lines& lines, const double_vector2d& linewidths,
 	              const Vector3s2d& colors);
 	void AddLines(const Lines& lines, const double_vector2d& linewidths);
-	void AddLinesLine(const Lines& lines, const double_vector2d& linewidths);
 	void AddLines(const Lines& lines);
-	void AddLineSegs(const LineSegs& lines);
 	void AddLines(const CgalLines& lines);
 	void AddLines(const CvLine& lines);
+	void AddLinesCover(const Lines& lines);
+	void AddLinesLine(const Lines& lines, const double_vector2d& linewidths);
+	void AddLineSegs(const LineSegs& lines);
 	void ClearPatchs();
+	void ClearCovers();
 	void SetTransparency_Triangle(float t);
 	void SetTransparency_SelectPatch(float t);
 	void SetTransparency_TriangleLine(float t);
@@ -204,6 +206,7 @@ protected:
 	ID3DX11EffectScalarVariable*    m_SkeletonLines_CenterY;
 	ID3DX11EffectScalarVariable*    m_SkeletonLines_Transparency;
 	SkeletonLineVertexes        m_SkeletonLinesVertices;
+	SkeletonLineVertexes        m_SkeletonLinesVerticesCover;
 
 	D3D11_BUFFER_DESC       m_vbd;
 	DXUTUI*             m_DXUT_UI;

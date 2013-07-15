@@ -97,3 +97,65 @@
 #endif
 
 
+#include <vtkSphereSource.h>
+#include <vtkMath.h>
+#include <vtkDoubleArray.h>
+#include <vtkFieldData.h>
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkXYPlotActor.h>
+#include <vtkCubeSource.h>
+#include <vtkPolyData.h>
+#include <vtkCommand.h>
+#include <vtkRenderer.h>
+#include <vtkRendererCollection.h>
+#include <vtkTesting.h>
+
+#define VTK_SMART_POINTER(x) \
+	typedef vtkSmartPointer< x >    x##_Sptr; \
+	typedef std::vector< x##_Sptr > x##_Sptrs;
+VTK_SMART_POINTER(vtkXYPlotActor);
+VTK_SMART_POINTER(vtkRenderWindow);
+VTK_SMART_POINTER(vtkRenderWindowInteractor);
+
+template<typename T, typename U> class has_member_Initialize_tester
+{
+private:
+	template<U> struct helper;
+	template<typename T> static char check(helper < &T::Initialize >*);
+	template<typename T> static char(&check(...))[2];
+public:
+	enum { value = (sizeof(check<T> (0)) == sizeof(char)) };
+};
+template<char Doit, class T> struct static_Check_To_Initialize
+{
+	static void Do(T& ic)   { ic; }
+};
+template<class T> struct static_Check_To_Initialize<1, T>
+{
+	static void Do(T& ic)   { ic->Initialize(); }
+};
+static struct
+{
+	template<class T> operator vtkSmartPointer<T> ()
+	{
+		vtkSmartPointer<T> ptr = vtkSmartPointer<T>::New();
+		static_Check_To_Initialize<has_member_Initialize_tester<T, void(T::*)()>::value, vtkSmartPointer<T> >::Do(
+			ptr);
+		return ptr;
+	}
+}
+vtkSmartNew;
+static struct
+{
+	template<class T> operator vtkSmartPointer<T> ()
+	{
+		return vtkSmartPointer<T>::New();
+	}
+}
+vtkOnlyNew;
