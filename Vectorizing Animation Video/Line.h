@@ -57,3 +57,11 @@ Lines	LinesSub(const Lines& aLine, const Lines& bLine);
 
 Line	FixLineWidths(const Line& aLine, int range);
 Lines	FixLineWidths(const Lines& aLine, int range);
+
+Line	CleanOrphanedLineWidths(const Line& aLine, int num);
+Lines	CleanOrphanedLineWidths(const Lines& aLine, int num);
+
+Line	SmoothingHas0Len5(const Line& cvp, int repeat = 1);
+Line	SmoothingHas0Len3(const Line& cvp, int repeat = 1);
+Lines	SmoothingHas0Len5(const Lines& cvp, int repeat = 1);
+Lines	SmoothingHas0Len3(const Lines& cvp, int repeat = 1);

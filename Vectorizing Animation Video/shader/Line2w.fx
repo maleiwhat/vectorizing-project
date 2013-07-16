@@ -16,7 +16,7 @@ struct VS_IN
 	float2 p3: POSC;
 	float2 p4: POSD;
 	float2 widthL: WA;
-	float2 widthR: WA;
+	float2 widthR: WB;
 	float3 c1: COLOR;
 };
 

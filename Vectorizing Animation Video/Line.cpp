@@ -389,6 +389,7 @@ Lines LinesSub(const Lines& aLine, const Lines& bLine)
 	return ans;
 }
 
+// 左右端點有黑線範圍的話就把中間空的連起來
 Line FixLineWidths(const Line& cvp, int range)
 {
 	Line cps = cvp;
@@ -398,16 +399,30 @@ Line FixLineWidths(const Line& cvp, int range)
 		{
 			Vector2 setValue;
 			int finds = 0;
+			// 有左端點
+			bool hasLeft = false;
+			bool hasRight = false;
 			for (int j = i - range; (j < i + range) && (j < cvp.size()); ++j)
 			{
 				if (cvp[j].x > 0)
 				{
 					finds++;
 					setValue += cvp[j];
+					if (j < i)
+					{
+						hasLeft = true;
+					}
+					else if (j > i)
+					{
+						hasRight = true;
+					}
 				}
 			}
-			setValue /= finds;
-			cps[i] = setValue;
+			if (hasLeft && hasRight)
+			{
+				setValue /= finds;
+				cps[i] = setValue;
+			}
 		}
 	}
 	return cps;
@@ -420,6 +435,117 @@ Lines FixLineWidths(const Lines& widths, int range)
 	{
 		const Line& aa = widths.at(i);
 		ans[i] = FixLineWidths(aa, range);
+	}
+	return ans;
+}
+
+Line CleanOrphanedLineWidths(const Line& cvp, int num)
+{
+	Line cps = cvp;
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		if (cvp[i].x > 0)
+		{
+			int hasWidth = 1;
+			for (int j = i + 1; j < cvp.size(); ++j)
+			{
+				if (cvp[j].x > 0)
+				{
+					hasWidth++;
+				}
+				else
+				{
+					if (hasWidth < num)
+					{
+						for (int k = i; k < i + hasWidth; ++k)
+						{
+							cps[k].x = 0;
+							cps[k].y = 0;
+						}
+					}
+					i = j;
+					break;
+				}
+			}
+		}
+	}
+	return cps;
+}
+
+Lines CleanOrphanedLineWidths(const Lines& widths, int num)
+{
+	Lines ans(widths.size());
+	for (int i = 0; i < widths.size(); ++i)
+	{
+		const Line& aa = widths.at(i);
+		ans[i] = CleanOrphanedLineWidths(aa, num);
+	}
+	return ans;
+}
+
+Line SmoothingHas0Len5(const Line& cvp, int repeat)
+{
+	if (cvp.size() <= 2)
+	{
+		return cvp;
+	}
+	Line cps = cvp;
+	Line newcps;
+	for (int repeatCount = 0; repeatCount < repeat; repeatCount++)
+	{
+		newcps.clear();
+		if (cps.size() <= 5)
+		{
+			newcps.push_back(cps.front());
+			for (int j = 1; j < cps.size() - 1; j ++)
+			{
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1]) * 0.25;
+				newcps.push_back(vec);
+			}
+			newcps.push_back(cps.back());
+			cps = newcps;
+		}
+		else
+		{
+			newcps.push_back(cps.front()*0.8);
+			newcps.push_back((cps[0] + cps[1] * 2 + cps[2]) * 0.25);
+			for (int j = 2; j < cps.size() - 2; j ++)
+			{
+				if (cps[j].x > 0)
+				{
+					int zero = 0;
+					for (int k = j - 2; k <= j + 2; ++k)
+					{
+						if (cps[j].x < 0.01)
+						{
+							zero++;
+						}
+					}
+					auto vec = (cps[j] * (2 + zero) + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+								cps[j - 2]) / 6.0f;
+					newcps.push_back(vec);
+				}
+				else
+				{
+					newcps.push_back(Vector2());
+				}
+			}
+			int last = cps.size() - 1;
+			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
+			newcps.push_back(cps.back()*0.8);
+			cps = newcps;
+		}
+	}
+	return cps;
+}
+
+Lines SmoothingHas0Len5(const Lines& cvp, int num)
+{
+	Lines ans(cvp.size());
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Line& aa = cvp.at(i);
+		ans[i] = SmoothingHas0Len5(aa, num);
 	}
 	return ans;
 }

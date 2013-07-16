@@ -374,8 +374,6 @@ void VAV_View::ShowLineNormal()
 					   m_FeatureNormals[idx1][idx2 + 1] * LINE_WIDTH);
 		Vector2 end2(m_FeatureLines[idx1][idx2 + 1] +
 					 m_FeatureNormals[idx1][idx2 + 1] * LINE_WIDTH);
-		twoPoint.push_back(start);
-		twoPoint.push_back(end);
 		double_vector line1 = m_ExpImage.GetLineLight(start.x, start.y, end.x, end.y,
 							  360);
 		double_vector line2 = m_ExpImage.GetLineLight(start2.x, start2.y, end2.x,
@@ -389,24 +387,37 @@ void VAV_View::ShowLineNormal()
 		m_TimerCallback->m_data[5] = ConvertToSquareWave(ConvertToAngle(line1), 5, 50);
 		m_TimerCallback->Unlock();
 		Lines push;
-		push.push_back(twoPoint);
+		{ // show test line
+			start.x += 0.5;
+			start.y += 0.5;
+			end.x += 0.5;
+			end.y += 0.5;
+			start2.x += 0.5;
+			start2.y += 0.5;
+			end2.x += 0.5;
+			end2.y += 0.5;
+			twoPoint.push_back(start);
+			twoPoint.push_back(end);
+			push.push_back(twoPoint);
+		}
 		double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
 											5, 50), LINE_WIDTH * 2);
 		double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
 											5, 50), LINE_WIDTH * 2);
+		const double blackRadio = 0.6;
 		if (width1.size() >= 2 && width2.size() >= 2)
 		{
 			Line line1;
 			line1.push_back(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
-							width1[0]);
+							width1[0] * blackRadio);
 			line1.push_back(m_FeatureLines[idx1][idx2 + 1] +
-							m_FeatureNormals[idx1][idx2 + 1] * width2[0]);
+							m_FeatureNormals[idx1][idx2 + 1] * width2[0] * blackRadio);
 			line1 = GetLine(line1, 0.5, 0.5);
 			Line line2;
-			line2.push_back(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
-							width1[1]);
-			line2.push_back(m_FeatureLines[idx1][idx2 + 1] +
-							m_FeatureNormals[idx1][idx2 + 1] * width2[1]);
+			line2.push_back(m_FeatureLines[idx1][idx2] - m_FeatureNormals[idx1][idx2] *
+							width1[1] * blackRadio);
+			line2.push_back(m_FeatureLines[idx1][idx2 + 1] -
+							m_FeatureNormals[idx1][idx2 + 1] * width2[1] * blackRadio);
 			line2 = GetLine(line2, 0.5, 0.5);
 			push.push_back(line1);
 			push.push_back(line2);

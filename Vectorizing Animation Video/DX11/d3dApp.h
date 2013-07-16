@@ -41,6 +41,7 @@ public:
 	void AddLines(const Lines& lines, const double_vector2d& linewidths,
 				  const Vector3s2d& colors);
 	void AddLines(const Lines& lines, const double_vector2d& linewidths);
+	void AddLines(const Lines& lines, const Lines& linewidths);
 	void AddLines(const Lines& lines);
 	void AddLines(const CgalLines& lines);
 	void AddLines(const CvLine& lines);

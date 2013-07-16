@@ -20,7 +20,7 @@ double_vector ConvertToAngle(const double_vector& data)
 	for (int i = 2; i < data.size() - 2; ++i)
 	{
 		double dy = tmp[i + 2] - tmp[i - 2];
-		double angle = atan2f(5, dy) / M_PI * 180 + 200;
+		double angle = atan2f(3, dy) / M_PI * 180 + 200;
 		ans.push_back(angle);
 	}
 	{
@@ -367,28 +367,38 @@ double_vector GetLineWidth(const double_vector& data, double lineWidth,
 	bool end = false;
 	const int check_length = 100;
 	const int size = data.size();
-	for (int i = size / 2; i > 0 && !end; --i)
+	for (int i = size / 2; i > size / 2 - check_length && !end; --i)
 	{
 		if (data[i] > zero)
 		{
-			for (int j = i; j > 0; --j)
+			for (int j = i; j >= 0; --j)
 			{
 				if (data[j] <= zero)
 				{
-					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
+					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
 					end = true;
 					break;
+				}
+				else if (j == 0)
+				{
+					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
+					end = true;
 				}
 			}
 		}
 	}
-	for (int i = size / 2; i < size; ++i)
+	for (int i = size / 2; i < size / 2 + check_length; ++i)
 	{
 		if (data[i] < zero)
 		{
 			for (int j = i; j < size; ++j)
 			{
 				if (data[j] >= zero)
+				{
+					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
+					return ans;
+				}
+				else if (j == size - 1)
 				{
 					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
 					return ans;
