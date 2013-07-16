@@ -54,3 +54,6 @@ Line	LineAdd(const Line& aLine, const Line& bLine);
 Lines	LinesAdd(const Lines& aLine, const Lines& bLine);
 Line	LineSub(const Line& aLine, const Line& bLine);
 Lines	LinesSub(const Lines& aLine, const Lines& bLine);
+
+Line	FixLineWidths(const Line& aLine, int range);
+Lines	FixLineWidths(const Lines& aLine, int range);

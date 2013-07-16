@@ -350,48 +350,51 @@ double_vector LogSmooth(const double_vector& data, double zero)
 	{
 		if (data[i] - zero >= 0)
 		{
-			ans.push_back(zero + 0.1*exp(0.4*(data[i] - zero)));
+			ans.push_back(zero + 0.1 * exp(0.4 * (data[i] - zero)));
 		}
 		else
 		{
-			ans.push_back(zero - 0.1*exp(0.4*(zero - data[i])));
+			ans.push_back(zero - 0.1 * exp(0.4 * (zero - data[i])));
 		}
 	}
 	return ans;
 }
 
-double_vector GetLineWidth( const double_vector& data, double zero /*= 290*/ )
+double_vector GetLineWidth(const double_vector& data, double lineWidth,
+						   double zero /*= 290*/)
 {
 	double_vector ans;
 	bool end = false;
 	const int check_length = 100;
 	const int size = data.size();
-	for (int i = 0; i < size; ++i)
+	for (int i = size / 2; i > 0 && !end; --i)
 	{
 		if (data[i] > zero)
 		{
-			for (int j = i; j < size && j < i + check_length; ++j)
+			for (int j = i; j > 0; --j)
 			{
-				if (data[j] < zero)
+				if (data[j] <= zero)
 				{
-					ans.push_back(i*10/360.0-5);
-					i = j;
+					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
 					end = true;
 					break;
 				}
 			}
-			if (end)
+		}
+	}
+	for (int i = size / 2; i < size; ++i)
+	{
+		if (data[i] < zero)
+		{
+			for (int j = i; j < size; ++j)
 			{
-				for (int j = i; j < size; ++j)
+				if (data[j] >= zero)
 				{
-					if (data[j] >= zero)
-					{
-						ans.push_back(j*10/360.0-5);
-						return ans;
-					}
+					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
+					return ans;
 				}
 			}
 		}
 	}
-	return ans;
+	return double_vector();
 }

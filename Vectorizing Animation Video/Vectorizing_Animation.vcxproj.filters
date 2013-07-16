@@ -547,6 +547,9 @@
     <FxCompile Include="shader\patch.fx">
       <Filter>shader</Filter>
     </FxCompile>
+    <FxCompile Include="shader\Line2w.fx">
+      <Filter>shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Vectorizing Animation Video.rc">

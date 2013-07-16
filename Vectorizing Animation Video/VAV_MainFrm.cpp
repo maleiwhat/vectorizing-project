@@ -605,26 +605,30 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			}
 			tpnts2d.push_back(edges[i].pnts);
 		}
-		Lines showLine = GetLines(tpnts2d, 0, 0);
-		showLine = SmoothingLen5(showLine, 1);
-		Lines normals = GetNormalsLen2(showLine);
-		GetVavView()->m_FeatureLines = showLine;
+		
+		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
+		m_BlackLine = SmoothingLen5(m_BlackLine, 1);
+		d3dApp.AddLines(m_BlackLine);
+		m_BlackLine = GetLines(tpnts2d, 0, 0);
+		m_BlackLine = SmoothingLen5(m_BlackLine, 1);
+		Lines normals = GetNormalsLen2(m_BlackLine);
+		GetVavView()->m_FeatureLines = m_BlackLine;
 		GetVavView()->m_FeatureNormals = normals;
-		showLine = GetLines(tpnts2d, 0.5, 0.5);
-		showLine = SmoothingLen5(showLine, 5);
-		d3dApp.AddLines(showLine);
-		Line twoPoint;
-		for (int idx1 = 0; idx1 < showLine.size(); ++idx1)
+		Lines showLines;
+		Lines BLineWidth(m_BlackLine.size());
+		for (int idx1 = 0; idx1 < m_BlackLine.size(); ++idx1)
 		{
-			const Line& nowLine = showLine[idx1];
+			const Line& nowLine = m_BlackLine[idx1];
 			const Line& nowNormals = normals[idx1];
-			Lines push;
+			Line& lineWidths = BLineWidth[idx1];
+			lineWidths.clear();
 			for (int idx2 = 0; idx2 < nowLine.size() - 1; ++idx2)
 			{
-				Vector2 start(nowLine[idx2] - nowNormals[idx2] * 5);
-				Vector2 end(nowLine[idx2] + nowNormals[idx2] * 5);
-				Vector2 start2(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * 5);
-				Vector2 end2(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * 5);
+				const double LINE_WIDTH = 3;
+				Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
+				Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
+				Vector2 start2(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * LINE_WIDTH);
+				Vector2 end2(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * LINE_WIDTH);
 				double_vector line1 = vImage.GetLineLight(start.x, start.y, end.x, end.y,
 									  360);
 				double_vector line2 = vImage.GetLineLight(start2.x, start2.y, end2.x, end2.y,
@@ -632,25 +636,34 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 				line1 = SmoothingLen5(line1, 3);
 				line2 = SmoothingLen5(line2, 3);
 				double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
-													10, 50));
+													5, 50), LINE_WIDTH * 2);
 				double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
-													10, 50));
-				if (!width1.empty() && !width2.empty())
+													5, 50), LINE_WIDTH * 2);
+				if (width1.size() >= 2 && width2.size() >= 2)
 				{
 					Line line1;
-					line1.push_back(nowLine[idx2] + nowNormals[idx2] * width1[0]);
-					line1.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[0]);
+					line1.push_back(nowLine[idx2] + nowNormals[idx2] * width1[0] * 0.5);
+					line1.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[0]*0.5);
 					line1 = GetLine(line1, 0.5, 0.5);
 					Line line2;
-					line2.push_back(nowLine[idx2] + nowNormals[idx2] * width1[1]);
-					line2.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[1]);
+					line2.push_back(nowLine[idx2] + nowNormals[idx2] * width1[1]*0.5);
+					line2.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[1]*0.5);
 					line2 = GetLine(line2, 0.5, 0.5);
-					push.push_back(line1);
-					push.push_back(line2);
+					showLines.push_back(line1);
+					showLines.push_back(line2);
+					// save line width
+					lineWidths.push_back(Vector2(width1[0] * 0.5, width1[1] * 0.5));
+					lineWidths.push_back(Vector2(width2[0] * 0.5, width2[1] * 0.5));
+				}
+				else
+				{
+					lineWidths.push_back(Vector2());
+					lineWidths.push_back(Vector2());
 				}
 			}
-			d3dApp.AddLines(push);
 		}
+		m_BLineWidth = FixLineWidths(BLineWidth, 3);
+		d3dApp.AddLines(showLines);
 // 		Lines normalLines = LinesAdd(showLine, normals);
 // 		Lines normalLines2 = LinesSub(showLine, normals);
 // 		d3dApp.AddLines(normalLines);

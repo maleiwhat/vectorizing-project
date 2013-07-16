@@ -365,36 +365,48 @@ void VAV_View::ShowLineNormal()
 	if (idx1 != -1)
 	{
 		Line twoPoint;
-		Vector2 start(m_FeatureLines[idx1][idx2] - m_FeatureNormals[idx1][idx2] * 5);
-		Vector2 end(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] * 5);
-		Vector2 start2(m_FeatureLines[idx1][idx2+1] - m_FeatureNormals[idx1][idx2+1] * 5);
-		Vector2 end2(m_FeatureLines[idx1][idx2+1] + m_FeatureNormals[idx1][idx2+1] * 5);
+		const double LINE_WIDTH = 3;
+		Vector2 start(m_FeatureLines[idx1][idx2] - m_FeatureNormals[idx1][idx2] *
+					  LINE_WIDTH);
+		Vector2 end(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
+					LINE_WIDTH);
+		Vector2 start2(m_FeatureLines[idx1][idx2 + 1] -
+					   m_FeatureNormals[idx1][idx2 + 1] * LINE_WIDTH);
+		Vector2 end2(m_FeatureLines[idx1][idx2 + 1] +
+					 m_FeatureNormals[idx1][idx2 + 1] * LINE_WIDTH);
 		twoPoint.push_back(start);
 		twoPoint.push_back(end);
 		double_vector line1 = m_ExpImage.GetLineLight(start.x, start.y, end.x, end.y,
 							  360);
-		double_vector line2 = m_ExpImage.GetLineLight(start2.x, start2.y, end2.x, end2.y,
-			360);
+		double_vector line2 = m_ExpImage.GetLineLight(start2.x, start2.y, end2.x,
+							  end2.y,
+							  360);
 		line1 = SmoothingLen5(line1, 3);
 		line2 = SmoothingLen5(line2, 3);
 		m_TimerCallback->Lock();
 		m_TimerCallback->m_data[0] = line1;
 		m_TimerCallback->m_data[4] = ConvertToAngle(line1);
-		m_TimerCallback->m_data[5] = ConvertToSquareWave(ConvertToAngle(line1), 10, 50);
+		m_TimerCallback->m_data[5] = ConvertToSquareWave(ConvertToAngle(line1), 5, 50);
 		m_TimerCallback->Unlock();
 		Lines push;
 		push.push_back(twoPoint);
-		double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1), 10, 50));
-		double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2), 10, 50));
-		if (!width1.empty() && !width2.empty())
+		double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
+											5, 50), LINE_WIDTH * 2);
+		double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
+											5, 50), LINE_WIDTH * 2);
+		if (width1.size() >= 2 && width2.size() >= 2)
 		{
 			Line line1;
-			line1.push_back(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] * width1[0]);
-			line1.push_back(m_FeatureLines[idx1][idx2+1] + m_FeatureNormals[idx1][idx2+1] * width2[0]);
+			line1.push_back(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
+							width1[0]);
+			line1.push_back(m_FeatureLines[idx1][idx2 + 1] +
+							m_FeatureNormals[idx1][idx2 + 1] * width2[0]);
 			line1 = GetLine(line1, 0.5, 0.5);
 			Line line2;
-			line2.push_back(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] * width1[1]);
-			line2.push_back(m_FeatureLines[idx1][idx2+1] + m_FeatureNormals[idx1][idx2+1] * width2[1]);
+			line2.push_back(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
+							width1[1]);
+			line2.push_back(m_FeatureLines[idx1][idx2 + 1] +
+							m_FeatureNormals[idx1][idx2 + 1] * width2[1]);
 			line2 = GetLine(line2, 0.5, 0.5);
 			push.push_back(line1);
 			push.push_back(line2);

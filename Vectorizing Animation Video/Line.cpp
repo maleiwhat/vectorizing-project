@@ -353,7 +353,7 @@ Line LineAdd(const Line& aLine, const Line& bLine)
 	return ans;
 }
 
-Lines LinesAdd( const Lines& aLine, const Lines& bLine )
+Lines LinesAdd(const Lines& aLine, const Lines& bLine)
 {
 	Lines ans(aLine.size());
 	for (int i = 0; i < aLine.size(); ++i)
@@ -365,7 +365,7 @@ Lines LinesAdd( const Lines& aLine, const Lines& bLine )
 	return ans;
 }
 
-Line LineSub( const Line& aLine, const Line& bLine )
+Line LineSub(const Line& aLine, const Line& bLine)
 {
 	Line ans(aLine.size());
 	for (int i = 0; i < aLine.size(); ++i)
@@ -377,7 +377,7 @@ Line LineSub( const Line& aLine, const Line& bLine )
 	return ans;
 }
 
-Lines LinesSub( const Lines& aLine, const Lines& bLine )
+Lines LinesSub(const Lines& aLine, const Lines& bLine)
 {
 	Lines ans(aLine.size());
 	for (int i = 0; i < aLine.size(); ++i)
@@ -385,6 +385,41 @@ Lines LinesSub( const Lines& aLine, const Lines& bLine )
 		const Line& aa = aLine.at(i);
 		const Line& bb = bLine.at(i);
 		ans[i] = LineSub(aa, bb);
+	}
+	return ans;
+}
+
+Line FixLineWidths(const Line& cvp, int range)
+{
+	Line cps = cvp;
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		if (0 == cvp[i].x)
+		{
+			Vector2 setValue;
+			int finds = 0;
+			for (int j = i - range; (j < i + range) && (j < cvp.size()); ++j)
+			{
+				if (cvp[j].x > 0)
+				{
+					finds++;
+					setValue += cvp[j];
+				}
+			}
+			setValue /= finds;
+			cps[i] = setValue;
+		}
+	}
+	return cps;
+}
+
+Lines FixLineWidths(const Lines& widths, int range)
+{
+	Lines ans(widths.size());
+	for (int i = 0; i < widths.size(); ++i)
+	{
+		const Line& aa = widths.at(i);
+		ans[i] = FixLineWidths(aa, range);
 	}
 	return ans;
 }

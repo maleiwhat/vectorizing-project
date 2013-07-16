@@ -31,6 +31,8 @@ protected: // 僅從序列化建立
 public:
 	vavImage    m_vavImage;
 	vavImage    m_cannyImage;
+	Lines		m_BlackLine;
+	Lines		m_BLineWidth;
 	int     m_PatchTransparency;
 	int     m_SelectPatchTransparency;
 	int     m_BlackRegionThreshold;

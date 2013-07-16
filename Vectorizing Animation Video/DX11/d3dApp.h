@@ -39,7 +39,7 @@ public:
 	void AddPatchTriangles(const Triangles& tris);
 	void AddBigPoint(float x, float y, D3DXVECTOR3 color);
 	void AddLines(const Lines& lines, const double_vector2d& linewidths,
-	              const Vector3s2d& colors);
+				  const Vector3s2d& colors);
 	void AddLines(const Lines& lines, const double_vector2d& linewidths);
 	void AddLines(const Lines& lines);
 	void AddLines(const CgalLines& lines);
@@ -58,8 +58,14 @@ public:
 
 
 	void ClearTriangles();
-	int  Width() { return m_ClientWidth;}
-	int  Height() {return m_ClientHeight;};
+	int  Width()
+	{
+		return m_ClientWidth;
+	}
+	int  Height()
+	{
+		return m_ClientHeight;
+	};
 	void SetTexture(ID3D11ShaderResourceView* tex);
 
 	ID3D11Device* GetDevice()
@@ -120,11 +126,11 @@ protected:
 	ID3D11DepthStencilState* m_pDepthStencil_ZWriteON;
 	ID3D11DepthStencilState* m_pDepthStencil_ZWriteOFF;
 
-	ID3D11Buffer*           m_Backup_Buffer;
-	ID3D11Buffer*           m_Pics_Buffer;
-	ID3DX11Effect*          m_Pics_Effect;
-	ID3DX11EffectTechnique*     m_Pics_PTech;
-	ID3D11InputLayout*      m_Pics_PLayout;
+	ID3D11Buffer*					m_Backup_Buffer;
+	ID3D11Buffer*					m_Pics_Buffer;
+	ID3DX11Effect*					m_Pics_Effect;
+	ID3DX11EffectTechnique*			m_Pics_PTech;
+	ID3D11InputLayout*				m_Pics_PLayout;
 	ID3DX11EffectScalarVariable*    m_Pics_Width;
 	ID3DX11EffectScalarVariable*    m_Pics_Height;
 	ID3DX11EffectScalarVariable*    m_Pics_CenterX;
@@ -135,10 +141,10 @@ protected:
 	ID3D11ShaderResourceView*   m_Pics_Texture;
 	PictureVertices         m_PicsVertices;
 
-	ID3D11Buffer*           m_Triangle_Buffer;
-	ID3DX11Effect*          m_Triangle_Effect;
-	ID3DX11EffectTechnique*     m_Triangle_PTech;
-	ID3D11InputLayout*      m_Triangle_PLayout;
+	ID3D11Buffer*					m_Triangle_Buffer;
+	ID3DX11Effect*					m_Triangle_Effect;
+	ID3DX11EffectTechnique*			m_Triangle_PTech;
+	ID3D11InputLayout*				m_Triangle_PLayout;
 	ID3DX11EffectScalarVariable*    m_Triangle_Width;
 	ID3DX11EffectScalarVariable*    m_Triangle_Height;
 	ID3DX11EffectScalarVariable*    m_Triangle_CenterX;
@@ -147,10 +153,10 @@ protected:
 	ID3DX11EffectScalarVariable*    m_Triangle_Transparency;
 	TriangleVertices        m_TriangleVertices;
 
-	ID3D11Buffer*           m_TriangleLine_Buffer;
-	ID3DX11Effect*          m_TriangleLine_Effect;
-	ID3DX11EffectTechnique*     m_TriangleLine_PTech;
-	ID3D11InputLayout*      m_TriangleLine_PLayout;
+	ID3D11Buffer*					m_TriangleLine_Buffer;
+	ID3DX11Effect*					m_TriangleLine_Effect;
+	ID3DX11EffectTechnique*			m_TriangleLine_PTech;
+	ID3D11InputLayout*				m_TriangleLine_PLayout;
 	ID3DX11EffectScalarVariable*    m_TriangleLine_Width;
 	ID3DX11EffectScalarVariable*    m_TriangleLine_Height;
 	ID3DX11EffectScalarVariable*    m_TriangleLine_CenterX;
@@ -159,10 +165,10 @@ protected:
 	ID3DX11EffectScalarVariable*    m_TriangleLine_Transparency;
 	TriangleVertices        m_TriangleLineVertices;
 
-	ID3D11Buffer*           m_Patch_Buffer;
-	ID3DX11Effect*          m_Patch_Effect;
-	ID3DX11EffectTechnique*     m_Patch_PTech;
-	ID3D11InputLayout*      m_Patch_PLayout;
+	ID3D11Buffer*					m_Patch_Buffer;
+	ID3DX11Effect*					m_Patch_Effect;
+	ID3DX11EffectTechnique*			m_Patch_PTech;
+	ID3D11InputLayout*				m_Patch_PLayout;
 	ID3DX11EffectScalarVariable*    m_Patch_Width;
 	ID3DX11EffectScalarVariable*    m_Patch_Height;
 	ID3DX11EffectScalarVariable*    m_Patch_CenterX;
@@ -171,10 +177,10 @@ protected:
 	ID3DX11EffectScalarVariable*    m_SelectPatch_Transparency;
 	TriangleVertices        m_PatchVertices;
 
-	ID3D11Buffer*           m_Points_Buffer;
-	ID3DX11Effect*          m_Points_Effect;
-	ID3DX11EffectTechnique*     m_Points_PTech;
-	ID3D11InputLayout*      m_Points_PLayout;
+	ID3D11Buffer*					m_Points_Buffer;
+	ID3DX11Effect*					m_Points_Effect;
+	ID3DX11EffectTechnique*			m_Points_PTech;
+	ID3D11InputLayout*				m_Points_PLayout;
 	ID3DX11EffectScalarVariable*    m_Points_Width;
 	ID3DX11EffectScalarVariable*    m_Points_Height;
 	ID3DX11EffectScalarVariable*    m_Points_Scale;
@@ -183,10 +189,10 @@ protected:
 	ID3DX11EffectScalarVariable*    m_Points_Transparency;
 	PointVertices           m_PointsVertices;
 
-	ID3D11Buffer*           m_Lines_Buffer;
-	ID3DX11Effect*          m_Lines_Effect;
-	ID3DX11EffectTechnique*     m_Lines_PTech;
-	ID3D11InputLayout*      m_Lines_PLayout;
+	ID3D11Buffer*					m_Lines_Buffer;
+	ID3DX11Effect*					m_Lines_Effect;
+	ID3DX11EffectTechnique*			m_Lines_PTech;
+	ID3D11InputLayout*				m_Lines_PLayout;
 	ID3DX11EffectScalarVariable*    m_Lines_Width;
 	ID3DX11EffectScalarVariable*    m_Lines_Height;
 	ID3DX11EffectScalarVariable*    m_Lines_Scale;
@@ -194,6 +200,18 @@ protected:
 	ID3DX11EffectScalarVariable*    m_Lines_CenterY;
 	ID3DX11EffectScalarVariable*    m_Lines_Transparency;
 	LineVertices            m_LinesVertices;
+
+	ID3D11Buffer*					m_Lines2w_Buffer;
+	ID3DX11Effect*					m_Lines2w_Effect;
+	ID3DX11EffectTechnique*			m_Lines2w_PTech;
+	ID3D11InputLayout*				m_Lines2w_PLayout;
+	ID3DX11EffectScalarVariable*    m_Lines2w_Width;
+	ID3DX11EffectScalarVariable*    m_Lines2w_Height;
+	ID3DX11EffectScalarVariable*    m_Lines2w_Scale;
+	ID3DX11EffectScalarVariable*    m_Lines2w_CenterX;
+	ID3DX11EffectScalarVariable*    m_Lines2w_CenterY;
+	ID3DX11EffectScalarVariable*    m_Lines2w_Transparency;
+	Line2wVertices            m_Lines2wVertices;
 
 	ID3D11Buffer*           m_SkeletonLines_Buffer;
 	ID3DX11Effect*          m_SkeletonLines_Effect;
@@ -223,16 +241,16 @@ struct CD3D11_BLEND_DESCX : public D3D11_BLEND_DESC
 	CD3D11_BLEND_DESCX() {}
 	explicit CD3D11_BLEND_DESCX(const D3D11_BLEND_DESC& o) : D3D11_BLEND_DESC(o) {}
 	explicit CD3D11_BLEND_DESCX(
-	    BOOL AlphaToCoverageEnable,
-	    BOOL IndependentBlendEnable,
-	    BOOL BlendEnable0,
-	    D3D11_BLEND SrcBlend0,
-	    D3D11_BLEND DestBlend0,
-	    D3D11_BLEND_OP BlendOp0,
-	    D3D11_BLEND SrcBlendAlpha0,
-	    D3D11_BLEND DestBlendAlpha0,
-	    D3D11_BLEND_OP BlendOpAlpha0,
-	    UINT8 RenderTargetWriteMask0)
+		BOOL AlphaToCoverageEnable,
+		BOOL IndependentBlendEnable,
+		BOOL BlendEnable0,
+		D3D11_BLEND SrcBlend0,
+		D3D11_BLEND DestBlend0,
+		D3D11_BLEND_OP BlendOp0,
+		D3D11_BLEND SrcBlendAlpha0,
+		D3D11_BLEND DestBlendAlpha0,
+		D3D11_BLEND_OP BlendOpAlpha0,
+		UINT8 RenderTargetWriteMask0)
 	{
 		this->AlphaToCoverageEnable = AlphaToCoverageEnable;
 		this->IndependentBlendEnable = IndependentBlendEnable;
@@ -246,6 +264,9 @@ struct CD3D11_BLEND_DESCX : public D3D11_BLEND_DESC
 		this->RenderTarget[0].RenderTargetWriteMask = RenderTargetWriteMask0;
 	}
 	~CD3D11_BLEND_DESCX() {}
-	operator const D3D11_BLEND_DESC& () const { return *this; }
+	operator const D3D11_BLEND_DESC& () const
+	{
+		return *this;
+	}
 };
 
