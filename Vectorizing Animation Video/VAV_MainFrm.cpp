@@ -606,7 +606,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			tpnts2d.push_back(edges[i].pnts);
 		}
 		m_BlackLine = GetLines(tpnts2d, 0, 0);
-		m_BlackLine = SmoothingLen5(m_BlackLine, 1);
+		m_BlackLine = SmoothingLen5(m_BlackLine);
 		Lines normals = GetNormalsLen2(m_BlackLine);
 		GetVavView()->m_FeatureLines = m_BlackLine;
 		GetVavView()->m_FeatureNormals = normals;
@@ -622,7 +622,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			lineWidths.clear();
 			for (int idx2 = 0; idx2 < nowLine.size() - 1; ++idx2)
 			{
-				const double LINE_WIDTH = 3;
+				const double LINE_WIDTH = 5;
 				Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
 				Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
 				Vector2 start2(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * LINE_WIDTH);
@@ -631,12 +631,12 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 									  360);
 				double_vector line2 = vImage.GetLineLight(start2.x, start2.y, end2.x, end2.y,
 									  360);
-				line1 = SmoothingLen5(line1, 3);
-				line2 = SmoothingLen5(line2, 3);
+				line1 = SmoothingLen5(line1, 0.0, 3);
+				line2 = SmoothingLen5(line2, 0.0, 3);
 				double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
-													5, 50), LINE_WIDTH * 2);
+													10, 50), LINE_WIDTH * 2);
 				double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
-													5, 50), LINE_WIDTH * 2);
+													10, 50), LINE_WIDTH * 2);
 				if (width1.size() >= 2 && width2.size() >= 2)
 				{
 					Line line1;
@@ -659,13 +659,11 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			}
 			lineWidths.push_back(Vector2());
 		}
-		m_BLineWidth = FixLineWidths(BLineWidth, 10);
-		m_BLineWidth = FixLineWidths(m_BLineWidth, 10);
-		m_BLineWidth = FixLineWidths(m_BLineWidth, 10);
-		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 5);
-		m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 2);
+		m_BLineWidth = FixLineWidths(BLineWidth, 5);
+		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 3);
+		m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 1, 3);
 		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
-		m_BlackLine = SmoothingLen5(m_BlackLine, 3);
+		m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 10);
 		d3dApp.AddLines(m_BlackLine, m_BLineWidth);
 		d3dApp.AddLines(showLines);
 // 		Lines normalLines = LinesAdd(showLine, normals);

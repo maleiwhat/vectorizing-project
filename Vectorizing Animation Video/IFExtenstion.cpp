@@ -5,37 +5,39 @@
 #include "math\Quaternion.h"
 
 
-double_vector ConvertToAngle(const double_vector& data)
+double_vector ConvertToAngle(const double_vector& data, double zero)
 {
-	double_vector tmp = (data);
+	zero -= 90;
+	double_vector tmp = data;
 	double_vector ans;
 	{
-		double dy = tmp[1] - tmp[0];
-		double angle = atan2f(2, dy) / M_PI * 180 + 200;
+		double dy = tmp[2] - tmp[0];
+		double angle = atan2f(3, dy) / M_PI * 180 + zero;
 		ans.push_back(angle);
-		dy = tmp[2] - tmp[0];
-		angle = atan2f(3, dy) / M_PI * 180 + 200;
+		dy = tmp[3] - tmp[1];
+		angle = atan2f(3, dy) / M_PI * 180 + zero;
 		ans.push_back(angle);
 	}
 	for (int i = 2; i < data.size() - 2; ++i)
 	{
 		double dy = tmp[i + 2] - tmp[i - 2];
-		double angle = atan2f(3, dy) / M_PI * 180 + 200;
+		double angle = atan2f(3, dy) / M_PI * 180 + zero;
 		ans.push_back(angle);
 	}
 	{
-		int last = data.size() - 1;
-		double dy = tmp[last] - tmp[last - 2];
-		double angle = atan2f(3, dy) / M_PI * 180 + 200;
+		int last = data.size() - 2;
+		double dy = tmp[last-1] - tmp[last - 3];
+		double angle = atan2f(3, dy) / M_PI * 180 + zero;
 		ans.push_back(angle);
 		dy = tmp[last] - tmp[last - 1];
-		angle = atan2f(2, dy) / M_PI * 180 + 200;
+		angle = atan2f(3, dy) / M_PI * 180 + zero;
 		ans.push_back(angle);
 	}
-	return SmoothingLen5(ans);
+	return SmoothingLen5(ans, 0, 2);
 }
 
-double_vector SmoothingLoop(const double_vector& data, int repeat)
+double_vector SmoothingLoop(const double_vector& data, double centroidRadio,
+							int repeat)
 {
 	double_vector cps = data;
 	double_vector newcps;
@@ -62,12 +64,15 @@ double_vector SmoothingLoop(const double_vector& data, int repeat)
 	return newcps;
 }
 
-double_vector SmoothingLen3(const double_vector& data, int repeat)
+double_vector SmoothingLen3(const double_vector& data, double centroidRadio,
+							int repeat)
 {
 	double_vector cps = data;
 	double_vector newcps;
+	double_vector centroids;
 	for (int count = 0; count < repeat; ++count)
 	{
+		centroids.clear();
 		newcps.clear();
 		int last = cps.size() - 1;
 		if (cps.size() < 5)
@@ -79,19 +84,34 @@ double_vector SmoothingLen3(const double_vector& data, int repeat)
 		{
 			auto vec = (cps[j] * 2 + cps[j - 1] + cps[j + 1]) * 0.25;
 			newcps.push_back(vec);
+			centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1]) / 3.0f);
 		}
 		newcps.push_back((cps[last - 1] + cps[last] * 2) / 3.0f);
+		cps = newcps;
+		// move centroid
+		newcps.clear();
+		newcps.push_back(cps.front());
+		for (int j = 1; j < cps.size() - 1; j ++)
+		{
+			double nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1]) / 3.0f;
+			nowCentroid = centroids[j - 1] - nowCentroid;
+			newcps.push_back(cps[j] + nowCentroid * centroidRadio);
+		}
+		newcps.push_back(cps.back());
 		cps = newcps;
 	}
 	return newcps;
 }
 
-double_vector SmoothingLen5(const double_vector& data, int repeat)
+double_vector SmoothingLen5(const double_vector& data, double centroidRadio,
+							int repeat)
 {
 	double_vector cps = data;
 	double_vector newcps;
+	double_vector centroids;
 	for (int count = 0; count < repeat; ++count)
 	{
+		centroids.clear();
 		newcps.clear();
 		int last = cps.size() - 1;
 		if (cps.size() < 5)
@@ -100,14 +120,36 @@ double_vector SmoothingLen5(const double_vector& data, int repeat)
 		}
 		newcps.push_back((cps[0] * 2 + cps[1]) / 3.0f);
 		newcps.push_back((cps[1] * 2 + cps[0] + cps[2]) * 0.25f);
+		centroids.push_back((cps[0] + cps[1]  + cps[2]) / 3.0f);
 		for (int j = 2; j < cps.size() - 2; j ++)
 		{
 			auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
 					   6.0f;
 			newcps.push_back(vec);
+			centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+								 cps[j - 2]) / 5.0f);
 		}
+		centroids.push_back((cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f);
 		newcps.push_back((cps[last - 1] * 2 + cps[last] + cps[last - 2]) * 0.25f);
 		newcps.push_back((cps[last - 1] + cps[last] * 2) / 3.0f);
+		cps = newcps;
+		// move centroid
+		newcps.clear();
+		newcps.push_back(cps.front());
+		double cert = (cps[0] + cps[1]  + cps[2]) / 3.0f;
+		cert = centroids[0] - cert;
+		newcps.push_back(cps[1] + cert);
+		for (int j = 2; j < cps.size() - 2; j ++)
+		{
+			double nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+								  cps[j - 2]) / 5.0f;
+			nowCentroid = centroids[j - 1] - nowCentroid;
+			newcps.push_back(cps[j] + nowCentroid * centroidRadio);
+		}
+		cert = (cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f;
+		cert = centroids[last - 2] - cert;
+		newcps.push_back(cps[last - 1] + cert);
+		newcps.push_back(cps.back());
 		cps = newcps;
 	}
 	return newcps;
@@ -365,7 +407,7 @@ double_vector GetLineWidth(const double_vector& data, double lineWidth,
 {
 	double_vector ans;
 	bool end = false;
-	const int check_length = 100;
+	const int check_length = 179;
 	const int size = data.size();
 	for (int i = size / 2; i > size / 2 - check_length && !end; --i)
 	{

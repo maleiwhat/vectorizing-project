@@ -41,10 +41,10 @@ CgalLines	GetCgalLines(const Lines& cvp, double xOffset=0, double yOffset=0);
 CgalLine	GetCgalLine(const CvLine& cvp, double xOffset=0, double yOffset=0);
 CgalLine	GetCgalLine(const Line& cvp, double xOffset=0, double yOffset=0);
 
-Line	SmoothingLen5(const Line& cvp, int repeat = 1);
-Line	SmoothingLen3(const Line& cvp, int repeat = 1);
-Lines	SmoothingLen5(const Lines& cvp, int repeat = 1);
-Lines	SmoothingLen3(const Lines& cvp, int repeat = 1);
+Line	SmoothingLen5(const Line& cvp, double centroidRadio = 1.0, int repeat = 1);
+Line	SmoothingLen3(const Line& cvp, double centroidRadio = 1.0, int repeat = 1);
+Lines	SmoothingLen5(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);
+Lines	SmoothingLen3(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);
 
 Line	GetNormalsLen2(const Line& cvp);
 Line	GetNormalsLen3(const Line& cvp);
@@ -61,7 +61,7 @@ Lines	FixLineWidths(const Lines& aLine, int range);
 Line	CleanOrphanedLineWidths(const Line& aLine, int num);
 Lines	CleanOrphanedLineWidths(const Lines& aLine, int num);
 
-Line	SmoothingHas0Len5(const Line& cvp, int repeat = 1);
-Line	SmoothingHas0Len3(const Line& cvp, int repeat = 1);
-Lines	SmoothingHas0Len5(const Lines& cvp, int repeat = 1);
-Lines	SmoothingHas0Len3(const Lines& cvp, int repeat = 1);
+Line	SmoothingHas0Len5(const Line& cvp, double centroidRadio = 1.0, int repeat = 1);
+Line	SmoothingHas0Len3(const Line& cvp, double centroidRadio = 1.0, int repeat = 1);
+Lines	SmoothingHas0Len5(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);
+Lines	SmoothingHas0Len3(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);

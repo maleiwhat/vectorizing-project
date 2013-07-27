@@ -365,7 +365,7 @@ void VAV_View::ShowLineNormal()
 	if (idx1 != -1)
 	{
 		Line twoPoint;
-		const double LINE_WIDTH = 3;
+		const double LINE_WIDTH = 8;
 		Vector2 start(m_FeatureLines[idx1][idx2] - m_FeatureNormals[idx1][idx2] *
 					  LINE_WIDTH);
 		Vector2 end(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
@@ -379,12 +379,10 @@ void VAV_View::ShowLineNormal()
 		double_vector line2 = m_ExpImage.GetLineLight(start2.x, start2.y, end2.x,
 							  end2.y,
 							  360);
-		line1 = SmoothingLen5(line1, 3);
-		line2 = SmoothingLen5(line2, 3);
 		m_TimerCallback->Lock();
 		m_TimerCallback->m_data[0] = line1;
 		m_TimerCallback->m_data[4] = ConvertToAngle(line1);
-		m_TimerCallback->m_data[5] = ConvertToSquareWave(ConvertToAngle(line1), 5, 50);
+		m_TimerCallback->m_data[5] = ConvertToSquareWave(ConvertToAngle(line1), 10, 50);
 		m_TimerCallback->Unlock();
 		Lines push;
 		{ // show test line
@@ -400,23 +398,25 @@ void VAV_View::ShowLineNormal()
 			twoPoint.push_back(end);
 			push.push_back(twoPoint);
 		}
+		line1 = SmoothingLen5(line1, 0.0, 3);
+		line2 = SmoothingLen5(line2, 0.0, 3);
 		double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
-											5, 50), LINE_WIDTH * 2);
+											10, 50), LINE_WIDTH * 2);
 		double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
-											5, 50), LINE_WIDTH * 2);
+											10, 50), LINE_WIDTH * 2);
 		const double blackRadio = 0.6;
 		if (width1.size() >= 2 && width2.size() >= 2)
 		{
 			Line line1;
-			line1.push_back(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
+			line1.push_back(m_FeatureLines[idx1][idx2] - m_FeatureNormals[idx1][idx2] *
 							width1[0] * blackRadio);
-			line1.push_back(m_FeatureLines[idx1][idx2 + 1] +
+			line1.push_back(m_FeatureLines[idx1][idx2 + 1] -
 							m_FeatureNormals[idx1][idx2 + 1] * width2[0] * blackRadio);
 			line1 = GetLine(line1, 0.5, 0.5);
 			Line line2;
-			line2.push_back(m_FeatureLines[idx1][idx2] - m_FeatureNormals[idx1][idx2] *
+			line2.push_back(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
 							width1[1] * blackRadio);
-			line2.push_back(m_FeatureLines[idx1][idx2 + 1] -
+			line2.push_back(m_FeatureLines[idx1][idx2 + 1] +
 							m_FeatureNormals[idx1][idx2 + 1] * width2[1] * blackRadio);
 			line2 = GetLine(line2, 0.5, 0.5);
 			push.push_back(line1);

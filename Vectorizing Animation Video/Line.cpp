@@ -192,7 +192,7 @@ CgalLine GetCgalLine(const Line& cvp, double xOffset/*=0*/,
 	return line;
 }
 
-Line SmoothingLen5(const Line& cvp, int repeat)
+Line SmoothingLen5(const Line& cvp, double centroidRadio, int repeat)
 {
 	if (cvp.size() <= 2)
 	{
@@ -200,6 +200,7 @@ Line SmoothingLen5(const Line& cvp, int repeat)
 	}
 	Line cps = cvp;
 	Line newcps;
+	Line centroids;
 	for (int repeatCount = 0; repeatCount < repeat; repeatCount++)
 	{
 		newcps.clear();
@@ -216,16 +217,39 @@ Line SmoothingLen5(const Line& cvp, int repeat)
 		}
 		else
 		{
+			centroids.clear();
 			newcps.push_back(cps.front());
+			centroids.push_back((cps[0] + cps[1]  + cps[2]) / 3.0f);
 			newcps.push_back((cps[0] + cps[1] * 2 + cps[2]) * 0.25);
 			for (int j = 2; j < cps.size() - 2; j ++)
 			{
 				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
 						   6.0f;
 				newcps.push_back(vec);
+				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+									 cps[j - 2]) / 5.0f);
 			}
 			int last = cps.size() - 1;
 			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
+			centroids.push_back((cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f);
+			newcps.push_back(cps.back());
+			cps = newcps;
+			// move centroid
+			newcps.clear();
+			newcps.push_back(cps.front());
+			Vector2 cert = (cps[0] + cps[1]  + cps[2]) / 3.0f;
+			cert = centroids[0] - cert;
+			newcps.push_back(cps[1] + cert);
+			for (int j = 2; j < cps.size() - 2; j ++)
+			{
+				Vector2 nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+									   cps[j - 2]) / 5.0f;
+				nowCentroid = centroids[j - 1] - nowCentroid;
+				newcps.push_back(cps[j] + nowCentroid * centroidRadio);
+			}
+			cert = (cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f;
+			cert = centroids[last - 2] - cert;
+			newcps.push_back(cps[last - 1] + cert);
 			newcps.push_back(cps.back());
 			cps = newcps;
 		}
@@ -233,18 +257,18 @@ Line SmoothingLen5(const Line& cvp, int repeat)
 	return cps;
 }
 
-Lines SmoothingLen5(const Lines& cvp, int repeat /*= 1*/)
+Lines SmoothingLen5(const Lines& cvp, double centroidRadio, int repeat /*= 1*/)
 {
 	Lines cps(cvp.size());
 	for (int i = 0; i < cvp.size(); ++i)
 	{
 		const Line& nowLine = cvp[i];
-		cps[i] = SmoothingLen5(nowLine, repeat);
+		cps[i] = SmoothingLen5(nowLine, centroidRadio, repeat);
 	}
 	return cps;
 }
 
-Line SmoothingLen3(const Line& cvp, int repeat /*= 1*/)
+Line SmoothingLen3(const Line& cvp, double centroidRadio, int repeat /*= 1*/)
 {
 	if (cvp.size() <= 2)
 	{
@@ -252,14 +276,28 @@ Line SmoothingLen3(const Line& cvp, int repeat /*= 1*/)
 	}
 	Line cps = cvp;
 	Line newcps;
+	Line centroids;
 	for (int repeatCount = 0; repeatCount < repeat; repeatCount++)
 	{
+		centroids.clear();
 		newcps.clear();
 		newcps.push_back(cps.front());
 		for (int j = 1; j < cps.size() - 1; j ++)
 		{
 			auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1]) * 0.25;
 			newcps.push_back(vec);
+			centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1]) / 3.0f);
+		}
+		newcps.push_back(cps.back());
+		cps = newcps;
+		// move centroid
+		newcps.clear();
+		newcps.push_back(cps.front());
+		for (int j = 1; j < cps.size() - 1; j ++)
+		{
+			Vector2 nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1]) / 3.0f;
+			nowCentroid = centroids[j - 1] - nowCentroid;
+			newcps.push_back(cps[j] + nowCentroid * centroidRadio);
 		}
 		newcps.push_back(cps.back());
 		cps = newcps;
@@ -267,13 +305,13 @@ Line SmoothingLen3(const Line& cvp, int repeat /*= 1*/)
 	return cps;
 }
 
-Lines SmoothingLen3(const Lines& cvp, int repeat /*= 1*/)
+Lines SmoothingLen3(const Lines& cvp, double centroidRadio, int repeat /*= 1*/)
 {
 	Lines cps(cvp.size());
 	for (int i = 0; i < cvp.size(); ++i)
 	{
 		const Line& nowLine = cvp[i];
-		cps[i] = SmoothingLen3(nowLine, repeat);
+		cps[i] = SmoothingLen3(nowLine, centroidRadio, repeat);
 	}
 	return cps;
 }
@@ -483,7 +521,7 @@ Lines CleanOrphanedLineWidths(const Lines& widths, int num)
 	return ans;
 }
 
-Line SmoothingHas0Len5(const Line& cvp, int repeat)
+Line SmoothingHas0Len5(const Line& cvp, double centroidRadio, int repeat)
 {
 	if (cvp.size() <= 2)
 	{
@@ -507,7 +545,7 @@ Line SmoothingHas0Len5(const Line& cvp, int repeat)
 		}
 		else
 		{
-			newcps.push_back(cps.front()*0.8);
+			newcps.push_back(cps.front() * 0.8);
 			newcps.push_back((cps[0] + cps[1] * 2 + cps[2]) * 0.25);
 			for (int j = 2; j < cps.size() - 2; j ++)
 			{
@@ -516,7 +554,7 @@ Line SmoothingHas0Len5(const Line& cvp, int repeat)
 					int zero = 0;
 					for (int k = j - 2; k <= j + 2; ++k)
 					{
-						if (cps[j].x < 0.01)
+						if (cps[k].x < 0.01)
 						{
 							zero++;
 						}
@@ -532,20 +570,83 @@ Line SmoothingHas0Len5(const Line& cvp, int repeat)
 			}
 			int last = cps.size() - 1;
 			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
-			newcps.push_back(cps.back()*0.8);
+			newcps.push_back(cps.back() * 0.8);
 			cps = newcps;
 		}
 	}
 	return cps;
 }
 
-Lines SmoothingHas0Len5(const Lines& cvp, int num)
+Lines SmoothingHas0Len5(const Lines& cvp, double centroidRadio, int num)
 {
 	Lines ans(cvp.size());
 	for (int i = 0; i < cvp.size(); ++i)
 	{
 		const Line& aa = cvp.at(i);
-		ans[i] = SmoothingHas0Len5(aa, num);
+		ans[i] = SmoothingHas0Len5(aa, centroidRadio, num);
+	}
+	return ans;
+}
+
+Line SmoothingHas0Len3(const Line& cvp, double centroidRadio, int repeat)
+{
+	if (cvp.size() <= 2)
+	{
+		return cvp;
+	}
+	Line cps = cvp;
+	Line newcps;
+	for (int repeatCount = 0; repeatCount < repeat; repeatCount++)
+	{
+		newcps.clear();
+		if (cps.size() <= 5)
+		{
+			newcps.push_back(cps.front());
+			for (int j = 1; j < cps.size() - 1; j ++)
+			{
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1]) * 0.25;
+				newcps.push_back(vec);
+			}
+			newcps.push_back(cps.back());
+			cps = newcps;
+		}
+		else
+		{
+			newcps.push_back(cps.front() * 0.8);
+			for (int j = 2; j < cps.size() - 2; j ++)
+			{
+				if (cps[j].x > 0)
+				{
+					int zero = 0;
+					for (int k = j - 1; k <= j + 1; ++k)
+					{
+						if (cps[k].x < 0.01)
+						{
+							zero++;
+						}
+					}
+					auto vec = (cps[j] * (2 + zero) + cps[j + 1] + cps[j - 1]) / 4.0f;
+					newcps.push_back(vec);
+				}
+				else
+				{
+					newcps.push_back(Vector2());
+				}
+			}
+			newcps.push_back(cps.back() * 0.8);
+			cps = newcps;
+		}
+	}
+	return cps;
+}
+
+Lines SmoothingHas0Len3(const Lines& cvp, double centroidRadio, int num)
+{
+	Lines ans(cvp.size());
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Line& aa = cvp.at(i);
+		ans[i] = SmoothingHas0Len3(aa, centroidRadio, num);
 	}
 	return ans;
 }
