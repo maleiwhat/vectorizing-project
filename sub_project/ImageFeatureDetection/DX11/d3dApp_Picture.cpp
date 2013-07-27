@@ -573,6 +573,7 @@ void D3DApp_Picture::AddBigPoint(float x, float y, float radius,
 	pv.size.y = radius;
 	pv.position.x = x;
 	pv.position.y = m_PicH - y;
+	m_PointsVertices.push_back(pv);
 	m_CircleLineVertices.push_back(pv);
 }
 

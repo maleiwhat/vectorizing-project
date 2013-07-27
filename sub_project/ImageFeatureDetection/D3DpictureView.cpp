@@ -489,8 +489,9 @@ void CD3DpictureView::UpdateImageFeature()
 	break;
 	}
 	UnlockDraw();
-	m_D3DApp.SetMousePoint(realx, realy, m_LineRadius * 2, color);
-	m_D3DApp.ClearTriangles();
+	//m_D3DApp.SetMousePoint(realx, realy, m_LineRadius * 2, color);
+	m_D3DApp.AddBigPoint(realx, realy, m_LineRadius * 2, color);
+	//m_D3DApp.ClearTriangles();
 //	m_LineRadius += 1;
 // 	{
 // 		// big circle 1

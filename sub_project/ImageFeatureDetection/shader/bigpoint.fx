@@ -41,7 +41,7 @@ VS_OUT VS(VS_IN vIn)
 }
 
 
-[maxvertexcount (48)]
+[maxvertexcount (34)]
 void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 {
 	GS_OUT out3;
@@ -52,16 +52,12 @@ void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 	float angle = 22.5*3.14159/180;
 	
 	float2 len = float2(input[0].size.x, 0);
-	for (int i = 0;i < 16;++i)
+	for (int i = 0;i <= 16;++i)
 	{
-		
-		float2x2 mat1 = {cos(angle*(i+1)), -sin(angle*(i+1)), sin(angle*(i+1)), cos(angle*(i+1))};
-		float2x2 mat2 = {cos(angle*i), -sin(angle*i), sin(angle*i), cos(angle*i)};
-		out3.pos.xy = mul(len, mat2)/float2(width,height)*width + input[0].pos;
+		float2x2 mat1 = {cos(angle*i), -sin(angle*i), sin(angle*i), cos(angle*i)};
+		out3.pos.xy = mul(len, mat1)/float2(width,height)*width + input[0].pos;
 		triStream.Append( out3 );
 		out3.pos.xy = input[0].pos;
-		triStream.Append( out3 );
-		out3.pos.xy = mul(len, mat1)/float2(width,height)*width + input[0].pos;
 		triStream.Append( out3 );
 	}
 	triStream.RestartStrip();

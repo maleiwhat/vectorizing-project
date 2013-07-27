@@ -11,55 +11,49 @@ cbuffer cbPerFrame
 
 struct VS_IN
 {
-	float2 pos: POSITION;
-	float2 size: SIZE;
-	float3 color: COLOR;
+	float2 p1: POSA;
+	float2 p2: POSB;
+	float3 c1: COLOR;
 };
 
 struct VS_OUT
 {
-	float2 pos: POSITION;
-	float2 size: SIZE;
-	float3 color: COLOR;
+	float2 p1: POSA;
+	float2 p2: POSB;
+	float3 c1: COLOR;
 };
 
 struct GS_OUT
 {
 	float4 pos : SV_POSITION;
-	float4 color: COLOR4;
+	float4 color : COLOR4;
 };
  
 VS_OUT VS(VS_IN vIn)
 {
 	VS_OUT vOut;
-	vOut.pos = (vIn.pos/float2(width,height)*scale)*2-1+float3(centerX/width,-centerY/height, 0)*scale;
-	vOut.pos.x += centerX/width*2;
-	vOut.pos.y -= centerY/height*2;
-	vOut.size = (vIn.size/float2(width,height)*scale);
-	vOut.color = vIn.color;
+	float2 offset = float2(centerX/width*2, -centerY/height*2);
+	vOut.p1 = (vIn.p1/float2(width,height)*scale)*2-1+float2(centerX/width,-centerY/height)*scale;
+	vOut.p2 = (vIn.p2/float2(width,height)*scale)*2-1+float2(centerX/width,-centerY/height)*scale;
+	vOut.p1 += offset;
+	vOut.p2 += offset;
+	vOut.c1 = vIn.c1;
 	return vOut;
 }
 
 
-[maxvertexcount (34)]
-void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
+[maxvertexcount (2)]
+void gs_main(point VS_OUT input[1], inout LineStream<GS_OUT> triStream)
 {
 	GS_OUT out3;
 	
 	out3.pos.z = 0;
 	out3.pos.w = 1;
-	out3.color = float4(input[0].color, transparency);
-	float angle = 22.5*3.14159/180;
-	
-	float2 len = float2(input[0].size.x, 0);
-	for (int i = 0;i <= 16;++i)
-	{
-		float2x2 mat1 = {cos(angle*i), -sin(angle*i), sin(angle*i), cos(angle*i)};
-		out3.pos.xy = mul(len, mat1)/float2(width,height)*width + input[0].pos;
-		triStream.Append( out3 );
-		out3.pos.xy = input[0].pos;
-		triStream.Append( out3 );
-	}
+	out3.color = float4(input[0].c1, 1);
+	out3.pos.xy = input[0].p1;
+	triStream.Append( out3 );
+	out3.pos.xy = input[0].p2;
+	triStream.Append( out3 );
 	triStream.RestartStrip();
 }
 

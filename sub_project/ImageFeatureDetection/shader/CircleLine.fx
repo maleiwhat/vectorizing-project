@@ -41,23 +41,21 @@ VS_OUT VS(VS_IN vIn)
 }
 
 
-[maxvertexcount (34)]
-void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
+[maxvertexcount (33)]
+void gs_main(point VS_OUT input[1], inout LineStream<GS_OUT> triStream)
 {
 	GS_OUT out3;
 	
 	out3.pos.z = 0;
 	out3.pos.w = 1;
 	out3.color = float4(input[0].color, transparency);
-	float angle = 22.5*3.14159/180;
+	float angle = 12.25*3.14159/180;
 	
 	float2 len = float2(input[0].size.x, 0);
-	for (int i = 0;i <= 16;++i)
+	for (int i = 0;i <= 32;++i)
 	{
-		float2x2 mat1 = {cos(angle*i), -sin(angle*i), sin(angle*i), cos(angle*i)};
+		float2x2 mat1 = {cos(angle*(i+1)), -sin(angle*(i+1)), sin(angle*(i+1)), cos(angle*(i+1))};
 		out3.pos.xy = mul(len, mat1)/float2(width,height)*width + input[0].pos;
-		triStream.Append( out3 );
-		out3.pos.xy = input[0].pos;
 		triStream.Append( out3 );
 	}
 	triStream.RestartStrip();
