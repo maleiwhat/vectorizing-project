@@ -1,6 +1,8 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include "Line.h"
 #include "math/Quaternion.h"
-
+#include "IFExtenstion.h"
 
 Lines GetLines(const CvLines& cvp)
 {
@@ -648,5 +650,44 @@ Lines SmoothingHas0Len3(const Lines& cvp, double centroidRadio, int num)
 		const Line& aa = cvp.at(i);
 		ans[i] = SmoothingHas0Len3(aa, centroidRadio, num);
 	}
+	return ans;
+}
+
+Lines SplitStraightLine(const Line& cvp)
+{
+}
+
+double_vector ComputeAngle(const Line& line)
+{
+	double_vector ans(line.size(), 0);
+
+	for (int i = 1; i < line.size(); i++)
+	{
+		Vector2 vec = line[i] - line[i - 1];
+		ans[i] = atan2f(vec.x, vec.y) / M_PI * 180;
+	}
+
+	ans[0] = ans[1];
+	return ans;
+}
+
+Line GetControlPoint(const Line& line, double angle)
+{
+	Line ans;
+	double_vector angles = Accumulation(Curvature(ComputeAngle(line)));
+	double threshold = 0;
+	assert(angles.size() == line.size());
+	ans.push_back(line.front());
+
+	for (int i = 1; i < angles.size() - 1; ++i)
+	{
+		if (abs(angles[i] - threshold) > angle)
+		{
+			ans.push_back(line[i]);
+			threshold = angles[i];
+		}
+	}
+
+	ans.push_back(line.back());
 	return ans;
 }

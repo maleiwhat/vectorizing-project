@@ -1,6 +1,10 @@
 #pragma once
 #include "math\BasicMath.h"
 
+double_vector Curvature(const double_vector& angles);
+double_vector Accumulation(const double_vector& line);
+double_vector AbsAccumulation(const double_vector& line);
+
 double_vector SmoothingLoop(const double_vector& data,
 							double centroidRadio = 1.0, int repeat = 1);
 double_vector SmoothingLen3(const double_vector& data,

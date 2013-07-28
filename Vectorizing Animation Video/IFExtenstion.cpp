@@ -1,9 +1,45 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
-
 #include "IFExtenstion.h"
 #include "math\Quaternion.h"
 
+double_vector Curvature(const double_vector& angles)
+{
+	double_vector ans = angles;
+	ans[0] = 0;
+
+	for (int i = 1; i < ans.size(); i++)
+	{
+		ans[i] = angles[i] - angles[i - 1];
+	}
+
+	return ans;
+}
+
+double_vector Accumulation(const double_vector& line)
+{
+	double_vector ans = line;
+
+	for (int i = 1; i < line.size(); i++)
+	{
+		ans[i] = ans[i] + ans[i - 1];
+	}
+
+	return ans;
+}
+
+double_vector AbsAccumulation(const double_vector& line)
+{
+	double_vector ans = line;
+	ans[0] = abs(ans[0]);
+
+	for (int i = 1; i < line.size(); i++)
+	{
+		ans[i] = abs(ans[i]) + ans[i - 1];
+	}
+
+	return ans;
+}
 
 double_vector ConvertToAngle(const double_vector& data, double zero)
 {
