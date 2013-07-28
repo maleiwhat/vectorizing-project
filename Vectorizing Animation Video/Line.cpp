@@ -653,8 +653,40 @@ Lines SmoothingHas0Len3(const Lines& cvp, double centroidRadio, int num)
 	return ans;
 }
 
-Lines SplitStraightLine(const Line& cvp)
+Lines SplitStraightLine(const Line& line,  double angle)
 {
+	Lines ans;
+	double_vector angles = Accumulation(Curvature(ComputeAngle(line)));
+	double threshold = 0;
+	assert(angles.size() == line.size());
+
+	int lastidx = 0;
+	double nowAngle = 0;
+	for (int i = 1; i < angles.size(); ++i)
+	{
+		if (abs(angles[i] - threshold) > angle)
+		{
+			ans.push_back(Line());
+			Line& nowLine = ans.back();
+			nowLine.insert(nowLine.begin(), line.begin()+lastidx, line.begin()+i);
+			lastidx = i;
+			threshold = angles[i];
+		}
+	}
+
+	return ans;
+}
+
+Lines SplitStraightLine( const Lines& cvp, double angle )
+{
+	Lines ans;
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Line& aa = cvp.at(i);
+		Lines newLines = SplitStraightLine(aa, angle);
+		ans.insert(ans.end(), newLines.begin(), newLines.end());
+	}
+	return ans;
 }
 
 double_vector ComputeAngle(const Line& line)

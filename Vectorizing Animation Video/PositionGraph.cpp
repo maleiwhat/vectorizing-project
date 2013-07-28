@@ -452,7 +452,7 @@ void PositionGraph::MakeContourLines()
 		rights.resize(now_line.size());
 		const double_vector& now_linewidth = m_LinesWidth[i];
 		rights[0] = Quaternion::GetRotation(now_line[1] - now_line[0], 90);
-		for (int j = 1; j < now_line.size(); ++j)
+		for (size_t j = 1; j < now_line.size(); ++j)
 		{
 			rights[j] = Quaternion::GetRotation(now_line[j] - now_line[j - 1], 90);
 			rights[j].normalise();
@@ -463,7 +463,7 @@ void PositionGraph::MakeContourLines()
 			lineSegs.push_back(now_line[j] + rights[j] * (now_linewidth[j] - 0.2) * 0.5);
 		}
 		//lineSegs.push_back(now_line.back() + rights.back()*now_linewidth.back() * 0.5);
-		for (size_t j = now_line.size() - 1; j >= 0; --j)
+		for (int j = now_line.size() - 1; j >= 0; --j)
 		{
 			lineSegs.push_back(now_line[j] - rights[j] * (now_linewidth[j] - 0.2) * 0.5);
 		}
@@ -478,7 +478,7 @@ void PositionGraph::MakeContourLines()
 		}
 		newcps.push_back(cps.front());
 		Vector2 last = cps.front();
-		for (int j = 1; j < cps.size(); j ++)
+		for (size_t j = 1; j < cps.size(); j++)
 		{
 			Vector2& now = cps[j];
 			if (last.distance(now) > 0.5)
@@ -490,7 +490,7 @@ void PositionGraph::MakeContourLines()
 		cps = newcps;
 	}
 	Clipper c;
-	for (int i = 0; i < m_ContourLines.size(); ++i)
+	for (size_t i = 0; i < m_ContourLines.size(); ++i)
 	{
 		Polygons Qx;
 		Qx.resize(1);

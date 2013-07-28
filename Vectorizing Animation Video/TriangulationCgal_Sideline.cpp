@@ -125,21 +125,18 @@ int TriangulationCgal_Sideline::Compute()
 			cps.push_back(hs.GetValue(j * 3));
 		}
 		cps.push_back(end);
-//      hs.Clear();
-//
-//      for (int j = 0; j < cps.size(); ++j)
-//      {
-//          hs.AddPointByDistance(cps[j]);
-//      }
-//      res.clear();
-//      res.push_back(beg);
-//
-//      for (int j = 1; j < dis-1; ++j)
-//      {
-//          res.push_back(hs.GetValue(j));
-//      }
-//
-//      res.push_back(end);
+// 		hs.Clear();
+// 		for (int j = 0; j < cps.size(); ++j)
+// 		{
+// 			hs.AddPointByDistance(cps[j]);
+// 		}
+// 		res.clear();
+// 		res.push_back(beg);
+// 		for (int j = 1; j < dis - 1; ++j)
+// 		{
+// 			res.push_back(hs.GetValue(j));
+// 		}
+// 		res.push_back(end);
 	}
 	m_Triangulation.clear();
 	Point lu(0, 0);

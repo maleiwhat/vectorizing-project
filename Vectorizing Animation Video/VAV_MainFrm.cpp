@@ -582,6 +582,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	const bool DRAW_CONTOUR_SKELETON_POINT = false;
 	const bool DRAW_ISOSURFACE = false;
 	const bool DRAW_CURVE_EXTRACTION = true;
+
 	if (DRAW_CURVE_EXTRACTION)
 	{
 		vavImage vImage = m_vavImage.Clone();
@@ -665,21 +666,16 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 10);
 		d3dApp.AddLines(m_BlackLine, m_BLineWidth);
-		d3dApp.AddLines(showLines);
-// 		Lines normalLines = LinesAdd(showLine, normals);
-// 		Lines normalLines2 = LinesSub(showLine, normals);
-// 		d3dApp.AddLines(normalLines);
-// 		d3dApp.AddLines(normalLines2);
+		m_BlackLine = SplitStraightLine(m_BlackLine, 20);
+		d3dApp.AddLines(m_BlackLine);
+		//d3dApp.AddLines(showLines);
 	}
+	// contour
 	TriangulationCgal_Sideline cgal_contour;
 	ImageSpline is2;
 	if (DRAW_CONTOUR)
 	{
 		is2 = ComputeLines(m_vavImage, m_BlackRegionThreshold * 0.01);
-	}
-	// contour
-	if (DRAW_CONTOUR)
-	{
 		cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
 		cgal_contour.AddImageSpline(is2);
 		cgal_contour.SetCriteria(0.001, 4000);
@@ -731,22 +727,21 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 				cps = newcps;
 			}
 		}
-// 		cgal_contour.MakeColorSequential();
-// 		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
-// 		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
-// 		d3dApp.SetScaleTemporary(1);
-// 		d3dApp.BuildPoint();
-// 		cv::Mat simg = d3dApp.DrawSceneToCvMat();
-// 		d3dApp.SetScaleRecovery();
-// 		ColorConstraint_sptrs RegionColors = MakeColors(region, simg, m_vavImage);
-// 		d3dApp.ClearTriangles();
-// 		cgal_contour.SetColor(RegionColors);
-//
-// 		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
-// 		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
-// 		d3dApp.AddLineSegs(cgal_contour.m_LineSegs);
-// 		d3dApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth, colors);
-		d3dApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth);
+		cgal_contour.MakeColorSequential();
+		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
+		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
+		d3dApp.SetScaleTemporary(1);
+		d3dApp.BuildPoint();
+		cv::Mat simg = d3dApp.DrawSceneToCvMat();
+		d3dApp.SetScaleRecovery();
+		ColorConstraint_sptrs RegionColors = MakeColors(region, simg, m_vavImage);
+		d3dApp.ClearTriangles();
+		cgal_contour.SetColor(RegionColors);
+		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
+		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
+		//d3dApp.AddLineSegs(cgal_contour.m_LineSegs);
+		d3dApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth, colors);
+		//d3dApp.AddLines(cgal_contour.m_Lines, cgal_contour.m_LinesWidth);
 		d3dApp.AddLines(cgal_contour.m_ContourLines);
 		if (DRAW_CONTOUR_CONTROL_POINT)
 		{

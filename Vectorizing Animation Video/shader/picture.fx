@@ -50,7 +50,7 @@ VS_OUT VS(VS_IN vIn)
 }
 
 
-[maxvertexcount (6)]
+[maxvertexcount (4)]
 void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 {
 	//float x = 90*3.14159/180;
@@ -61,13 +61,6 @@ void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 	out5.posH=float4(input[0].pos.xy-float2(-input[0].size.x*2,-input[0].size.y*2)*size ,0,1);
 	out5.texcoord=float2(0,1);
 	triStream.Append( out5 );
-	out5.posH=float4(input[0].pos.xy-float2(-input[0].size.x*2,0)*size,0,1);
-	out5.texcoord=float2(1,1);
-	triStream.Append( out5 );
-	out5.posH=float4(input[0].pos.xy-float2(0,-input[0].size.y*2)*size,0,1);
-	out5.texcoord=float2(0,0);
-	triStream.Append( out5 );
-	
 	out5.posH=float4(input[0].pos.xy-float2(-input[0].size.x*2,0)*size,0,1);
 	out5.texcoord=float2(1,1);
 	triStream.Append( out5 );

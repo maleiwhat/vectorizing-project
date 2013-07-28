@@ -489,54 +489,9 @@ void CD3DpictureView::UpdateImageFeature()
 	break;
 	}
 	UnlockDraw();
-	//m_D3DApp.SetMousePoint(realx, realy, m_LineRadius * 2, color);
+	m_D3DApp.ClearTriangles();
+	m_D3DApp.SetMousePoint(realx, realy, m_LineRadius * 2, color);
 	m_D3DApp.AddBigPoint(realx, realy, m_LineRadius * 2, color);
-	//m_D3DApp.ClearTriangles();
-//	m_LineRadius += 1;
-// 	{
-// 		// big circle 1
-// 		double_vector cdata = ConvertToAngle(m_vavImage->GetRingLight(realx, realy,
-// 											 m_LineRadius, circle_length));
-// 		color.x = 1;
-// 		color.y = 0;
-// 		color.z = 0.5;
-// 		if (IsBlackLine(cdata))
-// 		{
-// 			color.x = 0;
-// 			color.y = 1;
-// 			color.z = 0;
-// 		}
-// 		else if (IsShading(cdata))
-// 		{
-// 			color.x = 0.3;
-// 			color.y = 0.3;
-// 			color.z = 1;
-// 		}
-// 		m_D3DApp.AddBigPoint(realx, realy, m_LineRadius * 2, color);
-// 	}
-// 	m_LineRadius += 1;
-// 	{
-// 		// big circle 1
-// 		double_vector cdata = ConvertToAngle(m_vavImage->GetRingLight(realx, realy,
-// 			m_LineRadius, circle_length));
-// 		color.x = 1;
-// 		color.y = 0;
-// 		color.z = 0.5;
-// 		if (IsBlackLine(cdata))
-// 		{
-// 			color.x = 0;
-// 			color.y = 1;
-// 			color.z = 0;
-// 		}
-// 		else if (IsShading(cdata))
-// 		{
-// 			color.x = 0.3;
-// 			color.y = 0.3;
-// 			color.z = 1;
-// 		}
-// 		m_D3DApp.AddBigPoint(realx, realy, m_LineRadius * 2, color);
-// 	}
-//	m_LineRadius -= 2;
 	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
 // 	printf("px: %3.1f py: %3.1f Center.x %3.1f Center3.y %3.1f\n",

@@ -66,7 +66,8 @@ Line	SmoothingHas0Len3(const Line& cvp, double centroidRadio = 1.0, int repeat =
 Lines	SmoothingHas0Len5(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);
 Lines	SmoothingHas0Len3(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);
 
-Lines	SplitStraightLine(const Line& cvp);
+Lines	SplitStraightLine(const Line& cvp, double angle);
+Lines	SplitStraightLine(const Lines& cvp, double angle);
 
 double_vector ComputeAngle(const Line& line);
 Line    GetControlPoint(const Line& line, double angle);
