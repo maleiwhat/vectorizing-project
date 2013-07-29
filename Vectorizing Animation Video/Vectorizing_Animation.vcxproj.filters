@@ -297,6 +297,9 @@
     <ClInclude Include="vtkShowHistogramTimerCallback.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="LineDef.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="algSpline.cpp">

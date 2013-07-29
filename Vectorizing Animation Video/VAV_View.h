@@ -16,7 +16,7 @@
 #include <windows.h>
 #include "DX11/d3dApp.h"
 #include "math/Vector2.h"
-#include "Line.h"
+#include "LineDef.h"
 #include "vtkShowHistogramTimerCallback.h"
 
 class VAV_Doc;

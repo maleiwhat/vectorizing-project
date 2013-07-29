@@ -17,7 +17,7 @@
 #include <CGAL/Delaunay_mesher_2.h>
 
 #include "ImageSpline.h"
-#include "Line.h"
+#include "LineDef.h"
 #include "CgalPatch.h"
 #include "PositionGraph.h"
 

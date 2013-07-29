@@ -17,7 +17,7 @@
 #include "ColorConstraint.h"
 #include "ImageSpline.h"
 #include "PositionGraph.h"
-#include "Line.h"
+#include "LineDef.h"
 
 class TriangulationCgal_Patch : public TriangulationBase
 {

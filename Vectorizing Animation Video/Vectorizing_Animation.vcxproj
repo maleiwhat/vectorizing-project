@@ -232,6 +232,7 @@
     <ClInclude Include="ImageSpline.h" />
     <ClInclude Include="imath.h" />
     <ClInclude Include="Line.h" />
+    <ClInclude Include="LineDef.h" />
     <ClInclude Include="LineFragment.h" />
     <ClInclude Include="math\AABB2D.h" />
     <ClInclude Include="math\asm_math.h" />

@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <algorithm>
 #include "Line.h"
 #include "math/Quaternion.h"
 #include "IFExtenstion.h"
@@ -659,7 +660,6 @@ Lines SplitStraightLine(const Line& line,  double angle)
 	double_vector angles = Accumulation(Curvature(ComputeAngle(line)));
 	double threshold = 0;
 	assert(angles.size() == line.size());
-
 	int lastidx = 0;
 	double nowAngle = 0;
 	for (int i = 1; i < angles.size(); ++i)
@@ -668,16 +668,15 @@ Lines SplitStraightLine(const Line& line,  double angle)
 		{
 			ans.push_back(Line());
 			Line& nowLine = ans.back();
-			nowLine.insert(nowLine.begin(), line.begin()+lastidx, line.begin()+i);
+			nowLine.insert(nowLine.begin(), line.begin() + lastidx, line.begin() + i);
 			lastidx = i;
 			threshold = angles[i];
 		}
 	}
-
 	return ans;
 }
 
-Lines SplitStraightLine( const Lines& cvp, double angle )
+Lines SplitStraightLine(const Lines& cvp, double angle)
 {
 	Lines ans;
 	for (int i = 0; i < cvp.size(); ++i)
@@ -689,16 +688,66 @@ Lines SplitStraightLine( const Lines& cvp, double angle )
 	return ans;
 }
 
+LinesPair SplitStraightLineAndWidth(const Line& line, const Line& width,
+									double angle)
+{
+	LinesPair ans;
+	Lines& ans1 = ans.first;
+	Lines& ans2 = ans.second;
+	double_vector angles = Accumulation(Curvature(ComputeAngle(line)));
+	double threshold = 0;
+	assert(angles.size() == line.size());
+	int lastidx = 0;
+	double nowAngle = 0;
+	for (int i = 1; i < angles.size(); ++i)
+	{
+		if (abs(angles[i] - threshold) > angle)
+		{
+			ans1.push_back(Line());
+			ans2.push_back(Line());
+			Line& nowLine = ans1.back();
+			nowLine.insert(nowLine.begin(), line.begin() + lastidx, line.begin() + i + 1);
+			Line& nowWidth = ans2.back();
+			nowWidth.insert(nowWidth.begin(), width.begin() + lastidx,
+							width.begin() + i + 1);
+			lastidx = i;
+			threshold = angles[i];
+		}
+	}
+	ans1.push_back(Line());
+	ans2.push_back(Line());
+	Line& nowLine = ans1.back();
+	Line& nowWidth = ans2.back();
+	nowLine.insert(nowLine.begin(), line.begin() + lastidx, line.end());
+	nowWidth.insert(nowWidth.begin(), width.begin() + lastidx, width.end());
+	return ans;
+}
+
+LinesPair SplitStraightLineAndWidth(const Lines& cvp, const Lines& width,
+									double angle)
+{
+	LinesPair ans;
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Line& aa = cvp.at(i);
+		const Line& bb = width.at(i);
+		LinesPair newLines = SplitStraightLineAndWidth(aa, bb, angle);
+		ans.first.insert(ans.first.end(), newLines.first.begin(), newLines.first.end());
+		ans.second.insert(ans.second.end(), newLines.second.begin(),
+						  newLines.second.end());
+	}
+	return ans;
+}
+
+
 double_vector ComputeAngle(const Line& line)
 {
 	double_vector ans(line.size(), 0);
-
 	for (int i = 1; i < line.size(); i++)
 	{
 		Vector2 vec = line[i] - line[i - 1];
 		ans[i] = atan2f(vec.x, vec.y) / M_PI * 180;
 	}
-
 	ans[0] = ans[1];
 	return ans;
 }
@@ -710,7 +759,6 @@ Line GetControlPoint(const Line& line, double angle)
 	double threshold = 0;
 	assert(angles.size() == line.size());
 	ans.push_back(line.front());
-
 	for (int i = 1; i < angles.size() - 1; ++i)
 	{
 		if (abs(angles[i] - threshold) > angle)
@@ -719,7 +767,114 @@ Line GetControlPoint(const Line& line, double angle)
 			threshold = angles[i];
 		}
 	}
-
 	ans.push_back(line.back());
 	return ans;
+}
+
+Endpoints GetEndpoints(const Lines& cvp)
+{
+	Endpoints ans;
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Line& nowLine = cvp.at(i);
+		Vector2 vec = nowLine[0] - nowLine[2];
+		double angle = atan2f(vec.x, vec.y) / M_PI * 180;
+		ans.push_back(Endpoint(nowLine.front(), i, 0, angle));
+		int last = nowLine.size() - 1;
+		vec = nowLine[last] - nowLine[last - 2];
+		angle = atan2f(vec.x, vec.y) / M_PI * 180;
+		ans.push_back(Endpoint(nowLine.back(), i, last, angle));
+	}
+	return ans;
+}
+
+bool LessEndpointX(const Endpoint& a, const Endpoint& b)
+{
+	return a.pos.x < b.pos.x;
+}
+
+bool GreaterEndpointX(const Endpoint& a, const Endpoint& b)
+{
+	return a.pos.x > b.pos.x;
+}
+
+bool LessEndpointY(const Endpoint& a, const Endpoint& b)
+{
+	return a.pos.y < b.pos.y;
+}
+
+bool GreaterEndpointY(const Endpoint& a, const Endpoint& b)
+{
+	return a.pos.y > b.pos.y;
+}
+
+
+void SortEndpointsX(Endpoints& cvp)
+{
+	std::sort(cvp.begin(), cvp.end(), LessEndpointX);
+}
+
+Endpoints FindNearEndpoints(const Endpoints& cvp, const Vector2& pos,
+							double distance)
+{
+	distance *= distance;
+	Endpoints ans;
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Endpoint& nowPoint = cvp.at(i);
+		double tmpDis = nowPoint.pos.squaredDistance(pos);
+		if (tmpDis < distance)
+		{
+			if (ans.empty())
+			{
+				ans.push_back(nowPoint);
+			}
+			// avoid same line
+			else if (ans.back().idx1 == nowPoint.idx1)
+			{
+				if (tmpDis < ans.back().pos.squaredDistance(pos))
+				{
+					ans.erase(ans.end()-1);
+					ans.push_back(nowPoint);
+				}
+			}
+			else
+			{
+				ans.push_back(nowPoint);
+			}
+		}
+	}
+	return ans;
+}
+
+Endpoints FindNearSortedXEndpoints(const Endpoints& cvp, const Vector2& pos,
+								   double distance)
+{
+	Endpoints ans;
+	return ans;
+}
+
+bool CheckEndpointsSimilarity(const Endpoint& lhs, const Endpoint& rhs,
+							  double angle)
+{
+	Vector2 vec = lhs.pos - rhs.pos;
+	double linkAngle = atan2f(vec.x, vec.y) / M_PI * 180;
+	double refAngleL = lhs.angle + 180;
+	double refAngleR = rhs.angle + 180;
+	if (refAngleL >= 360)
+	{
+		refAngleL -= 360;
+	}
+	if (refAngleR >= 360)
+	{
+		refAngleR -= 360;
+	}
+	if (abs(lhs.angle - linkAngle) < angle || abs(refAngleL - linkAngle) < angle)
+	{
+		if (abs(rhs.angle - linkAngle) < angle || abs(refAngleR - linkAngle) < angle)
+		{
+			return true;
+		}
+	}
+	return false;
 }

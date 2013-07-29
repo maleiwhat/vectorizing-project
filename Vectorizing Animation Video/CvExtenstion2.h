@@ -1,7 +1,7 @@
 #pragma once
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include "Line.h"
+#include "LineDef.h"
 #include "ColorConstraint.h"
 #include "ImageSpline.h"
 #include "Patch.h"

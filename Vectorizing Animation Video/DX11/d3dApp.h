@@ -9,7 +9,7 @@
 #include "Vertex.h"
 #include "TriangulationBase.h"
 #include "vavImage.h"
-#include "Line.h"
+#include "LineDef.h"
 
 class D3DApp
 {
@@ -214,10 +214,10 @@ protected:
 	ID3DX11EffectScalarVariable*    m_Lines2w_Transparency;
 	Line2wVertices            m_Lines2wVertices;
 
-	ID3D11Buffer*           m_SkeletonLines_Buffer;
-	ID3DX11Effect*          m_SkeletonLines_Effect;
-	ID3DX11EffectTechnique*     m_SkeletonLines_PTech;
-	ID3D11InputLayout*      m_SkeletonLines_PLayout;
+	ID3D11Buffer*					m_SkeletonLines_Buffer;
+	ID3DX11Effect*					m_SkeletonLines_Effect;
+	ID3DX11EffectTechnique*			m_SkeletonLines_PTech;
+	ID3D11InputLayout*				m_SkeletonLines_PLayout;
 	ID3DX11EffectScalarVariable*    m_SkeletonLines_Width;
 	ID3DX11EffectScalarVariable*    m_SkeletonLines_Height;
 	ID3DX11EffectScalarVariable*    m_SkeletonLines_Scale;

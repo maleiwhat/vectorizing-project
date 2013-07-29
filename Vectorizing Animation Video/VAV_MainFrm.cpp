@@ -582,7 +582,6 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	const bool DRAW_CONTOUR_SKELETON_POINT = false;
 	const bool DRAW_ISOSURFACE = false;
 	const bool DRAW_CURVE_EXTRACTION = true;
-
 	if (DRAW_CURVE_EXTRACTION)
 	{
 		vavImage vImage = m_vavImage.Clone();
@@ -642,11 +641,13 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 				{
 					Line line1;
 					line1.push_back(nowLine[idx2] - nowNormals[idx2] * width1[0] * blackRadio);
-					line1.push_back(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * width2[0] * blackRadio);
+					line1.push_back(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * width2[0] *
+									blackRadio);
 					line1 = GetLine(line1, 0.5, 0.5);
 					Line line2;
 					line2.push_back(nowLine[idx2] + nowNormals[idx2] * width1[1] * blackRadio);
-					line2.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[1] * blackRadio);
+					line2.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[1] *
+									blackRadio);
 					line2 = GetLine(line2, 0.5, 0.5);
 					showLines.push_back(line1);
 					showLines.push_back(line2);
@@ -661,12 +662,44 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			lineWidths.push_back(Vector2());
 		}
 		m_BLineWidth = FixLineWidths(BLineWidth, 5);
+		m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
+		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
+		m_BlackLine = SmoothingLen5(m_BlackLine, 0.8, 5);
+		Endpoints eps = GetEndpoints(m_BlackLine);
+		for (int i = 0; i < eps.size(); ++i)
+		{
+			Endpoints nearEps = FindNearEndpoints(eps, eps[i].pos, 10);
+			for (int j = 0; j < nearEps.size(); ++j)
+			{
+				if (nearEps[j] != eps[i] && CheckEndpointsSimilarity(nearEps[j], eps[i], 30))
+				{
+					if (eps[i].idx2 > 0)
+					{
+						m_BlackLine[eps[i].idx1].push_back(nearEps[j].pos);
+						m_BLineWidth[eps[i].idx1].push_back(m_BLineWidth[eps[i].idx1].back());
+					}
+					else if (nearEps[j].idx2 > 0)
+					{
+						m_BlackLine[nearEps[j].idx1].push_back(eps[i].pos);
+						m_BLineWidth[nearEps[j].idx1].push_back(m_BLineWidth[nearEps[j].idx1].back());
+					}
+					else if (eps[i].idx2 == 0)
+					{
+						m_BlackLine[eps[i].idx1].insert(m_BlackLine[eps[i].idx1].begin(),
+														nearEps[j].pos);
+						m_BLineWidth[eps[i].idx1].insert(m_BLineWidth[eps[i].idx1].begin(),
+														 m_BLineWidth[eps[i].idx1].front());
+					}
+				}
+			}
+		}
+		m_BlackLine = SmoothingLen5(m_BlackLine, 0.8, 5);
 		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 3);
 		m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 1, 3);
-		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
-		m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 10);
+// 		LinesPair splitLine = SplitStraightLineAndWidth(m_BlackLine, m_BLineWidth, 10);
+// 		m_BlackLine = splitLine.first;
+// 		m_BLineWidth = splitLine.second;
 		d3dApp.AddLines(m_BlackLine, m_BLineWidth);
-		m_BlackLine = SplitStraightLine(m_BlackLine, 20);
 		d3dApp.AddLines(m_BlackLine);
 		//d3dApp.AddLines(showLines);
 	}
@@ -833,8 +866,6 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	d3dApp.BuildPoint();
 	d3dApp.DrawScene();
 }
-
-
 void VAV_MainFrame::OnButtonSkeleton()
 {
 	// TODO: 在此加入您的命令處理常式程式碼
@@ -854,30 +885,22 @@ void VAV_MainFrame::OnButtonSkeleton()
 	m_cannyImage = cw;
 	GetVavView()->SetTexture(m_cannyImage.GetDx11Texture());
 }
-
-
 void VAV_MainFrame::OnButtonSobel()
 {
 	// TODO: 在此加入您的命令處理常式程式碼
 	m_cannyImage = m_vavImage;
 	GetVavView()->SetTexture(m_cannyImage.GetDx11Texture());
 }
-
-
 void VAV_MainFrame::OnButtonLaplace()
 {
 	// TODO: 在此加入您的命令處理常式程式碼
 }
-
-
 void VAV_MainFrame::OnSpinTransparencySelectPatch()
 {
 	GetVavView()->
 	GetD3DApp().SetTransparency_SelectPatch((100 - m_SelectPatchTransparency) *
 											0.01);
 }
-
-
 void VAV_MainFrame::OnUpdateSpinTransparencySelectPatch(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
@@ -893,7 +916,6 @@ void VAV_MainFrame::OnUpdateSpinTransparencySelectPatch(CCmdUI* pCmdUI)
 	GetD3DApp().SetTransparency_SelectPatch((100 - m_SelectPatchTransparency) *
 											0.01);
 }
-
 void VAV_MainFrame::ShowPatch(double x, double y)
 {
 	GetVavView()->GetD3DApp().ClearPatchs();
@@ -911,8 +933,6 @@ void VAV_MainFrame::ShowPatch(double x, double y)
 //      }
 	}
 }
-
-
 void VAV_MainFrame::OnSpinTransparencyPatch()
 {
 	CMFCRibbonEdit* re;
@@ -927,8 +947,6 @@ void VAV_MainFrame::OnSpinTransparencyPatch()
 	GetVavView()->GetD3DApp().SetTransparency_Triangle((
 				100 - m_PatchTransparency) * 0.01);
 }
-
-
 void VAV_MainFrame::OnUpdateSpinTransparencyPatch(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
@@ -943,8 +961,6 @@ void VAV_MainFrame::OnUpdateSpinTransparencyPatch(CCmdUI* pCmdUI)
 	GetVavView()->GetD3DApp().SetTransparency_Triangle((
 				100 - m_PatchTransparency) * 0.01);
 }
-
-
 void VAV_MainFrame::OnSpinTransparencyline()
 {
 	CMFCRibbonEdit* re;
@@ -959,7 +975,6 @@ void VAV_MainFrame::OnSpinTransparencyline()
 	GetVavView()->GetD3DApp().SetTransparency_Line((
 				100 - m_LineTransparency) * 0.01);
 }
-
 void VAV_MainFrame::OnUpdateSpinTransparencyline(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
@@ -974,8 +989,6 @@ void VAV_MainFrame::OnUpdateSpinTransparencyline(CCmdUI* pCmdUI)
 	GetVavView()->GetD3DApp().SetTransparency_Line((
 				100 - m_LineTransparency) * 0.01);
 }
-
-
 void VAV_MainFrame::OnUpdateSpinTransparencypicture(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
@@ -990,8 +1003,6 @@ void VAV_MainFrame::OnUpdateSpinTransparencypicture(CCmdUI* pCmdUI)
 	GetVavView()->GetD3DApp().SetTransparency_Picture((
 				100 - m_PictureTransparency) * 0.01);
 }
-
-
 void VAV_MainFrame::OnSpinTransparencypicture()
 {
 	CMFCRibbonEdit* re;
@@ -1006,8 +1017,6 @@ void VAV_MainFrame::OnSpinTransparencypicture()
 	GetVavView()->GetD3DApp().SetTransparency_Picture((
 				100 - m_PictureTransparency) * 0.01);
 }
-
-
 void VAV_MainFrame::OnSpinBlackregionthreshold()
 {
 	CMFCRibbonEdit* re;
@@ -1020,8 +1029,6 @@ void VAV_MainFrame::OnSpinBlackregionthreshold()
 										  re->GetEditText().GetString()).c_str());
 	}
 }
-
-
 void VAV_MainFrame::OnUpdateSpinBlackregionthreshold(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
@@ -1034,8 +1041,6 @@ void VAV_MainFrame::OnUpdateSpinBlackregionthreshold(CCmdUI* pCmdUI)
 										  re->GetEditText().GetString()).c_str());
 	}
 }
-
-
 void VAV_MainFrame::OnSpinTransparencytriangleline()
 {
 	CMFCRibbonEdit* re;
@@ -1050,8 +1055,6 @@ void VAV_MainFrame::OnSpinTransparencytriangleline()
 	GetVavView()->GetD3DApp().SetTransparency_TriangleLine((
 				100 - m_TriangleLineTransparency) * 0.01);
 }
-
-
 void VAV_MainFrame::OnUpdateSpinTransparencytriangleline(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
@@ -1066,8 +1069,6 @@ void VAV_MainFrame::OnUpdateSpinTransparencytriangleline(CCmdUI* pCmdUI)
 	GetVavView()->GetD3DApp().SetTransparency_TriangleLine((
 				100 - m_TriangleLineTransparency) * 0.01);
 }
-
-
 void VAV_MainFrame::OnSpinTransparencylineskeleton()
 {
 	CMFCRibbonEdit* re;
@@ -1082,7 +1083,6 @@ void VAV_MainFrame::OnSpinTransparencylineskeleton()
 	GetVavView()->GetD3DApp().SetTransparency_LineSkeleton((
 				100 - m_LineSkeletonTransparency) * 0.01);
 }
-
 void VAV_MainFrame::OnUpdateSpinTransparencylineskeleton(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
@@ -1097,7 +1097,6 @@ void VAV_MainFrame::OnUpdateSpinTransparencylineskeleton(CCmdUI* pCmdUI)
 	GetVavView()->GetD3DApp().SetTransparency_LineSkeleton((
 				100 - m_LineSkeletonTransparency) * 0.01);
 }
-
 VAV_View* VAV_MainFrame::GetVavView()
 {
 	return ((VAV_View*)this->GetActiveView());

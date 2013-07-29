@@ -1,50 +1,32 @@
 #pragma once
+#include "LineDef.h"
 
-#include <vector>
-#include <opencv2/core/core.hpp>
-#include <deque>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include "math/Vector2.h"
+Lines	GetLines(const CvLines& cvp, double xOffset = 0, double yOffset = 0);
+Lines	GetLines(const Lines& cvp, double xOffset = 0, double yOffset = 0);
+Lines	GetLines(const CgalLines& cvp, double xOffset = 0, double yOffset = 0);
+Line	GetLine(const CvLine& cvp, double xOffset = 0, double yOffset = 0);
+Line	GetLine(const Line& cvp, double xOffset = 0, double yOffset = 0);
+Line	GetLine(const CgalLine& cvp, double xOffset = 0, double yOffset = 0);
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel CgalInexactKernel;
-typedef CgalInexactKernel::Point_2 CgalPoint;
-typedef std::vector<CgalPoint> CgalLine;
-typedef std::vector<CgalLine> CgalLines;
+CvLines	GetCvLines(const Lines& cvp, double xOffset = 0, double yOffset = 0);
+CvLines	GetCvLines(const CgalLines& cvp, double xOffset = 0,
+				   double yOffset = 0);
+CvLine	GetCvLine(const Line& cvp, double xOffset = 0, double yOffset = 0);
+CvLine	GetCvLine(const CgalLine& cvp, double xOffset = 0, double yOffset = 0);
 
-typedef std::vector<Vector2> Line;
-typedef std::vector<Line> Lines;
-typedef std::vector<cv::Point> CvLine;
-typedef std::vector<CvLine> CvLines;
-struct LineSeg
-{
-
-	Vector2 beg, end;
-	LineSeg() {}
-	LineSeg(Vector2& b, Vector2& e): beg(b), end(e) {}
-};
-typedef std::deque<LineSeg> LineSegs;
-
-Lines	GetLines(const CvLines& cvp, double xOffset=0, double yOffset=0);
-Lines	GetLines(const Lines& cvp, double xOffset=0, double yOffset=0);
-Lines	GetLines(const CgalLines& cvp, double xOffset=0, double yOffset=0);
-Line	GetLine(const CvLine& cvp, double xOffset=0, double yOffset=0);
-Line	GetLine(const Line& cvp, double xOffset=0, double yOffset=0);
-Line	GetLine(const CgalLine& cvp, double xOffset=0, double yOffset=0);
-
-CvLines	GetCvLines(const Lines& cvp, double xOffset=0, double yOffset=0);
-CvLines	GetCvLines(const CgalLines& cvp, double xOffset=0, double yOffset=0);
-CvLine	GetCvLine(const Line& cvp, double xOffset=0, double yOffset=0);
-CvLine	GetCvLine(const CgalLine& cvp, double xOffset=0, double yOffset=0);
-
-CgalLines	GetCgalLines(const CvLines& cvp, double xOffset=0, double yOffset=0);
-CgalLines	GetCgalLines(const Lines& cvp, double xOffset=0, double yOffset=0);
-CgalLine	GetCgalLine(const CvLine& cvp, double xOffset=0, double yOffset=0);
-CgalLine	GetCgalLine(const Line& cvp, double xOffset=0, double yOffset=0);
+CgalLines	GetCgalLines(const CvLines& cvp, double xOffset = 0,
+						 double yOffset = 0);
+CgalLines	GetCgalLines(const Lines& cvp, double xOffset = 0,
+						 double yOffset = 0);
+CgalLine	GetCgalLine(const CvLine& cvp, double xOffset = 0, double yOffset = 0);
+CgalLine	GetCgalLine(const Line& cvp, double xOffset = 0, double yOffset = 0);
 
 Line	SmoothingLen5(const Line& cvp, double centroidRadio = 1.0, int repeat = 1);
 Line	SmoothingLen3(const Line& cvp, double centroidRadio = 1.0, int repeat = 1);
-Lines	SmoothingLen5(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);
-Lines	SmoothingLen3(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);
+Lines	SmoothingLen5(const Lines& cvp, double centroidRadio = 1.0,
+					  int repeat = 1);
+Lines	SmoothingLen3(const Lines& cvp, double centroidRadio = 1.0,
+					  int repeat = 1);
 
 Line	GetNormalsLen2(const Line& cvp);
 Line	GetNormalsLen3(const Line& cvp);
@@ -61,13 +43,37 @@ Lines	FixLineWidths(const Lines& aLine, int range);
 Line	CleanOrphanedLineWidths(const Line& aLine, int num);
 Lines	CleanOrphanedLineWidths(const Lines& aLine, int num);
 
-Line	SmoothingHas0Len5(const Line& cvp, double centroidRadio = 1.0, int repeat = 1);
-Line	SmoothingHas0Len3(const Line& cvp, double centroidRadio = 1.0, int repeat = 1);
-Lines	SmoothingHas0Len5(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);
-Lines	SmoothingHas0Len3(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);
+Line	SmoothingHas0Len5(const Line& cvp, double centroidRadio = 1.0,
+						  int repeat = 1);
+Line	SmoothingHas0Len3(const Line& cvp, double centroidRadio = 1.0,
+						  int repeat = 1);
+Lines	SmoothingHas0Len5(const Lines& cvp, double centroidRadio = 1.0,
+						  int repeat = 1);
+Lines	SmoothingHas0Len3(const Lines& cvp, double centroidRadio = 1.0,
+						  int repeat = 1);
 
 Lines	SplitStraightLine(const Line& cvp, double angle);
 Lines	SplitStraightLine(const Lines& cvp, double angle);
 
+typedef std::pair<Lines, Lines> LinesPair;
+LinesPair	SplitStraightLineAndWidth(const Line& cvp, const Line& width,
+									  double angle);
+LinesPair	SplitStraightLineAndWidth(const Lines& cvp, const Lines& width,
+									  double angle);
+
 double_vector ComputeAngle(const Line& line);
 Line    GetControlPoint(const Line& line, double angle);
+
+Endpoints	GetEndpoints(const Lines& cvp);
+bool LessEndpointX(const Endpoint& a, const Endpoint& b);
+bool GreaterEndpointX(const Endpoint& a, const Endpoint& b);
+bool LessEndpointY(const Endpoint& a, const Endpoint& b);
+bool GreaterEndpointY(const Endpoint& a, const Endpoint& b);
+void		SortEndpointsX(Endpoints& cvp);
+Endpoints	FindNearEndpoints(const Endpoints& cvp, const Vector2& pos,
+							  double distance);
+Endpoints	FindNearSortedXEndpoints(const Endpoints& cvp, const Vector2& pos,
+									 double distance);
+bool CheckEndpointsSimilarity(const Endpoint& lhs, const Endpoint& rhs,
+							  double angle);
+

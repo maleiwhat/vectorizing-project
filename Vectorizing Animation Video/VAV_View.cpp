@@ -23,6 +23,7 @@
 #include "VAV_View.h"
 #include "VAV_MainFrm.h"
 #include "IFExtenstion.h"
+#include "Line.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

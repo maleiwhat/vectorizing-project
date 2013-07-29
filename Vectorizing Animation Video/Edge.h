@@ -1,6 +1,6 @@
 #pragma once
 #include <opencv2\core\core.hpp>
-#include "Line.h"
+#include "LineDef.h"
 
 struct CEdge
 {

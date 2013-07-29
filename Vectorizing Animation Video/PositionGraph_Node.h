@@ -1,5 +1,5 @@
 #pragma once
-#include "Line.h"
+#include "LineDef.h"
 #include <list>
 
 class PositionGraph_Node;
