@@ -591,7 +591,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		cvtColor(imgf, imgf, CV_BGR2GRAY);
 		imgf.convertTo(imgf, CV_32F, 1.0 / 255);
 		CmCurveEx dEdge(imgf);
-		dEdge.CalSecDer(5, 0.001f);
+		dEdge.CalSecDer(7, 0.001f);
 		dEdge.Link();
 		CvLines tpnts2d;
 		const CEdges& edges = dEdge.GetEdges();
@@ -665,35 +665,11 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
 		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0.8, 5);
-		Endpoints eps = GetEndpoints(m_BlackLine);
-		for (int i = 0; i < eps.size(); ++i)
-		{
-			Endpoints nearEps = FindNearEndpoints(eps, eps[i].pos, 10);
-			for (int j = 0; j < nearEps.size(); ++j)
-			{
-				if (nearEps[j] != eps[i] && CheckEndpointsSimilarity(nearEps[j], eps[i], 30))
-				{
-					if (eps[i].idx2 > 0)
-					{
-						m_BlackLine[eps[i].idx1].push_back(nearEps[j].pos);
-						m_BLineWidth[eps[i].idx1].push_back(m_BLineWidth[eps[i].idx1].back());
-					}
-					else if (nearEps[j].idx2 > 0)
-					{
-						m_BlackLine[nearEps[j].idx1].push_back(eps[i].pos);
-						m_BLineWidth[nearEps[j].idx1].push_back(m_BLineWidth[nearEps[j].idx1].back());
-					}
-					else if (eps[i].idx2 == 0)
-					{
-						m_BlackLine[eps[i].idx1].insert(m_BlackLine[eps[i].idx1].begin(),
-														nearEps[j].pos);
-						m_BLineWidth[eps[i].idx1].insert(m_BLineWidth[eps[i].idx1].begin(),
-														 m_BLineWidth[eps[i].idx1].front());
-					}
-				}
-			}
-		}
+ 		ConnectSimilarLines(m_BlackLine, m_BLineWidth);
+ 		ConnectSimilarLines(m_BlackLine, m_BLineWidth);
+		ClearLineWidthByPercent(m_BLineWidth, 0.5);
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0.8, 5);
+		m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
 		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 3);
 		m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 1, 3);
 // 		LinesPair splitLine = SplitStraightLineAndWidth(m_BlackLine, m_BLineWidth, 10);

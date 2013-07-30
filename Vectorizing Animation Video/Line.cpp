@@ -443,9 +443,19 @@ Line FixLineWidths(const Line& cvp, int range)
 			// ¦³¥ªºÝÂI
 			bool hasLeft = false;
 			bool hasRight = false;
-			for (int j = i - range; (j < i + range) && (j < cvp.size()); ++j)
+			int j = i - range;
+			int jend = i + range;
+			if (j < 0)
 			{
-				if (cvp[j].x > 0)
+				j = 0;
+			}
+			if (jend >= cvp.size())
+			{
+				jend = cvp.size() - 1;
+			}
+			for (;j < jend; ++j)
+			{
+				if (cvp[j].x > 0.1)
 				{
 					finds++;
 					setValue += cvp[j];
@@ -490,7 +500,7 @@ Line CleanOrphanedLineWidths(const Line& cvp, int num)
 			int hasWidth = 1;
 			for (int j = i + 1; j < cvp.size(); ++j)
 			{
-				if (cvp[j].x > 0)
+				if (cvp[j].x > 0.1)
 				{
 					hasWidth++;
 				}
@@ -823,7 +833,7 @@ Endpoints FindNearEndpoints(const Endpoints& cvp, const Vector2& pos,
 	{
 		const Endpoint& nowPoint = cvp.at(i);
 		double tmpDis = nowPoint.pos.squaredDistance(pos);
-		if (tmpDis < distance)
+		if (tmpDis < distance && tmpDis > 0.001)
 		{
 			if (ans.empty())
 			{
@@ -834,7 +844,7 @@ Endpoints FindNearEndpoints(const Endpoints& cvp, const Vector2& pos,
 			{
 				if (tmpDis < ans.back().pos.squaredDistance(pos))
 				{
-					ans.erase(ans.end()-1);
+					ans.erase(ans.end() - 1);
 					ans.push_back(nowPoint);
 				}
 			}
@@ -877,4 +887,204 @@ bool CheckEndpointsSimilarity(const Endpoint& lhs, const Endpoint& rhs,
 		}
 	}
 	return false;
+}
+
+void ConnectSimilarLines(Lines& pos, Lines& width)
+{
+	Endpoints eps = GetEndpoints(pos);
+	for (int i = 0; i < eps.size(); ++i)
+	{
+		Endpoints nearEps = FindNearEndpoints(eps, eps[i].pos, 10);
+		for (int j = 0; j < nearEps.size(); ++j)
+		{
+			if (nearEps[j] != eps[i] && CheckEndpointsSimilarity(nearEps[j], eps[i], 30))
+			{
+				if (eps[i].idx2 > 0)
+				{
+					Line& linkLine = pos[eps[i].idx1];
+					Line& beLink = pos[nearEps[j].idx1];
+					Line& w1 = width[eps[i].idx1];
+					Line& w2 = width[nearEps[j].idx1];
+					if (linkLine.empty())
+					{
+						continue;
+					}
+					if (nearEps[j].idx2 == 0)
+					{
+						linkLine.insert(linkLine.end(), beLink.begin(), beLink.end());
+						w1.insert(w1.end(), w2.begin(), w2.end());
+					}
+					else
+					{
+						linkLine.insert(linkLine.end(), beLink.rbegin(), beLink.rend());
+						w1.insert(w1.end(), w2.rbegin(), w2.rend());
+					}
+					beLink.clear();
+					w2.clear();
+					// change Endpoint info
+					eps[i].idx2 = linkLine.size() - 1;
+					eps[i].pos = linkLine.back();
+					Vector2 vec = linkLine.back() - linkLine[linkLine.size() - 3];
+					eps[i].angle = atan2f(vec.x, vec.y);
+					// remove Endpoint info
+					const int removeId = nearEps[j].idx1;
+					for (int k = 0; k < eps.size(); ++k)
+					{
+						if (eps[k].idx1 == removeId)
+						{
+							eps[k].idx1 = -1;
+							eps[k].pos.x = -100;
+							eps[k].pos.y = -100;
+						}
+					}
+				}
+				else if (nearEps[j].idx2 > 0)
+				{
+					Line& linkLine = pos[nearEps[j].idx1];
+					Line& beLink = pos[eps[i].idx1];
+					Line& w1 = width[nearEps[j].idx1];
+					Line& w2 = width[eps[i].idx1];
+					if (linkLine.empty())
+					{
+						continue;
+					}
+					if (eps[j].idx2 == 0)
+					{
+						linkLine.insert(linkLine.end(), beLink.begin(), beLink.end());
+						w1.insert(w1.end(), w2.begin(), w2.end());
+					}
+					else
+					{
+						linkLine.insert(linkLine.end(), beLink.rbegin(), beLink.rend());
+						w1.insert(w1.end(), w2.rbegin(), w2.rend());
+					}
+					beLink.clear();
+					w2.clear();
+					// change Endpoint info
+					for (int k = 0; k < eps.size(); ++k)
+					{
+						if (eps[k] == nearEps[j])
+						{
+							eps[k].idx2 = linkLine.size() - 1;
+							eps[k].pos = linkLine.back();
+							Vector2 vec = linkLine.back() - linkLine[linkLine.size() - 3];
+							eps[i].angle = atan2f(vec.x, vec.y);
+							break;
+						}
+					}
+					// remove Endpoint info
+					const int removeId = eps[i].idx1;
+					for (int k = 0; k < eps.size(); ++k)
+					{
+						if (eps[k].idx1 == removeId)
+						{
+							eps[k].idx1 = -1;
+							eps[k].pos.x = -100;
+							eps[k].pos.y = -100;
+						}
+					}
+				}
+				else if (eps[i].idx2 == 0)
+				{
+					Line& linkLine = pos[eps[i].idx1];
+					Line& beLink = pos[nearEps[j].idx1];
+					Line& w1 = width[eps[i].idx1];
+					Line& w2 = width[nearEps[j].idx1];
+					if (linkLine.empty())
+					{
+						continue;
+					}
+					if (nearEps[j].idx2 == 0)
+					{
+						linkLine.insert(linkLine.begin(), beLink.rbegin(), beLink.rend());
+						w1.insert(w1.begin(), w2.rbegin(), w2.rend());
+					}
+					else
+					{
+						linkLine.insert(linkLine.begin(), beLink.begin(), beLink.end());
+						w1.insert(w1.begin(), w2.begin(), w2.end());
+					}
+					beLink.clear();
+					w2.clear();
+					// change Endpoint info
+					for (int k = 0; k < eps.size(); ++k)
+					{
+						if (eps[k].idx1 == eps[i].idx1)
+						{
+							if (eps[k].idx2 > 0)
+							{
+								eps[k].idx2 = linkLine.size() - 1;
+								break;
+							}
+						}
+					}
+					eps[i].pos = linkLine.front();
+					Vector2 vec = linkLine.front() - linkLine[2];
+					eps[i].angle = atan2f(vec.x, vec.y);
+					// remove Endpoint info
+					const int removeId = nearEps[j].idx1;
+					for (int k = 0; k < eps.size(); ++k)
+					{
+						if (eps[k].idx1 == removeId)
+						{
+							eps[k].idx1 = -1;
+							eps[k].pos.x = -100;
+							eps[k].pos.y = -100;
+						}
+					}
+				}
+			}
+		}
+	}
+	for (int i = 0; i < pos.size(); ++i)
+	{
+		if (pos[i].empty())
+		{
+			pos.erase(pos.begin() + i);
+			i--;
+		}
+	}
+	for (int i = 0; i < width.size(); ++i)
+	{
+		if (width[i].empty())
+		{
+			width.erase(width.begin() + i);
+			i--;
+		}
+	}
+}
+
+double GetLineWidthPercent(const Line& cvp)
+{
+	double n = 0;
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		if (cvp[i].x > 0.1)
+		{
+			n += 1;
+		}
+		else if (cvp[i].y > 0.1)
+		{
+			n += 1;
+		}
+	}
+	return n / cvp.size();
+}
+
+void ClearLineWidthByPercent(Lines& widths, double v)
+{
+	for (int i = 0; i < widths.size(); ++i)
+	{
+		Line& nowWidths = widths.at(i);
+		double p = GetLineWidthPercent(nowWidths);
+		if (p < v)
+		{
+			int n = nowWidths.size();
+			nowWidths = Line(n);
+		}
+		else
+		{
+			nowWidths = FixLineWidths(nowWidths, 200);
+		}
+	}
 }

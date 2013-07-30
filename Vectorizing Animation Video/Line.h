@@ -76,4 +76,6 @@ Endpoints	FindNearSortedXEndpoints(const Endpoints& cvp, const Vector2& pos,
 									 double distance);
 bool CheckEndpointsSimilarity(const Endpoint& lhs, const Endpoint& rhs,
 							  double angle);
-
+void ConnectSimilarLines(Lines& pos, Lines& width);
+double	GetLineWidthPercent(const Line& cvp);
+void	ClearLineWidthByPercent(Lines& widths, double v);
