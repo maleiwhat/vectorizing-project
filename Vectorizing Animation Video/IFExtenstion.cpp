@@ -48,25 +48,25 @@ double_vector ConvertToAngle(const double_vector& data, double zero)
 	double_vector ans;
 	{
 		double dy = tmp[2] - tmp[0];
-		double angle = atan2f(3, dy) / M_PI * 180 + zero;
+		double angle = atan2(3, dy) / M_PI * 180 + zero;
 		ans.push_back(angle);
 		dy = tmp[3] - tmp[1];
-		angle = atan2f(3, dy) / M_PI * 180 + zero;
+		angle = atan2(3, dy) / M_PI * 180 + zero;
 		ans.push_back(angle);
 	}
 	for (int i = 2; i < data.size() - 2; ++i)
 	{
 		double dy = tmp[i + 2] - tmp[i - 2];
-		double angle = atan2f(3, dy) / M_PI * 180 + zero;
+		double angle = atan2(3, dy) / M_PI * 180 + zero;
 		ans.push_back(angle);
 	}
 	{
-		int last = data.size() - 2;
+		int last = (int)data.size() - 2;
 		double dy = tmp[last-1] - tmp[last - 3];
-		double angle = atan2f(3, dy) / M_PI * 180 + zero;
+		double angle = atan2(3, dy) / M_PI * 180 + zero;
 		ans.push_back(angle);
 		dy = tmp[last] - tmp[last - 1];
-		angle = atan2f(3, dy) / M_PI * 180 + zero;
+		angle = atan2(3, dy) / M_PI * 180 + zero;
 		ans.push_back(angle);
 	}
 	return SmoothingLen5(ans, 0, 2);
@@ -80,7 +80,7 @@ double_vector SmoothingLoop(const double_vector& data, double centroidRadio,
 	for (int count = 0; count < repeat; ++count)
 	{
 		newcps.clear();
-		int last = cps.size() - 1;
+		int last = (int)cps.size() - 1;
 		if (cps.size() < 5)
 		{
 			continue;
@@ -110,7 +110,7 @@ double_vector SmoothingLen3(const double_vector& data, double centroidRadio,
 	{
 		centroids.clear();
 		newcps.clear();
-		int last = cps.size() - 1;
+		int last = (int)cps.size() - 1;
 		if (cps.size() < 5)
 		{
 			continue;
@@ -149,7 +149,7 @@ double_vector SmoothingLen5(const double_vector& data, double centroidRadio,
 	{
 		centroids.clear();
 		newcps.clear();
-		int last = cps.size() - 1;
+		int last = (int)cps.size() - 1;
 		if (cps.size() < 5)
 		{
 			continue;
@@ -195,7 +195,7 @@ double_vector ConvertToSquareWave(const double_vector& data, int error,
 								  double value, double zero)
 {
 	double_vector ans;
-	const int size = data.size();
+	const int size = (int)data.size();
 	for (int i = 0; i < size; ++i)
 	{
 		if (data[i] - zero > error)
@@ -219,7 +219,7 @@ bool IsBlackLine(const double_vector& data, double zero)
 	bool end = false;
 	int lookline = 0;
 	const int check_length = 15;
-	const int size = data.size();
+	const int size = (int)data.size();
 	for (int i = 0; i < size && !end; ++i)
 	{
 		if (data[i] > zero)
@@ -270,7 +270,7 @@ bool IsBrightLine(const double_vector& data, double zero /*= 290*/)
 	bool end = false;
 	int lookline = 0;
 	const int check_length = 15;
-	const int size = data.size();
+	const int size = (int)data.size();
 	for (int i = 0; i < size && !end; ++i)
 	{
 		if (data[i] < zero)
@@ -325,7 +325,7 @@ bool IsBrightLine(const double_vector& data, double zero /*= 290*/)
 
 bool IsShading(const double_vector& data, double zero)
 {
-	const int size = data.size();
+	const int size = (int)data.size();
 	int jump = 0;
 	int now = 0;
 	for (int i = 0; i < size; ++i)
@@ -368,7 +368,7 @@ double_vector GetBlackLine(const double_vector& data, double zero /*= 290*/)
 	double_vector ans;
 	bool end = false;
 	const int check_length = 15;
-	const int size = data.size();
+	const int size = (int)data.size();
 	for (int i = 0; i < size && !end; ++i)
 	{
 		if (data[i] > zero)
@@ -423,7 +423,7 @@ double GetVariance(const double_vector& data)
 double_vector LogSmooth(const double_vector& data, double zero)
 {
 	double_vector ans;
-	const int size = data.size();
+	const int size = (int)data.size();
 	for (int i = 0; i < size; ++i)
 	{
 		if (data[i] - zero >= 0)
@@ -444,7 +444,7 @@ double_vector GetLineWidth(const double_vector& data, double lineWidth,
 	double_vector ans;
 	bool end = false;
 	const int check_length = 179;
-	const int size = data.size();
+	const int size = (int)data.size();
 	for (int i = size / 2; i > size / 2 - check_length && !end; --i)
 	{
 		if (data[i] > zero)

@@ -1,5 +1,6 @@
 #pragma once
 #include "TriangulationBase.h"
+#pragma warning( push, 0 )
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/IO/Color.h>
 #include <CGAL/Triangulation_2.h>
@@ -12,6 +13,7 @@
 #include <CGAL/Delaunay_mesh_size_criteria_2.h>
 #include <CGAL/Triangulation_conformer_2.h>
 #include <CGAL/Polygon_2.h>
+#pragma warning( pop ) 
 
 #include "Patch.h"
 #include "ColorConstraint.h"

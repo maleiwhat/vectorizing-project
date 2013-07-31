@@ -1,12 +1,12 @@
 #include "PositionGraph.h"
 #include "math\Quaternion.h"
 
-#define CGAL_NO_AUTOLINK
+#pragma warning( push, 0 )
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
 #include <CGAL/Polygon_set_2.h>
-
+#pragma warning( pop ) 
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel CgalInexactKernel;
 typedef CgalInexactKernel::Point_2                                   Point_2;
@@ -463,7 +463,7 @@ void PositionGraph::MakeContourLines()
 			lineSegs.push_back(now_line[j] + rights[j] * (now_linewidth[j] - 0.2) * 0.5);
 		}
 		//lineSegs.push_back(now_line.back() + rights.back()*now_linewidth.back() * 0.5);
-		for (int j = now_line.size() - 1; j >= 0; --j)
+		for (int j = (int)now_line.size() - 1; j >= 0; --j)
 		{
 			lineSegs.push_back(now_line[j] - rights[j] * (now_linewidth[j] - 0.2) * 0.5);
 		}
@@ -498,8 +498,8 @@ void PositionGraph::MakeContourLines()
 		Qx[0].resize(now_line.size());
 		for (int j = 0; j < now_line.size(); j ++)
 		{
-			Qx[0][j].X = now_line[j].x * 10000;
-			Qx[0][j].Y = now_line[j].y * 10000;
+			Qx[0][j].X = (long long)now_line[j].x * 10000;
+			Qx[0][j].Y = (long long)now_line[j].y * 10000;
 		}
 		c.AddPolygons(Qx, ptSubject);
 	}

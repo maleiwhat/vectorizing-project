@@ -175,7 +175,7 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
 			{
 				pOrnt[x] += PI2;
 			}
-			pDer[x] = float(eigval[0] > 0.0f ? powf(eigval[0], 1) : 0.0f);//計算二階導數
+			pDer[x] = float(eigval[0] > 0.0f ? pow(eigval[0], 1) : 0.0f);//計算二階導數
 		}
 	}
 	//GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0);
@@ -256,7 +256,7 @@ const cv::Mat& CmCurveEx::CalFirDer(int kSize, float linkEndBound,
 
 		for (int x = 0; x < m_w; x++)
 		{
-			pOrnt[x] = (float)atan2f(dx[x], -dy[x]);
+			pOrnt[x] = (float)atan2(dx[x], -dy[x]);
 
 			if (pOrnt[x] < 0.0f)
 			{

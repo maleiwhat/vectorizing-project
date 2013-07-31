@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <iostream>
 #include "TriangulationBase.h"
-
+#pragma warning( push, 0 )
 // includes for defining the Voronoi diagram adaptor
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Triangulation_euclidean_traits_xy_3.h>
@@ -15,6 +15,7 @@
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
 #include <CGAL/Delaunay_mesh_size_criteria_2.h>
 #include <CGAL/Delaunay_mesher_2.h>
+#pragma warning( pop ) 
 
 #include "ImageSpline.h"
 #include "LineDef.h"

@@ -1,8 +1,11 @@
 #pragma once
+#pragma warning( push, 0 )
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#pragma warning( pop ) 
+
 #include <vector>
 #include <opencv2/core/core.hpp>
 #include <deque>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include "math/Vector2.h"
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel CgalInexactKernel;

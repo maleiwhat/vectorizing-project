@@ -1,6 +1,8 @@
 #pragma once
+#pragma warning( push, 0 )
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polygon_2_algorithms.h>
+#pragma warning( pop ) 
 #include <vector>
 #include "ImageSpline.h"
 

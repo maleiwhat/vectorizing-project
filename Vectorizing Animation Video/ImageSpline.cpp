@@ -74,7 +74,7 @@ void ImageSpline::ComputeToLineFragments()
 				if (len < 3)
 				{
 					bool issame = true;
-					const int nsize = nowpoints.size();
+					const int nsize = (int)nowpoints.size();
 
 					for (int i = 0; i < nowpoints.size() && i < res[k].m_Points.size(); ++i)
 					{
@@ -127,7 +127,7 @@ void ImageSpline::SmoothingFragments()
 		{
 			Line& cps = m_LineFragments[i].m_Points;
 			Line newcps;
-			int last = cps.size() - 1;
+			int last = (int)cps.size() - 1;
 
 			if (cps.size() < 5) { continue; }
 
@@ -136,7 +136,7 @@ void ImageSpline::SmoothingFragments()
 
 			for (int j = 2; j < cps.size() - 2; j ++)
 			{
-				if (CheckOnSide(cps[j].x, cps[j].y))
+				if (CheckOnSide((int)cps[j].x, (int)cps[j].y))
 				{
 					newcps.push_back(cps[j]);
 				}
@@ -216,8 +216,8 @@ void ImageSpline::SmoothingFragments()
 //
 //          if (last != vec)
 //          {
-//              float angle1 = atan2f(last.x, last.y) / M_PI * 180;
-//              float angle2 = atan2f(vec.x, vec.y) / M_PI * 180;
+//              float angle1 = atan2(last.x, last.y) / M_PI * 180;
+//              float angle2 = atan2(vec.x, vec.y) / M_PI * 180;
 //
 //              if (angle2 - angle1 > 0)
 //              {

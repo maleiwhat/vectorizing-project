@@ -101,7 +101,7 @@ CvLines GetCvLines(const Lines& cvp, double xOffset/*=0*/, double yOffset/*=0*/)
 		lines.push_back(CvLine());
 		for (auto it2 = it1->begin(); it2 != it1->end(); ++it2)
 		{
-			lines.back().push_back(cv::Point(it2->x + xOffset, it2->y + yOffset));
+			lines.back().push_back(cv::Point(int(it2->x + xOffset), int(it2->y + yOffset)));
 		}
 	}
 	return lines;
@@ -116,7 +116,7 @@ CvLines GetCvLines(const CgalLines& cvp, double xOffset/*=0*/,
 		lines.push_back(CvLine());
 		for (auto it2 = it1->begin(); it2 != it1->end(); ++it2)
 		{
-			lines.back().push_back(cv::Point(it2->hx() + xOffset, it2->hy() + yOffset));
+			lines.back().push_back(cv::Point(int(it2->hx() + xOffset), int(it2->hy() + yOffset)));
 		}
 	}
 	return lines;
@@ -127,7 +127,7 @@ CvLine GetCvLine(const Line& cvp, double xOffset/*=0*/, double yOffset/*=0*/)
 	CvLine line;
 	for (auto it2 = cvp.begin(); it2 != cvp.end(); ++it2)
 	{
-		line.push_back(cv::Point(it2->x + xOffset, it2->y + yOffset));
+		line.push_back(cv::Point(int(it2->x + xOffset), int(it2->y + yOffset)));
 	}
 	return line;
 }
@@ -138,7 +138,7 @@ CvLine GetCvLine(const CgalLine& cvp, double xOffset/*=0*/,
 	CvLine line;
 	for (auto it2 = cvp.begin(); it2 != cvp.end(); ++it2)
 	{
-		line.push_back(cv::Point(it2->hx() + xOffset, it2->hy() + yOffset));
+		line.push_back(cv::Point(int(it2->hx() + xOffset), int(it2->hy() + yOffset)));
 	}
 	return line;
 }
@@ -232,7 +232,7 @@ Line SmoothingLen5(const Line& cvp, double centroidRadio, int repeat)
 				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
 									 cps[j - 2]) / 5.0f);
 			}
-			int last = cps.size() - 1;
+			int last = (int)cps.size() - 1;
 			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
 			centroids.push_back((cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f);
 			newcps.push_back(cps.back());
@@ -243,7 +243,7 @@ Line SmoothingLen5(const Line& cvp, double centroidRadio, int repeat)
 			Vector2 cert = (cps[0] + cps[1]  + cps[2]) / 3.0f;
 			cert = centroids[0] - cert;
 			newcps.push_back(cps[1] + cert);
-			for (int j = 2; j < cps.size() - 2; j ++)
+			for (int j = 2; j < (int)cps.size() - 2; j ++)
 			{
 				Vector2 nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
 									   cps[j - 2]) / 5.0f;
@@ -330,7 +330,7 @@ Line GetNormalsLen3(const Line& cvp)
 			normals.push_back(Quaternion::GetRotation(cvp[i + 1] - cvp[i - 1],
 							  -90));
 		}
-		int last = cvp.size() - 1;
+		int last = (int)cvp.size() - 1;
 		normals.push_back(Quaternion::GetRotation(cvp[last] - cvp[last - 2], -90));
 		for (int i = 0; i < normals.size() ; ++i)
 		{
@@ -451,7 +451,7 @@ Line FixLineWidths(const Line& cvp, int range)
 			}
 			if (jend >= cvp.size())
 			{
-				jend = cvp.size() - 1;
+				jend = (int)cvp.size() - 1;
 			}
 			for (;j < jend; ++j)
 			{
@@ -560,7 +560,7 @@ Line SmoothingHas0Len5(const Line& cvp, double centroidRadio, int repeat)
 		{
 			newcps.push_back(cps.front() * 0.8);
 			newcps.push_back((cps[0] + cps[1] * 2 + cps[2]) * 0.25);
-			for (int j = 2; j < cps.size() - 2; j ++)
+			for (int j = 2; j < (int)cps.size() - 2; j ++)
 			{
 				if (cps[j].x > 0)
 				{
@@ -581,7 +581,7 @@ Line SmoothingHas0Len5(const Line& cvp, double centroidRadio, int repeat)
 					newcps.push_back(Vector2());
 				}
 			}
-			int last = cps.size() - 1;
+			int last = (int)cps.size() - 1;
 			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
 			newcps.push_back(cps.back() * 0.8);
 			cps = newcps;
@@ -756,7 +756,7 @@ double_vector ComputeAngle(const Line& line)
 	for (int i = 1; i < line.size(); i++)
 	{
 		Vector2 vec = line[i] - line[i - 1];
-		ans[i] = atan2f(vec.x, vec.y) / M_PI * 180;
+		ans[i] = atan2(vec.x, vec.y) / M_PI * 180;
 	}
 	ans[0] = ans[1];
 	return ans;
@@ -788,11 +788,11 @@ Endpoints GetEndpoints(const Lines& cvp)
 	{
 		const Line& nowLine = cvp.at(i);
 		Vector2 vec = nowLine[0] - nowLine[2];
-		double angle = atan2f(vec.x, vec.y) / M_PI * 180;
+		double angle = atan2(vec.x, vec.y) / M_PI * 180;
 		ans.push_back(Endpoint(nowLine.front(), i, 0, angle));
-		int last = nowLine.size() - 1;
+		int last = (int)nowLine.size() - 1;
 		vec = nowLine[last] - nowLine[last - 2];
-		angle = atan2f(vec.x, vec.y) / M_PI * 180;
+		angle = atan2(vec.x, vec.y) / M_PI * 180;
 		ans.push_back(Endpoint(nowLine.back(), i, last, angle));
 	}
 	return ans;
@@ -868,7 +868,7 @@ bool CheckEndpointsSimilarity(const Endpoint& lhs, const Endpoint& rhs,
 							  double angle)
 {
 	Vector2 vec = lhs.pos - rhs.pos;
-	double linkAngle = atan2f(vec.x, vec.y) / M_PI * 180;
+	double linkAngle = atan2(vec.x, vec.y) / M_PI * 180;
 	double refAngleL = lhs.angle + 180;
 	double refAngleR = rhs.angle + 180;
 	if (refAngleL >= 360)
@@ -889,7 +889,7 @@ bool CheckEndpointsSimilarity(const Endpoint& lhs, const Endpoint& rhs,
 	return false;
 }
 
-void ConnectSimilarLines(Lines& pos, Lines& width)
+void ConnectSimilarLines(Lines& pos, Lines& width, double angle)
 {
 	Endpoints eps = GetEndpoints(pos);
 	for (int i = 0; i < eps.size(); ++i)
@@ -897,7 +897,7 @@ void ConnectSimilarLines(Lines& pos, Lines& width)
 		Endpoints nearEps = FindNearEndpoints(eps, eps[i].pos, 10);
 		for (int j = 0; j < nearEps.size(); ++j)
 		{
-			if (nearEps[j] != eps[i] && CheckEndpointsSimilarity(nearEps[j], eps[i], 30))
+			if (nearEps[j] != eps[i] && CheckEndpointsSimilarity(nearEps[j], eps[i], angle))
 			{
 				if (eps[i].idx2 > 0)
 				{
@@ -922,10 +922,10 @@ void ConnectSimilarLines(Lines& pos, Lines& width)
 					beLink.clear();
 					w2.clear();
 					// change Endpoint info
-					eps[i].idx2 = linkLine.size() - 1;
+					eps[i].idx2 = (int)linkLine.size() - 1;
 					eps[i].pos = linkLine.back();
 					Vector2 vec = linkLine.back() - linkLine[linkLine.size() - 3];
-					eps[i].angle = atan2f(vec.x, vec.y);
+					eps[i].angle = atan2(vec.x, vec.y);
 					// remove Endpoint info
 					const int removeId = nearEps[j].idx1;
 					for (int k = 0; k < eps.size(); ++k)
@@ -965,10 +965,10 @@ void ConnectSimilarLines(Lines& pos, Lines& width)
 					{
 						if (eps[k] == nearEps[j])
 						{
-							eps[k].idx2 = linkLine.size() - 1;
+							eps[k].idx2 = (int)linkLine.size() - 1;
 							eps[k].pos = linkLine.back();
 							Vector2 vec = linkLine.back() - linkLine[linkLine.size() - 3];
-							eps[i].angle = atan2f(vec.x, vec.y);
+							eps[i].angle = atan2(vec.x, vec.y);
 							break;
 						}
 					}
@@ -1013,14 +1013,14 @@ void ConnectSimilarLines(Lines& pos, Lines& width)
 						{
 							if (eps[k].idx2 > 0)
 							{
-								eps[k].idx2 = linkLine.size() - 1;
+								eps[k].idx2 = (int)linkLine.size() - 1;
 								break;
 							}
 						}
 					}
 					eps[i].pos = linkLine.front();
 					Vector2 vec = linkLine.front() - linkLine[2];
-					eps[i].angle = atan2f(vec.x, vec.y);
+					eps[i].angle = atan2(vec.x, vec.y);
 					// remove Endpoint info
 					const int removeId = nearEps[j].idx1;
 					for (int k = 0; k < eps.size(); ++k)
@@ -1071,16 +1071,15 @@ double GetLineWidthPercent(const Line& cvp)
 	return n / cvp.size();
 }
 
-void ClearLineWidthByPercent(Lines& widths, double v)
+void ClearLineWidthByPercent(Lines& widths, double angle)
 {
 	for (int i = 0; i < widths.size(); ++i)
 	{
 		Line& nowWidths = widths.at(i);
 		double p = GetLineWidthPercent(nowWidths);
-		if (p < v)
+		if (p < angle)
 		{
-			int n = nowWidths.size();
-			nowWidths = Line(n);
+			nowWidths = Line(nowWidths.size());
 		}
 		else
 		{

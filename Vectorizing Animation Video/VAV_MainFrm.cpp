@@ -591,7 +591,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		cvtColor(imgf, imgf, CV_BGR2GRAY);
 		imgf.convertTo(imgf, CV_32F, 1.0 / 255);
 		CmCurveEx dEdge(imgf);
-		dEdge.CalSecDer(7, 0.001f);
+		dEdge.CalSecDer(5, 0.001f);
 		dEdge.Link();
 		CvLines tpnts2d;
 		const CEdges& edges = dEdge.GetEdges();
@@ -665,8 +665,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
 		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0.8, 5);
- 		ConnectSimilarLines(m_BlackLine, m_BLineWidth);
- 		ConnectSimilarLines(m_BlackLine, m_BLineWidth);
+ 		ConnectSimilarLines(m_BlackLine, m_BLineWidth, 30);
 		ClearLineWidthByPercent(m_BLineWidth, 0.5);
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0.8, 5);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
