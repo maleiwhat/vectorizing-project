@@ -63,7 +63,6 @@ void EdgeLink_LineFragment(cv::Mat& image, Line& now_line, int now_value)
 
 		if (now_line.size() > 1)
 		{
-			int x, y;
 			Vector2 move = now_line.back() - *(now_line.end() - 2);
 
 			for (int i = 0; i < wm.size(); i++)
@@ -192,10 +191,9 @@ void EdgeLink_LineFragment(cv::Mat& image, Line& now_line, int now_value)
 
 		if (now_line.size() > 1)
 		{
-			int x, y;
 			Vector2 move = now_line.back() - *(now_line.end() - 2);
 
-			for (int i = 0; i < wm.size(); i++)
+			for (int i = 0; i < (int)wm.size(); i++)
 			{
 				if (move.y != 0 && move.y == wm[i].pos.y)
 				{
@@ -217,7 +215,7 @@ void EdgeLink_LineFragment(cv::Mat& image, Line& now_line, int now_value)
 		std::sort(wm.begin(), wm.end());
 		const Vector2& v = now_line.back();
 
-		for (int i = 0; i < wm.size(); i++)
+		for (int i = 0; i < (int)wm.size(); i++)
 		{
 			int x = v.x + wm[i].pos.x;
 			int y = v.y + wm[i].pos.y;
@@ -255,7 +253,7 @@ void EdgeLink_LineFragment(cv::Mat& image, Line& now_line, int now_value)
 		Weights wm = wm_init_cross;
 		bool getjoint = false;
 
-		for (int i = wm.size() - 1; i >= 0; --i)
+		for (int i = (int)wm.size() - 1; i >= 0; --i)
 		{
 			int x = v.x + wm[i].pos.x;
 			int y = v.y + wm[i].pos.y;
@@ -282,7 +280,7 @@ void EdgeLink_LineFragment(cv::Mat& image, Line& now_line, int now_value)
 
 		if (!getjoint)
 		{
-			for (int i = 0; i < wm.size(); i++)
+			for (int i = 0; i < (int)wm.size(); i++)
 			{
 				int x = v.x + wm[i].pos.x;
 				int y = v.y + wm[i].pos.y;

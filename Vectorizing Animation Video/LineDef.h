@@ -1,8 +1,8 @@
 #pragma once
 #pragma warning( push, 0 )
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#pragma warning( pop ) 
-
+#pragma warning( pop )
+#include <memory.h>
 #include <vector>
 #include <opencv2/core/core.hpp>
 #include <deque>
@@ -28,8 +28,8 @@ typedef std::deque<LineSeg> LineSegs;
 struct Endpoint
 {
 	Vector2 pos;
-	int	idx1, idx2;
-	double	angle;
+	int idx1, idx2;
+	double  angle;
 	Endpoint() {}
 	Endpoint(const Vector2& p, int i1, int i2, double a)
 		: pos(p), idx1(i1), idx2(i2), angle(a) {}
@@ -43,3 +43,34 @@ struct Endpoint
 	}
 };
 typedef std::vector<Endpoint> Endpoints;
+
+struct LineEnd
+{
+
+	enum LinkMethod
+	{
+		NOTHING = 0,
+		BEGIN_TO_BEGIN = 0x01,
+		BEGIN_TO_END = 0x02,
+		END_TO_BEGIN = 0x04,
+		END_TO_END = 0x08,
+	};
+	LineEnd*  linkIdx1;
+	LineEnd*  linkIdx2;
+	Vector2 beg;
+	Vector2 end;
+	// angleBeg is p[0]-p[2]
+	// angleEnd is p[last]-p[last-2]
+	int idx1, idx2;
+	double angleBeg, angleEnd;
+	LineEnd* beglink;
+	LineEnd* endlink;
+	LineEnd()
+	{
+		memset(this, 0, sizeof(LineEnd));
+	}
+	LineEnd(const Vector2& p1, const Vector2& p2, int i1, int i2, double a1, double a2)
+		: beg(p1), end(p2), idx1(i1), idx2(i2), angleBeg(a1), angleEnd(a2),
+		  linkIdx1(0), linkIdx2(0), beglink(0), endlink(0) {}
+};
+typedef std::vector<LineEnd> LineEnds;

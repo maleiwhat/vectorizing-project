@@ -116,7 +116,8 @@ CvLines GetCvLines(const CgalLines& cvp, double xOffset/*=0*/,
 		lines.push_back(CvLine());
 		for (auto it2 = it1->begin(); it2 != it1->end(); ++it2)
 		{
-			lines.back().push_back(cv::Point(int(it2->hx() + xOffset), int(it2->hy() + yOffset)));
+			lines.back().push_back(cv::Point(int(it2->hx() + xOffset),
+											 int(it2->hy() + yOffset)));
 		}
 	}
 	return lines;
@@ -453,7 +454,7 @@ Line FixLineWidths(const Line& cvp, int range)
 			{
 				jend = (int)cvp.size() - 1;
 			}
-			for (;j < jend; ++j)
+			for (; j < jend; ++j)
 			{
 				if (cvp[j].x > 0.1)
 				{
@@ -864,8 +865,8 @@ Endpoints FindNearSortedXEndpoints(const Endpoints& cvp, const Vector2& pos,
 	return ans;
 }
 
-bool CheckEndpointsSimilarity(const Endpoint& lhs, const Endpoint& rhs,
-							  double angle)
+bool CheckEndpointSimilarity(const Endpoint& lhs, const Endpoint& rhs,
+							 double angle)
 {
 	Vector2 vec = lhs.pos - rhs.pos;
 	double linkAngle = atan2(vec.x, vec.y) / M_PI * 180;
@@ -897,7 +898,7 @@ void ConnectSimilarLines(Lines& pos, Lines& width, double angle)
 		Endpoints nearEps = FindNearEndpoints(eps, eps[i].pos, 10);
 		for (int j = 0; j < nearEps.size(); ++j)
 		{
-			if (nearEps[j] != eps[i] && CheckEndpointsSimilarity(nearEps[j], eps[i], angle))
+			if (nearEps[j] != eps[i] && CheckEndpointSimilarity(nearEps[j], eps[i], angle))
 			{
 				if (eps[i].idx2 > 0)
 				{
@@ -1087,3 +1088,259 @@ void ClearLineWidthByPercent(Lines& widths, double angle)
 		}
 	}
 }
+
+LineEnds GetLineEnds(const Lines& cvp)
+{
+	LineEnds ans;
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Line& nowLine = cvp.at(i);
+		int last = (int)nowLine.size() - 1;
+		Vector2 p1 = nowLine[0] - nowLine[2];
+		Vector2 p2 = nowLine[last] - nowLine[last - 2];
+		double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+		double angle2 = fmod(360 + atan2(p2.x, p2.y) / M_PI * 180, 360);
+		ans.push_back(LineEnd(nowLine.front(), nowLine.back(), i, last, angle1,
+							  angle2));
+	}
+	return ans;
+}
+
+void LinkLineEnds(LineEnds& les, double distance, double angle)
+{
+	double sdistance = distance * distance;
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		LineEnd& le1 = les[i];
+		for (int j = 0; j < (int)les.size(); ++j)
+		{
+			if (i != j)
+			{
+				bool haslink = false;
+				LineEnd& le2 = les[j];
+				// find begin link
+				if (le1.beg.squaredDistance(le2.beg) < sdistance)
+				{
+					if (CheckLinkEndSimilarity(le1, le2, LineEnd::BEGIN_TO_BEGIN, angle))
+					{
+						le1.beglink = &le2;
+						le2.beglink = &le1;
+						haslink = true;
+					}
+				}
+				else if (le1.beg.squaredDistance(le2.end) < sdistance)
+				{
+					if (CheckLinkEndSimilarity(le1, le2, LineEnd::BEGIN_TO_END, angle))
+					{
+						le1.beglink = &le2;
+						le2.endlink = &le1;
+						haslink = true;
+					}
+				}
+				// find end link
+				if (le1.end.squaredDistance(le2.beg) < sdistance)
+				{
+					if (CheckLinkEndSimilarity(le1, le2, LineEnd::END_TO_BEGIN, angle))
+					{
+						le1.endlink = &le2;
+						le2.beglink = &le1;
+						haslink = true;
+					}
+				}
+				else if (le1.end.squaredDistance(le2.end) < sdistance)
+				{
+					if (CheckLinkEndSimilarity(le1, le2, LineEnd::END_TO_END, angle))
+					{
+						le1.endlink = &le2;
+						le2.endlink = &le1;
+						haslink = true;
+					}
+				}
+				if (haslink)
+				{
+					if (le1.linkIdx1)
+					{
+						le1.linkIdx2 = &le2;
+					}
+					else
+					{
+						le1.linkIdx1 = &le2;
+					}
+					if (le2.linkIdx1)
+					{
+						le2.linkIdx2 = &le1;
+					}
+					else
+					{
+						le2.linkIdx1 = &le1;
+					}
+				}
+			}
+		}
+	}
+}
+
+bool CheckLinkEndSimilarity(const LineEnd& lhs, const LineEnd& rhs,
+							LineEnd::LinkMethod c, double angle)
+{
+	switch (c)
+	{
+	case LineEnd::BEGIN_TO_BEGIN:
+		if (abs(lhs.angleBeg - (rhs.angleBeg - 180)) < angle)
+		{
+			Vector2 p1 = rhs.beg - lhs.beg;
+			double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+			if (abs(lhs.angleBeg - angle1) < angle)
+			{
+				return true;
+			}
+		}
+		break;
+	case LineEnd::BEGIN_TO_END:
+		if (abs(lhs.angleBeg - (rhs.angleEnd - 180)) < angle)
+		{
+			Vector2 p1 = rhs.end - lhs.beg;
+			double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+			if (abs(lhs.angleBeg - angle1) < angle)
+			{
+				return true;
+			}
+		}
+		break;
+	case LineEnd::END_TO_BEGIN:
+		if (abs(lhs.angleEnd - (rhs.angleBeg - 180)) < angle)
+		{
+			Vector2 p1 = rhs.beg - lhs.end;
+			double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+			if (abs(lhs.angleEnd - angle1) < angle)
+			{
+				return true;
+			}
+		}
+		break;
+	case LineEnd::END_TO_END:
+		if (abs(lhs.angleEnd - (rhs.angleEnd - 180)) < angle)
+		{
+			Vector2 p1 = rhs.end - lhs.end;
+			double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+			if (abs(lhs.angleEnd - angle1) < angle)
+			{
+				return true;
+			}
+		}
+		break;
+	}
+	return false;
+}
+
+void ConnectSimilarLines(const LineEnds& les, Lines& pos, Lines& width)
+{
+	std::vector<bool> marked(pos.size(), false);
+	Lines newpos;
+	Lines newwidth;
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		const LineEnd& le1 = les[i];
+		if (le1.linkIdx1 != 0 && le1.linkIdx2 == 0)
+		{
+			if (!marked[le1.idx1])
+			{
+				Line addline;
+				Line addwidth;
+				const LineEnd* nowle = &le1;
+				const LineEnd* last = 0;
+				while (nowle)
+				{
+					marked[nowle->idx1] = 1;
+					const Line& loopline = pos[nowle->idx1];
+					const Line& loopwidth = width[nowle->idx1];
+					const LineEnd* next = 0;
+					if (last == 0)
+					{
+						next = nowle->linkIdx1;
+					}
+					else if (last == nowle->linkIdx1)
+					{
+						next = nowle->linkIdx2;
+					}
+					else
+					{
+						next = nowle->linkIdx1;
+					}
+					if (last == nowle->endlink)
+					{
+						addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+						addwidth.insert(addwidth.end(), loopwidth.rbegin(), loopwidth.rend());
+					}
+					else if (last == nowle->beglink)
+					{
+						addline.insert(addline.end(), loopline.begin(), loopline.end());
+						addwidth.insert(addwidth.end(), loopwidth.begin(), loopwidth.end());
+					}
+					else if (next == nowle->beglink)
+					{
+						addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+						addwidth.insert(addwidth.end(), loopwidth.rbegin(), loopwidth.rend());
+					}
+					else if (next == nowle->endlink)
+					{
+						addline.insert(addline.end(), loopline.begin(), loopline.end());
+						addwidth.insert(addwidth.end(), loopwidth.begin(), loopwidth.end());
+					}
+					last = nowle;
+					nowle = next;
+				}
+				newpos.push_back(addline);
+				newwidth.push_back(addwidth);
+			}
+		}
+	}
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		if (!marked[i])
+		{
+			newpos.push_back(pos[i]);
+			newwidth.push_back(width[i]);
+		}
+	}
+	pos = newpos;
+	width = newwidth;
+}
+
+LineEnds FindLinkHead(const LineEnds& les, int lineNum)
+{
+	std::vector<bool> marked(lineNum);
+	LineEnds endpoints;
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		const LineEnd& le1 = les[i];
+		if ((le1.beglink != 0 && le1.endlink == 0) || (le1.beglink == 0 && le1.endlink != 0))
+		{
+			if (!marked[le1.idx1])
+			{
+				marked[le1.idx1] = true;
+				endpoints.push_back(le1);
+				LineEnd* nowle = le1.beglink;
+				if (!nowle)
+				{
+					nowle = le1.endlink;
+				}
+				while (nowle)
+				{
+					marked[nowle->idx1] = 1;
+					if (nowle->beglink)
+					{
+						nowle = nowle->beglink;
+					}
+					else
+					{
+						nowle = nowle->endlink;
+					}
+				}
+			}
+		}
+	}
+	return endpoints;
+}
+
+

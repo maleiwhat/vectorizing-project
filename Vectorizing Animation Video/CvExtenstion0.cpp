@@ -109,7 +109,6 @@ void EdgeLink(cv::Mat& image, Line& now_line)
 
 		if (now_line.size() > 1)
 		{
-			int x, y;
 			Vector2 move = now_line.back() - *(now_line.end() - 2);
 
 			for (int i = 0; i < wm.size(); i++)
@@ -200,7 +199,6 @@ void EdgeLink(cv::Mat& image, Line& now_line)
 
 		if (now_line.size() > 1)
 		{
-			int x, y;
 			Vector2 move = now_line.back() - *(now_line.end() - 2);
 
 			for (int i = 0; i < wm.size(); i++)
@@ -294,7 +292,6 @@ void EdgeLink2(cv::Mat& image, Line& now_line)
 
 		if (now_line.size() > 1)
 		{
-			int x, y;
 			Vector2 move = now_line.back() - *(now_line.end() - 2);
 
 			for (int i = 0; i < wm.size(); i++)
@@ -381,7 +378,6 @@ void EdgeLink2(cv::Mat& image, Line& now_line)
 
 		if (now_line.size() > 1)
 		{
-			int x, y;
 			Vector2 move = now_line.back() - *(now_line.end() - 2);
 
 			for (int i = 0; i < wm.size(); i++)

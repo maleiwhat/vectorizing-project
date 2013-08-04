@@ -665,9 +665,11 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
 		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0.8, 5);
- 		ConnectSimilarLines(m_BlackLine, m_BLineWidth, 30);
+		LineEnds les = GetLineEnds(m_BlackLine);
+		LinkLineEnds(les, 10, 30);
+		ConnectSimilarLines(les, m_BlackLine, m_BLineWidth);
 		ClearLineWidthByPercent(m_BLineWidth, 0.5);
-		m_BlackLine = SmoothingLen5(m_BlackLine, 0.8, 5);
+		m_BlackLine = SmoothingLen5(m_BlackLine, 0, 5);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
 		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 3);
 		m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 1, 3);
