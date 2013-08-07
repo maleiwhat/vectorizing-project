@@ -77,7 +77,7 @@ void        SortEndpointsX(Endpoints& cvp);
 Endpoints   FindNearEndpoints(const Endpoints& cvp, const Vector2& pos, double distance);
 Endpoints   FindNearSortedXEndpoints(const Endpoints& cvp, const Vector2& pos, double distance);
 bool CheckEndpointSimilarity(const Endpoint& lhs, const Endpoint& rhs, double angle);
-void ConnectSimilarLines(Lines& pos, Lines& width, double angle);	
+void ConnectSimilarLines(Lines& pos, Lines& width, double angle);
 double  GetLineWidthPercent(const Line& cvp);
 void    ClearLineWidthByPercent(Lines& widths, double angle);
 
@@ -87,3 +87,5 @@ bool CheckLinkEndSimilarity(const LineEnd& lhs, const LineEnd& rhs,
 							LineEnd::LinkMethod c, double angle);
 void ConnectSimilarLines(const LineEnds& les, Lines& pos, Lines& width);
 LineEnds FindLinkHead(const LineEnds& lhs, int lineNum);
+void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d1, double d2,
+						 double angle);

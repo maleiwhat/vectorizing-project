@@ -1343,4 +1343,87 @@ LineEnds FindLinkHead(const LineEnds& les, int lineNum)
 	return endpoints;
 }
 
-
+void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d1, double d2,
+						 double angle)
+{
+	d1 *= d1;
+	d2 *= d2;
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		const LineEnd& le1 = les[i];
+		int minbegp = -1, minbeg_angle = angle;
+		int minendp = -1, minend_angle = angle;
+		Vector2 begdst, enddst;
+		for (int j = 0; j < pos.size(); ++j)
+		{
+			Line& nowLine = pos[j];
+			for (int k = 0; k < nowLine.size(); k += 5)
+			{
+				if (le1.beg.squaredDistance(nowLine[k]) < d1)
+				{
+					int p = k - 5, ep = k + 5;
+					if (p < 0)
+					{
+						p = 0;
+					}
+					if (ep >= nowLine.size())
+					{
+						ep = nowLine.size() - 1;
+					}
+					for (; p < ep; p++)
+					{
+						int dis = le1.beg.squaredDistance(nowLine[p]);
+						Vector2 p1 = nowLine[p] - le1.beg;
+						double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+						angle1 = abs(le1.angleBeg - angle1);
+						if (dis < d2 &&  angle1 < minbeg_angle)
+						{
+							minbeg_angle = angle1;
+							minbegp = p;
+							begdst = nowLine[minbegp];
+						}
+					}
+				}
+				if (le1.end.squaredDistance(nowLine[k]) < d1)
+				{
+					int p = k - 5, ep = k + 5;
+					if (p < 0)
+					{
+						p = 0;
+					}
+					if (ep >= nowLine.size())
+					{
+						ep = nowLine.size() - 1;
+					}
+					for (; p < ep; p++)
+					{
+						int dis = le1.end.squaredDistance(nowLine[p]);
+						Vector2 p1 = nowLine[p] - le1.end;
+						double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+						angle1 = abs(le1.angleEnd - angle1);
+						if (dis < d2 &&  angle1 < minend_angle)
+						{
+							minend_angle = angle1;
+							minendp = p;
+							enddst = nowLine[minendp];
+						}
+					}
+				}
+			}
+		}
+		if (minbegp != -1)
+		{
+			Line& elongation = pos[le1.idx1];
+			Line& elongationw = width[le1.idx1];
+			elongation.insert(elongation.begin(), begdst);
+			elongationw.insert(elongationw.begin(), elongationw.front());
+		}
+		if (minendp != -1)
+		{
+			Line& elongation = pos[le1.idx1];
+			Line& elongationw = width[le1.idx1];
+			elongation.insert(elongation.end(), enddst);
+			elongationw.insert(elongationw.end(), elongationw.back());
+		}
+	}
+}
