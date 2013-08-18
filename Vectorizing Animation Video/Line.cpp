@@ -1084,7 +1084,7 @@ void ClearLineWidthByPercent(Lines& widths, double angle)
 		}
 		else
 		{
-			nowWidths = FixLineWidths(nowWidths, 200);
+			//nowWidths = FixLineWidths(nowWidths, 200);
 		}
 	}
 }
@@ -1351,12 +1351,14 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 	for (int i = 0; i < (int)les.size(); ++i)
 	{
 		const LineEnd& le1 = les[i];
-		int minbegp = -1, minbeg_angle = angle;
-		int minendp = -1, minend_angle = angle;
+		int minbegp = -1, minbeg_angle = angle, minbeg_dis = d2;
+		int minendp = -1, minend_angle = angle, minend_dis = d2;
+		double hitbeg_width, hitend_width;
 		Vector2 begdst, enddst;
 		for (int j = 0; j < pos.size(); ++j)
 		{
 			Line& nowLine = pos[j];
+			Line& nowWidth = width[j];
 			for (int k = 0; k < nowLine.size(); k += 5)
 			{
 				if (le1.beg.squaredDistance(nowLine[k]) < d1)
@@ -1376,11 +1378,13 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 						Vector2 p1 = nowLine[p] - le1.beg;
 						double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
 						angle1 = abs(le1.angleBeg - angle1);
-						if (dis < d2 &&  angle1 < minbeg_angle)
+						if (dis < minbeg_dis &&  angle1 < minbeg_angle)
 						{
 							minbeg_angle = angle1;
+							minbeg_dis = dis;
 							minbegp = p;
 							begdst = nowLine[minbegp];
+							hitbeg_width = nowWidth[minbegp].x + nowWidth[minbegp].y;
 						}
 					}
 				}
@@ -1401,11 +1405,13 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 						Vector2 p1 = nowLine[p] - le1.end;
 						double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
 						angle1 = abs(le1.angleEnd - angle1);
-						if (dis < d2 &&  angle1 < minend_angle)
+						if (dis < minend_dis && angle1 < minend_angle)
 						{
 							minend_angle = angle1;
+							minend_dis = dis;
 							minendp = p;
 							enddst = nowLine[minendp];
+							hitend_width = nowWidth[minendp].x + nowWidth[minendp].y;
 						}
 					}
 				}
@@ -1417,6 +1423,10 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 			Line& elongationw = width[le1.idx1];
 			elongation.insert(elongation.begin(), begdst);
 			elongationw.insert(elongationw.begin(), elongationw.front());
+			//if (hitbeg_width > 0.5)
+			{
+				FixBeginWidth(elongationw, 20);
+			}
 		}
 		if (minendp != -1)
 		{
@@ -1424,6 +1434,109 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 			Line& elongationw = width[le1.idx1];
 			elongation.insert(elongation.end(), enddst);
 			elongationw.insert(elongationw.end(), elongationw.back());
+			//if (hitend_width > 0.5)
+			{
+				FixEndWidth(elongationw, 20);
+			}
 		}
 	}
 }
+
+void IncreaseDensity(Line& pos, Line& pos2)
+{
+	{
+		Line ans(pos.size() * 2 - 1);
+		for (int i = 0; i < (int)pos.size() - 1; ++i)
+		{
+			Vector2& v1 = pos[i];
+			Vector2& v2 = pos[i + 1];
+			ans[i * 2] = v1;
+			ans[i * 2 + 1] = (v2 + v1) * 0.5;
+		}
+		ans.back() = pos.back();
+		pos = ans;
+	}
+	{
+		Line ans(pos2.size() * 2 - 1);
+		for (int i = 0; i < (int)pos2.size() - 1; ++i)
+		{
+			Vector2& v1 = pos2[i];
+			Vector2& v2 = pos2[i + 1];
+			ans[i * 2] = v1;
+			ans[i * 2 + 1] = (v2 + v1) * 0.5;
+		}
+		ans.back() = pos2.back();
+		pos2 = ans;
+	}
+}
+
+void IncreaseDensity(Lines& pos, Lines& pos2)
+{
+	for (int i = 0; i < pos.size(); ++i)
+	{
+		Line& nowLine = pos[i];
+		Line& nowLine2 = pos2[i];
+		IncreaseDensity(nowLine, nowLine2);
+	}
+}
+
+void FixBeginWidth(Line& width, int len)
+{
+	int sidx = 0;
+	int eidx = len;
+	if (eidx >= width.size())
+	{
+		eidx = (int)width.size() - 1;
+	}
+	double max_width = 0.5;
+	int widx = -1;
+	Vector2 w;
+	for (int i = sidx; i < eidx; ++i)
+	{
+		Vector2& v1 = width[i];
+		if (v1.x + v1.y > max_width)
+		{
+			max_width = v1.x + v1.y;
+			widx = i;
+			w = v1;
+		}
+	}
+	if (widx != -1)
+	{
+		for (int j = sidx; j < widx; ++j)
+		{
+			width[j] = w;
+		}
+	}
+}
+
+void FixEndWidth(Line& width, int len)
+{
+	int sidx = (int)width.size() - 1;
+	int eidx = (int)width.size() - 1 - len;
+	if (eidx < 0)
+	{
+		eidx = 0;
+	}
+	double max_width = 0.5;
+	int widx = -1;
+	Vector2 w;
+	for (int i = sidx; i > eidx ; --i)
+	{
+		Vector2& v1 = width[i];
+		if (v1.x + v1.y > max_width)
+		{
+			max_width = v1.x + v1.y;
+			widx = i;
+			w = v1;
+		}
+	}
+	if (widx != -1)
+	{
+		for (int j = (int)sidx; j > widx; --j)
+		{
+			width[j] = w;
+		}
+	}
+}
+

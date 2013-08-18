@@ -460,10 +460,10 @@ void VAV_MainFrame::OnFileOpenPicture()
 			D3DApp& d3dApp = GetVavView()->GetD3DApp();
 			CMFCRibbonEdit* re;
 			CMFCRibbonBaseElement* tmp_ui = 0;
-			for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+			for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 			{
 				tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-					ID_SPIN_TransparencySelectPatch);
+							 ID_SPIN_TransparencySelectPatch);
 				if (tmp_ui != 0)
 				{
 					break;
@@ -476,10 +476,10 @@ void VAV_MainFrame::OnFileOpenPicture()
 													 re->GetEditText().GetString()).c_str());
 			}
 			d3dApp.SetTransparency_SelectPatch((100 - m_SelectPatchTransparency) * 0.01);
-			for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+			for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 			{
 				tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-					ID_SPIN_TransparencyPatch);
+							 ID_SPIN_TransparencyPatch);
 				if (tmp_ui != 0)
 				{
 					break;
@@ -492,10 +492,10 @@ void VAV_MainFrame::OnFileOpenPicture()
 											   re->GetEditText().GetString()).c_str());
 			}
 			d3dApp.SetTransparency_SelectPatch((100 - m_PatchTransparency) * 0.01);
-			for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+			for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 			{
 				tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-					ID_SPIN_TransparencyTriangleLine);
+							 ID_SPIN_TransparencyTriangleLine);
 				if (tmp_ui != 0)
 				{
 					break;
@@ -508,10 +508,10 @@ void VAV_MainFrame::OnFileOpenPicture()
 													  re->GetEditText().GetString()).c_str());
 			}
 			d3dApp.SetTransparency_SelectPatch((100 - m_TriangleLineTransparency) * 0.01);
-			for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+			for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 			{
 				tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-					ID_SPIN_TransparencyPicture);
+							 ID_SPIN_TransparencyPicture);
 				if (tmp_ui != 0)
 				{
 					break;
@@ -542,10 +542,10 @@ void VAV_MainFrame::OnButtonCanny()
 	int t1 = 0, t2 = 30, a = 3;
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_CannyThreshold1);
+					 ID_SPIN_CannyThreshold1);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -556,10 +556,10 @@ void VAV_MainFrame::OnButtonCanny()
 	{
 		t1 = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
 	}
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_CannyThreshold2);
+					 ID_SPIN_CannyThreshold2);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -570,10 +570,10 @@ void VAV_MainFrame::OnButtonCanny()
 	{
 		t2 = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
 	}
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_ApertureSize);
+					 ID_SPIN_ApertureSize);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -619,7 +619,6 @@ void VAV_MainFrame::OnSpinAperturesize()
 {
 	// TODO: 在此加入您的命令處理常式程式碼
 }
-
 
 void VAV_MainFrame::OnButtonControlPointInitialize()
 {
@@ -668,7 +667,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		Lines showLines;
 		Lines BLineWidth(m_BlackLine.size());
 		//vImage.ToExpImage();
-		const double blackRadio = 0.6;
+		const double blackRadio = 0.7;
 		for (int idx1 = 0; idx1 < m_BlackLine.size(); ++idx1)
 		{
 			const Line& nowLine = m_BlackLine[idx1];
@@ -689,10 +688,10 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 				line1 = SmoothingLen5(line1, 0.0, 3);
 				line2 = SmoothingLen5(line2, 0.0, 3);
 				double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
-													10, 50), LINE_WIDTH * 2);
+													15, 50), LINE_WIDTH * 2);
 				double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
-													10, 50), LINE_WIDTH * 2);
-				if (width1.size() >= 2 && width2.size() >= 2)
+													15, 50), LINE_WIDTH * 2);
+				if (width1.size() >= 2 && width2.size() >= 2 && abs(width2[0] - width2[1]) < 1)
 				{
 					Line line1;
 					line1.push_back(nowLine[idx2] - nowNormals[idx2] * width1[0] * blackRadio);
@@ -717,19 +716,21 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			lineWidths.push_back(Vector2());
 		}
 		m_BLineWidth = FixLineWidths(BLineWidth, 5);
-		m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
 		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
-		m_BlackLine = SmoothingLen5(m_BlackLine, 0.8, 5);
+		m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 5);
 		LineEnds les = GetLineEnds(m_BlackLine);
 		LinkLineEnds(les, 10, 30);
 		ConnectSimilarLines(les, m_BlackLine, m_BLineWidth);
-		m_BlackLine = SmoothingLen5(m_BlackLine, 0, 5);
+		//m_BlackLine = SmoothingLen5(m_BlackLine, 1, 5);
 		les = GetLineEnds(m_BlackLine);
-		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 15, 7, 15);
-		ClearLineWidthByPercent(m_BLineWidth, 0.5);
-		m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
-		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 3);
-		m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 1, 3);
+		IncreaseDensity(m_BlackLine, m_BLineWidth);
+		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 8, 3, 15);
+		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
+		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
+		ClearLineWidthByPercent(m_BLineWidth, 0.4);
+		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 20);
+		m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 0, 5);
+		m_BlackLine = SmoothingLen5(m_BlackLine, 0, 5);
 		d3dApp.AddLines(m_BlackLine, m_BLineWidth);
 		d3dApp.AddLines(m_BlackLine);
 		//d3dApp.AddLines(showLines);
@@ -936,10 +937,10 @@ void VAV_MainFrame::OnUpdateSpinTransparencySelectPatch(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_TransparencySelectPatch);
+					 ID_SPIN_TransparencySelectPatch);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -976,10 +977,10 @@ void VAV_MainFrame::OnSpinTransparencyPatch()
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_TransparencyPatch);
+					 ID_SPIN_TransparencyPatch);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -998,10 +999,10 @@ void VAV_MainFrame::OnUpdateSpinTransparencyPatch(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_TransparencyPatch);
+					 ID_SPIN_TransparencyPatch);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -1020,10 +1021,10 @@ void VAV_MainFrame::OnSpinTransparencyline()
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_TransparencyLine);
+					 ID_SPIN_TransparencyLine);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -1042,10 +1043,10 @@ void VAV_MainFrame::OnUpdateSpinTransparencyline(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_TransparencyLine);
+					 ID_SPIN_TransparencyLine);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -1064,10 +1065,10 @@ void VAV_MainFrame::OnUpdateSpinTransparencypicture(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_TransparencyPicture);
+					 ID_SPIN_TransparencyPicture);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -1086,10 +1087,10 @@ void VAV_MainFrame::OnSpinTransparencypicture()
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_TransparencyPicture);
+					 ID_SPIN_TransparencyPicture);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -1108,10 +1109,10 @@ void VAV_MainFrame::OnSpinBlackregionthreshold()
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_BlackRegionThreshold);
+					 ID_SPIN_BlackRegionThreshold);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -1128,10 +1129,10 @@ void VAV_MainFrame::OnUpdateSpinBlackregionthreshold(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_BlackRegionThreshold);
+					 ID_SPIN_BlackRegionThreshold);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -1148,10 +1149,10 @@ void VAV_MainFrame::OnSpinTransparencytriangleline()
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_TransparencyTriangleLine);
+					 ID_SPIN_TransparencyTriangleLine);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -1170,10 +1171,10 @@ void VAV_MainFrame::OnUpdateSpinTransparencytriangleline(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_TransparencyTriangleLine);
+					 ID_SPIN_TransparencyTriangleLine);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -1192,10 +1193,10 @@ void VAV_MainFrame::OnSpinTransparencylineskeleton()
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_TransparencyLineSkeleton);
+					 ID_SPIN_TransparencyLineSkeleton);
 		if (tmp_ui != 0)
 		{
 			break;
@@ -1214,10 +1215,10 @@ void VAV_MainFrame::OnUpdateSpinTransparencylineskeleton(CCmdUI* pCmdUI)
 {
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
-	for (int i=0;i<m_wndRibbonBar.GetCategoryCount();++i)
+	for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
 	{
 		tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
-			ID_SPIN_TransparencyLineSkeleton);
+					 ID_SPIN_TransparencyLineSkeleton);
 		if (tmp_ui != 0)
 		{
 			break;

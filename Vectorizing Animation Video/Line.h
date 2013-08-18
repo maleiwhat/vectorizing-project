@@ -89,3 +89,8 @@ void ConnectSimilarLines(const LineEnds& les, Lines& pos, Lines& width);
 LineEnds FindLinkHead(const LineEnds& lhs, int lineNum);
 void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d1, double d2,
 						 double angle);
+void IncreaseDensity(Line& pos, Line& pos2);
+void IncreaseDensity(Lines& pos, Lines& pos2);
+void FixBeginWidth(Line& width, int len);
+void FixEndWidth(Line& width, int len);
+
