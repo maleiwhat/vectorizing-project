@@ -65,7 +65,7 @@ VSObject::VSObject(ID3D10Device* pd3dDevice)
 	m_cNum = 0;
 	m_scale = 1;
 	m_pan = D3DXVECTOR2(0, 0);
-	m_polySize = 1.0;
+	m_polySize = 0.02;
 	// create output quad
 	m_sizeX = (DXUTIsAppRenderingWithD3D9()) ?
 	          DXUTGetD3D9BackBufferSurfaceDesc()->Width :

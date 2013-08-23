@@ -432,7 +432,10 @@ void CALLBACK OnD3D10FrameRender(ID3D10Device* pd3dDevice, double fTime,
                                  void* pUserContext)
 {
 	HRESULT hr;
-
+	g_device->ClearRenderTargetView(g_vsObj->m_TextureTV, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+	g_device->ClearRenderTargetView(g_vsObj->m_diffuseTextureTV[0], D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+	g_device->ClearRenderTargetView(g_vsObj->m_diffuseTextureTV[1], D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+	g_device->ClearRenderTargetView(g_vsObj->m_otherTextureTV, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 	// If the settings dialog is being shown, then render it instead of rendering the app's scene
 	if (g_D3DSettingsDlg.IsActive())
 	{
@@ -479,7 +482,7 @@ void CALLBACK OnD3D10FrameRender(ID3D10Device* pd3dDevice, double fTime,
 		g_Camera.m_vMouseDelta.y = 0;
 	}
 
-	g_vsObj->m_polySize = 2.1; //render each polygon in full screen size
+	//g_vsObj->m_polySize = 0.1; //render each polygon in full screen size
 	g_vsObj->RenderDiffusion(pd3dDevice);
 	g_vsObj->Render(pd3dDevice);
 
