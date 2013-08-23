@@ -145,11 +145,11 @@ struct Matrix2
 
 Matrix padarray(Matrix& pad, Matrix& outSize)
 {
-	int size2 = std::min((int)pad.size2(), (int)(pad.size2() + outSize(0, 1)));
-	Matrix out = ZMatrix(pad.size1() + outSize(0, 0), size2);
+	Matrix out = ZMatrix(pad.size1() + outSize(0, 0), pad.size2() + outSize(0, 1));
+
 	for (int i = 0; i < pad.size1(); ++i)
 	{
-		for (int j = 0; j < size2; ++j)
+		for (int j = 0; j < pad.size2(); ++j)
 		{
 			out(i, j) = pad(i, j);
 		}

@@ -630,12 +630,12 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	D3DApp& d3dApp = GetVavView()->GetD3DApp();
 	ImageSpline is;
 	const bool DRAW_PATCH = false;
-	const bool DRAW_SEPARATE_PATCH = false;
+	const bool DRAW_SEPARATE_PATCH = true;
 	const bool DRAW_CONTOUR = false;
 	const bool DRAW_CONTOUR_CONTROL_POINT = false;
 	const bool DRAW_CONTOUR_SKELETON_POINT = false;
 	const bool DRAW_ISOSURFACE = false;
-	const bool DRAW_CURVE_EXTRACTION = true;
+	const bool DRAW_CURVE_EXTRACTION = false;
 	if (DRAW_CURVE_EXTRACTION)
 	{
 		vavImage vImage = m_vavImage.Clone();
@@ -645,7 +645,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		cvtColor(imgf, imgf, CV_BGR2GRAY);
 		imgf.convertTo(imgf, CV_32F, 1.0 / 255);
 		CmCurveEx dEdge(imgf);
-		dEdge.CalSecDer(5, 0.001f);
+		dEdge.CalSecDer(7, 0.001f);
 		dEdge.Link();
 		CvLines tpnts2d;
 		const CEdges& edges = dEdge.GetEdges();
@@ -719,12 +719,12 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 5);
 		LineEnds les = GetLineEnds(m_BlackLine);
-		LinkLineEnds(les, 10, 30);
+		LinkLineEnds(les, 5, 20);
 		ConnectSimilarLines(les, m_BlackLine, m_BLineWidth);
 		//m_BlackLine = SmoothingLen5(m_BlackLine, 1, 5);
 		les = GetLineEnds(m_BlackLine);
 		IncreaseDensity(m_BlackLine, m_BLineWidth);
-		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 8, 3, 15);
+		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 10, 5, 15);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
 		ClearLineWidthByPercent(m_BLineWidth, 0.4);
@@ -855,7 +855,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	if (DRAW_PATCH || DRAW_SEPARATE_PATCH)
 	{
 		cv::imshow("vavImage", (cv::Mat)m_vavImage);
-		cv::Mat isoimg = MakeIsoSurfaceImg(m_vavImage, 6);
+		cv::Mat isoimg = MakeIsoSurfaceImg(m_vavImage, 12);
 		is = S3GetPatchs(isoimg, m_BlackRegionThreshold * 0.01, m_vavImage);
 		cv::imshow("isoimg", isoimg);
 		//is = S3GetPatchs(m_vavImage, 0, 0);
