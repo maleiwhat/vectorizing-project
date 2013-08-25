@@ -342,8 +342,8 @@ void D3DApp::DrawScene()
 
 void D3DApp::BuildShaderFX()
 {
-	ID3D10Blob* pCode;
-	ID3D10Blob* pError;
+	ID3DBlob* pCode;
+	ID3DBlob* pError;
 	//Picture
 	HRESULT hr = 0;
 	hr = D3DX11CompileFromFile(_T("shader\\picture.fx"), NULL, NULL, NULL,

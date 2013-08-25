@@ -6,26 +6,25 @@ struct VSO_Vertex
 	D3DXVECTOR3 pos; // Position
 	D3DXVECTOR2 tex; // Texturecoords
 };
-typedef std::vector<VSO_Vertex> VSO_Vertexes;
 
 struct CURVE_Vertex
 {
 	D3DXVECTOR2 pos;        // Position and Blurr
 	D3DXVECTOR4 col[2];     // Color: left, right
-	D3DXVECTOR2     nb;     // previous vertex and next vertex
+	D3DXVECTOR2 nb;     // previous vertex and next vertex
 };
 
 
 struct COLORPOINT
 {
 	D3DXVECTOR3 col;
-	int                     off;
+	int	off;
 };
 
 struct BLURRPOINT
 {
-	float           blurr;
-	int                     off;
+	float	blurr;
+	int		off;
 };
 typedef std::vector<D3DXVECTOR2> D3DXVECTOR2s;
 typedef std::vector<COLORPOINT> COLORPOINTs;
@@ -33,14 +32,14 @@ typedef std::vector<BLURRPOINT> BLURRPOINTs;
 
 struct CURVE
 {
-	int             pNum;
+	int          pNum;
 	D3DXVECTOR2s p;
-	int             clNum;
-	COLORPOINTs     cl;
-	int             crNum;
+	int          clNum;
+	COLORPOINTs  cl;
+	int          crNum;
 	COLORPOINTs  cr;
-	int             bNum;
-	BLURRPOINTs b;
+	int          bNum;
+	BLURRPOINTs  b;
 };
 typedef std::vector<CURVE> CURVEs;
 
@@ -88,17 +87,19 @@ public:
 
 	float m_sizeX;
 	float m_sizeY;
-	int diffSteps;
+	
 	float m_scale;
 	D3DXVECTOR2 m_pan;
-	float m_polySize;
+	
 	int     m_cNum;
 	int m_cSegNum;
 	CURVEs m_curve;
 	float m_fWidth;
 	float m_fHeight;
+	float m_polySize;
 	int diffTex;
 	int diff2Tex;
+	int diffSteps;
 
 	static D3D10_INPUT_ELEMENT_DESC InputElements[];
 	static D3D10_INPUT_ELEMENT_DESC InputCurveElements[];
@@ -112,8 +113,6 @@ public:
 
 	ID3D10ShaderResourceView* GetDisplayTextureRV(void) { return m_diffuseTextureRV[diffTex]; }
 
-	BOOL CreateVertexBuffer(ID3D10Device* pd3dDevice);
-	BOOL CreateIndexBuffer(ID3D10Device* pd3dDevice);
 	void Render(ID3D10Device* pd3dDevice);
 	void RenderDiffusion(ID3D10Device* pd3dDevice);
 	void SetupTextures(ID3D10Device* pd3dDevice, ID3D10Effect* g_pEffect10,
