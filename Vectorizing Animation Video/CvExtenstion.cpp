@@ -1498,6 +1498,33 @@ void ClearEdge(cv::Mat& mask2)
 	}
 }
 
+void AddEdge(cv::Mat& mask2)
+{
+	for (int i = 0; i < mask2.rows ; i++)
+	{
+		uchar& c0 = mask2.at<uchar>(i, 0);
+		c0 = 255;
+		uchar& c1 = mask2.at<uchar>(i, 1);
+		c1 = 255;
+		uchar& c2 = mask2.at<uchar>(i, mask2.cols - 1);
+		c2 = 255;
+		uchar& c3 = mask2.at<uchar>(i, mask2.cols - 2);
+		c3 = 255;
+	}
+
+	for (int j = 0; j < mask2.cols ; j++)
+	{
+		uchar& c0 = mask2.at<uchar>(0, j);
+		c0 = 255;
+		uchar& c1 = mask2.at<uchar>(1, j);
+		c1 = 255;
+		uchar& c2 = mask2.at<uchar>(mask2.rows - 1, j);
+		c2 = 255;
+		uchar& c3 = mask2.at<uchar>(mask2.rows - 2, j);
+		c3 = 255;
+	}
+}
+
 void S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 				 int range, int x, int y, CvPatchs& out_array, int dilation)
 {

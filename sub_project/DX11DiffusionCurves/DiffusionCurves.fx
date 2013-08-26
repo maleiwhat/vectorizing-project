@@ -78,7 +78,7 @@ struct PS_OUTPUT_MRT_3
 
 struct VS_CURVE_INPUT
 {
-	float3 pos		: POSITION;
+	float2 pos		: POSITION;
 	float4 col0		: TEXTURE0;
 	float4 col1		: TEXTURE1;
 	float2 nb		: TEXTURE2;
@@ -114,7 +114,6 @@ VS_CURVE_INPUT CurveVS(VS_CURVE_INPUT In)
 {
 	VS_CURVE_INPUT Out;
 	Out.pos.xy = In.pos.xy*g_scale+g_pan;
-	Out.pos.z = In.pos.z;
 	Out.col0 = In.col0;
 	Out.col1 = In.col1;
 	if (In.nb.x < 9999.0)
@@ -143,12 +142,12 @@ void CurveGS1( line VS_CURVE_INPUT input[2], inout TriangleStream<PS_CURVE_INPUT
 	nL = normalize(float2(-nL.y, nL.x));
 
 	// left side
-	p0.oPosition = float4( input[0].pos.xy+g_polySize*nL, input[0].pos.z, 1.0);
+	p0.oPosition = float4( input[0].pos.xy+g_polySize*nL, zMax, 1.0);
 	p0.col = input[0].col0;
 	p0.oCol = input[0].col1;
 	p0.distdir = float4(0.5*g_polySize,-nL,0);
 	tStream.Append( p0 );
-	p0.oPosition = float4( input[1].pos.xy+g_polySize*nL, input[0].pos.z, 1.0);
+	p0.oPosition = float4( input[1].pos.xy+g_polySize*nL, zMax, 1.0);
 	p0.col = input[1].col0;
 	p0.oCol = input[1].col1;
 	p0.distdir = float4(0.5*g_polySize,-nL,0);
@@ -186,12 +185,12 @@ void CurveGS2( line VS_CURVE_INPUT input[2], inout TriangleStream<PS_CURVE_INPUT
 	p0.oCol = input[1].col0;
 	p0.distdir = float4(0,nL,0);
 	tStream.Append( p0 );
-	p0.oPosition = float4( input[0].pos.xy-g_polySize*nL, input[0].pos.z, 1.0);
+	p0.oPosition = float4( input[0].pos.xy-g_polySize*nL, zMax, 1.0);
 	p0.col = input[0].col1;
 	p0.oCol = input[0].col0;
 	p0.distdir = float4(0.5*g_polySize,nL,0);
 	tStream.Append( p0 );
-	p0.oPosition = float4( input[1].pos.xy-g_polySize*nL, input[0].pos.z, 1.0);
+	p0.oPosition = float4( input[1].pos.xy-g_polySize*nL, zMax, 1.0);
 	p0.col = input[1].col1;
 	p0.oCol = input[1].col0;
 	p0.distdir = float4(0.5*g_polySize,nL,0);
@@ -238,30 +237,30 @@ void CurveGS3( line VS_CURVE_INPUT input[2], inout TriangleStream<PS_CURVE_INPUT
 			p0.col = col;
 			p0.oCol = oCol;
 			
-			p0.oPosition = float4( input[1].pos+g_polySize*nL, input[0].pos.z, 1.0);
+			p0.oPosition = float4( input[1].pos+g_polySize*nL, zMax, 1.0);
 			p0.distdir = float4(0,-g_polySize*nL,1);
 			tStream.Append( p0 );
 			p0.oPosition = float4( input[1].pos.xy, 0.0, 1.0);
 			p0.distdir = float4(0,float2(0,0),1);
 			tStream.Append( p0 );
-			p0.oPosition = float4( input[1].pos+g_polySize*lH1, input[0].pos.z, 1.0);
+			p0.oPosition = float4( input[1].pos+g_polySize*lH1, zMax, 1.0);
 			p0.distdir = float4(0,-g_polySize*lH1,1);
 			tStream.Append( p0 );
-			p0.oPosition = float4( input[1].pos.xy+g_polySize*lP, input[0].pos.z, 1.0);
+			p0.oPosition = float4( input[1].pos.xy+g_polySize*lP, zMax, 1.0);
 			p0.distdir = float4(0,-g_polySize*lP,1);
 			tStream.Append( p0 );
 			tStream.RestartStrip();
 
-			p0.oPosition = float4( input[1].pos.xy+g_polySize*lP, input[0].pos.z, 1.0);
+			p0.oPosition = float4( input[1].pos.xy+g_polySize*lP, zMax, 1.0);
 			p0.distdir = float4(0,-g_polySize*lP,1);
 			tStream.Append( p0 );
 			p0.oPosition = float4( input[1].pos.xy, 0.0, 1.0);
 			p0.distdir = float4(0,float2(0,0),1);
 			tStream.Append( p0 );
-			p0.oPosition = float4( input[1].pos+g_polySize*lH2, input[0].pos.z, 1.0);
+			p0.oPosition = float4( input[1].pos+g_polySize*lH2, zMax, 1.0);
 			p0.distdir = float4(0,-g_polySize*lH2,1);
 			tStream.Append( p0 );
-			p0.oPosition = float4( input[1].pos.xy+g_polySize*nLN, input[0].pos.z, 1.0);
+			p0.oPosition = float4( input[1].pos.xy+g_polySize*nLN, zMax, 1.0);
 			p0.distdir = float4(0,-g_polySize*nLN,1);
 			tStream.Append( p0 );
 			tStream.RestartStrip();
@@ -280,16 +279,16 @@ void CurveGS3( line VS_CURVE_INPUT input[2], inout TriangleStream<PS_CURVE_INPUT
 			float2 lH = normalize(nL+nLN);
 			p0.col = col;
 			p0.oCol = oCol;
-			p0.oPosition = float4( input[1].pos.xy+g_polySize*nL, input[0].pos.z, 1.0);
+			p0.oPosition = float4( input[1].pos.xy+g_polySize*nL, zMax, 1.0);
 			p0.distdir = float4(0,-g_polySize*nL,1);
 			tStream.Append( p0 );
 			p0.oPosition = float4( input[1].pos.xy, 0.0, 1.0);
 			p0.distdir = float4(0,float2(0,0),1);
 			tStream.Append( p0 );
-			p0.oPosition = float4( input[1].pos.xy+g_polySize*lH, input[0].pos.z, 1.0);
+			p0.oPosition = float4( input[1].pos.xy+g_polySize*lH, zMax, 1.0);
 			p0.distdir = float4(0,-g_polySize*lH,1);
 			tStream.Append( p0 );
-			p0.oPosition = float4( input[1].pos.xy+g_polySize*nLN, input[0].pos.z, 1.0);
+			p0.oPosition = float4( input[1].pos.xy+g_polySize*nLN, zMax, 1.0);
 			p0.distdir = float4(0,-g_polySize*nLN,1);
 			tStream.Append( p0 );
 			tStream.RestartStrip();
@@ -310,10 +309,10 @@ void CurveGS3( line VS_CURVE_INPUT input[2], inout TriangleStream<PS_CURVE_INPUT
 			p0.oPosition = float4( input[1].pos.xy, 0.0, 1.0);
 			p0.distdir = float4(0,float2(0,0),1);
 			tStream.Append( p0 );
-			p0.oPosition = float4( input[1].pos.xy+g_polySize*nL, input[0].pos.z, 1.0);
+			p0.oPosition = float4( input[1].pos.xy+g_polySize*nL, zMax, 1.0);
 			p0.distdir = float4(0,-g_polySize*nL,1);
 			tStream.Append( p0 );
-			p0.oPosition = float4( input[1].pos.xy+g_polySize*nLN, input[0].pos.z, 1.0);
+			p0.oPosition = float4( input[1].pos.xy+g_polySize*nLN, zMax, 1.0);
 			p0.distdir = float4(0,-g_polySize*nLN,1);
 			tStream.Append( p0 );
 			tStream.RestartStrip();
@@ -337,16 +336,16 @@ void CurveGS4( line VS_CURVE_INPUT input[2], inout TriangleStream<PS_CURVE_INPUT
 	
 		p0.col = input[0].col0;
 		p0.oCol = input[0].col1;
-		p0.oPosition = float4( input[0].pos.xy+g_polySize*nL, input[0].pos.z, 1.0);
+		p0.oPosition = float4( input[0].pos.xy+g_polySize*nL, zMax, 1.0);
 		p0.distdir = float4(0,-g_polySize*nL,1);
 		tStream.Append( p0 );
 		p0.oPosition = float4( input[0].pos.xy, 0.0, 1.0);
 		p0.distdir = float4(0,float2(0,0),1);
 		tStream.Append( p0 );
-		p0.oPosition = float4( input[0].pos.xy+g_polySize*lH, input[0].pos.z, 1.0);
+		p0.oPosition = float4( input[0].pos.xy+g_polySize*lH, zMax, 1.0);
 		p0.distdir = float4(0,-g_polySize*lH,1);
 		tStream.Append( p0 );
-		p0.oPosition = float4( input[0].pos.xy+g_polySize*lP, input[0].pos.z, 1.0);
+		p0.oPosition = float4( input[0].pos.xy+g_polySize*lP, zMax, 1.0);
 		p0.distdir = float4(0,-g_polySize*lP,1);
 		tStream.Append( p0 );
 		tStream.RestartStrip();
@@ -363,16 +362,16 @@ void CurveGS4( line VS_CURVE_INPUT input[2], inout TriangleStream<PS_CURVE_INPUT
 
 		p0.col = input[1].col0;
 		p0.oCol = input[1].col1;
-		p0.oPosition = float4( input[1].pos.xy+g_polySize*nL, input[0].pos.z, 1.0);
+		p0.oPosition = float4( input[1].pos.xy+g_polySize*nL, zMax, 1.0);
 		p0.distdir = float4(0,-g_polySize*nL,1);
 		tStream.Append( p0 );
 		p0.oPosition = float4( input[1].pos.xy, 0.0, 1.0);
 		p0.distdir = float4(0,float2(0,0),1);
 		tStream.Append( p0 );
-		p0.oPosition = float4( input[1].pos.xy+g_polySize*lH, input[0].pos.z, 1.0);
+		p0.oPosition = float4( input[1].pos.xy+g_polySize*lH, zMax, 1.0);
 		p0.distdir = float4(0,-g_polySize*lH,1);
 		tStream.Append( p0 );
-		p0.oPosition = float4( input[1].pos.xy+g_polySize*lP, input[0].pos.z, 1.0);
+		p0.oPosition = float4( input[1].pos.xy+g_polySize*lP, zMax, 1.0);
 		p0.distdir = float4(0,-g_polySize*lP,1);
 		tStream.Append( p0 );
 		tStream.RestartStrip();
@@ -396,17 +395,17 @@ void CurveGS5( line VS_CURVE_INPUT input[2], inout TriangleStream<PS_CURVE_INPUT
 	
 		p0.col = input[0].col1;
 		p0.oCol = input[0].col0;
-		p0.oPosition = float4( input[0].pos.xy+g_polySize*lP, input[0].pos.z, 1.0);
+		p0.oPosition = float4( input[0].pos.xy+g_polySize*lP, zMax, 1.0);
 		p0.distdir = float4(0,-g_polySize*lP,1);
 		tStream.Append( p0 );
 		p0.oPosition = float4( input[0].pos.xy, 0.0, 1.0);
 		p0.distdir = float4(0,float2(0,0),1);
 		tStream.Append( p0 );
 		lH = normalize(-nL+lP);
-		p0.oPosition = float4( input[0].pos.xy+g_polySize*lH, input[0].pos.z, 1.0);
+		p0.oPosition = float4( input[0].pos.xy+g_polySize*lH, zMax, 1.0);
 		p0.distdir = float4(0,-g_polySize*lH,1);
 		tStream.Append( p0 );
-		p0.oPosition = float4( input[0].pos.xy-g_polySize*nL, input[0].pos.z, 1.0);
+		p0.oPosition = float4( input[0].pos.xy-g_polySize*nL, zMax, 1.0);
 		p0.distdir = float4(0,g_polySize*nL,1);
 		tStream.Append( p0 );
 		tStream.RestartStrip();
@@ -423,17 +422,17 @@ void CurveGS5( line VS_CURVE_INPUT input[2], inout TriangleStream<PS_CURVE_INPUT
 
 		p0.col = input[1].col1;
 		p0.oCol = input[1].col0;
-		p0.oPosition = float4( input[1].pos.xy+g_polySize*lP, input[0].pos.z, 1.0);
+		p0.oPosition = float4( input[1].pos.xy+g_polySize*lP, zMax, 1.0);
 		p0.distdir = float4(0,-g_polySize*lP,1);
 		tStream.Append( p0 );
 		p0.oPosition = float4( input[1].pos.xy, 0.0, 1.0);
 		p0.distdir = float4(0,float2(0,0),1);
 		tStream.Append( p0 );
 		lH = normalize(-nL+lP);
-		p0.oPosition = float4( input[1].pos.xy+g_polySize*lH, input[0].pos.z, 1.0);
+		p0.oPosition = float4( input[1].pos.xy+g_polySize*lH, zMax, 1.0);
 		p0.distdir = float4(0,-g_polySize*lH,1);
 		tStream.Append( p0 );
-		p0.oPosition = float4( input[1].pos.xy-g_polySize*nL, input[0].pos.z, 1.0);
+		p0.oPosition = float4( input[1].pos.xy-g_polySize*nL, zMax, 1.0);
 		p0.distdir = float4(0,g_polySize*nL,1);
 		tStream.Append( p0 );
 		tStream.RestartStrip();
@@ -492,9 +491,9 @@ PS_OUTPUT DiffusePS(PS_INPUT In)
 	Out.oColor += g_inTex[0].SampleLevel(PointSampler, In.Tex.xy+float2(0,-kernel/g_diffY), 0);
 	Out.oColor += g_inTex[0].SampleLevel(PointSampler, In.Tex.xy+float2(0, kernel/g_diffY), 0);
 	if (g_blurOn)
-		Out.oColor += g_inTex[0].SampleLevel(PointSampler, In.Tex.xy, 0)*4;
+		Out.oColor += g_inTex[0].SampleLevel(PointSampler, In.Tex.xy, 0)*2;
 	if (g_blurOn)
-		Out.oColor /= 8;
+		Out.oColor /= 6;
 	else
 		Out.oColor /= 4;
 	return Out;

@@ -119,6 +119,7 @@ D3DApp::D3DApp()
 	m_Minimized  = false;
 	m_Maximized  = false;
 	m_Resizing   = false;
+	m_Init		 = false;
 	m_FrameStats = L"";
 	m_DXUT_UI = NULL;
 	//mFont               = 0;
@@ -309,7 +310,7 @@ void D3DApp::OnDrawToBimapResize()
 		texDesc.Width     = m_ClientWidth;
 		texDesc.Height    = m_ClientHeight;
 	}
-	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UINT;
+	texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	texDesc.MipLevels = 1;
 	texDesc.ArraySize = 1;
 	texDesc.SampleDesc.Quality = 0;
@@ -320,9 +321,10 @@ void D3DApp::OnDrawToBimapResize()
 	texDesc.MiscFlags = 0;
 	printf("%d %d\n", TexWidth, TexHeight);
 	HR(m_d3dDevice->CreateTexture2D(&texDesc, 0, &m_DrawTexture));
-	m_d3dDevice->CreateRenderTargetView(m_DrawTexture, NULL, &m_distDirTextureTV);
-	m_d3dDevice->CreateShaderResourceView(m_DrawTexture, NULL, &m_distDirTextureRV);
+	HR(m_d3dDevice->CreateRenderTargetView(m_DrawTexture, NULL, &m_distDirTextureTV));
+	HR(m_d3dDevice->CreateShaderResourceView(m_DrawTexture, NULL, &m_distDirTextureRV));
 }
+
 void D3DApp::DrawScene()
 {
 	if (!m_DXUT_UI)
@@ -576,6 +578,7 @@ void D3DApp::BuildShaderFX()
 	HR(m_d3dDevice->CreateInputLayout(VertexDesc_SkeletonLineVertex, 3,
 									  PassDescTri7.pIAInputSignature,
 									  PassDescTri7.IAInputSignatureSize, &m_SkeletonLines_PLayout));
+	m_Init = true;
 }
 
 void D3DApp::SetTexture(ID3D11ShaderResourceView* tex)
@@ -610,6 +613,10 @@ void D3DApp::ClearTriangles()
 
 void D3DApp::BuildPoint()
 {
+	if (!m_Init)
+	{
+		return;
+	}
 	ReleaseCOM(m_Pics_Buffer);
 	ReleaseCOM(m_Triangle_Buffer);
 	ReleaseCOM(m_TriangleLine_Buffer);
@@ -944,6 +951,10 @@ void D3DApp::SetScale(float s)
 
 void D3DApp::InterSetScale(float s)
 {
+	if (!m_Init)
+	{
+		return;
+	}
 	m_Triangle_Scale->SetFloat(s);
 	m_Pics_Scale->SetFloat(s);
 	m_TriangleLine_Scale->SetFloat(s);
@@ -1448,6 +1459,10 @@ void D3DApp::AddLinesLine(const Lines& lines, const double_vector2d& linewidths)
 
 void D3DApp::InterDraw()
 {
+	if (!m_Init)
+	{
+		return;
+	}
 	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
 	//Draw Picture
 	if (m_PicsVertices.size() > 0)
@@ -1541,6 +1556,10 @@ void D3DApp::InterDraw()
 
 void D3DApp::InterSetLookCenter(float x, float y)
 {
+	if (!m_Init)
+	{
+		return;
+	}
 	m_Pics_CenterX->SetFloat(x);
 	m_Pics_CenterY->SetFloat(y);
 	m_Triangle_CenterX->SetFloat(x);
@@ -1561,6 +1580,10 @@ void D3DApp::InterSetLookCenter(float x, float y)
 
 void D3DApp::InterSetSize(float w, float h)
 {
+	if (!m_Init)
+	{
+		return;
+	}
 	m_Pics_Width->SetFloat(w);
 	m_Pics_Height->SetFloat(h);
 	m_Triangle_Width->SetFloat(w);
@@ -1585,7 +1608,6 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 	const int TexHeight = m_PicH * m_Scale;
 	if (TexWidth > 0)
 	{
-		InterSetRenderTransparencyOutput();
 		ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
 		ID3D11DepthStencilView* old_pDSV = DXUTGetD3D11DepthStencilView();
 		UINT NumViewports = 1;
@@ -1647,6 +1669,7 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 		m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
 		m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
 		InterSetRenderTransparencyDefault();
+		ReleaseCOM(pTextureRead);
 		return simg;
 	}
 	else // no load any image
@@ -1655,7 +1678,7 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 	}
 }
 
-void D3DApp::InterSetRenderTransparencyOutput()
+void D3DApp::InterSetRenderTransparencyOutput1()
 {
 	m_Triangle_Alpha->SetFloat(1);
 	m_SelectPatch_Alpha->SetFloat(0);
@@ -1663,6 +1686,17 @@ void D3DApp::InterSetRenderTransparencyOutput()
 	m_Lines_Alpha->SetFloat(1);
 	m_Lines2w_CenterAlpha->SetFloat(1);
 	m_SkeletonLines_Alpha->SetFloat(0.1);
+	m_TransparencySV_Picture->SetFloat(0);
+}
+
+void D3DApp::InterSetRenderTransparencyOutput2()
+{
+	m_Triangle_Alpha->SetFloat(0);
+	m_SelectPatch_Alpha->SetFloat(0);
+	m_TriangleLine_Alpha->SetFloat(0);
+	m_Lines_Alpha->SetFloat(0);
+	m_Lines2w_CenterAlpha->SetFloat(0);
+	m_SkeletonLines_Alpha->SetFloat(1);
 	m_TransparencySV_Picture->SetFloat(0);
 }
 

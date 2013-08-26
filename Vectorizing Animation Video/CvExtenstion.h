@@ -69,6 +69,7 @@ inline bool CorrectPosition(cv::Mat& image, int x, int y)
 }
 
 void ClearEdge(cv::Mat& image);
+void AddEdge(cv::Mat& image);
 void EdgeLink_LineFragment(cv::Mat& image, Line& now_line, int now_value);
 void AddCathetus(CvPatchs& cvps);
 void AddCathetus(CvLine& cps);

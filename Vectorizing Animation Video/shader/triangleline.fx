@@ -11,7 +11,7 @@ cbuffer cbPerFrame
 
 struct VS_IN
 {
-	float2 p1: POS1;
+	float2 p1: POSA;
 	float2 p2: POSB;
 	float2 p3: POSC;
 	float3 c1: COLORA;

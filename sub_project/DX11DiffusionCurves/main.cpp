@@ -35,7 +35,7 @@ typedef std::vector<VSO_Vertex> VSO_Vertexes;
 
 struct CURVE_Vertex
 {
-	D3DXVECTOR3 pos;        // Position
+	D3DXVECTOR2 pos;        // Position
 	D3DXVECTOR4 lcolor;     // Color: left and Blur in w
 	D3DXVECTOR4 rcolor;     // Color: right and Blur in w
 	D3DXVECTOR2 nb;     // previous vertex and next vertex
@@ -51,10 +51,10 @@ D3D11_INPUT_ELEMENT_DESC VertexDesc_VSOVertex[] =
 
 D3D11_INPUT_ELEMENT_DESC VertexDesc_CurveVertex[] =
 {
-	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "TEXTURE", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "TEXTURE", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "TEXTURE", 2, DXGI_FORMAT_R32G32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "TEXTURE", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "TEXTURE", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "TEXTURE", 2, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ NULL, 0, DXGI_FORMAT_UNKNOWN, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
 
@@ -516,7 +516,7 @@ void BuildShaderFX()
 	texdesc.Width = (int)(WIDTH);
 	texdesc.Height = (int)(HEIGHT);
 	texdesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	texdesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;  // use this for higher accuracy diffusion
+	//texdesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;  // use this for higher accuracy diffusion
 	texdesc.BindFlags =  D3D10_BIND_RENDER_TARGET | D3D10_BIND_SHADER_RESOURCE;
 	hr = g_pd3dDevice->CreateTexture2D(&texdesc, NULL, &g_diffuseTexture[0]);
 	hr = g_pd3dDevice->CreateTexture2D(&texdesc, NULL, &g_diffuseTexture[1]);
@@ -783,7 +783,7 @@ void ConstructCurves()
 	int     iLoopStart;
 	HRESULT hr;
 	float subSegNum = 1.0f;
-	g_CurveVertexes.resize(g_cSegNum * (int)(subSegNum) * 20 * 2);
+	g_CurveVertexes.resize(g_cSegNum * (int)(subSegNum) * 10 * 2);
 	CURVE_Vertex* pd = &g_CurveVertexes[0];
 	char*     used = new char[g_cNum];
 	ZeroMemory(used, g_cNum * sizeof(char));
@@ -875,8 +875,8 @@ void ConstructCurves()
 					pd[cPos + 1].lcolor.w = (1.0f - sN) * b + sN * bN;
 					pd[cPos + 0].rcolor.w = (1.0f - sI) * b + sI * bN;
 					pd[cPos + 1].rcolor.w = (1.0f - sN) * b + sN * bN;
-					pd[cPos + 0].pos = D3DXVECTOR3(p0.x, -p0.y, 1.0- step * iX);
-					pd[cPos + 1].pos = D3DXVECTOR3(p1.x, -p1.y, 1.0- step * iX);
+					pd[cPos + 0].pos = D3DXVECTOR2(p0.x, -p0.y);
+					pd[cPos + 1].pos = D3DXVECTOR2(p1.x, -p1.y);
 					if ((i2 == 0) && (t == 0.0f) && (sI < 0.5f / subSegNum))
 					{
 						pd[cPos + 0].nb = D3DXVECTOR2(10000.0f, 10000.0f);
@@ -891,10 +891,8 @@ void ConstructCurves()
 					}
 					else
 					{
-						pd[cPos + 0].nb.x = pd[cPos - 1].pos.x;
-						pd[cPos + 0].nb.y = pd[cPos - 1].pos.y;
-						pd[cPos - 1].nb.x = pd[cPos + 1].pos.x;
-						pd[cPos - 1].nb.y = pd[cPos + 1].pos.y;
+						pd[cPos + 0].nb = pd[cPos - 2].pos;
+						pd[cPos - 1].nb = pd[cPos + 1].pos;
 					}
 					pd[cPos + 1].nb = D3DXVECTOR2(10000.0f, 10000.0f);
 					// if we are at the end of a loop, do not declare endpoints
@@ -902,8 +900,7 @@ void ConstructCurves()
 							&& (i2 == g_curve[i1].pNum - 1 - 3)
 							&& (t >= 0.89f) && (sI + 1.1f / subSegNum >= 1.0))
 					{
-						pd[iLoopStart].nb.x = pd[cPos + 0].pos.x;
-						pd[iLoopStart].nb.y = pd[cPos + 0].pos.y;
+						pd[iLoopStart].nb = pd[cPos + 0].pos;
 						pd[cPos + 1].nb = pLoop;
 					}
 					cPos += 2;
@@ -1018,7 +1015,7 @@ void RenderDiffusion()
 	destTexTV[2] = g_otherTextureTV;
 	g_pImmediateContext->OMSetRenderTargets(3, destTexTV, g_pDepthStencilView);
 	g_pDrawVectorsTechnique->GetDesc(&techDesc);
-	for (UINT p = 0; p < techDesc.Passes; ++p)
+	for (UINT p = 0;p<5 && p < techDesc.Passes; ++p)
 	{
 		g_pDrawVectorsTechnique->GetPassByIndex(p)->Apply(0, g_pImmediateContext);
 		g_pImmediateContext->Draw(g_CurveVertexes.size(), 0);

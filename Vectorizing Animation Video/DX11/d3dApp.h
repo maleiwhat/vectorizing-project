@@ -77,8 +77,10 @@ public:
 	{
 		return m_DeviceContext;
 	}
+	void InterSetRenderTransparencyOutput1();
+	void InterSetRenderTransparencyOutput2();
 protected:
-	void InterSetRenderTransparencyOutput();
+	
 	void InterSetRenderTransparencyDefault();
 	void initDirect3D();
 	void InterDraw();
@@ -105,6 +107,7 @@ protected:
 	bool        m_Minimized;
 	bool        m_Maximized;
 	bool        m_Resizing;
+	bool        m_Init;
 	GameTimer   m_Timer;
 	std::wstring    m_FrameStats;
 	ID3D11Texture2D* m_BackBuffer;

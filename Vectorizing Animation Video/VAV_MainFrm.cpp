@@ -630,111 +630,13 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	D3DApp& d3dApp = GetVavView()->GetD3DApp();
 	ImageSpline is;
 	const bool DRAW_PATCH = false;
-	const bool DRAW_SEPARATE_PATCH = true;
+	const bool DRAW_SEPARATE_PATCH = false;
 	const bool DRAW_CONTOUR = false;
 	const bool DRAW_CONTOUR_CONTROL_POINT = false;
 	const bool DRAW_CONTOUR_SKELETON_POINT = false;
 	const bool DRAW_ISOSURFACE = false;
-	const bool DRAW_CURVE_EXTRACTION = false;
-	if (DRAW_CURVE_EXTRACTION)
-	{
-		vavImage vImage = m_vavImage.Clone();
-		vImage.ToExpImage();
-		cv::Mat imgf, show3u = cv::Mat::zeros(vImage.GetCvMat().size(), CV_8UC3);
-		imgf = vImage;
-		cvtColor(imgf, imgf, CV_BGR2GRAY);
-		imgf.convertTo(imgf, CV_32F, 1.0 / 255);
-		CmCurveEx dEdge(imgf);
-		dEdge.CalSecDer(7, 0.001f);
-		dEdge.Link();
-		CvLines tpnts2d;
-		const CEdges& edges = dEdge.GetEdges();
-		for (size_t i = 0; i < edges.size(); i++)
-		{
-			cv::Vec3b color(rand() % 155 + 100, rand() % 155 + 100, rand() % 155 + 100);
-			const std::vector<cv::Point>& pnts = edges[i].pnts;
-			for (size_t j = 0; j < pnts.size(); j++)
-			{
-				show3u.at<cv::Vec3b>(pnts[j]) = color;
-			}
-			tpnts2d.push_back(edges[i].pnts);
-		}
-		m_BlackLine = GetLines(tpnts2d, 0, 0);
-		m_BlackLine = SmoothingLen5(m_BlackLine);
-		Lines normals = GetNormalsLen2(m_BlackLine);
-		GetVavView()->m_FeatureLines = m_BlackLine;
-		GetVavView()->m_FeatureNormals = normals;
-		Lines showLines;
-		Lines BLineWidth(m_BlackLine.size());
-		//vImage.ToExpImage();
-		const double blackRadio = 0.7;
-		for (int idx1 = 0; idx1 < m_BlackLine.size(); ++idx1)
-		{
-			const Line& nowLine = m_BlackLine[idx1];
-			const Line& nowNormals = normals[idx1];
-			Line& lineWidths = BLineWidth[idx1];
-			lineWidths.clear();
-			for (int idx2 = 0; idx2 < nowLine.size() - 1; ++idx2)
-			{
-				const double LINE_WIDTH = 5;
-				Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
-				Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
-				Vector2 start2(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * LINE_WIDTH);
-				Vector2 end2(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * LINE_WIDTH);
-				double_vector line1 = vImage.GetLineLight(start.x, start.y, end.x, end.y,
-									  360);
-				double_vector line2 = vImage.GetLineLight(start2.x, start2.y, end2.x, end2.y,
-									  360);
-				line1 = SmoothingLen5(line1, 0.0, 3);
-				line2 = SmoothingLen5(line2, 0.0, 3);
-				double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
-													15, 50), LINE_WIDTH * 2);
-				double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
-													15, 50), LINE_WIDTH * 2);
-				if (width1.size() >= 2 && width2.size() >= 2 && abs(width2[0] - width2[1]) < 1)
-				{
-					Line line1;
-					line1.push_back(nowLine[idx2] - nowNormals[idx2] * width1[0] * blackRadio);
-					line1.push_back(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * width2[0] *
-									blackRadio);
-					line1 = GetLine(line1, 0.5, 0.5);
-					Line line2;
-					line2.push_back(nowLine[idx2] + nowNormals[idx2] * width1[1] * blackRadio);
-					line2.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[1] *
-									blackRadio);
-					line2 = GetLine(line2, 0.5, 0.5);
-					showLines.push_back(line1);
-					showLines.push_back(line2);
-					// save line width
-					lineWidths.push_back(Vector2(width1[0] * blackRadio, width1[1] * blackRadio));
-				}
-				else
-				{
-					lineWidths.push_back(Vector2());
-				}
-			}
-			lineWidths.push_back(Vector2());
-		}
-		m_BLineWidth = FixLineWidths(BLineWidth, 5);
-		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
-		m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 5);
-		LineEnds les = GetLineEnds(m_BlackLine);
-		LinkLineEnds(les, 5, 20);
-		ConnectSimilarLines(les, m_BlackLine, m_BLineWidth);
-		//m_BlackLine = SmoothingLen5(m_BlackLine, 1, 5);
-		les = GetLineEnds(m_BlackLine);
-		IncreaseDensity(m_BlackLine, m_BLineWidth);
-		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 10, 5, 15);
-		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
-		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
-		ClearLineWidthByPercent(m_BLineWidth, 0.4);
-		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 20);
-		m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 0, 5);
-		m_BlackLine = SmoothingLen5(m_BlackLine, 0, 5);
-		d3dApp.AddLines(m_BlackLine, m_BLineWidth);
-		d3dApp.AddLines(m_BlackLine);
-		//d3dApp.AddLines(showLines);
-	}
+	const bool DRAW_CURVE_EXTRACTION = true;
+	
 	// contour
 	TriangulationCgal_Sideline cgal_contour;
 	ImageSpline is2;
@@ -797,10 +699,11 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
 		d3dApp.SetScaleTemporary(1);
 		d3dApp.BuildPoint();
+		d3dApp.InterSetRenderTransparencyOutput1();
 		cv::Mat simg = d3dApp.DrawSceneToCvMat();
 		d3dApp.SetScaleRecovery();
-		ColorConstraint_sptrs RegionColors = MakeColors(region, simg, m_vavImage);
 		d3dApp.ClearTriangles();
+		ColorConstraint_sptrs RegionColors = MakeColors(region, simg, m_vavImage);
 		cgal_contour.SetColor(RegionColors);
 		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
 		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
@@ -884,7 +787,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			TriangulationCgal_Patch cgal_patch;
 			cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
 			Patch t_patch = ToPatch(is.m_CvPatchs[i]);
-			t_patch.SmoothPatch();
+			//t_patch.SmoothPatch();
 			cgal_patch.AddPatch(t_patch);
 			is.m_CvPatchs[i].SetImage(m_vavImage);
 			ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint3();
@@ -894,6 +797,129 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			d3dApp.AddColorTriangles(cgal_patch.GetTriangles());
 			d3dApp.AddTrianglesLine(cgal_patch.GetTriangles());
 		}
+	}
+	if (DRAW_CURVE_EXTRACTION)
+	{
+		vavImage vImage = m_vavImage.Clone();
+		vImage.ToExpImage();
+		cv::Mat imgf, show3u = cv::Mat::zeros(vImage.GetCvMat().size(), CV_8UC3);
+		imgf = vImage;
+		cvtColor(imgf, imgf, CV_BGR2GRAY);
+		imgf.convertTo(imgf, CV_32F, 1.0 / 255);
+		CmCurveEx dEdge(imgf);
+		dEdge.CalSecDer(7, 0.001f);
+		dEdge.Link();
+		CvLines tpnts2d;
+		const CEdges& edges = dEdge.GetEdges();
+		for (size_t i = 0; i < edges.size(); i++)
+		{
+			cv::Vec3b color(rand() % 155 + 100, rand() % 155 + 100, rand() % 155 + 100);
+			const std::vector<cv::Point>& pnts = edges[i].pnts;
+			for (size_t j = 0; j < pnts.size(); j++)
+			{
+				show3u.at<cv::Vec3b>(pnts[j]) = color;
+			}
+			tpnts2d.push_back(edges[i].pnts);
+		}
+		m_BlackLine = GetLines(tpnts2d, 0, 0);
+		m_BlackLine = SmoothingLen5(m_BlackLine);
+		Lines normals = GetNormalsLen2(m_BlackLine);
+		GetVavView()->m_FeatureLines = m_BlackLine;
+		GetVavView()->m_FeatureNormals = normals;
+		Lines showLines;
+		Lines BLineWidth(m_BlackLine.size());
+		//vImage.ToExpImage();
+		const double blackRadio = 0.7;
+		for (int idx1 = 0; idx1 < m_BlackLine.size(); ++idx1)
+		{
+			const Line& nowLine = m_BlackLine[idx1];
+			const Line& nowNormals = normals[idx1];
+			Line& lineWidths = BLineWidth[idx1];
+			lineWidths.clear();
+			for (int idx2 = 0; idx2 < nowLine.size() - 1; ++idx2)
+			{
+				const double LINE_WIDTH = 5;
+				Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
+				Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
+				Vector2 start2(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * LINE_WIDTH);
+				Vector2 end2(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * LINE_WIDTH);
+				double_vector line1 = vImage.GetLineLight(start.x, start.y, end.x, end.y,
+					360);
+				double_vector line2 = vImage.GetLineLight(start2.x, start2.y, end2.x, end2.y,
+					360);
+				line1 = SmoothingLen5(line1, 0.0, 3);
+				line2 = SmoothingLen5(line2, 0.0, 3);
+				double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
+					15, 50), LINE_WIDTH * 2);
+				double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
+					15, 50), LINE_WIDTH * 2);
+				if (width1.size() >= 2 && width2.size() >= 2 && abs(width2[0] - width2[1]) < 1)
+				{
+					Line line1;
+					line1.push_back(nowLine[idx2] - nowNormals[idx2] * width1[0] * blackRadio);
+					line1.push_back(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * width2[0] *
+						blackRadio);
+					line1 = GetLine(line1, 0.5, 0.5);
+					Line line2;
+					line2.push_back(nowLine[idx2] + nowNormals[idx2] * width1[1] * blackRadio);
+					line2.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[1] *
+						blackRadio);
+					line2 = GetLine(line2, 0.5, 0.5);
+					showLines.push_back(line1);
+					showLines.push_back(line2);
+					// save line width
+					lineWidths.push_back(Vector2(width1[0] * blackRadio, width1[1] * blackRadio));
+				}
+				else
+				{
+					lineWidths.push_back(Vector2());
+				}
+			}
+			lineWidths.push_back(Vector2());
+		}
+		m_BLineWidth = FixLineWidths(BLineWidth, 5);
+		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
+		m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 5);
+		LineEnds les = GetLineEnds(m_BlackLine);
+		LinkLineEnds(les, 5, 20);
+		ConnectSimilarLines(les, m_BlackLine, m_BLineWidth);
+		//m_BlackLine = SmoothingLen5(m_BlackLine, 1, 5);
+		les = GetLineEnds(m_BlackLine);
+		IncreaseDensity(m_BlackLine, m_BLineWidth);
+		IncreaseDensity(m_BlackLine, m_BLineWidth);
+		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 16, 8, 30);
+		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
+		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
+		ClearLineWidthByPercent(m_BLineWidth, 0.4);
+		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 20);
+		m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 0, 5);
+		m_BlackLine = SmoothingLen5(m_BlackLine, 0, 5);
+		d3dApp.AddLines(m_BlackLine, m_BLineWidth);
+		d3dApp.AddLines(m_BlackLine);
+		//d3dApp.AddLines(showLines);
+		d3dApp.SetScaleTemporary(1);
+		d3dApp.BuildPoint();
+		d3dApp.InterSetRenderTransparencyOutput2();
+		cv::Mat simg = d3dApp.DrawSceneToCvMat();
+		d3dApp.SetScaleRecovery();
+		cvtColor(simg, simg, CV_BGR2GRAY);
+		AddEdge(simg);
+		std::vector<cv::Vec4i> hierarchy;
+		std::vector<std::vector<cv::Point>> contours;
+		findContours(simg, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE,
+			cv::Point(0, 0));
+		cv::Mat drawing = cv::Mat::zeros(simg.size(), CV_8UC3);
+		cv::RNG rng(12345);
+		for (int i = 0; i < contours.size(); i++)
+		{
+			cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
+				rng.uniform(50, 255));
+			//drawContours( drawing, contours, i, color, 1, 8, hierarchy, 0, cv::Point() );
+			//if ( hierarchy[i][3] != -1 ) {
+			drawContours(drawing, contours, i, color, -1);
+			//}
+		}
+		imshow("FillContours", drawing);
 	}
 	d3dApp.BuildPoint();
 	d3dApp.DrawScene();
