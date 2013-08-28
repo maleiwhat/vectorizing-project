@@ -112,6 +112,22 @@ public:
 	afx_msg void OnUpdateSpinTransparencytriangleline(CCmdUI* pCmdUI);
 	afx_msg void OnSpinTransparencylineskeleton();
 	afx_msg void OnUpdateSpinTransparencylineskeleton(CCmdUI* pCmdUI);
+	afx_msg void OnCheckDrawPatch();
+	afx_msg void OnUpdateCheckDrawPatch(CCmdUI *pCmdUI);
+	afx_msg void OnCheckDrawSeparatePatch();
+	afx_msg void OnUpdateCheckDrawSeparatePatch(CCmdUI *pCmdUI);
+	afx_msg void OnCheckDrawContour();
+	afx_msg void OnUpdateCheckDrawContour(CCmdUI *pCmdUI);
+	afx_msg void OnCheckDrawContourControlPoint();
+	afx_msg void OnUpdateCheckDrawContourControlPoint(CCmdUI *pCmdUI);
+	afx_msg void OnCheckDrawContourSkeletonPoint();
+	afx_msg void OnUpdateCheckDrawContourSkeletonPoint(CCmdUI *pCmdUI);
+	afx_msg void OnCheckDrawIsosurface();
+	afx_msg void OnUpdateCheckDrawIsosurface(CCmdUI *pCmdUI);
+	afx_msg void OnCheckDrawCurveExtraction();
+	afx_msg void OnUpdateCheckDrawCurveExtraction(CCmdUI *pCmdUI);
+	afx_msg void OnCheckDrawCannyExtraction();
+	afx_msg void OnUpdateCheckDrawCannyExtraction(CCmdUI *pCmdUI);
 };
 
 

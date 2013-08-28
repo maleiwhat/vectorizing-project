@@ -25,6 +25,7 @@
 #include "IFExtenstion.h"
 #include "CmCurveEx.h"
 #include "Line.h"
+#include "CvExtenstion0.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -60,7 +61,7 @@ BEGIN_MESSAGE_MAP(VAV_MainFrame, CFrameWndEx)
 	ON_COMMAND(ID_SPIN_ApertureSize, &VAV_MainFrame::OnSpinAperturesize)
 	ON_COMMAND(ID_BUTTON_ControlPointInitialize,
 			   &VAV_MainFrame::OnButtonControlPointInitialize)
-	ON_COMMAND(ID_BUTTON_CGALTriangulation,
+	ON_COMMAND(ID_BUTTON_CGALVectorization,
 			   &VAV_MainFrame::OnButtonCGALTriangulation)
 	ON_COMMAND(ID_BUTTON_Skeleton, &VAV_MainFrame::OnButtonSkeleton)
 	ON_COMMAND(ID_BUTTON_Sobel, &VAV_MainFrame::OnButtonSobel)
@@ -91,6 +92,22 @@ BEGIN_MESSAGE_MAP(VAV_MainFrame, CFrameWndEx)
 			   &VAV_MainFrame::OnSpinTransparencylineskeleton)
 	ON_UPDATE_COMMAND_UI(ID_SPIN_TransparencyLineSkeleton,
 						 &VAV_MainFrame::OnUpdateSpinTransparencylineskeleton)
+						 ON_COMMAND(ID_CHECK_DRAW_PATCH, &VAV_MainFrame::OnCheckDrawPatch)
+						 ON_UPDATE_COMMAND_UI(ID_CHECK_DRAW_PATCH, &VAV_MainFrame::OnUpdateCheckDrawPatch)
+						 ON_COMMAND(ID_CHECK_DRAW_SEPARATE_PATCH, &VAV_MainFrame::OnCheckDrawSeparatePatch)
+						 ON_UPDATE_COMMAND_UI(ID_CHECK_DRAW_SEPARATE_PATCH, &VAV_MainFrame::OnUpdateCheckDrawSeparatePatch)
+						 ON_COMMAND(ID_CHECK_DRAW_CONTOUR, &VAV_MainFrame::OnCheckDrawContour)
+						 ON_UPDATE_COMMAND_UI(ID_CHECK_DRAW_CONTOUR, &VAV_MainFrame::OnUpdateCheckDrawContour)
+						 ON_COMMAND(ID_CHECK_DRAW_CONTOUR_CONTROL_POINT, &VAV_MainFrame::OnCheckDrawContourControlPoint)
+						 ON_UPDATE_COMMAND_UI(ID_CHECK_DRAW_CONTOUR_CONTROL_POINT, &VAV_MainFrame::OnUpdateCheckDrawContourControlPoint)
+						 ON_COMMAND(ID_CHECK_DRAW_CONTOUR_SKELETON_POINT, &VAV_MainFrame::OnCheckDrawContourSkeletonPoint)
+						 ON_UPDATE_COMMAND_UI(ID_CHECK_DRAW_CONTOUR_SKELETON_POINT, &VAV_MainFrame::OnUpdateCheckDrawContourSkeletonPoint)
+						 ON_COMMAND(ID_CHECK_DRAW_ISOSURFACE, &VAV_MainFrame::OnCheckDrawIsosurface)
+						 ON_UPDATE_COMMAND_UI(ID_CHECK_DRAW_ISOSURFACE, &VAV_MainFrame::OnUpdateCheckDrawIsosurface)
+						 ON_COMMAND(ID_CHECK_DRAW_CURVE_EXTRACTION, &VAV_MainFrame::OnCheckDrawCurveExtraction)
+						 ON_UPDATE_COMMAND_UI(ID_CHECK_DRAW_CURVE_EXTRACTION, &VAV_MainFrame::OnUpdateCheckDrawCurveExtraction)
+						 ON_COMMAND(ID_CHECK_DRAW_CANNY_EXTRACTION, &VAV_MainFrame::OnCheckDrawCannyExtraction)
+						 ON_UPDATE_COMMAND_UI(ID_CHECK_DRAW_CANNY_EXTRACTION, &VAV_MainFrame::OnUpdateCheckDrawCannyExtraction)
 END_MESSAGE_MAP()
 
 // VAV_MainFrame 建構/解構
@@ -635,7 +652,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	const bool DRAW_CONTOUR_CONTROL_POINT = false;
 	const bool DRAW_CONTOUR_SKELETON_POINT = false;
 	const bool DRAW_ISOSURFACE = false;
-	const bool DRAW_CURVE_EXTRACTION = true;
+	const bool DRAW_CURVE_EXTRACTION = false;
+	const bool DRAW_CANNY_EXTRACTION = true;
 	
 	// contour
 	TriangulationCgal_Sideline cgal_contour;
@@ -914,12 +932,75 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		{
 			cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
 				rng.uniform(50, 255));
-			//drawContours( drawing, contours, i, color, 1, 8, hierarchy, 0, cv::Point() );
-			//if ( hierarchy[i][3] != -1 ) {
 			drawContours(drawing, contours, i, color, -1);
-			//}
 		}
 		imshow("FillContours", drawing);
+	}
+	if (DRAW_CANNY_EXTRACTION)
+	{
+		int t1 = 0, t2 = 30, a = 3;
+		CMFCRibbonEdit* re;
+		CMFCRibbonBaseElement* tmp_ui = 0;
+		for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
+		{
+			tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
+				ID_SPIN_CannyThreshold1);
+			if (tmp_ui != 0)
+			{
+				break;
+			}
+		}
+		re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
+		if (NULL != re)
+		{
+			t1 = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
+		}
+		for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
+		{
+			tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
+				ID_SPIN_CannyThreshold2);
+			if (tmp_ui != 0)
+			{
+				break;
+			}
+		}
+		re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
+		if (NULL != re)
+		{
+			t2 = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
+		}
+		for (int i = 0; i < m_wndRibbonBar.GetCategoryCount(); ++i)
+		{
+			tmp_ui = m_wndRibbonBar.GetCategory(i)->FindByID(
+				ID_SPIN_ApertureSize);
+			if (tmp_ui != 0)
+			{
+				break;
+			}
+		}
+		re = dynamic_cast<CMFCRibbonEdit*>(tmp_ui);
+		if (NULL != re)
+		{
+			a = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
+		}
+
+		cv::Mat simg = m_vavImage.Clone();
+		simg = CannyEdge(simg, t1, t2, a);
+		cvtColor(simg, simg, CV_BGR2GRAY);
+		AddEdge(simg);
+		std::vector<cv::Vec4i> hierarchy;
+		std::vector<std::vector<cv::Point>> contours;
+		findContours(simg, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE,
+			cv::Point(0, 0));
+		cv::Mat drawing = cv::Mat::zeros(simg.size(), CV_8UC3);
+		cv::RNG rng(12345);
+		for (int i = 0; i < contours.size(); i++)
+		{
+			cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
+				rng.uniform(50, 255));
+			drawContours(drawing, contours, i, color, -1);
+		}
+		imshow("FillContours2", drawing);
 	}
 	d3dApp.BuildPoint();
 	d3dApp.DrawScene();
@@ -1262,4 +1343,99 @@ void VAV_MainFrame::OnUpdateSpinTransparencylineskeleton(CCmdUI* pCmdUI)
 VAV_View* VAV_MainFrame::GetVavView()
 {
 	return ((VAV_View*)this->GetActiveView());
+}
+
+void VAV_MainFrame::OnCheckDrawPatch()
+{
+	// TODO: 在此加入您的命令處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnUpdateCheckDrawPatch(CCmdUI *pCmdUI)
+{
+	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnCheckDrawSeparatePatch()
+{
+	// TODO: 在此加入您的命令處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnUpdateCheckDrawSeparatePatch(CCmdUI *pCmdUI)
+{
+	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnCheckDrawContour()
+{
+	// TODO: 在此加入您的命令處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnUpdateCheckDrawContour(CCmdUI *pCmdUI)
+{
+	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnCheckDrawContourControlPoint()
+{
+	// TODO: 在此加入您的命令處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnUpdateCheckDrawContourControlPoint(CCmdUI *pCmdUI)
+{
+	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnCheckDrawContourSkeletonPoint()
+{
+	// TODO: 在此加入您的命令處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnUpdateCheckDrawContourSkeletonPoint(CCmdUI *pCmdUI)
+{
+	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnCheckDrawIsosurface()
+{
+	// TODO: 在此加入您的命令處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnUpdateCheckDrawIsosurface(CCmdUI *pCmdUI)
+{
+	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnCheckDrawCurveExtraction()
+{
+	// TODO: 在此加入您的命令處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnUpdateCheckDrawCurveExtraction(CCmdUI *pCmdUI)
+{
+	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnCheckDrawCannyExtraction()
+{
+	// TODO: 在此加入您的命令處理常式程式碼
+}
+
+
+void VAV_MainFrame::OnUpdateCheckDrawCannyExtraction(CCmdUI *pCmdUI)
+{
+	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
 }
