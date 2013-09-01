@@ -11,6 +11,34 @@
 #include "vavImage.h"
 #include "LineDef.h"
 
+struct COLORPOINT
+{
+	D3DXVECTOR3 col;
+	int off;
+};
+
+struct BLURRPOINT
+{
+	float   blurr;
+	int     off;
+};
+typedef std::vector<D3DXVECTOR2> D3DXVECTOR2s;
+typedef std::vector<COLORPOINT> COLORPOINTs;
+typedef std::vector<BLURRPOINT> BLURRPOINTs;
+
+struct CURVE
+{
+	int          pNum;
+	D3DXVECTOR2s p;
+	int          clNum;
+	COLORPOINTs  cl;
+	int          crNum;
+	COLORPOINTs  cr;
+	int          bNum;
+	BLURRPOINTs  b;
+};
+typedef std::vector<CURVE> CURVEs;
+
 class D3DApp
 {
 public:
@@ -48,6 +76,7 @@ public:
 	void AddLinesCover(const Lines& lines);
 	void AddLinesLine(const Lines& lines, const double_vector2d& linewidths);
 	void AddLineSegs(const LineSegs& lines);
+	void AddDiffusionLines(const Lines& lines);
 	void ClearPatchs();
 	void ClearCovers();
 	void SetTransparency_Triangle(float t);
@@ -56,7 +85,6 @@ public:
 	void SetTransparency_Line(float t);
 	void SetTransparency_LineSkeleton(float t);
 	void SetTransparency_Picture(float t);
-
 
 	void ClearTriangles();
 	int  Width()
@@ -71,7 +99,7 @@ public:
 
 	ID3D11Device* GetDevice()
 	{
-		return m_d3dDevice;
+		return m_pd3dDevice;
 	}
 	ID3D11DeviceContext* GetDeviceContext()
 	{
@@ -95,6 +123,7 @@ protected:
 	float m_Transparency_LineSkeleton;
 	float m_Transparency_Picture;
 
+	CURVEs	m_curve;
 	int     m_PicW;
 	int     m_PicH;
 	float   m_Scale;
@@ -112,7 +141,7 @@ protected:
 	std::wstring    m_FrameStats;
 	ID3D11Texture2D* m_BackBuffer;
 
-	ID3D11Device*       m_d3dDevice;
+	ID3D11Device*       m_pd3dDevice;
 	IDXGISwapChain*     m_SwapChain;
 	ID3D11Texture2D*    m_DepthStencilBuffer;
 	ID3D11Texture2D*    m_DrawTextureDepthStencilBuffer;
@@ -230,6 +259,57 @@ protected:
 	ID3DX11EffectScalarVariable*    m_SkeletonLines_Alpha;
 	SkeletonLineVertexes        m_SkeletonLinesVertices;
 	SkeletonLineVertexes        m_SkeletonLinesVerticesCover;
+
+	// diffusion curve part
+	D3D11_VIEWPORT m_vp;
+	float m_fWidth;
+	float m_fHeight;
+	float m_polySize;
+	int diffTex;
+	int diff2Tex;
+	int diffSteps;
+	int m_cNum;
+	int m_cSegNum;
+	D3DXVECTOR2 m_pan;
+	ID3D11InputLayout*      m_pCurveVertexLayout;
+	ID3D11Buffer*           m_pCurveVertexBuffer;
+	ID3D11InputLayout*      m_pCurveVertex2Layout;
+	ID3D11Buffer*           m_pCurveVertex2Buffer;
+	CURVE_Vertexes  m_CurveVertexes;
+
+	// two textures used interleavedly for diffusion
+	ID3D11Texture2D*    m_diffuseTexture[2];
+	// two textures used interleavedly for diffusion (blurr texture)
+	ID3D11Texture2D*    m_diffdistDirTexture;
+	ID3D11Texture2D*    m_Texture;
+	ID3D11Texture2D*    m_pDepthStencil;         // for z culling
+	// texture that keeps the color on the other side of a curve
+	ID3D11Texture2D*    m_otherTexture;
+
+	ID3D11ShaderResourceView* m_diffuseTextureRV[2];
+	ID3D11RenderTargetView*   m_diffuseTextureTV[2];
+	ID3D11ShaderResourceView* m_diffdistDirTextureRV;
+	ID3D11RenderTargetView*   m_diffdistDirTextureTV;
+	ID3D11ShaderResourceView* m_TextureRV;
+	ID3D11RenderTargetView*   m_TextureTV;
+	ID3D11DepthStencilView*   m_pDepthStencilView;
+	ID3D11ShaderResourceView* m_otherTextureRV;
+	ID3D11RenderTargetView*   m_otherTextureTV;
+
+	ID3DX11EffectTechnique* m_pDrawVectorsTechnique;
+	ID3DX11EffectTechnique* m_pDiffuseTechnique;
+	ID3DX11EffectTechnique* m_pLineAntiAliasTechnique;
+	ID3DX11EffectTechnique* m_pDisplayImage;
+
+	ID3DX11EffectShaderResourceVariable* m_pInTex[3];
+	ID3DX11EffectShaderResourceVariable* m_pDiffTex;
+	ID3DX11EffectScalarVariable* m_pDiffX;
+	ID3DX11EffectScalarVariable* m_blurOn;
+	ID3DX11EffectScalarVariable* m_pDiffY;
+	ID3DX11EffectScalarVariable* m_pScale;
+	ID3DX11EffectVectorVariable* m_pPan;
+	ID3DX11EffectScalarVariable* m_pPolySize;
+	// diffusion curve part end
 
 	D3D11_BUFFER_DESC       m_vbd;
 	DXUTUI*             m_DXUT_UI;

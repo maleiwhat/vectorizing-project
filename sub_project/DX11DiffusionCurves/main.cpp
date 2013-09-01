@@ -95,65 +95,65 @@ HINSTANCE               g_hInst = NULL;
 HWND                    g_hWnd = NULL;
 D3D_DRIVER_TYPE         g_driverType = D3D_DRIVER_TYPE_NULL;
 D3D_FEATURE_LEVEL       g_featureLevel = D3D_FEATURE_LEVEL_11_0;
-ID3D11Device*           g_pd3dDevice = NULL;
-ID3D11DeviceContext*    g_pImmediateContext = NULL;
+ID3D11Device*           m_pd3dDevice = NULL;
+ID3D11DeviceContext*    m_DeviceContext = NULL;
 IDXGISwapChain*         g_pSwapChain = NULL;
-ID3D11RenderTargetView* g_pRenderTargetView = NULL;
+ID3D11RenderTargetView* m_pRenderTargetView = NULL;
 
 const int WIDTH = 1080;
 const int HEIGHT = 1080;
 
-float g_fWidth;
-float g_fHeight;
-float g_scale = 0.5;
-float g_polySize = 0.5;
+float m_fWidth;
+float m_fHeight;
+float m_scale = 0.5;
+float m_polySize = 0.5;
 int diffTex = 0;
 int diff2Tex = 0;
 int diffSteps = 16;
-int g_cNum;
-int g_cSegNum;
-D3D11_VIEWPORT g_vp;
-D3DXVECTOR2 g_pan = D3DXVECTOR2(0, 0);
-ID3D11InputLayout*      g_pCurveVertexLayout = NULL;
-ID3D11Buffer*           g_pCurveVertexBuffer = NULL;
-ID3D11InputLayout*      g_pCurveVertex2Layout = NULL;
-ID3D11Buffer*           g_pCurveVertex2Buffer = NULL;
-CURVE_Vertexes  g_CurveVertexes;
-CURVEs g_curve;
+int m_cNum;
+int m_cSegNum;
+D3D11_VIEWPORT m_vp;
+D3DXVECTOR2 m_pan = D3DXVECTOR2(0, 0);
+ID3D11InputLayout*      m_pCurveVertexLayout = NULL;
+ID3D11Buffer*           m_pCurveVertexBuffer = NULL;
+ID3D11InputLayout*      m_pCurveVertex2Layout = NULL;
+ID3D11Buffer*           m_pCurveVertex2Buffer = NULL;
+CURVE_Vertexes  m_CurveVertexes;
+CURVEs m_curve;
 
-D3D11_BUFFER_DESC       g_vbd;
+D3D11_BUFFER_DESC       m_vbd;
 // two textures used interleavedly for diffusion
-ID3D11Texture2D*    g_diffuseTexture[2];
+ID3D11Texture2D*    m_diffuseTexture[2];
 // two textures used interleavedly for diffusion (blurr texture)
-ID3D11Texture2D*    g_distDirTexture;
-ID3D11Texture2D*    g_Texture;
-ID3D11Texture2D*    g_pDepthStencil;         // for z culling
+ID3D11Texture2D*    m_distDirTexture;
+ID3D11Texture2D*    m_Texture;
+ID3D11Texture2D*    m_pDepthStencil;         // for z culling
 // texture that keeps the color on the other side of a curve
-ID3D11Texture2D*    g_otherTexture;
+ID3D11Texture2D*    m_otherTexture;
 
-ID3D11ShaderResourceView* g_diffuseTextureRV[2];
-ID3D11RenderTargetView*   g_diffuseTextureTV[2];
-ID3D11ShaderResourceView* g_distDirTextureRV;
-ID3D11RenderTargetView*   g_distDirTextureTV;
-ID3D11ShaderResourceView* g_TextureRV;
-ID3D11RenderTargetView*   g_TextureTV;
-ID3D11DepthStencilView*   g_pDepthStencilView;
-ID3D11ShaderResourceView* g_otherTextureRV;
-ID3D11RenderTargetView*   g_otherTextureTV;
+ID3D11ShaderResourceView* m_diffuseTextureRV[2];
+ID3D11RenderTargetView*   m_diffuseTextureTV[2];
+ID3D11ShaderResourceView* m_distDirTextureRV;
+ID3D11RenderTargetView*   m_distDirTextureTV;
+ID3D11ShaderResourceView* m_TextureRV;
+ID3D11RenderTargetView*   m_TextureTV;
+ID3D11DepthStencilView*   m_pDepthStencilView;
+ID3D11ShaderResourceView* m_otherTextureRV;
+ID3D11RenderTargetView*   m_otherTextureTV;
 
-ID3DX11EffectTechnique* g_pDrawVectorsTechnique;
-ID3DX11EffectTechnique* g_pDiffuseTechnique;
-ID3DX11EffectTechnique* g_pLineAntiAliasTechnique;
-ID3DX11EffectTechnique* g_pDisplayImage;
+ID3DX11EffectTechnique* m_pDrawVectorsTechnique;
+ID3DX11EffectTechnique* m_pDiffuseTechnique;
+ID3DX11EffectTechnique* m_pLineAntiAliasTechnique;
+ID3DX11EffectTechnique* m_pDisplayImage;
 
-ID3DX11EffectShaderResourceVariable* g_pInTex[3];
-ID3DX11EffectShaderResourceVariable* g_pDiffTex;
-ID3DX11EffectScalarVariable* g_pDiffX;
-ID3DX11EffectScalarVariable* g_blurOn;
-ID3DX11EffectScalarVariable* g_pDiffY;
-ID3DX11EffectScalarVariable* g_pScale;
-ID3DX11EffectVectorVariable* g_pPan;
-ID3DX11EffectScalarVariable* g_pPolySize;
+ID3DX11EffectShaderResourceVariable* m_pInTex[3];
+ID3DX11EffectShaderResourceVariable* m_pDiffTex;
+ID3DX11EffectScalarVariable* m_pDiffX;
+ID3DX11EffectScalarVariable* m_blurOn;
+ID3DX11EffectScalarVariable* m_pDiffY;
+ID3DX11EffectScalarVariable* m_pScale;
+ID3DX11EffectVectorVariable* m_pPan;
+ID3DX11EffectScalarVariable* m_pPolySize;
 
 //--------------------------------------------------------------------------------------
 // Forward declarations
@@ -236,9 +236,9 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 	RECT rc = { 0, 0, WIDTH, HEIGHT };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 	g_hWnd = CreateWindow(L"TutorialWindowClass", L"DX11 DiffusionCurves",
-						  WS_OVERLAPPEDWINDOW,
-						  CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance,
-						  NULL);
+		WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance,
+		NULL);
 	if (!g_hWnd)
 	{
 		return E_FAIL;
@@ -292,8 +292,8 @@ HRESULT InitDevice()
 	{
 		g_driverType = driverTypes[driverTypeIndex];
 		hr = D3D11CreateDeviceAndSwapChain(NULL, g_driverType, NULL, createDeviceFlags, featureLevels,
-										   numFeatureLevels,
-										   D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext);
+			numFeatureLevels,
+			D3D11_SDK_VERSION, &sd, &g_pSwapChain, &m_pd3dDevice, &g_featureLevel, &m_DeviceContext);
 		if (SUCCEEDED(hr))
 		{
 			break;
@@ -310,13 +310,13 @@ HRESULT InitDevice()
 	{
 		return hr;
 	}
-	hr = g_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL, &g_pRenderTargetView);
+	hr = m_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
 	pBackBuffer->Release();
 	if (FAILED(hr))
 	{
 		return hr;
 	}
-	g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, NULL);
+	m_DeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
 	// Setup the viewport
 	D3D11_VIEWPORT vp;
 	vp.Width = (FLOAT)width;
@@ -325,7 +325,7 @@ HRESULT InitDevice()
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
-	g_pImmediateContext->RSSetViewports(1, &vp);
+	m_DeviceContext->RSSetViewports(1, &vp);
 
 	return S_OK;
 }
@@ -336,25 +336,25 @@ HRESULT InitDevice()
 //--------------------------------------------------------------------------------------
 void CleanupDevice()
 {
-	if (g_pImmediateContext)
+	if (m_DeviceContext)
 	{
-		g_pImmediateContext->ClearState();
+		m_DeviceContext->ClearState();
 	}
-	if (g_pRenderTargetView)
+	if (m_pRenderTargetView)
 	{
-		g_pRenderTargetView->Release();
+		m_pRenderTargetView->Release();
 	}
 	if (g_pSwapChain)
 	{
 		g_pSwapChain->Release();
 	}
-	if (g_pImmediateContext)
+	if (m_DeviceContext)
 	{
-		g_pImmediateContext->Release();
+		m_DeviceContext->Release();
 	}
-	if (g_pd3dDevice)
+	if (m_pd3dDevice)
 	{
-		g_pd3dDevice->Release();
+		m_pd3dDevice->Release();
 	}
 }
 
@@ -395,42 +395,42 @@ void Render()
 
 void BuildShaderFX()
 {
-	g_diffuseTextureRV[0] = NULL;
-	g_diffuseTextureTV[0] = NULL;
-	g_distDirTextureRV = NULL;
-	g_distDirTextureTV = NULL;
-	g_TextureRV = NULL;
-	g_TextureTV = NULL;
-	g_pDepthStencilView = NULL;
-	g_otherTextureRV = NULL;
-	g_otherTextureTV = NULL;
-	g_pDrawVectorsTechnique = NULL;
-	g_pDiffuseTechnique = NULL;
-	g_pLineAntiAliasTechnique = NULL;
-	g_pDisplayImage = NULL;
-	g_pInTex[0] = NULL;
-	g_pInTex[1] = NULL;
-	g_pInTex[2] = NULL;
-	g_pDiffTex = NULL;
-	g_pDiffX = NULL;
-	g_pDiffY = NULL;
-	g_pScale = NULL;
-	g_pPan = NULL;
-	g_pPolySize = NULL;
-	g_vp.Width = (int)(WIDTH);
-	g_vp.Height = (int)(HEIGHT);
-	g_vp.MinDepth = 0.0f;
-	g_vp.MaxDepth = 1.0f;
-	g_vp.TopLeftX = 0;
-	g_vp.TopLeftY = 0;
+	m_diffuseTextureRV[0] = NULL;
+	m_diffuseTextureTV[0] = NULL;
+	m_distDirTextureRV = NULL;
+	m_distDirTextureTV = NULL;
+	m_TextureRV = NULL;
+	m_TextureTV = NULL;
+	m_pDepthStencilView = NULL;
+	m_otherTextureRV = NULL;
+	m_otherTextureTV = NULL;
+	m_pDrawVectorsTechnique = NULL;
+	m_pDiffuseTechnique = NULL;
+	m_pLineAntiAliasTechnique = NULL;
+	m_pDisplayImage = NULL;
+	m_pInTex[0] = NULL;
+	m_pInTex[1] = NULL;
+	m_pInTex[2] = NULL;
+	m_pDiffTex = NULL;
+	m_pDiffX = NULL;
+	m_pDiffY = NULL;
+	m_pScale = NULL;
+	m_pPan = NULL;
+	m_pPolySize = NULL;
+	m_vp.Width = (int)(WIDTH);
+	m_vp.Height = (int)(HEIGHT);
+	m_vp.MinDepth = 0.0f;
+	m_vp.MaxDepth = 1.0f;
+	m_vp.TopLeftX = 0;
+	m_vp.TopLeftY = 0;
 	ID3DBlob* pCode;
 	ID3DBlob* pError;
 	ID3DX11Effect*  pEffect11;
 	//Picture
 	HRESULT hr = 0;
 	hr = D3DX11CompileFromFile(_T("DiffusionCurves.fx"), NULL, NULL, NULL,
-							   "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
-							   &pCode, &pError, NULL);
+		"fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
+		&pCode, &pError, NULL);
 	if (FAILED(hr))
 	{
 		if (pError)
@@ -440,38 +440,38 @@ void BuildShaderFX()
 		}
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
-	(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
-								  pCode->GetBufferSize(), NULL, g_pd3dDevice, &pEffect11));
-	g_pDrawVectorsTechnique = pEffect11->GetTechniqueByName("DrawCurves");
-	g_pDiffuseTechnique = pEffect11->GetTechniqueByName("Diffuse");
-	g_pLineAntiAliasTechnique = pEffect11->GetTechniqueByName("LineAntiAlias");
-	g_pDisplayImage = pEffect11->GetTechniqueByName("DisplayDiffusionImage");
-	g_pDiffTex = pEffect11->GetVariableByName("g_diffTex")->AsShaderResource();
+	V(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
+		pCode->GetBufferSize(), NULL, m_pd3dDevice, &pEffect11));
+	m_pDrawVectorsTechnique = pEffect11->GetTechniqueByName("DrawCurves");
+	m_pDiffuseTechnique = pEffect11->GetTechniqueByName("Diffuse");
+	m_pLineAntiAliasTechnique = pEffect11->GetTechniqueByName("LineAntiAlias");
+	m_pDisplayImage = pEffect11->GetTechniqueByName("DisplayDiffusionImage");
+	m_pDiffTex = pEffect11->GetVariableByName("g_diffTex")->AsShaderResource();
 	for (int i = 0; i < 3; i++)
 	{
-		g_pInTex[i] = (pEffect11->GetVariableByName("g_inTex"))->GetElement(
-						  i)->AsShaderResource();
+		m_pInTex[i] = (pEffect11->GetVariableByName("g_inTex"))->GetElement(
+			i)->AsShaderResource();
 	}
-	g_blurOn = pEffect11->GetVariableByName("g_blurOn")->AsScalar();
-	g_pDiffX = pEffect11->GetVariableByName("g_diffX")->AsScalar();
-	g_pDiffY = pEffect11->GetVariableByName("g_diffY")->AsScalar();
-	g_pScale = pEffect11->GetVariableByName("g_scale")->AsScalar();
-	g_pPolySize = pEffect11->GetVariableByName("g_polySize")->AsScalar();
-	g_pPan = pEffect11->GetVariableByName("g_pan")->AsVector();
+	m_blurOn = pEffect11->GetVariableByName("g_blurOn")->AsScalar();
+	m_pDiffX = pEffect11->GetVariableByName("g_diffX")->AsScalar();
+	m_pDiffY = pEffect11->GetVariableByName("g_diffY")->AsScalar();
+	m_pScale = pEffect11->GetVariableByName("g_scale")->AsScalar();
+	m_pPolySize = pEffect11->GetVariableByName("g_polySize")->AsScalar();
+	m_pPan = pEffect11->GetVariableByName("g_pan")->AsVector();
 	D3DX11_PASS_DESC PassDesc;
-	g_pDrawVectorsTechnique->GetPassByIndex(0)->GetDesc(&PassDesc);
-	if (FAILED(g_pd3dDevice->CreateInputLayout(VertexDesc_CurveVertex,
-			   4,
-			   PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize,
-			   &g_pCurveVertexLayout)))
+	m_pDrawVectorsTechnique->GetPassByIndex(0)->GetDesc(&PassDesc);
+	if (FAILED(m_pd3dDevice->CreateInputLayout(VertexDesc_CurveVertex,
+		4,
+		PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize,
+		&m_pCurveVertexLayout)))
 	{
 		return;
 	}
-	g_pDiffuseTechnique->GetPassByIndex(0)->GetDesc(&PassDesc);
-	if (FAILED(g_pd3dDevice->CreateInputLayout(VertexDesc_VSOVertex,
-			   2,
-			   PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize,
-			   &g_pCurveVertex2Layout)))
+	m_pDiffuseTechnique->GetPassByIndex(0)->GetDesc(&PassDesc);
+	if (FAILED(m_pd3dDevice->CreateInputLayout(VertexDesc_VSOVertex,
+		2,
+		PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize,
+		&m_pCurveVertex2Layout)))
 	{
 		return;
 	}
@@ -489,64 +489,64 @@ void BuildShaderFX()
 	texdesc.Usage = D3D11_USAGE_DEFAULT;
 	texdesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	texdesc.Format = DXGI_FORMAT_D32_FLOAT;
-	if (g_pDepthStencil != NULL)
+	if (m_pDepthStencil != NULL)
 	{
-		g_pDepthStencil->Release();
+		m_pDepthStencil->Release();
 	}
-	hr = g_pd3dDevice->CreateTexture2D(&texdesc, NULL, &g_pDepthStencil);
-	hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil, NULL,
-			&g_pDepthStencilView);
+	hr = m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_pDepthStencil);
+	hr = m_pd3dDevice->CreateDepthStencilView(m_pDepthStencil, NULL,
+		&m_pDepthStencilView);
 	//create diffusion textures (2 for ping pong rendering)
-	if (g_diffuseTexture[0] != NULL)
+	if (m_diffuseTexture[0] != NULL)
 	{
-		g_diffuseTexture[0]->Release();
+		m_diffuseTexture[0]->Release();
 	}
-	if (g_diffuseTexture[1] != NULL)
+	if (m_diffuseTexture[1] != NULL)
 	{
-		g_diffuseTexture[1]->Release();
+		m_diffuseTexture[1]->Release();
 	}
-	if (g_distDirTexture != NULL)
+	if (m_distDirTexture != NULL)
 	{
-		g_distDirTexture->Release();
+		m_distDirTexture->Release();
 	}
-	if (g_otherTexture != NULL)
+	if (m_otherTexture != NULL)
 	{
-		g_otherTexture->Release();
+		m_otherTexture->Release();
 	}
 	texdesc.Width = (int)(WIDTH);
 	texdesc.Height = (int)(HEIGHT);
 	texdesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	//texdesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;  // use this for higher accuracy diffusion
 	texdesc.BindFlags =  D3D10_BIND_RENDER_TARGET | D3D10_BIND_SHADER_RESOURCE;
-	hr = g_pd3dDevice->CreateTexture2D(&texdesc, NULL, &g_diffuseTexture[0]);
-	hr = g_pd3dDevice->CreateTexture2D(&texdesc, NULL, &g_diffuseTexture[1]);
-	hr = g_pd3dDevice->CreateTexture2D(&texdesc, NULL, &g_otherTexture);
+	hr = m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_diffuseTexture[0]);
+	hr = m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_diffuseTexture[1]);
+	hr = m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_otherTexture);
 	// distance map + nearest point map
 	texdesc.Usage = D3D11_USAGE_DEFAULT;
 	texdesc.CPUAccessFlags = 0;
 	texdesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D10_BIND_SHADER_RESOURCE;
 	texdesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	hr = g_pd3dDevice->CreateTexture2D(&texdesc, NULL, &g_distDirTexture);
-	hr = g_pd3dDevice->CreateTexture2D(&texdesc, NULL, &g_Texture);
+	hr = m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_distDirTexture);
+	hr = m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_Texture);
 	//create render target views
-	hr = g_pd3dDevice->CreateShaderResourceView(g_diffuseTexture[0], NULL,
-			&g_diffuseTextureRV[0]);
-	hr = g_pd3dDevice->CreateRenderTargetView(g_diffuseTexture[0], NULL,
-			&g_diffuseTextureTV[0]);
-	hr = g_pd3dDevice->CreateShaderResourceView(g_diffuseTexture[1], NULL,
-			&g_diffuseTextureRV[1]);
-	hr = g_pd3dDevice->CreateRenderTargetView(g_diffuseTexture[1], NULL,
-			&g_diffuseTextureTV[1]);
-	hr = g_pd3dDevice->CreateShaderResourceView(g_distDirTexture, NULL,
-			&g_distDirTextureRV);
-	hr = g_pd3dDevice->CreateRenderTargetView(g_distDirTexture, NULL,
-			&g_distDirTextureTV);
-	hr = g_pd3dDevice->CreateShaderResourceView(g_Texture, NULL, &g_TextureRV);
-	hr = g_pd3dDevice->CreateRenderTargetView(g_Texture, NULL, &g_TextureTV);
-	hr = g_pd3dDevice->CreateShaderResourceView(g_otherTexture, NULL,
-			&g_otherTextureRV);
-	hr = g_pd3dDevice->CreateRenderTargetView(g_otherTexture, NULL,
-			&g_otherTextureTV);
+	hr = m_pd3dDevice->CreateShaderResourceView(m_diffuseTexture[0], NULL,
+		&m_diffuseTextureRV[0]);
+	hr = m_pd3dDevice->CreateRenderTargetView(m_diffuseTexture[0], NULL,
+		&m_diffuseTextureTV[0]);
+	hr = m_pd3dDevice->CreateShaderResourceView(m_diffuseTexture[1], NULL,
+		&m_diffuseTextureRV[1]);
+	hr = m_pd3dDevice->CreateRenderTargetView(m_diffuseTexture[1], NULL,
+		&m_diffuseTextureTV[1]);
+	hr = m_pd3dDevice->CreateShaderResourceView(m_distDirTexture, NULL,
+		&m_distDirTextureRV);
+	hr = m_pd3dDevice->CreateRenderTargetView(m_distDirTexture, NULL,
+		&m_distDirTextureTV);
+	hr = m_pd3dDevice->CreateShaderResourceView(m_Texture, NULL, &m_TextureRV);
+	hr = m_pd3dDevice->CreateRenderTargetView(m_Texture, NULL, &m_TextureTV);
+	hr = m_pd3dDevice->CreateShaderResourceView(m_otherTexture, NULL,
+		&m_otherTextureRV);
+	hr = m_pd3dDevice->CreateRenderTargetView(m_otherTexture, NULL,
+		&m_otherTextureTV);
 	char s[255] = "zephyr.xml";
 	ReadVectorFile(s);
 	ConstructCurves();
@@ -567,213 +567,213 @@ void ReadVectorFile(char* s)
 		if (stringStartsWith(buff, "<!DOCTYPE CurveSetXML"))
 		{
 			StringCchPrintf(wcFileInfo, 512,
-							L"(INFO) : This seems to be a diffusion curves file.\n");
+				L"(INFO) : This seems to be a diffusion curves file.\n");
 			OutputDebugString(wcFileInfo);
 			break;
 		}
-	fgets(buff, 255, F);
-	token = strtok(buff, " \"\t");
-	while (!stringStartsWith(token, "image_width="))
-	{
-		token = strtok(NULL, " \"\t");
-	}
-	token = strtok(NULL, " \"\t");
-	g_fWidth = atof(token);
-	while (!stringStartsWith(token, "image_height="))
-	{
-		token = strtok(NULL, " \"\t");
-	}
-	token = strtok(NULL, " \"\t");
-	g_fHeight = atof(token);
-	while (!stringStartsWith(token, "nb_curves="))
-	{
-		token = strtok(NULL, " \"\t");
-	}
-	token = strtok(NULL, " \"\t");
-	g_cNum = atof(token);
-	StringCchPrintf(wcFileInfo, 512, L"(INFO) : %d curves found in file.\n",
-					g_cNum);
-	OutputDebugString(wcFileInfo);
-	g_curve.resize(g_cNum);
-	g_cSegNum = 0;
-	D3DXVECTOR2 maxBound = D3DXVECTOR2(-1000000, -1000000);
-	D3DXVECTOR2 minBound = D3DXVECTOR2(1000000, 1000000);
-	for (int i1 = 0; i1 < g_cNum; i1++)
-	{
-		while (!stringStartsWith(buff, " <curve nb_control_points"))
-		{
-			fgets(buff, 255, F);
-		}
+		fgets(buff, 255, F);
 		token = strtok(buff, " \"\t");
-		while (!stringStartsWith(token, "nb_control_points="))
+		while (!stringStartsWith(token, "image_width="))
 		{
 			token = strtok(NULL, " \"\t");
 		}
 		token = strtok(NULL, " \"\t");
-		g_curve[i1].pNum = atof(token);
-		g_cSegNum += ((g_curve[i1].pNum - 1) / 3);
-		while (!stringStartsWith(token, "nb_left_colors="))
+		m_fWidth = atof(token);
+		while (!stringStartsWith(token, "image_height="))
 		{
 			token = strtok(NULL, " \"\t");
 		}
 		token = strtok(NULL, " \"\t");
-		g_curve[i1].clNum = atof(token);
-		while (!stringStartsWith(token, "nb_right_colors="))
+		m_fHeight = atof(token);
+		while (!stringStartsWith(token, "nb_curves="))
 		{
 			token = strtok(NULL, " \"\t");
 		}
 		token = strtok(NULL, " \"\t");
-		g_curve[i1].crNum = atof(token);
-		while (!stringStartsWith(token, "nb_blur_points="))
+		m_cNum = atof(token);
+		StringCchPrintf(wcFileInfo, 512, L"(INFO) : %d curves found in file.\n",
+			m_cNum);
+		OutputDebugString(wcFileInfo);
+		m_curve.resize(m_cNum);
+		m_cSegNum = 0;
+		D3DXVECTOR2 maxBound = D3DXVECTOR2(-1000000, -1000000);
+		D3DXVECTOR2 minBound = D3DXVECTOR2(1000000, 1000000);
+		for (int i1 = 0; i1 < m_cNum; i1++)
 		{
-			token = strtok(NULL, " \"\t");
-		}
-		token = strtok(NULL, " \"\t");
-		g_curve[i1].bNum = atof(token);
-		// read in individual curve data
-		g_curve[i1].p.resize(g_curve[i1].pNum);
-		for (int i2 = 0; i2 < g_curve[i1].pNum; i2++)
-		{
-			while (!stringStartsWith(buff, "   <control_point "))
+			while (!stringStartsWith(buff, " <curve nb_control_points"))
 			{
 				fgets(buff, 255, F);
 			}
 			token = strtok(buff, " \"\t");
-			while (!stringStartsWith(token, "x="))
+			while (!stringStartsWith(token, "nb_control_points="))
 			{
 				token = strtok(NULL, " \"\t");
 			}
 			token = strtok(NULL, " \"\t");
-			g_curve[i1].p[i2].y = atof(token);
-			while (!stringStartsWith(token, "y="))
+			m_curve[i1].pNum = atof(token);
+			m_cSegNum += ((m_curve[i1].pNum - 1) / 3);
+			while (!stringStartsWith(token, "nb_left_colors="))
 			{
 				token = strtok(NULL, " \"\t");
 			}
 			token = strtok(NULL, " \"\t");
-			g_curve[i1].p[i2].x = atof(token);
-			fgets(buff, 255, F);
-			//extend the bounds if necessary
-			if (g_curve[i1].p[i2].y < minBound.y)
+			m_curve[i1].clNum = atof(token);
+			while (!stringStartsWith(token, "nb_right_colors="))
 			{
-				minBound.y = g_curve[i1].p[i2].y;
+				token = strtok(NULL, " \"\t");
 			}
-			if (g_curve[i1].p[i2].y > maxBound.y)
+			token = strtok(NULL, " \"\t");
+			m_curve[i1].crNum = atof(token);
+			while (!stringStartsWith(token, "nb_blur_points="))
 			{
-				maxBound.y = g_curve[i1].p[i2].y;
+				token = strtok(NULL, " \"\t");
 			}
-			if (g_curve[i1].p[i2].x < minBound.x)
+			token = strtok(NULL, " \"\t");
+			m_curve[i1].bNum = atof(token);
+			// read in individual curve data
+			m_curve[i1].p.resize(m_curve[i1].pNum);
+			for (int i2 = 0; i2 < m_curve[i1].pNum; i2++)
 			{
-				minBound.x = g_curve[i1].p[i2].x;
+				while (!stringStartsWith(buff, "   <control_point "))
+				{
+					fgets(buff, 255, F);
+				}
+				token = strtok(buff, " \"\t");
+				while (!stringStartsWith(token, "x="))
+				{
+					token = strtok(NULL, " \"\t");
+				}
+				token = strtok(NULL, " \"\t");
+				m_curve[i1].p[i2].y = atof(token);
+				while (!stringStartsWith(token, "y="))
+				{
+					token = strtok(NULL, " \"\t");
+				}
+				token = strtok(NULL, " \"\t");
+				m_curve[i1].p[i2].x = atof(token);
+				fgets(buff, 255, F);
+				//extend the bounds if necessary
+				if (m_curve[i1].p[i2].y < minBound.y)
+				{
+					minBound.y = m_curve[i1].p[i2].y;
+				}
+				if (m_curve[i1].p[i2].y > maxBound.y)
+				{
+					maxBound.y = m_curve[i1].p[i2].y;
+				}
+				if (m_curve[i1].p[i2].x < minBound.x)
+				{
+					minBound.x = m_curve[i1].p[i2].x;
+				}
+				if (m_curve[i1].p[i2].x > maxBound.x)
+				{
+					maxBound.x = m_curve[i1].p[i2].x;
+				}
 			}
-			if (g_curve[i1].p[i2].x > maxBound.x)
+			m_curve[i1].cl.resize(m_curve[i1].clNum);
+			for (int i2 = 0; i2 < m_curve[i1].clNum; i2++)
 			{
-				maxBound.x = g_curve[i1].p[i2].x;
-			}
-		}
-		g_curve[i1].cl.resize(g_curve[i1].clNum);
-		for (int i2 = 0; i2 < g_curve[i1].clNum; i2++)
-		{
-			while (!stringStartsWith(buff, "   <left_color "))
-			{
+				while (!stringStartsWith(buff, "   <left_color "))
+				{
+					fgets(buff, 255, F);
+				}
+				token = strtok(buff, " \"\t");
+				while (!stringStartsWith(token, "G="))
+				{
+					token = strtok(NULL, " \"\t");
+				}
+				token = strtok(NULL, " \"\t");
+				m_curve[i1].cl[i2].col.y = atof(token) / 256.0;
+				while (!stringStartsWith(token, "R="))
+				{
+					token = strtok(NULL, " \"\t");
+				}
+				token = strtok(NULL, " \"\t");
+				m_curve[i1].cl[i2].col.z  = atof(token) / 256.0;
+				while (!stringStartsWith(token, "globalID="))
+				{
+					token = strtok(NULL, " \"\t");
+				}
+				token = strtok(NULL, " \"\t");
+				m_curve[i1].cl[i2].off = atof(token);
+				while (!stringStartsWith(token, "B="))
+				{
+					token = strtok(NULL, " \"\t");
+				}
+				token = strtok(NULL, " \"\t");
+				m_curve[i1].cl[i2].col.x  = atof(token) / 256.0;
 				fgets(buff, 255, F);
 			}
-			token = strtok(buff, " \"\t");
-			while (!stringStartsWith(token, "G="))
+			m_curve[i1].cr.resize(m_curve[i1].crNum);
+			for (int i2 = 0; i2 < m_curve[i1].crNum; i2++)
 			{
+				while (!stringStartsWith(buff, "   <right_color "))
+				{
+					fgets(buff, 255, F);
+				}
+				token = strtok(buff, " \"\t");
+				while (!stringStartsWith(token, "G="))
+				{
+					token = strtok(NULL, " \"\t");
+				}
 				token = strtok(NULL, " \"\t");
-			}
-			token = strtok(NULL, " \"\t");
-			g_curve[i1].cl[i2].col.y = atof(token) / 256.0;
-			while (!stringStartsWith(token, "R="))
-			{
+				m_curve[i1].cr[i2].col.y = atof(token) / 256.0;
+				while (!stringStartsWith(token, "R="))
+				{
+					token = strtok(NULL, " \"\t");
+				}
 				token = strtok(NULL, " \"\t");
-			}
-			token = strtok(NULL, " \"\t");
-			g_curve[i1].cl[i2].col.z  = atof(token) / 256.0;
-			while (!stringStartsWith(token, "globalID="))
-			{
+				m_curve[i1].cr[i2].col.z  = atof(token) / 256.0;
+				while (!stringStartsWith(token, "globalID="))
+				{
+					token = strtok(NULL, " \"\t");
+				}
 				token = strtok(NULL, " \"\t");
-			}
-			token = strtok(NULL, " \"\t");
-			g_curve[i1].cl[i2].off = atof(token);
-			while (!stringStartsWith(token, "B="))
-			{
+				m_curve[i1].cr[i2].off = atof(token);
+				while (!stringStartsWith(token, "B="))
+				{
+					token = strtok(NULL, " \"\t");
+				}
 				token = strtok(NULL, " \"\t");
-			}
-			token = strtok(NULL, " \"\t");
-			g_curve[i1].cl[i2].col.x  = atof(token) / 256.0;
-			fgets(buff, 255, F);
-		}
-		g_curve[i1].cr.resize(g_curve[i1].crNum);
-		for (int i2 = 0; i2 < g_curve[i1].crNum; i2++)
-		{
-			while (!stringStartsWith(buff, "   <right_color "))
-			{
+				m_curve[i1].cr[i2].col.x  = atof(token) / 256.0;
 				fgets(buff, 255, F);
 			}
-			token = strtok(buff, " \"\t");
-			while (!stringStartsWith(token, "G="))
+			m_curve[i1].b.resize(m_curve[i1].bNum);
+			for (int i2 = 0; i2 < m_curve[i1].bNum; i2++)
 			{
+				while (!stringStartsWith(buff, "   <best_scale"))
+				{
+					fgets(buff, 255, F);
+				}
+				token = strtok(buff, " \"\t");
+				while (!stringStartsWith(token, "value="))
+				{
+					token = strtok(NULL, " \"\t");
+				}
 				token = strtok(NULL, " \"\t");
-			}
-			token = strtok(NULL, " \"\t");
-			g_curve[i1].cr[i2].col.y = atof(token) / 256.0;
-			while (!stringStartsWith(token, "R="))
-			{
+				m_curve[i1].b[i2].blurr = atof(token);
+				while (!stringStartsWith(token, "globalID="))
+				{
+					token = strtok(NULL, " \"\t");
+				}
 				token = strtok(NULL, " \"\t");
-			}
-			token = strtok(NULL, " \"\t");
-			g_curve[i1].cr[i2].col.z  = atof(token) / 256.0;
-			while (!stringStartsWith(token, "globalID="))
-			{
-				token = strtok(NULL, " \"\t");
-			}
-			token = strtok(NULL, " \"\t");
-			g_curve[i1].cr[i2].off = atof(token);
-			while (!stringStartsWith(token, "B="))
-			{
-				token = strtok(NULL, " \"\t");
-			}
-			token = strtok(NULL, " \"\t");
-			g_curve[i1].cr[i2].col.x  = atof(token) / 256.0;
-			fgets(buff, 255, F);
-		}
-		g_curve[i1].b.resize(g_curve[i1].bNum);
-		for (int i2 = 0; i2 < g_curve[i1].bNum; i2++)
-		{
-			while (!stringStartsWith(buff, "   <best_scale"))
-			{
+				m_curve[i1].b[i2].off = atof(token);
 				fgets(buff, 255, F);
 			}
-			token = strtok(buff, " \"\t");
-			while (!stringStartsWith(token, "value="))
-			{
-				token = strtok(NULL, " \"\t");
-			}
-			token = strtok(NULL, " \"\t");
-			g_curve[i1].b[i2].blurr = atof(token);
-			while (!stringStartsWith(token, "globalID="))
-			{
-				token = strtok(NULL, " \"\t");
-			}
-			token = strtok(NULL, " \"\t");
-			g_curve[i1].b[i2].off = atof(token);
-			fgets(buff, 255, F);
 		}
-	}
-	fclose(F);
-	//scale the whole image between -1 and 1
-	D3DXVECTOR2 middlePan = D3DXVECTOR2(0.5 * (maxBound.x + minBound.x),
-										0.5 * (maxBound.y + minBound.y));
-	for (int i1 = 0; i1 < g_cNum; i1++)
-		for (int i2 = 0; i2 < g_curve[i1].pNum; i2++)
-		{
-			g_curve[i1].p[i2].x = 2.0f * (g_curve[i1].p[i2].x - middlePan.x) / g_fWidth;
-			g_curve[i1].p[i2].y = 2.0f * (g_curve[i1].p[i2].y - middlePan.y) / g_fHeight;
-		}
-	StringCchPrintf(wcFileInfo, 512, L"(INFO) : %d curve segments found in file.\n",
-					g_cSegNum);
-	OutputDebugString(wcFileInfo);
+		fclose(F);
+		//scale the whole image between -1 and 1
+		D3DXVECTOR2 middlePan = D3DXVECTOR2(0.5 * (maxBound.x + minBound.x),
+			0.5 * (maxBound.y + minBound.y));
+		for (int i1 = 0; i1 < m_cNum; i1++)
+			for (int i2 = 0; i2 < m_curve[i1].pNum; i2++)
+			{
+				m_curve[i1].p[i2].x = 2.0f * (m_curve[i1].p[i2].x - middlePan.x) / m_fWidth;
+				m_curve[i1].p[i2].y = 2.0f * (m_curve[i1].p[i2].y - middlePan.y) / m_fHeight;
+			}
+			StringCchPrintf(wcFileInfo, 512, L"(INFO) : %d curve segments found in file.\n",
+				m_cSegNum);
+			OutputDebugString(wcFileInfo);
 }
 
 // convert the vectors into triangle strips and draw these to the finest pyramid level
@@ -783,19 +783,19 @@ void ConstructCurves()
 	int     iLoopStart;
 	HRESULT hr;
 	float subSegNum = 1.0f;
-	g_CurveVertexes.resize(g_cSegNum * (int)(subSegNum) * 10 * 2);
-	CURVE_Vertex* pd = &g_CurveVertexes[0];
-	char*     used = new char[g_cNum];
-	ZeroMemory(used, g_cNum * sizeof(char));
+	m_CurveVertexes.resize(m_cSegNum * (int)(subSegNum) * 10 * 2);
+	CURVE_Vertex* pd = &m_CurveVertexes[0];
+	char*     used = new char[m_cNum];
+	ZeroMemory(used, m_cNum * sizeof(char));
 	int cPos = 0;
-	double step = 0.7 / (g_curve.size()+1);
-	for (int iX = 0; iX < g_cNum; iX++)
+	double step = 0.7 / (m_curve.size()+1);
+	for (int iX = 0; iX < m_cNum; iX++)
 	{
 		int i1 = iX;
 		while (used[i1] > 0)
 		{
 			i1++;
-			if (i1 == g_cNum)
+			if (i1 == m_cNum)
 			{
 				i1 = 0;
 			}
@@ -803,27 +803,27 @@ void ConstructCurves()
 		used[i1] = 1;
 		int cSeg = 0;
 		int lID = 0;
-		while (g_curve[i1].cl[lID + 1].off <= 0)
+		while (m_curve[i1].cl[lID + 1].off <= 0)
 		{
 			lID++;
 		}
-		int lS = g_curve[i1].cl[lID].off;
-		int lN = g_curve[i1].cl[lID + 1].off;
+		int lS = m_curve[i1].cl[lID].off;
+		int lN = m_curve[i1].cl[lID + 1].off;
 		int rID = 0;
-		while (g_curve[i1].cr[rID + 1].off <= 0)
+		while (m_curve[i1].cr[rID + 1].off <= 0)
 		{
 			rID++;
 		}
-		int rS = g_curve[i1].cr[rID].off;
-		int rN = g_curve[i1].cr[rID + 1].off;
+		int rS = m_curve[i1].cr[rID].off;
+		int rN = m_curve[i1].cr[rID + 1].off;
 		int bID = 0;
-		while (g_curve[i1].b[bID + 1].off <= 0)
+		while (m_curve[i1].b[bID + 1].off <= 0)
 		{
 			bID++;
 		}
-		int bS = g_curve[i1].b[rID].off;
-		int bN2 = g_curve[i1].b[rID + 1].off;
-		for (int i2 = 0; i2 < g_curve[i1].pNum - 3; i2 += 3)
+		int bS = m_curve[i1].b[rID].off;
+		int bN2 = m_curve[i1].b[rID + 1].off;
+		for (int i2 = 0; i2 < m_curve[i1].pNum - 3; i2 += 3)
 		{
 			for (float t = 0; t < 1.0f; t += 0.1f)
 			{
@@ -831,24 +831,24 @@ void ConstructCurves()
 				float t2 = t + 0.1f;
 				float f = (float)(cSeg - lS) / (float)(lN - lS);
 				float fN = (float)(cSeg + 1 - lS) / (float)(lN - lS);
-				D3DXVECTOR4 cL = D3DXVECTOR4((1.0f - f) * g_curve[i1].cl[lID].col + f *
-											 g_curve[i1].cl[lID + 1].col,
-											 1.0f);
-				D3DXVECTOR4 cNL = D3DXVECTOR4((1.0f - fN) * g_curve[i1].cl[lID].col + fN *
-											  g_curve[i1].cl[lID + 1].col, 1.0f);
+				D3DXVECTOR4 cL = D3DXVECTOR4((1.0f - f) * m_curve[i1].cl[lID].col + f *
+					m_curve[i1].cl[lID + 1].col,
+					1.0f);
+				D3DXVECTOR4 cNL = D3DXVECTOR4((1.0f - fN) * m_curve[i1].cl[lID].col + fN *
+					m_curve[i1].cl[lID + 1].col, 1.0f);
 				f = (float)(cSeg - rS) / (float)(rN - rS);
 				fN = (float)(cSeg + 1 - rS) / (float)(rN - rS);
-				D3DXVECTOR4 cR = D3DXVECTOR4((1.0f - f) * g_curve[i1].cr[rID].col + f *
-											 g_curve[i1].cr[rID + 1].col,
-											 1.0f);
-				D3DXVECTOR4 cNR = D3DXVECTOR4((1.0f - fN) * g_curve[i1].cr[rID].col + fN *
-											  g_curve[i1].cr[rID + 1].col, 1.0f);
+				D3DXVECTOR4 cR = D3DXVECTOR4((1.0f - f) * m_curve[i1].cr[rID].col + f *
+					m_curve[i1].cr[rID + 1].col,
+					1.0f);
+				D3DXVECTOR4 cNR = D3DXVECTOR4((1.0f - fN) * m_curve[i1].cr[rID].col + fN *
+					m_curve[i1].cr[rID + 1].col, 1.0f);
 				f = ((float)(cSeg - bS)) / ((float)(bN2 - bS));
 				fN = (float)(cSeg + 1 - bS) / (float)(bN2 - bS);
-				float b = (1.0f - f) * g_curve[i1].b[bID].blurr + f *
-						  g_curve[i1].b[bID + 1].blurr;
-				float bN = (1.0f - fN) * g_curve[i1].b[bID].blurr + fN *
-						   g_curve[i1].b[bID + 1].blurr;
+				float b = (1.0f - f) * m_curve[i1].b[bID].blurr + f *
+					m_curve[i1].b[bID + 1].blurr;
+				float bN = (1.0f - fN) * m_curve[i1].b[bID].blurr + fN *
+					m_curve[i1].b[bID + 1].blurr;
 				// it is not entirely clear how [Orzan et al.08] encode the blurr in the files, this has been found to work ok..
 				b = b * 1; 
 				bN = bN * 1;
@@ -859,30 +859,30 @@ void ConstructCurves()
 					float sN = sI + 1.0f / subSegNum;
 					float s1  = (1.0f - sI) * t1 + sI * t2;
 					float s2 = (1.0f - sN) * t1 + sN * t2;
-					D3DXVECTOR2 p0 = (1.0f - s1) * (1.0f - s1) * (1.0f - s1) * g_curve[i1].p[i2] +
-									 3 * s1 *
-									 (1.0f - s1) * (1.0f - s1) * g_curve[i1].p[i2 + 1] + 3 * s1 * s1 * (1.0f - s1) *
-									 g_curve[i1].p[i2 + 2] + s1 * s1 * s1 * g_curve[i1].p[i2 + 3];
-					D3DXVECTOR2 p1 = (1.0f - s2) * (1.0f - s2) * (1.0f - s2) * g_curve[i1].p[i2] +
-									 3 * s2 *
-									 (1.0f - s2) * (1.0f - s2) * g_curve[i1].p[i2 + 1] + 3 * s2 * s2 * (1.0f - s2) *
-									 g_curve[i1].p[i2 + 2] + s2 * s2 * s2 * g_curve[i1].p[i2 + 3];
+					D3DXVECTOR2 p0 = (1.0f - s1) * (1.0f - s1) * (1.0f - s1) * m_curve[i1].p[i2] +
+						3 * s1 *
+						(1.0f - s1) * (1.0f - s1) * m_curve[i1].p[i2 + 1] + 3 * s1 * s1 * (1.0f - s1) *
+						m_curve[i1].p[i2 + 2] + s1 * s1 * s1 * m_curve[i1].p[i2 + 3];
+					D3DXVECTOR2 p1 = (1.0f - s2) * (1.0f - s2) * (1.0f - s2) * m_curve[i1].p[i2] +
+						3 * s2 *
+						(1.0f - s2) * (1.0f - s2) * m_curve[i1].p[i2 + 1] + 3 * s2 * s2 * (1.0f - s2) *
+						m_curve[i1].p[i2 + 2] + s2 * s2 * s2 * m_curve[i1].p[i2 + 3];
 					pd[cPos + 0].lcolor = (1.0f - sI) * cL + sI * cNL;
 					pd[cPos + 1].lcolor = (1.0f - sN) * cL + sN * cNL;
 					pd[cPos + 0].rcolor = (1.0f - sI) * cR + sI * cNR;
 					pd[cPos + 1].rcolor = (1.0f - sN) * cR + sN * cNR;
-					pd[cPos + 0].lcolor.w = (1.0f - sI) * b + sI * bN;
-					pd[cPos + 1].lcolor.w = (1.0f - sN) * b + sN * bN;
-					pd[cPos + 0].rcolor.w = (1.0f - sI) * b + sI * bN;
-					pd[cPos + 1].rcolor.w = (1.0f - sN) * b + sN * bN;
+					pd[cPos + 0].lcolor.w = 1;
+					pd[cPos + 1].lcolor.w = 1;
+					pd[cPos + 0].rcolor.w = 1;
+					pd[cPos + 1].rcolor.w = 1;
 					pd[cPos + 0].pos = D3DXVECTOR2(p0.x, -p0.y);
 					pd[cPos + 1].pos = D3DXVECTOR2(p1.x, -p1.y);
 					if ((i2 == 0) && (t == 0.0f) && (sI < 0.5f / subSegNum))
 					{
 						pd[cPos + 0].nb = D3DXVECTOR2(10000.0f, 10000.0f);
 						// if we are at the begin of a loop, do not declare endpoints
-						if ((g_curve[i1].p[0] == g_curve[i1].p[g_curve[i1].pNum - 1])
-								&& (sI < 0.5f / subSegNum))
+						if ((m_curve[i1].p[0] == m_curve[i1].p[m_curve[i1].pNum - 1])
+							&& (sI < 0.5f / subSegNum))
 						{
 							pLoop.x = pd[cPos + 1].pos.x;
 							pLoop.y = pd[cPos + 1].pos.y;
@@ -896,9 +896,9 @@ void ConstructCurves()
 					}
 					pd[cPos + 1].nb = D3DXVECTOR2(10000.0f, 10000.0f);
 					// if we are at the end of a loop, do not declare endpoints
-					if ((g_curve[i1].p[0] == g_curve[i1].p[g_curve[i1].pNum - 1])
-							&& (i2 == g_curve[i1].pNum - 1 - 3)
-							&& (t >= 0.89f) && (sI + 1.1f / subSegNum >= 1.0))
+					if ((m_curve[i1].p[0] == m_curve[i1].p[m_curve[i1].pNum - 1])
+						&& (i2 == m_curve[i1].pNum - 1 - 3)
+						&& (t >= 0.89f) && (sI + 1.1f / subSegNum >= 1.0))
 					{
 						pd[iLoopStart].nb = pd[cPos + 0].pos;
 						pd[cPos + 1].nb = pLoop;
@@ -906,23 +906,23 @@ void ConstructCurves()
 					cPos += 2;
 				}
 				cSeg++;
-				while ((cSeg >= lN) && (lID < g_curve[i1].clNum - 2))
+				while ((cSeg >= lN) && (lID < m_curve[i1].clNum - 2))
 				{
 					lID++;
-					lS = g_curve[i1].cl[lID].off;
-					lN = g_curve[i1].cl[lID + 1].off;
+					lS = m_curve[i1].cl[lID].off;
+					lN = m_curve[i1].cl[lID + 1].off;
 				}
-				while ((cSeg >= rN) && (rID < g_curve[i1].crNum - 2))
+				while ((cSeg >= rN) && (rID < m_curve[i1].crNum - 2))
 				{
 					rID++;
-					rS = g_curve[i1].cr[rID].off;
-					rN = g_curve[i1].cr[rID + 1].off;
+					rS = m_curve[i1].cr[rID].off;
+					rN = m_curve[i1].cr[rID + 1].off;
 				}
-				while ((cSeg >= bN2)  && (bID < g_curve[i1].bNum - 2))
+				while ((cSeg >= bN2)  && (bID < m_curve[i1].bNum - 2))
 				{
 					bID++;
-					bS = g_curve[i1].b[bID].off;
-					bN2 = g_curve[i1].b[bID + 1].off;
+					bS = m_curve[i1].b[bID].off;
+					bN2 = m_curve[i1].b[bID + 1].off;
 				}
 			}
 		}
@@ -930,25 +930,25 @@ void ConstructCurves()
 	delete[]used;
 	WCHAR wcFileInfo[512];
 	StringCchPrintf(wcFileInfo, 512, L"(INFO) : Number of curve segments: %d \n",
-					g_cSegNum * (int)(subSegNum) * 10);
+		m_cSegNum * (int)(subSegNum) * 10);
 	OutputDebugString(wcFileInfo);
 }
 
 void BuildPoint()
 {
-	g_vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	g_vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	g_vbd.CPUAccessFlags = 0;
-	g_vbd.MiscFlags = 0;
-	SAFE_RELEASE(g_pCurveVertexBuffer);
-	SAFE_RELEASE(g_pCurveVertex2Buffer);
-	if (!g_CurveVertexes.empty())
+	m_vbd.Usage = D3D11_USAGE_IMMUTABLE;
+	m_vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	m_vbd.CPUAccessFlags = 0;
+	m_vbd.MiscFlags = 0;
+	SAFE_RELEASE(m_pCurveVertexBuffer);
+	SAFE_RELEASE(m_pCurveVertex2Buffer);
+	if (!m_CurveVertexes.empty())
 	{
-		g_vbd.ByteWidth = (UINT)(sizeof(CURVE_Vertex) * g_CurveVertexes.size());
-		g_vbd.StructureByteStride = sizeof(CURVE_Vertex);
+		m_vbd.ByteWidth = (UINT)(sizeof(CURVE_Vertex) * m_CurveVertexes.size());
+		m_vbd.StructureByteStride = sizeof(CURVE_Vertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
-		vinitData.pSysMem = &g_CurveVertexes[0];
-		g_pd3dDevice->CreateBuffer(&g_vbd, &vinitData, &g_pCurveVertexBuffer);
+		vinitData.pSysMem = &m_CurveVertexes[0];
+		m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_pCurveVertexBuffer);
 	}
 	{
 		//create the screen space quad
@@ -973,11 +973,11 @@ void BuildPoint()
 			pd[i + 1].tex = tex[i + 1];
 			pd[i + 2].tex = tex[i + 2];
 		}
-		g_vbd.ByteWidth = (UINT)(sizeof(VSO_Vertex) * 6);
-		g_vbd.StructureByteStride = sizeof(VSO_Vertex);
+		m_vbd.ByteWidth = (UINT)(sizeof(VSO_Vertex) * 6);
+		m_vbd.StructureByteStride = sizeof(VSO_Vertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &pd[0];
-		g_pd3dDevice->CreateBuffer(&g_vbd, &vinitData, &g_pCurveVertex2Buffer);
+		m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_pCurveVertex2Buffer);
 	}
 }
 
@@ -988,127 +988,127 @@ void RenderDiffusion()
 	D3DX11_PASS_DESC PassDesc;
 	UINT stride, offset;
 	//store the old render targets and viewports
-	ID3D11RenderTargetView* old_pRTV = g_pRenderTargetView;
+	ID3D11RenderTargetView* old_pRTV = m_pRenderTargetView;
 	//ID3D11DepthStencilView* old_pDSV = DXUTGetD3D10DepthStencilView();
 	UINT NumViewports = 1;
 	D3D11_VIEWPORT pViewports[20];
-	g_pImmediateContext->RSGetViewports(&NumViewports, &pViewports[0]);
+	m_DeviceContext->RSGetViewports(&NumViewports, &pViewports[0]);
 	// set the shader variables, they are valid through the whole rendering pipeline
-	V(g_pScale->SetFloat(g_scale));
-	V(g_pPan->SetFloatVector(g_pan));
-	V(g_pDiffX->SetFloat(WIDTH));
-	V(g_pDiffY->SetFloat(HEIGHT));
-	V(g_pPolySize->SetFloat(g_polySize));
+	V(m_pScale->SetFloat(m_scale));
+	V(m_pPan->SetFloatVector(m_pan));
+	V(m_pDiffX->SetFloat(WIDTH));
+	V(m_pDiffY->SetFloat(HEIGHT));
+	V(m_pPolySize->SetFloat(m_polySize));
 	// render the triangles to the highest input texture level (assuming they are already defined!)
-	g_pImmediateContext->IASetInputLayout(g_pCurveVertexLayout);
+	m_DeviceContext->IASetInputLayout(m_pCurveVertexLayout);
 	stride = sizeof(CURVE_Vertex);
 	offset = 0;
-	g_pImmediateContext->IASetVertexBuffers(0, 1, &g_pCurveVertexBuffer, &stride, &offset);
-	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	g_pImmediateContext->RSSetViewports(1, &g_vp);
-	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f,
-			0);
+	m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertexBuffer, &stride, &offset);
+	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	m_DeviceContext->RSSetViewports(1, &m_vp);
+	m_DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f,
+		0);
 	//construct the curve triangles in the geometry shader and render them directly
 	ID3D11RenderTargetView* destTexTV[3];
-	destTexTV[0] = g_diffuseTextureTV[1 - diffTex];
-	destTexTV[1] = g_distDirTextureTV;
-	destTexTV[2] = g_otherTextureTV;
-	g_pImmediateContext->OMSetRenderTargets(3, destTexTV, g_pDepthStencilView);
-	g_pDrawVectorsTechnique->GetDesc(&techDesc);
+	destTexTV[0] = m_diffuseTextureTV[1 - diffTex];
+	destTexTV[1] = m_distDirTextureTV;
+	destTexTV[2] = m_otherTextureTV;
+	m_DeviceContext->OMSetRenderTargets(3, destTexTV, m_pDepthStencilView);
+	m_pDrawVectorsTechnique->GetDesc(&techDesc);
 	for (UINT p = 0;p<5 && p < techDesc.Passes; ++p)
 	{
-		g_pDrawVectorsTechnique->GetPassByIndex(p)->Apply(0, g_pImmediateContext);
-		g_pImmediateContext->Draw(g_CurveVertexes.size(), 0);
+		m_pDrawVectorsTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw(m_CurveVertexes.size(), 0);
 	}
 	diffTex = 1 - diffTex;
 	diff2Tex = 1 - diff2Tex;
 	// setup the pipeline for the following image-space algorithms
-	g_pImmediateContext->IASetInputLayout(g_pCurveVertex2Layout);
+	m_DeviceContext->IASetInputLayout(m_pCurveVertex2Layout);
 	stride = sizeof(VSO_Vertex);
 	offset = 0;
-	g_pImmediateContext->IASetVertexBuffers(0, 1, &g_pCurveVertex2Buffer, &stride, &offset);
-	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertex2Buffer, &stride, &offset);
+	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// diffuse the texture in both directions
-	V(g_pInTex[1]->SetResource(g_distDirTextureRV));
-	
+	V(m_pInTex[1]->SetResource(m_distDirTextureRV));
+
 	for (int i = 0; i < diffSteps; i++)
 	{
 		if (i > diffSteps*0.5)
 		{
-			g_blurOn->SetFloat(1);
+			m_blurOn->SetFloat(1);
 		}
 		else
 		{
-			g_blurOn->SetFloat(0);
+			m_blurOn->SetFloat(0);
 		}
 		// SA strategy
-		V(g_pPolySize->SetFloat(1.0 - (float)(i) / (float)diffSteps));
+		V(m_pPolySize->SetFloat(1.0 - (float)(i) / (float)diffSteps));
 		// SH strategy
-// 		V( g_pPolySize->SetFloat( 1.0 ) );
-// 		if (i>diffSteps-diffSteps/2)
-// 		{
-// 				V( g_pPolySize->SetFloat( (float)(diffSteps-i)/(float)(diffSteps/2) ) );
-// 		}
-		
-		g_pImmediateContext->OMSetRenderTargets(1, &g_diffuseTextureTV[1 - diffTex], NULL);
-		(g_pInTex[0]->SetResource(g_diffuseTextureRV[diffTex]));
+		// 		V( g_pPolySize->SetFloat( 1.0 ) );
+		// 		if (i>diffSteps-diffSteps/2)
+		// 		{
+		// 				V( g_pPolySize->SetFloat( (float)(diffSteps-i)/(float)(diffSteps/2) ) );
+		// 		}
+
+		m_DeviceContext->OMSetRenderTargets(1, &m_diffuseTextureTV[1 - diffTex], NULL);
+		(m_pInTex[0]->SetResource(m_diffuseTextureRV[diffTex]));
 		diffTex = 1 - diffTex;
-		g_pDiffuseTechnique->GetDesc(&techDesc);
+		m_pDiffuseTechnique->GetDesc(&techDesc);
 		for (UINT p = 0; p < techDesc.Passes; ++p)
 		{
-			g_pDiffuseTechnique->GetPassByIndex(p)->Apply(0, g_pImmediateContext);
-			g_pImmediateContext->Draw(6, 0);
+			m_pDiffuseTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
+			m_DeviceContext->Draw(6, 0);
 		}
 	}
 	// anti alias the lines
-	g_pImmediateContext->OMSetRenderTargets(1, &g_diffuseTextureTV[1 - diffTex], NULL);
-	V(g_pInTex[0]->SetResource(g_diffuseTextureRV[diffTex]));
-	V(g_pInTex[1]->SetResource(g_otherTextureRV));
+	m_DeviceContext->OMSetRenderTargets(1, &m_diffuseTextureTV[1 - diffTex], NULL);
+	V(m_pInTex[0]->SetResource(m_diffuseTextureRV[diffTex]));
+	V(m_pInTex[1]->SetResource(m_otherTextureRV));
 	diffTex = 1 - diffTex;
-	V(g_pDiffTex->SetResource(g_distDirTextureRV));
-	g_pLineAntiAliasTechnique->GetDesc(&techDesc);
+	V(m_pDiffTex->SetResource(m_distDirTextureRV));
+	m_pLineAntiAliasTechnique->GetDesc(&techDesc);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-		g_pLineAntiAliasTechnique->GetPassByIndex(p)->Apply(0, g_pImmediateContext);
-		g_pImmediateContext->Draw(6, 0);
+		m_pLineAntiAliasTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw(6, 0);
 	}
 	//restore old render targets
-	g_pImmediateContext->OMSetRenderTargets(1,  &old_pRTV,  NULL);
-	g_pImmediateContext->RSSetViewports(NumViewports, &pViewports[0]);
+	m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  NULL);
+	m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
 }
 
 // this renders the final image to the screen
 void RenderToView()
 {
-	ID3D11RenderTargetView* old_pRTV = g_pRenderTargetView;
+	ID3D11RenderTargetView* old_pRTV = m_pRenderTargetView;
 	//ID3D11DepthStencilView* old_pDSV = DXUTGetD3D10DepthStencilView();
-	g_pImmediateContext->ClearRenderTargetView(g_TextureTV, D3DXCOLOR(0, 0, 0, 0));
-	g_pImmediateContext->OMSetRenderTargets(1, &g_TextureTV, g_pDepthStencilView);
+	m_DeviceContext->ClearRenderTargetView(m_TextureTV, D3DXCOLOR(0, 0, 0, 0));
+	m_DeviceContext->OMSetRenderTargets(1, &m_TextureTV, m_pDepthStencilView);
 	HRESULT hr;
 	// Set the input layout
-	g_pImmediateContext->IASetInputLayout(g_pCurveVertex2Layout);
+	m_DeviceContext->IASetInputLayout(m_pCurveVertex2Layout);
 	// Set vertex buffer
 	UINT stride = sizeof(VSO_Vertex);
 	UINT offset = 0;
-	g_pImmediateContext->IASetVertexBuffers(0, 1, &g_pCurveVertex2Buffer, &stride, &offset);
-	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	V(g_pDiffTex->SetResource(g_diffuseTextureRV[diffTex]));
-	//V(g_pDiffTex->SetResource(g_distDirTextureRV));
+	m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertex2Buffer, &stride, &offset);
+	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	V(m_pDiffTex->SetResource(m_diffuseTextureRV[diffTex]));
+	//V(m_pDiffTex->SetResource(m_distDirTextureRV));
 	D3DX11_TECHNIQUE_DESC techDesc;
-	g_pDisplayImage->GetDesc(&techDesc);
+	m_pDisplayImage->GetDesc(&techDesc);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-		g_pDisplayImage->GetPassByIndex(p)->Apply(0, g_pImmediateContext);
-		g_pImmediateContext->Draw(6, 0);
+		m_pDisplayImage->GetPassByIndex(p)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw(6, 0);
 	}
-	g_pImmediateContext->OMSetRenderTargets(1,  &old_pRTV, NULL);
+	m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV, NULL);
 	offset = 0;
-	g_pImmediateContext->IASetVertexBuffers(0, 1, &g_pCurveVertex2Buffer, &stride, &offset);
-	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	V(g_pDiffTex->SetResource(g_TextureRV));
+	m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertex2Buffer, &stride, &offset);
+	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	V(m_pDiffTex->SetResource(m_TextureRV));
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-		g_pDisplayImage->GetPassByIndex(p)->Apply(0, g_pImmediateContext);
-		g_pImmediateContext->Draw(6, 0);
+		m_pDisplayImage->GetPassByIndex(p)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw(6, 0);
 	}
 }

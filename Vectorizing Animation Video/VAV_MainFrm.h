@@ -40,6 +40,15 @@ public:
 	int     m_PictureTransparency;
 	int     m_LineTransparency;
 	int     m_LineSkeletonTransparency;
+	bool	m_DRAW_PATCH;
+	bool	m_DRAW_SEPARATE_PATCH;
+	bool	m_DRAW_CONTOUR;
+	bool	m_DRAW_CONTOUR_CONTROL_POINT;
+	bool	m_DRAW_CONTOUR_SKELETON_POINT;
+	bool	m_DRAW_ISOSURFACE;
+	bool	m_DRAW_CURVE_EXTRACTION;
+	bool	m_DRAW_CANNY_EXTRACTION;
+
 	CvPatchs    m_CvPatchs;
 	void    ShowPatch(double x, double y);
 // §@·~

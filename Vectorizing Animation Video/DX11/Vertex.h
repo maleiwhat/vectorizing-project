@@ -68,11 +68,30 @@ struct SkeletonLineVertex
 };
 typedef std::vector<SkeletonLineVertex> SkeletonLineVertexes;
 
+struct VSO_Vertex
+{
+	D3DXVECTOR3 pos; // Position
+	D3DXVECTOR2 tex; // Texturecoords
+};
+typedef std::vector<VSO_Vertex> VSO_Vertexes;
+
+struct CURVE_Vertex
+{
+	D3DXVECTOR2 pos;        // Position
+	D3DXVECTOR4 lcolor;     // Color: left and Blur in w
+	D3DXVECTOR4 rcolor;     // Color: right and Blur in w
+	D3DXVECTOR2 nb;     // previous vertex and next vertex
+};
+typedef std::vector<CURVE_Vertex> CURVE_Vertexes;
+
+
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_PointVertex[];
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_PICVertex[];
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_TRIVertex[];
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_LineVertex[];
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_LineVertex2w[];
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_SkeletonLineVertex[];
+extern D3D11_INPUT_ELEMENT_DESC VertexDesc_VSOVertex[];
+extern D3D11_INPUT_ELEMENT_DESC VertexDesc_CurveVertex[];
 
 #endif // VERTEX_H

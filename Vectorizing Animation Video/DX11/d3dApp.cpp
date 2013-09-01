@@ -4,11 +4,12 @@
 #include "SplineShape.h"
 #include <auto_link_effect11.hpp>
 #include "math/Quaternion.h"
+#include <strsafe.h>
 
 D3DApp::D3DApp()
 {
 	SplineShape ss;
-	m_d3dDevice = NULL;
+	m_pd3dDevice = NULL;
 	m_SwapChain = NULL;
 	m_DepthStencilBuffer = NULL;
 	m_Backup_Buffer = NULL;
@@ -119,7 +120,7 @@ D3DApp::D3DApp()
 	m_Minimized  = false;
 	m_Maximized  = false;
 	m_Resizing   = false;
-	m_Init		 = false;
+	m_Init       = false;
 	m_FrameStats = L"";
 	m_DXUT_UI = NULL;
 	//mFont               = 0;
@@ -129,11 +130,51 @@ D3DApp::D3DApp()
 	m_ClearColor     = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
 	m_ClientWidth    = 1440;
 	m_ClientHeight   = 900;
+	// diffusion curve part
+	m_pan = D3DXVECTOR2(0, 0);
+	m_pCurveVertexLayout = NULL;
+	m_pCurveVertexBuffer = NULL;
+	m_pCurveVertex2Layout = NULL;
+	m_pCurveVertex2Buffer = NULL;
+	m_pDepthStencil = NULL;
+	m_polySize = 0.5;
+	diffTex = 0;
+	diff2Tex = 0;
+	diffSteps = 8;
+	m_diffdistDirTexture = NULL;
+	m_diffuseTexture[0] = NULL;
+	m_diffuseTexture[1] = NULL;
+	m_diffuseTextureRV[0] = NULL;
+	m_diffuseTextureTV[0] = NULL;
+	m_diffuseTextureRV[1] = NULL;
+	m_diffuseTextureTV[1] = NULL;
+	m_diffdistDirTextureRV = NULL;
+	m_diffdistDirTextureTV = NULL;
+	m_Texture = NULL;
+	m_TextureRV = NULL;
+	m_TextureTV = NULL;
+	m_pDepthStencilView = NULL;
+	m_otherTexture = NULL;
+	m_otherTextureRV = NULL;
+	m_otherTextureTV = NULL;
+	m_pDrawVectorsTechnique = NULL;
+	m_pDiffuseTechnique = NULL;
+	m_pLineAntiAliasTechnique = NULL;
+	m_pDisplayImage = NULL;
+	m_pInTex[0] = NULL;
+	m_pInTex[1] = NULL;
+	m_pInTex[2] = NULL;
+	m_pDiffTex = NULL;
+	m_pDiffX = NULL;
+	m_pDiffY = NULL;
+	m_pScale = NULL;
+	m_pPan = NULL;
+	m_pPolySize = NULL;
 }
 
 D3DApp::~D3DApp()
 {
-	ReleaseCOM(m_d3dDevice);
+	ReleaseCOM(m_pd3dDevice);
 	ReleaseCOM(m_SwapChain);
 	ReleaseCOM(m_DepthStencilBuffer);
 	ReleaseCOM(m_DrawTexture);
@@ -160,6 +201,8 @@ D3DApp::~D3DApp()
 	ReleaseCOM(m_BackBuffer);
 	ReleaseCOM(m_distDirTextureRV);
 	ReleaseCOM(m_distDirTextureTV);
+	ReleaseCOM(m_diffdistDirTextureRV);
+	ReleaseCOM(m_diffdistDirTextureTV);
 	if (m_DXUT_UI)
 	{
 		delete m_DXUT_UI;
@@ -191,7 +234,7 @@ void D3DApp::initDirect3D()
 	m_DXUT_UI->InitDXUT();
 	m_DXUT_UI->SetWindow(m_hMainWnd);
 	m_DXUT_UI->CreateDevice(m_ClientWidth, m_ClientHeight);
-	m_d3dDevice = m_DXUT_UI->GetDevice();
+	m_pd3dDevice = m_DXUT_UI->GetDevice();
 	m_DeviceContext = m_DXUT_UI->GetDeviceContext();
 	m_SwapChain = m_DXUT_UI->GetSwapChaine();
 	OnResize(m_ClientWidth, m_ClientHeight);
@@ -209,7 +252,7 @@ void D3DApp::OnResize(int w, int h)
 		w = m_ClientWidth;
 		h = m_ClientHeight;
 	}
-	if (!m_d3dDevice)
+	if (!m_pd3dDevice)
 	{
 		return;
 	}
@@ -229,7 +272,7 @@ void D3DApp::OnResize(int w, int h)
 	//HR(mSwapChain->ResizeBuffers(2, mClientWidth, mClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, 0));
 	HR(m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
 							  reinterpret_cast<void**>(&m_BackBuffer)));
-	HR(m_d3dDevice->CreateRenderTargetView(m_BackBuffer, 0, &m_RenderTargetView));
+	HR(m_pd3dDevice->CreateRenderTargetView(m_BackBuffer, 0, &m_RenderTargetView));
 	// Create the depth/stencil buffer and view.
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
 	depthStencilDesc.Width     = w;
@@ -243,9 +286,9 @@ void D3DApp::OnResize(int w, int h)
 	depthStencilDesc.BindFlags      = D3D11_BIND_DEPTH_STENCIL;
 	depthStencilDesc.CPUAccessFlags = 0;
 	depthStencilDesc.MiscFlags      = 0;
-	HR(m_d3dDevice->CreateTexture2D(&depthStencilDesc, 0, &m_DepthStencilBuffer));
-	HR(m_d3dDevice->CreateDepthStencilView(m_DepthStencilBuffer, 0,
-										   &m_DepthStencilView));
+	HR(m_pd3dDevice->CreateTexture2D(&depthStencilDesc, 0, &m_DepthStencilBuffer));
+	HR(m_pd3dDevice->CreateDepthStencilView(m_DepthStencilBuffer, 0,
+											&m_DepthStencilView));
 	// Bind the render target view and depth/stencil view to the pipeline.
 	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	// Set the viewport transform.
@@ -294,10 +337,10 @@ void D3DApp::OnDrawToBimapResize()
 		depthStencilDesc.Width     = TexWidth;
 		depthStencilDesc.Height    = TexHeight;
 	}
-	HR(m_d3dDevice->CreateTexture2D(&depthStencilDesc, 0,
-									&m_DrawTextureDepthStencilBuffer));
-	HR(m_d3dDevice->CreateDepthStencilView(m_DrawTextureDepthStencilBuffer, 0,
-										   &m_DrawTextureDepthStencilView));
+	HR(m_pd3dDevice->CreateTexture2D(&depthStencilDesc, 0,
+									 &m_DrawTextureDepthStencilBuffer));
+	HR(m_pd3dDevice->CreateDepthStencilView(m_DrawTextureDepthStencilBuffer, 0,
+											&m_DrawTextureDepthStencilView));
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
 	if (TexWidth > 0)
@@ -320,9 +363,9 @@ void D3DApp::OnDrawToBimapResize()
 	texDesc.CPUAccessFlags = 0;
 	texDesc.MiscFlags = 0;
 	printf("%d %d\n", TexWidth, TexHeight);
-	HR(m_d3dDevice->CreateTexture2D(&texDesc, 0, &m_DrawTexture));
-	HR(m_d3dDevice->CreateRenderTargetView(m_DrawTexture, NULL, &m_distDirTextureTV));
-	HR(m_d3dDevice->CreateShaderResourceView(m_DrawTexture, NULL, &m_distDirTextureRV));
+	HR(m_pd3dDevice->CreateTexture2D(&texDesc, 0, &m_DrawTexture));
+	HR(m_pd3dDevice->CreateRenderTargetView(m_DrawTexture, NULL, &m_distDirTextureTV));
+	HR(m_pd3dDevice->CreateShaderResourceView(m_DrawTexture, NULL, &m_distDirTextureRV));
 }
 
 void D3DApp::DrawScene()
@@ -341,6 +384,8 @@ void D3DApp::DrawScene()
 	InterDraw();
 	m_SwapChain->Present(0, 0);
 }
+
+
 
 void D3DApp::BuildShaderFX()
 {
@@ -361,7 +406,7 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
-									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Pics_Effect));
+									pCode->GetBufferSize(), NULL, m_pd3dDevice, &m_Pics_Effect));
 	m_Pics_PTech = m_Pics_Effect->GetTechniqueByName("PointTech");
 	m_Pics_Width = m_Pics_Effect->GetVariableByName("width")->AsScalar();
 	m_Pics_Height = m_Pics_Effect->GetVariableByName("height")->AsScalar();
@@ -373,8 +418,8 @@ void D3DApp::BuildShaderFX()
 		m_Pics_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDesc;
 	m_Pics_PTech->GetPassByIndex(0)->GetDesc(&PassDesc);
-	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PICVertex, 2,
-									  PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_Pics_PLayout));
+	HR(m_pd3dDevice->CreateInputLayout(VertexDesc_PICVertex, 2,
+									   PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &m_Pics_PLayout));
 	//Triangle
 	hr = 0;
 	hr = D3DX11CompileFromFile(_T("shader\\triangle.fx"), NULL, NULL, NULL,
@@ -390,7 +435,7 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
-									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Triangle_Effect));
+									pCode->GetBufferSize(), NULL, m_pd3dDevice, &m_Triangle_Effect));
 	m_Triangle_PTech = m_Triangle_Effect->GetTechniqueByName("PointTech");
 	m_Triangle_Width = m_Triangle_Effect->GetVariableByName("width")->AsScalar();
 	m_Triangle_Height = m_Triangle_Effect->GetVariableByName("height")->AsScalar();
@@ -403,9 +448,9 @@ void D3DApp::BuildShaderFX()
 		m_Triangle_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri;
 	m_Triangle_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri);
-	HR(m_d3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6,
-									  PassDescTri.pIAInputSignature,
-									  PassDescTri.IAInputSignatureSize, &m_Triangle_PLayout));
+	HR(m_pd3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6,
+									   PassDescTri.pIAInputSignature,
+									   PassDescTri.IAInputSignatureSize, &m_Triangle_PLayout));
 	hr = D3DX11CompileFromFile(_T("shader\\triangleline.fx"), NULL, NULL, NULL,
 							   "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
 							   &pCode, &pError, NULL);
@@ -419,7 +464,7 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
-									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_TriangleLine_Effect));
+									pCode->GetBufferSize(), NULL, m_pd3dDevice, &m_TriangleLine_Effect));
 	m_TriangleLine_PTech = m_TriangleLine_Effect->GetTechniqueByName("PointTech");
 	m_TriangleLine_Width =
 		m_TriangleLine_Effect->GetVariableByName("width")->AsScalar();
@@ -435,9 +480,9 @@ void D3DApp::BuildShaderFX()
 		m_TriangleLine_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri2;
 	m_TriangleLine_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri2);
-	HR(m_d3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6,
-									  PassDescTri2.pIAInputSignature,
-									  PassDescTri2.IAInputSignatureSize, &m_TriangleLine_PLayout));
+	HR(m_pd3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6,
+									   PassDescTri2.pIAInputSignature,
+									   PassDescTri2.IAInputSignatureSize, &m_TriangleLine_PLayout));
 	hr = D3DX11CompileFromFile(_T("shader\\patch.fx"), NULL, NULL, NULL,
 							   "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
 							   &pCode, &pError, NULL);
@@ -451,7 +496,7 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
-									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Patch_Effect));
+									pCode->GetBufferSize(), NULL, m_pd3dDevice, &m_Patch_Effect));
 	m_Patch_PTech = m_Patch_Effect->GetTechniqueByName("PointTech");
 	m_Patch_Width = m_Patch_Effect->GetVariableByName("width")->AsScalar();
 	m_Patch_Height = m_Patch_Effect->GetVariableByName("height")->AsScalar();
@@ -462,9 +507,9 @@ void D3DApp::BuildShaderFX()
 		m_Patch_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri3;
 	m_Patch_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri3);
-	HR(m_d3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6,
-									  PassDescTri3.pIAInputSignature,
-									  PassDescTri3.IAInputSignatureSize, &m_Patch_PLayout));
+	HR(m_pd3dDevice->CreateInputLayout(VertexDesc_TRIVertex, 6,
+									   PassDescTri3.pIAInputSignature,
+									   PassDescTri3.IAInputSignatureSize, &m_Patch_PLayout));
 	hr = D3DX11CompileFromFile(_T("shader\\bigpoint.fx"), NULL, NULL, NULL,
 							   "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
 							   &pCode, &pError, NULL);
@@ -478,7 +523,7 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
-									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Points_Effect));
+									pCode->GetBufferSize(), NULL, m_pd3dDevice, &m_Points_Effect));
 	m_Points_PTech = m_Points_Effect->GetTechniqueByName("PointTech");
 	m_Points_Width = m_Points_Effect->GetVariableByName("width")->AsScalar();
 	m_Points_Height = m_Points_Effect->GetVariableByName("height")->AsScalar();
@@ -489,9 +534,9 @@ void D3DApp::BuildShaderFX()
 		m_Points_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri4;
 	m_Points_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri4);
-	HR(m_d3dDevice->CreateInputLayout(VertexDesc_PointVertex, 3,
-									  PassDescTri4.pIAInputSignature,
-									  PassDescTri4.IAInputSignatureSize, &m_Points_PLayout));
+	HR(m_pd3dDevice->CreateInputLayout(VertexDesc_PointVertex, 3,
+									   PassDescTri4.pIAInputSignature,
+									   PassDescTri4.IAInputSignatureSize, &m_Points_PLayout));
 	hr = D3DX11CompileFromFile(_T("shader\\Line.fx"), NULL, NULL, NULL,
 							   "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
 							   &pCode, &pError, NULL);
@@ -505,7 +550,7 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
-									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Lines_Effect));
+									pCode->GetBufferSize(), NULL, m_pd3dDevice, &m_Lines_Effect));
 	m_Lines_PTech = m_Lines_Effect->GetTechniqueByName("PointTech");
 	m_Lines_Width = m_Lines_Effect->GetVariableByName("width")->AsScalar();
 	m_Lines_Height = m_Lines_Effect->GetVariableByName("height")->AsScalar();
@@ -516,9 +561,9 @@ void D3DApp::BuildShaderFX()
 		m_Lines_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri5;
 	m_Lines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri5);
-	HR(m_d3dDevice->CreateInputLayout(VertexDesc_LineVertex, 6,
-									  PassDescTri5.pIAInputSignature,
-									  PassDescTri5.IAInputSignatureSize, &m_Lines_PLayout));
+	HR(m_pd3dDevice->CreateInputLayout(VertexDesc_LineVertex, 6,
+									   PassDescTri5.pIAInputSignature,
+									   PassDescTri5.IAInputSignatureSize, &m_Lines_PLayout));
 	hr = D3DX11CompileFromFile(_T("shader\\Line2w.fx"), NULL, NULL, NULL,
 							   "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
 							   &pCode, &pError, NULL);
@@ -532,7 +577,7 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
-									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_Lines2w_Effect));
+									pCode->GetBufferSize(), NULL, m_pd3dDevice, &m_Lines2w_Effect));
 	m_Lines2w_PTech = m_Lines2w_Effect->GetTechniqueByName("PointTech");
 	m_Lines2w_Width = m_Lines2w_Effect->GetVariableByName("width")->AsScalar();
 	m_Lines2w_Height = m_Lines2w_Effect->GetVariableByName("height")->AsScalar();
@@ -543,9 +588,9 @@ void D3DApp::BuildShaderFX()
 	m_Lines2w_PeripheryAlpha = m_Lines2w_Effect->GetVariableByName("peripheryAlpha")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri6;
 	m_Lines2w_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri6);
-	HR(m_d3dDevice->CreateInputLayout(VertexDesc_LineVertex2w, 7,
-									  PassDescTri6.pIAInputSignature,
-									  PassDescTri6.IAInputSignatureSize, &m_Lines2w_PLayout));
+	HR(m_pd3dDevice->CreateInputLayout(VertexDesc_LineVertex2w, 7,
+									   PassDescTri6.pIAInputSignature,
+									   PassDescTri6.IAInputSignatureSize, &m_Lines2w_PLayout));
 	hr = D3DX11CompileFromFile(_T("shader\\SkeletonLine.fx"), NULL, NULL, NULL,
 							   "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
 							   &pCode, &pError, NULL);
@@ -559,7 +604,7 @@ void D3DApp::BuildShaderFX()
 		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
 	}
 	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
-									pCode->GetBufferSize(), NULL, m_d3dDevice, &m_SkeletonLines_Effect));
+									pCode->GetBufferSize(), NULL, m_pd3dDevice, &m_SkeletonLines_Effect));
 	m_SkeletonLines_PTech = m_SkeletonLines_Effect->GetTechniqueByName("PointTech");
 	m_SkeletonLines_Width =
 		m_SkeletonLines_Effect->GetVariableByName("width")->AsScalar();
@@ -575,9 +620,131 @@ void D3DApp::BuildShaderFX()
 		m_SkeletonLines_Effect->GetVariableByName("transparency")->AsScalar();
 	D3DX11_PASS_DESC PassDescTri7;
 	m_SkeletonLines_PTech->GetPassByIndex(0)->GetDesc(&PassDescTri7);
-	HR(m_d3dDevice->CreateInputLayout(VertexDesc_SkeletonLineVertex, 3,
-									  PassDescTri7.pIAInputSignature,
-									  PassDescTri7.IAInputSignatureSize, &m_SkeletonLines_PLayout));
+	HR(m_pd3dDevice->CreateInputLayout(VertexDesc_SkeletonLineVertex, 3,
+									   PassDescTri7.pIAInputSignature,
+									   PassDescTri7.IAInputSignatureSize, &m_SkeletonLines_PLayout));
+	// diffusion curve part
+	hr = D3DX11CompileFromFile(_T("shader\\DiffusionCurves.fx"), NULL, NULL, NULL,
+							   "fx_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, NULL, NULL,
+							   &pCode, &pError, NULL);
+	if (FAILED(hr))
+	{
+		if (pError)
+		{
+			MessageBoxA(0, (char*)pError->GetBufferPointer(), 0, 0);
+			SAFE_RELEASE(pError);
+		}
+		DXTrace(__FILE__, __LINE__, hr, _T("D3DX11CreateEffectFromFile"), TRUE);
+	}
+	ID3DX11Effect*  pEffect11;
+	HR(D3DX11CreateEffectFromMemory(pCode->GetBufferPointer(),
+									pCode->GetBufferSize(), NULL, m_pd3dDevice, &pEffect11));
+	m_pDrawVectorsTechnique = pEffect11->GetTechniqueByName("DrawCurves");
+	m_pDiffuseTechnique = pEffect11->GetTechniqueByName("Diffuse");
+	m_pLineAntiAliasTechnique = pEffect11->GetTechniqueByName("LineAntiAlias");
+	m_pDisplayImage = pEffect11->GetTechniqueByName("DisplayDiffusionImage");
+	m_pDiffTex = pEffect11->GetVariableByName("g_diffTex")->AsShaderResource();
+	for (int i = 0; i < 3; i++)
+	{
+		m_pInTex[i] = (pEffect11->GetVariableByName("g_inTex"))->GetElement(
+						  i)->AsShaderResource();
+	}
+	m_blurOn = pEffect11->GetVariableByName("g_blurOn")->AsScalar();
+	m_pDiffX = pEffect11->GetVariableByName("g_diffX")->AsScalar();
+	m_pDiffY = pEffect11->GetVariableByName("g_diffY")->AsScalar();
+	m_pScale = pEffect11->GetVariableByName("g_scale")->AsScalar();
+	m_pPolySize = pEffect11->GetVariableByName("g_polySize")->AsScalar();
+	m_pPan = pEffect11->GetVariableByName("g_pan")->AsVector();
+	m_pDrawVectorsTechnique->GetPassByIndex(0)->GetDesc(&PassDesc);
+	if (FAILED(m_pd3dDevice->CreateInputLayout(VertexDesc_CurveVertex,
+			   4,
+			   PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize,
+			   &m_pCurveVertexLayout)))
+	{
+		return;
+	}
+	m_pDiffuseTechnique->GetPassByIndex(0)->GetDesc(&PassDesc);
+	if (FAILED(m_pd3dDevice->CreateInputLayout(VertexDesc_VSOVertex,
+			   2,
+			   PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize,
+			   &m_pCurveVertex2Layout)))
+	{
+		return;
+	}
+	// create the depth buffer (only needed for curve mask rendering)
+	DXGI_SAMPLE_DESC samdesc;
+	samdesc.Count = 1;
+	samdesc.Quality = 0;
+	D3D11_TEXTURE2D_DESC texdesc;
+	ZeroMemory(&texdesc, sizeof(D3D11_TEXTURE2D_DESC));
+	texdesc.MipLevels = 1;
+	texdesc.ArraySize = 1;
+	texdesc.SampleDesc = samdesc;
+	texdesc.Width = (int)(m_ClientWidth);
+	texdesc.Height = (int)(m_ClientHeight);
+	texdesc.Usage = D3D11_USAGE_DEFAULT;
+	texdesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	texdesc.Format = DXGI_FORMAT_D32_FLOAT;
+	if (m_pDepthStencil != NULL)
+	{
+		m_pDepthStencil->Release();
+	}
+	hr = m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_pDepthStencil);
+	hr = m_pd3dDevice->CreateDepthStencilView(m_pDepthStencil, NULL,
+			&m_pDepthStencilView);
+	//create diffusion textures (2 for ping pong rendering)
+	if (m_diffuseTexture[0] != NULL)
+	{
+		m_diffuseTexture[0]->Release();
+	}
+	if (m_diffuseTexture[1] != NULL)
+	{
+		m_diffuseTexture[1]->Release();
+	}
+	if (m_diffdistDirTexture != NULL)
+	{
+		m_diffdistDirTexture->Release();
+	}
+	if (m_otherTexture != NULL)
+	{
+		m_otherTexture->Release();
+	}
+	texdesc.Width = (int)(m_ClientWidth);
+	texdesc.Height = (int)(m_ClientHeight);
+	texdesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//texdesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;  // use this for higher accuracy diffusion
+	texdesc.Usage = D3D11_USAGE_DEFAULT;
+	texdesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_diffuseTexture[0]));
+	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_diffuseTexture[1]));
+	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_otherTexture));
+	// distance map + nearest point map
+	texdesc.Usage = D3D11_USAGE_DEFAULT;
+	texdesc.CPUAccessFlags = 0;
+	texdesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	texdesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_diffdistDirTexture));
+	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_Texture));
+	//create render target views
+	HR(m_pd3dDevice->CreateShaderResourceView(m_diffuseTexture[0], NULL,
+			&m_diffuseTextureRV[0]));
+	HR(m_pd3dDevice->CreateRenderTargetView(m_diffuseTexture[0], NULL,
+											&m_diffuseTextureTV[0]));
+	HR(m_pd3dDevice->CreateShaderResourceView(m_diffuseTexture[1], NULL,
+			&m_diffuseTextureRV[1]));
+	HR(m_pd3dDevice->CreateRenderTargetView(m_diffuseTexture[1], NULL,
+											&m_diffuseTextureTV[1]));
+	HR(m_pd3dDevice->CreateShaderResourceView(m_diffdistDirTexture, NULL,
+			&m_diffdistDirTextureRV));
+	HR(m_pd3dDevice->CreateRenderTargetView(m_diffdistDirTexture, NULL,
+											&m_diffdistDirTextureTV));
+	HR(m_pd3dDevice->CreateShaderResourceView(m_Texture, NULL, &m_TextureRV));
+	HR(m_pd3dDevice->CreateRenderTargetView(m_Texture, NULL, &m_TextureTV));
+	HR(m_pd3dDevice->CreateShaderResourceView(m_otherTexture, NULL,
+		&m_otherTextureRV));
+	HR(m_pd3dDevice->CreateRenderTargetView(m_otherTexture, NULL,
+		&m_otherTextureTV));
+	// diffusion curve part end
 	m_Init = true;
 }
 
@@ -609,6 +776,9 @@ void D3DApp::ClearTriangles()
 	m_Lines2wVertices.clear();
 	ReleaseCOM(m_SkeletonLines_Buffer);
 	m_SkeletonLinesVertices.clear();
+	ReleaseCOM(m_pCurveVertexBuffer);
+	ReleaseCOM(m_pCurveVertex2Buffer);
+	m_CurveVertexes.clear();
 }
 
 void D3DApp::BuildPoint()
@@ -625,6 +795,8 @@ void D3DApp::BuildPoint()
 	ReleaseCOM(m_Lines_Buffer);
 	ReleaseCOM(m_Lines2w_Buffer);
 	ReleaseCOM(m_SkeletonLines_Buffer);
+	ReleaseCOM(m_pCurveVertexBuffer);
+	ReleaseCOM(m_pCurveVertex2Buffer);
 	if (!m_DeviceContext)
 	{
 		return;
@@ -646,7 +818,7 @@ void D3DApp::BuildPoint()
 		m_vbd.StructureByteStride = sizeof(PictureVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_PicsVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Pics_Buffer));
+		HR(m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Pics_Buffer));
 	}
 	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
 	if (!m_TriangleVertices.empty())
@@ -655,7 +827,7 @@ void D3DApp::BuildPoint()
 		m_vbd.StructureByteStride = sizeof(TriangleVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_TriangleVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Triangle_Buffer));
+		HR(m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Triangle_Buffer));
 	}
 	if (!m_TriangleLineVertices.empty())
 	{
@@ -664,7 +836,7 @@ void D3DApp::BuildPoint()
 		m_vbd.StructureByteStride = sizeof(TriangleVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_TriangleLineVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_TriangleLine_Buffer));
+		HR(m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_TriangleLine_Buffer));
 	}
 	if (!m_PatchVertices.empty())
 	{
@@ -672,7 +844,7 @@ void D3DApp::BuildPoint()
 		m_vbd.StructureByteStride = sizeof(TriangleVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_PatchVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Patch_Buffer));
+		HR(m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Patch_Buffer));
 	}
 	if (!m_PointsVertices.empty())
 	{
@@ -680,7 +852,7 @@ void D3DApp::BuildPoint()
 		m_vbd.StructureByteStride = sizeof(PointVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_PointsVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Points_Buffer));
+		HR(m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Points_Buffer));
 	}
 	if (!m_LinesVertices.empty())
 	{
@@ -688,7 +860,7 @@ void D3DApp::BuildPoint()
 		m_vbd.StructureByteStride = sizeof(LineVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_LinesVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Lines_Buffer));
+		HR(m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Lines_Buffer));
 	}
 	if (!m_Lines2wVertices.empty())
 	{
@@ -696,7 +868,7 @@ void D3DApp::BuildPoint()
 		m_vbd.StructureByteStride = sizeof(LineVertex2w);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_Lines2wVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Lines2w_Buffer));
+		HR(m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_Lines2w_Buffer));
 	}
 	int originSize = m_SkeletonLinesVertices.size();
 	m_SkeletonLinesVertices.insert(m_SkeletonLinesVertices.end(),
@@ -709,10 +881,46 @@ void D3DApp::BuildPoint()
 		m_vbd.StructureByteStride = sizeof(SkeletonLineVertex);
 		D3D11_SUBRESOURCE_DATA vinitData;
 		vinitData.pSysMem = &m_SkeletonLinesVertices[0];
-		HR(m_d3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_SkeletonLines_Buffer));
+		HR(m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_SkeletonLines_Buffer));
 	}
 	m_SkeletonLinesVertices.erase(m_SkeletonLinesVertices.begin() + originSize,
 								  m_SkeletonLinesVertices.end());
+	// diffusion curve part
+	if (!m_CurveVertexes.empty())
+	{
+		m_vbd.ByteWidth = (UINT)(sizeof(CURVE_Vertex) * m_CurveVertexes.size());
+		m_vbd.StructureByteStride = sizeof(CURVE_Vertex);
+		D3D11_SUBRESOURCE_DATA vinitData;
+		vinitData.pSysMem = &m_CurveVertexes[0];
+		m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_pCurveVertexBuffer);
+		// render to view
+		//create the screen space quad
+		D3DXVECTOR3 pos[3 * 2] =
+		{
+			D3DXVECTOR3(-1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(-1.0f, 1.0f, +0.5f),
+			D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, 1.0f, +0.5f), D3DXVECTOR3(-1.0f, 1.0f, +0.5f)
+		};
+		D3DXVECTOR2 tex[3 * 2] =
+		{
+			D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(0.0f, 1.0f),
+			D3DXVECTOR2(1.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(0.0f, 1.0f)
+		};
+		VSO_Vertex pd[2 * 3];
+		for (int ctri = 0; ctri < 2; ctri++)
+		{
+			UINT32 i = 3 * ctri;
+			pd[i + 0].pos = pos[i + 0];
+			pd[i + 1].pos = pos[i + 1];
+			pd[i + 2].pos = pos[i + 2];
+			pd[i + 0].tex = tex[i + 0];
+			pd[i + 1].tex = tex[i + 1];
+			pd[i + 2].tex = tex[i + 2];
+		}
+		m_vbd.ByteWidth = (UINT)(sizeof(VSO_Vertex) * 6);
+		m_vbd.StructureByteStride = sizeof(VSO_Vertex);
+		vinitData.pSysMem = &pd[0];
+		m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_pCurveVertex2Buffer);
+	}
 }
 
 void D3DApp::SetPictureSize(int w, int h)
@@ -889,14 +1097,14 @@ void D3DApp::LoadBlend()
 	depth_stencil_desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
 	depth_stencil_desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
 	// 開啟zbuffer write
-	if (D3D_OK != m_d3dDevice->CreateDepthStencilState(&depth_stencil_desc,
+	if (D3D_OK != m_pd3dDevice->CreateDepthStencilState(&depth_stencil_desc,
 			&m_pDepthStencil_ZWriteON))
 	{
 		return ;
 	}
 	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 	// 關閉zbuffer write
-	if (D3D_OK != m_d3dDevice->CreateDepthStencilState(&depth_stencil_desc,
+	if (D3D_OK != m_pd3dDevice->CreateDepthStencilState(&depth_stencil_desc,
 			&m_pDepthStencil_ZWriteOFF))
 	{
 		return ;
@@ -914,7 +1122,7 @@ void D3DApp::LoadBlend()
 		D3D11_BLEND_OP_ADD,
 		D3D11_COLOR_WRITE_ENABLE_ALL);
 	// ADD混色模式
-	if (D3D_OK != m_d3dDevice->CreateBlendState(&blend_state_desc,
+	if (D3D_OK != m_pd3dDevice->CreateBlendState(&blend_state_desc,
 			&m_pBlendState_ADD))
 	{
 		return;
@@ -924,7 +1132,7 @@ void D3DApp::LoadBlend()
 	blend_state_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
 	blend_state_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 	// Alpha Blend混色模式
-	if (D3D_OK != m_d3dDevice->CreateBlendState(&blend_state_desc,
+	if (D3D_OK != m_pd3dDevice->CreateBlendState(&blend_state_desc,
 			&m_pBlendState_BLEND))
 	{
 		return ;
@@ -993,7 +1201,7 @@ void D3DApp::SetTransparency_Line(float t)
 	m_Transparency_Lines = t;
 	m_Lines_Alpha->SetFloat(t);
 	m_Lines2w_CenterAlpha->SetFloat(t);
-	m_Lines2w_PeripheryAlpha->SetFloat(t*0.5);
+	m_Lines2w_PeripheryAlpha->SetFloat(t * 0.5);
 }
 
 void D3DApp::SetTransparency_LineSkeleton(float t)
@@ -1552,6 +1760,140 @@ void D3DApp::InterDraw()
 		m_DeviceContext->Draw((UINT)m_SkeletonLinesVertices.size() +
 							  m_SkeletonLinesVerticesCover.size(), 0);
 	}
+	if (m_CurveVertexes.size() > 0)
+	{
+		// diffusion curve part
+		HRESULT hr;
+		D3DX11_TECHNIQUE_DESC techDesc;
+		D3DX11_PASS_DESC PassDesc;
+		UINT stride, offset;
+		//store the old render targets and viewports
+		ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
+		ID3D11DepthStencilView* old_pDSV = DXUTGetD3D11DepthStencilView();
+		UINT NumViewports = 1;
+		D3D11_VIEWPORT pViewports[20];
+		m_DeviceContext->RSGetViewports(&NumViewports, &pViewports[0]);
+		// set the shader variables, they are valid through the whole rendering pipeline
+		HR(m_pScale->SetFloat(m_Scale));
+		m_pan.x = m_LookCenterX;
+		m_pan.y = m_LookCenterY;
+		HR(m_pPan->SetFloatVector(m_pan));
+// 		HR(m_pDiffX->SetFloat(m_PicW));
+// 		HR(m_pDiffY->SetFloat(m_PicH));
+		HR(m_pDiffX->SetFloat(m_ClientWidth));
+		HR(m_pDiffY->SetFloat(m_ClientHeight));
+		HR(m_pPolySize->SetFloat(m_polySize));
+		// render the triangles to the highest input texture level (assuming they are already defined!)
+		m_DeviceContext->IASetInputLayout(m_pCurveVertexLayout);
+		stride = sizeof(CURVE_Vertex);
+		offset = 0;
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertexBuffer, &stride, &offset);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+// 		m_vp.Width = (int)(m_PicW);
+// 		m_vp.Height = (int)(m_PicH);
+		m_vp.Width = (int)(m_ClientWidth);
+		m_vp.Height = (int)(m_ClientHeight);
+		m_vp.MinDepth = 0.0f;
+		m_vp.MaxDepth = 1.0f;
+		m_vp.TopLeftX = 0;
+		m_vp.TopLeftY = 0;
+		m_DeviceContext->RSSetViewports(1, &m_vp);
+		m_DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f,
+											   0);
+		//construct the curve triangles in the geometry shader and render them directly
+		ID3D11RenderTargetView* destTexTV[3];
+		destTexTV[0] = m_diffuseTextureTV[1 - diffTex];
+		destTexTV[1] = m_diffdistDirTextureTV;
+		destTexTV[2] = m_otherTextureTV;
+		m_DeviceContext->OMSetRenderTargets(3, destTexTV, m_pDepthStencilView);
+		m_pDrawVectorsTechnique->GetDesc(&techDesc);
+		for (UINT p = 0; p < 5 && p < techDesc.Passes; ++p)
+		{
+			m_pDrawVectorsTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
+			m_DeviceContext->Draw(m_CurveVertexes.size(), 0);
+		}
+		diffTex = 1 - diffTex;
+		diff2Tex = 1 - diff2Tex;
+		// setup the pipeline for the following image-space algorithms
+		m_DeviceContext->IASetInputLayout(m_pCurveVertex2Layout);
+		stride = sizeof(VSO_Vertex);
+		offset = 0;
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertex2Buffer, &stride, &offset);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		// diffuse the texture in both directions
+		HR(m_pInTex[1]->SetResource(m_diffdistDirTextureRV));
+		for (int i = 0; i < diffSteps; i++)
+		{
+			if (i > diffSteps * 0.5)
+			{
+				m_blurOn->SetFloat(1);
+			}
+			else
+			{
+				m_blurOn->SetFloat(0);
+			}
+			// SA strategy
+			HR(m_pPolySize->SetFloat(1.0 - (float)(i) / (float)diffSteps));
+			// SH strategy
+			// V( m_pPolySize->SetFloat( 1.0 ) );
+			// if (i>diffSteps-diffSteps/2)
+			// {
+			//         V( m_pPolySize->SetFloat( (float)(diffSteps-i)/(float)(diffSteps/2) ) );
+			// }
+			m_DeviceContext->OMSetRenderTargets(1, &m_diffuseTextureTV[1 - diffTex], NULL);
+			(m_pInTex[0]->SetResource(m_diffuseTextureRV[diffTex]));
+			diffTex = 1 - diffTex;
+			m_pDiffuseTechnique->GetDesc(&techDesc);
+			for (UINT p = 0; p < techDesc.Passes; ++p)
+			{
+				m_pDiffuseTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
+				m_DeviceContext->Draw(6, 0);
+			}
+		}
+		// anti alias the lines
+		m_DeviceContext->OMSetRenderTargets(1, &m_diffuseTextureTV[1 - diffTex], NULL);
+		HR(m_pInTex[0]->SetResource(m_diffuseTextureRV[diffTex]));
+		HR(m_pInTex[1]->SetResource(m_otherTextureRV));
+		diffTex = 1 - diffTex;
+		HR(m_pDiffTex->SetResource(m_diffdistDirTextureRV));
+		m_pLineAntiAliasTechnique->GetDesc(&techDesc);
+		for (UINT p = 0; p < techDesc.Passes; ++p)
+		{
+			m_pLineAntiAliasTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
+			m_DeviceContext->Draw(6, 0);
+		}
+		//restore old render targets
+		m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
+		m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
+		// render to view
+		m_DeviceContext->ClearRenderTargetView(m_TextureTV, D3DXCOLOR(0, 0, 0, 0));
+		m_DeviceContext->OMSetRenderTargets(1, &m_TextureTV, m_pDepthStencilView);
+		// Set the input layout
+		m_DeviceContext->IASetInputLayout(m_pCurveVertex2Layout);
+		// Set vertex buffer
+		stride = sizeof(VSO_Vertex);
+		offset = 0;
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertex2Buffer, &stride, &offset);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		HR(m_pDiffTex->SetResource(m_diffuseTextureRV[diffTex]));
+		//HR(m_pDiffTex->SetResource(m_diffdistDirTextureRV));
+		m_pDisplayImage->GetDesc(&techDesc);
+		for (UINT p = 0; p < techDesc.Passes; ++p)
+		{
+			m_pDisplayImage->GetPassByIndex(p)->Apply(0, m_DeviceContext);
+			m_DeviceContext->Draw(6, 0);
+		}
+		m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV, old_pDSV);
+		offset = 0;
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertex2Buffer, &stride, &offset);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		HR(m_pDiffTex->SetResource(m_TextureRV));
+		for (UINT p = 0; p < techDesc.Passes; ++p)
+		{
+			m_pDisplayImage->GetPassByIndex(p)->Apply(0, m_DeviceContext);
+			m_DeviceContext->Draw(6, 0);
+		}
+	}
 }
 
 void D3DApp::InterSetLookCenter(float x, float y)
@@ -1642,7 +1984,7 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 		texDescCV.Usage = D3D11_USAGE_STAGING;
 		texDescCV.BindFlags = 0;
 		texDescCV.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-		HR(m_d3dDevice->CreateTexture2D(&texDescCV, 0, &pTextureRead));
+		HR(m_pd3dDevice->CreateTexture2D(&texDescCV, 0, &pTextureRead));
 		m_DeviceContext->CopyResource(pTextureRead, m_DrawTexture);
 		D3D11_MAPPED_SUBRESOURCE MappedResource;
 		float* pimg;
@@ -1755,4 +2097,61 @@ void D3DApp::AddLinesCover(const Lines& lines)
 void D3DApp::ClearCovers()
 {
 	m_SkeletonLinesVerticesCover.clear();
+}
+
+void D3DApp::AddDiffusionLines(const Lines& lines)
+{
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		CURVE_Vertexes curveline;
+		const Line& now_line = lines[i];
+		if (now_line.size() < 2)
+		{
+			continue;
+		}
+		float r, g, b;
+		r = (rand() % 155 + 100) / 255.0f;
+		g = (rand() % 155 + 100) / 255.0f;
+		b = (rand() % 155 + 100) / 255.0f;
+		float r2, g2, b2;
+		r2 = (rand() % 155 + 100) / 255.0f;
+		g2 = (rand() % 155 + 100) / 255.0f;
+		b2 = (rand() % 155 + 100) / 255.0f;
+		CURVE_Vertex vtx1, vtx2;
+		vtx1.lcolor.x = r;
+		vtx1.lcolor.y = g;
+		vtx1.lcolor.z = b;
+		vtx1.lcolor.w = 0;
+		vtx1.rcolor.x = r2;
+		vtx1.rcolor.y = g2;
+		vtx1.rcolor.z = b2;
+		vtx1.rcolor.w = 0;
+		vtx2.lcolor.x = r;
+		vtx2.lcolor.y = g;
+		vtx2.lcolor.z = b;
+		vtx2.lcolor.w = 0;
+		vtx2.rcolor.x = r2;
+		vtx2.rcolor.y = g2;
+		vtx2.rcolor.z = b2;
+		vtx2.rcolor.w = 1;
+		for (int j = 1; j < now_line.size()-1; ++j)
+		{
+			vtx1.pos.x = (now_line[j].x/m_ClientWidth-0.5)*2;
+			vtx1.pos.y = (-now_line[j].y/m_ClientHeight+0.5)*2;
+			vtx2.pos.x = (now_line[j + 1].x/m_ClientWidth-0.5)*2;
+			vtx2.pos.y = (-now_line[j + 1].y/m_ClientHeight+0.5)*2;
+			curveline.push_back(vtx1);
+			curveline.push_back(vtx2);
+		}
+		curveline.front().nb = D3DXVECTOR2(10000.0f, 10000.0f);
+ 		for (int j = 2; j < curveline.size(); j += 2)
+ 		{
+ 			curveline[j].nb = curveline[j - 2].pos;
+ 			curveline[j - 1].nb = curveline[j + 1].pos;
+ 			//curveline[j + 1].nb = D3DXVECTOR2(10000.0f, 10000.0f);
+ 		}
+ 		(curveline.end()-2)->nb = (curveline.end()-4)->pos;
+		curveline.back().nb = D3DXVECTOR2(10000.0f, 10000.0f);
+		m_CurveVertexes.insert(m_CurveVertexes.end(), curveline.begin(), curveline.end());
+	}
 }
