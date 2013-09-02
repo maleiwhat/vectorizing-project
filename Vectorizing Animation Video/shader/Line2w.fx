@@ -60,7 +60,8 @@ VS_OUT VS(VS_IN vIn)
 	vOut.p22 = p2;
 	vOut.p33 = p3;
 	float2 offset = float2(centerX/width*2, -centerY/height*2);
-	vOut.p1 = (vOut.p1/float2(width,height)*scale)*2-1+float2(centerX/width,-centerY/height)*scale;
+	vOut.p1 = (vOut.p1/float2(width,height)*scale)*2-1+
+		float2(centerX/width,-centerY/height)*scale;
 	vOut.p2 = (vOut.p2/float2(width,height)*scale)*2-1+float2(centerX/width,-centerY/height)*scale;
 	vOut.p3 = (vOut.p3/float2(width,height)*scale)*2-1+float2(centerX/width,-centerY/height)*scale;
 	vOut.p4 = (vOut.p4/float2(width,height)*scale)*2-1+float2(centerX/width,-centerY/height)*scale;

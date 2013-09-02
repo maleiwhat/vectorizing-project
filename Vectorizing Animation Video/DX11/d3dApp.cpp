@@ -140,7 +140,7 @@ D3DApp::D3DApp()
 	m_polySize = 0.5;
 	diffTex = 0;
 	diff2Tex = 0;
-	diffSteps = 8;
+	diffSteps = 4;
 	m_diffdistDirTexture = NULL;
 	m_diffuseTexture[0] = NULL;
 	m_diffuseTexture[1] = NULL;
@@ -300,6 +300,78 @@ void D3DApp::OnResize(int w, int h)
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	m_DeviceContext->RSSetViewports(1, &vp);
+
+	// create the depth buffer (only needed for curve mask rendering)
+	DXGI_SAMPLE_DESC samdesc;
+	samdesc.Count = 1;
+	samdesc.Quality = 0;
+	D3D11_TEXTURE2D_DESC texdesc;
+	ZeroMemory(&texdesc, sizeof(D3D11_TEXTURE2D_DESC));
+	texdesc.MipLevels = 1;
+	texdesc.ArraySize = 1;
+	texdesc.SampleDesc = samdesc;
+	texdesc.Width = w;
+	texdesc.Height = h;
+	texdesc.Usage = D3D11_USAGE_DEFAULT;
+	texdesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	texdesc.Format = DXGI_FORMAT_D32_FLOAT;
+	if (m_pDepthStencil != NULL)
+	{
+		m_pDepthStencil->Release();
+	}
+	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_pDepthStencil));
+	HR(m_pd3dDevice->CreateDepthStencilView(m_pDepthStencil, NULL, &m_pDepthStencilView));
+	//create diffusion textures (2 for ping pong rendering)
+	ReleaseCOM(m_diffuseTexture[0]);
+	ReleaseCOM(m_diffuseTexture[1]);
+	ReleaseCOM(m_diffdistDirTexture);
+	ReleaseCOM(m_otherTexture);
+	ReleaseCOM(m_Texture);
+	ReleaseCOM(m_diffuseTextureRV[0]);
+	ReleaseCOM(m_diffuseTextureTV[0]);
+	ReleaseCOM(m_diffuseTextureRV[1]);
+	ReleaseCOM(m_diffuseTextureTV[1]);
+	ReleaseCOM(m_diffdistDirTextureRV);
+	ReleaseCOM(m_diffdistDirTextureTV);
+	ReleaseCOM(m_TextureRV);
+	ReleaseCOM(m_TextureTV);
+	ReleaseCOM(m_otherTextureRV);
+	ReleaseCOM(m_otherTextureTV);
+	texdesc.Width = w;
+	texdesc.Height = h;
+	texdesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//texdesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;  // use this for higher accuracy diffusion
+	texdesc.Usage = D3D11_USAGE_DEFAULT;
+	texdesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_diffuseTexture[0]));
+	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_diffuseTexture[1]));
+	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_otherTexture));
+	// distance map + nearest point map
+	texdesc.Usage = D3D11_USAGE_DEFAULT;
+	texdesc.CPUAccessFlags = 0;
+	texdesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	texdesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_diffdistDirTexture));
+	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_Texture));
+	//create render target views
+	HR(m_pd3dDevice->CreateShaderResourceView(m_diffuseTexture[0], NULL,
+		&m_diffuseTextureRV[0]));
+	HR(m_pd3dDevice->CreateRenderTargetView(m_diffuseTexture[0], NULL,
+		&m_diffuseTextureTV[0]));
+	HR(m_pd3dDevice->CreateShaderResourceView(m_diffuseTexture[1], NULL,
+		&m_diffuseTextureRV[1]));
+	HR(m_pd3dDevice->CreateRenderTargetView(m_diffuseTexture[1], NULL,
+		&m_diffuseTextureTV[1]));
+	HR(m_pd3dDevice->CreateShaderResourceView(m_diffdistDirTexture, NULL,
+		&m_diffdistDirTextureRV));
+	HR(m_pd3dDevice->CreateRenderTargetView(m_diffdistDirTexture, NULL,
+		&m_diffdistDirTextureTV));
+	HR(m_pd3dDevice->CreateShaderResourceView(m_Texture, NULL, &m_TextureRV));
+	HR(m_pd3dDevice->CreateRenderTargetView(m_Texture, NULL, &m_TextureTV));
+	HR(m_pd3dDevice->CreateShaderResourceView(m_otherTexture, NULL,
+		&m_otherTextureRV));
+	HR(m_pd3dDevice->CreateRenderTargetView(m_otherTexture, NULL,
+		&m_otherTextureTV));
 }
 void D3DApp::OnDrawToBimapResize()
 {
@@ -671,79 +743,6 @@ void D3DApp::BuildShaderFX()
 	{
 		return;
 	}
-	// create the depth buffer (only needed for curve mask rendering)
-	DXGI_SAMPLE_DESC samdesc;
-	samdesc.Count = 1;
-	samdesc.Quality = 0;
-	D3D11_TEXTURE2D_DESC texdesc;
-	ZeroMemory(&texdesc, sizeof(D3D11_TEXTURE2D_DESC));
-	texdesc.MipLevels = 1;
-	texdesc.ArraySize = 1;
-	texdesc.SampleDesc = samdesc;
-	texdesc.Width = (int)(m_ClientWidth);
-	texdesc.Height = (int)(m_ClientHeight);
-	texdesc.Usage = D3D11_USAGE_DEFAULT;
-	texdesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	texdesc.Format = DXGI_FORMAT_D32_FLOAT;
-	if (m_pDepthStencil != NULL)
-	{
-		m_pDepthStencil->Release();
-	}
-	hr = m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_pDepthStencil);
-	hr = m_pd3dDevice->CreateDepthStencilView(m_pDepthStencil, NULL,
-			&m_pDepthStencilView);
-	//create diffusion textures (2 for ping pong rendering)
-	if (m_diffuseTexture[0] != NULL)
-	{
-		m_diffuseTexture[0]->Release();
-	}
-	if (m_diffuseTexture[1] != NULL)
-	{
-		m_diffuseTexture[1]->Release();
-	}
-	if (m_diffdistDirTexture != NULL)
-	{
-		m_diffdistDirTexture->Release();
-	}
-	if (m_otherTexture != NULL)
-	{
-		m_otherTexture->Release();
-	}
-	texdesc.Width = (int)(m_ClientWidth);
-	texdesc.Height = (int)(m_ClientHeight);
-	texdesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	//texdesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;  // use this for higher accuracy diffusion
-	texdesc.Usage = D3D11_USAGE_DEFAULT;
-	texdesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_diffuseTexture[0]));
-	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_diffuseTexture[1]));
-	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_otherTexture));
-	// distance map + nearest point map
-	texdesc.Usage = D3D11_USAGE_DEFAULT;
-	texdesc.CPUAccessFlags = 0;
-	texdesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	texdesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_diffdistDirTexture));
-	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_Texture));
-	//create render target views
-	HR(m_pd3dDevice->CreateShaderResourceView(m_diffuseTexture[0], NULL,
-			&m_diffuseTextureRV[0]));
-	HR(m_pd3dDevice->CreateRenderTargetView(m_diffuseTexture[0], NULL,
-											&m_diffuseTextureTV[0]));
-	HR(m_pd3dDevice->CreateShaderResourceView(m_diffuseTexture[1], NULL,
-			&m_diffuseTextureRV[1]));
-	HR(m_pd3dDevice->CreateRenderTargetView(m_diffuseTexture[1], NULL,
-											&m_diffuseTextureTV[1]));
-	HR(m_pd3dDevice->CreateShaderResourceView(m_diffdistDirTexture, NULL,
-			&m_diffdistDirTextureRV));
-	HR(m_pd3dDevice->CreateRenderTargetView(m_diffdistDirTexture, NULL,
-											&m_diffdistDirTextureTV));
-	HR(m_pd3dDevice->CreateShaderResourceView(m_Texture, NULL, &m_TextureRV));
-	HR(m_pd3dDevice->CreateRenderTargetView(m_Texture, NULL, &m_TextureTV));
-	HR(m_pd3dDevice->CreateShaderResourceView(m_otherTexture, NULL,
-		&m_otherTextureRV));
-	HR(m_pd3dDevice->CreateRenderTargetView(m_otherTexture, NULL,
-		&m_otherTextureTV));
 	// diffusion curve part end
 	m_Init = true;
 }
@@ -1778,10 +1777,6 @@ void D3DApp::InterDraw()
 		m_pan.x = m_LookCenterX;
 		m_pan.y = m_LookCenterY;
 		HR(m_pPan->SetFloatVector(m_pan));
-// 		HR(m_pDiffX->SetFloat(m_PicW));
-// 		HR(m_pDiffY->SetFloat(m_PicH));
-		HR(m_pDiffX->SetFloat(m_ClientWidth));
-		HR(m_pDiffY->SetFloat(m_ClientHeight));
 		HR(m_pPolySize->SetFloat(m_polySize));
 		// render the triangles to the highest input texture level (assuming they are already defined!)
 		m_DeviceContext->IASetInputLayout(m_pCurveVertexLayout);
@@ -1789,15 +1784,6 @@ void D3DApp::InterDraw()
 		offset = 0;
 		m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertexBuffer, &stride, &offset);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-// 		m_vp.Width = (int)(m_PicW);
-// 		m_vp.Height = (int)(m_PicH);
-		m_vp.Width = (int)(m_ClientWidth);
-		m_vp.Height = (int)(m_ClientHeight);
-		m_vp.MinDepth = 0.0f;
-		m_vp.MaxDepth = 1.0f;
-		m_vp.TopLeftX = 0;
-		m_vp.TopLeftY = 0;
-		m_DeviceContext->RSSetViewports(1, &m_vp);
 		m_DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f,
 											   0);
 		//construct the curve triangles in the geometry shader and render them directly
@@ -1942,6 +1928,8 @@ void D3DApp::InterSetSize(float w, float h)
 	m_Lines2w_Height->SetFloat(h);
 	m_SkeletonLines_Width->SetFloat(w);
 	m_SkeletonLines_Height->SetFloat(h);
+	HR(m_pDiffX->SetFloat(w));
+	HR(m_pDiffY->SetFloat(h));
 }
 
 cv::Mat D3DApp::DrawSceneToCvMat()
@@ -2134,23 +2122,22 @@ void D3DApp::AddDiffusionLines(const Lines& lines)
 		vtx2.rcolor.y = g2;
 		vtx2.rcolor.z = b2;
 		vtx2.rcolor.w = 1;
-		for (int j = 1; j < now_line.size()-1; ++j)
+		for (int j = 1; j < now_line.size() - 1; ++j)
 		{
-			vtx1.pos.x = (now_line[j].x/m_ClientWidth-0.5)*2;
-			vtx1.pos.y = (-now_line[j].y/m_ClientHeight+0.5)*2;
-			vtx2.pos.x = (now_line[j + 1].x/m_ClientWidth-0.5)*2;
-			vtx2.pos.y = (-now_line[j + 1].y/m_ClientHeight+0.5)*2;
+			vtx1.pos.x = now_line[j].x;
+			vtx1.pos.y = m_PicH - now_line[j].y;
+			vtx2.pos.x = now_line[j + 1].x;
+			vtx2.pos.y = m_PicH - now_line[j + 1].y;
 			curveline.push_back(vtx1);
 			curveline.push_back(vtx2);
 		}
 		curveline.front().nb = D3DXVECTOR2(10000.0f, 10000.0f);
- 		for (int j = 2; j < curveline.size(); j += 2)
- 		{
- 			curveline[j].nb = curveline[j - 2].pos;
- 			curveline[j - 1].nb = curveline[j + 1].pos;
- 			//curveline[j + 1].nb = D3DXVECTOR2(10000.0f, 10000.0f);
- 		}
- 		(curveline.end()-2)->nb = (curveline.end()-4)->pos;
+		for (int j = 2; j < curveline.size(); j += 2)
+		{
+			curveline[j].nb = curveline[j - 2].pos;
+			curveline[j - 1].nb = curveline[j + 1].pos;
+		}
+		(curveline.end() - 2)->nb = (curveline.end() - 4)->pos;
 		curveline.back().nb = D3DXVECTOR2(10000.0f, 10000.0f);
 		m_CurveVertexes.insert(m_CurveVertexes.end(), curveline.begin(), curveline.end());
 	}

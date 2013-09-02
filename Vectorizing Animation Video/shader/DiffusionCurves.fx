@@ -113,11 +113,19 @@ PS_INPUT TetraVS(VS_INPUT In)
 VS_CURVE_INPUT CurveVS(VS_CURVE_INPUT In)
 {
 	VS_CURVE_INPUT Out;
-	Out.pos.xy = In.pos.xy*g_scale+g_pan;
+	float2 offset = float2(g_pan.x/g_diffX*2, -g_pan.y/g_diffY*2);
+	Out.pos.xy = (In.pos.xy/float2(g_diffX,g_diffY)*g_scale)*2-1+
+		float2(g_pan.x/g_diffX,-g_pan.y/g_diffY)*g_scale;
+	Out.pos.xy += offset;
+	//Out.pos.xy = In.pos.xy*g_scale+g_pan;
 	Out.col0 = In.col0;
 	Out.col1 = In.col1;
 	if (In.nb.x < 9999.0)
-		Out.nb = In.nb*g_scale+g_pan;
+	{
+		Out.nb = (In.nb/float2(g_diffX,g_diffY)*g_scale)*2-1+
+			float2(g_pan.x/g_diffX,-g_pan.y/g_diffY)*g_scale;
+		Out.nb += offset;
+	}
 	else
 		Out.nb = float2(10000.0,10000.0);
 	return Out;
