@@ -1,10 +1,11 @@
 #include "stdcv.h"
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include "CvExtenstion2.h"
-#include "math/Quaternion.h"
 #include <fstream>
 #include <iostream>
+#include "vavImage.h"
+#include "CvExtenstion2.h"
+#include "math/Quaternion.h"
 
 ColorConstraint_sptrs MakeColors(int regions, const cv::Mat& mask,
 								 const cv::Mat& img)
@@ -67,6 +68,7 @@ Vector3s2d GetLinesColor(cv::Mat img, const Lines& lines)
 
 Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines)
 {
+	vavImage vimg(img);
 	Vector2s2d normals(lines.size());
 	for (int i = 0; i < lines.size() ; ++i)
 	{
@@ -100,18 +102,22 @@ Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines)
 		li.resize(it->size());
 		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
-			Vector2 pos = *it2 - normals[i][j];
-			cv::Vec3b& color = GetColor(img, pos.x, pos.y);
-			li[j] = Vector3(color[2], color[1], color[0]);
+			Vector2 pos = *it2 - normals[i][j]*3;
+			double r = vimg.GetBilinearR(pos.x, pos.y);
+			double g = vimg.GetBilinearG(pos.x, pos.y);
+			double b = vimg.GetBilinearB(pos.x, pos.y);
+			li[j] = Vector3(r, g, b);
 		}
 		Vector3s& ri = ans_right[i];
 		ri.resize(it->size());
 		j = 0;
 		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
-			Vector2 pos = *it2 + normals[i][j];
-			cv::Vec3b& color = GetColor(img, pos.x, pos.y);
-			ri[j] = Vector3(color[2], color[1], color[0]);
+			Vector2 pos = *it2 + normals[i][j]*3;
+			double r = vimg.GetBilinearR(pos.x, pos.y);
+			double g = vimg.GetBilinearG(pos.x, pos.y);
+			double b = vimg.GetBilinearB(pos.x, pos.y);
+			ri[j] = Vector3(r, g, b);
 		}
 	}
 	return ans;

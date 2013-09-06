@@ -31,6 +31,10 @@ Lines   SmoothingLen5(const Lines& cvp, double centroidRadio = 1.0,
 					  int repeat = 1);
 Lines   SmoothingLen3(const Lines& cvp, double centroidRadio = 1.0,
 					  int repeat = 1);
+Vector3s    SmoothingLen5(const Vector3s& cvp, double centroidRadio = 1.0,
+					  int repeat = 1);
+Vector3s2d   SmoothingLen5(const Vector3s2d& cvp, double centroidRadio = 1.0,
+					  int repeat = 1);
 
 Line    GetNormalsLen2(const Line& cvp);
 Line    GetNormalsLen3(const Line& cvp);

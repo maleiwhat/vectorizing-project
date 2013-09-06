@@ -11,34 +11,6 @@
 #include "vavImage.h"
 #include "LineDef.h"
 
-struct COLORPOINT
-{
-	D3DXVECTOR3 col;
-	int off;
-};
-
-struct BLURRPOINT
-{
-	float   blurr;
-	int     off;
-};
-typedef std::vector<D3DXVECTOR2> D3DXVECTOR2s;
-typedef std::vector<COLORPOINT> COLORPOINTs;
-typedef std::vector<BLURRPOINT> BLURRPOINTs;
-
-struct CURVE
-{
-	int          pNum;
-	D3DXVECTOR2s p;
-	int          clNum;
-	COLORPOINTs  cl;
-	int          crNum;
-	COLORPOINTs  cr;
-	int          bNum;
-	BLURRPOINTs  b;
-};
-typedef std::vector<CURVE> CURVEs;
-
 class D3DApp
 {
 public:
@@ -77,6 +49,8 @@ public:
 	void AddLinesLine(const Lines& lines, const double_vector2d& linewidths);
 	void AddLineSegs(const LineSegs& lines);
 	void AddDiffusionLines(const Lines& lines);
+	void AddDiffusionLines(const Lines& lines, const Vector3s2d& colors);
+	void AddDiffusionLines(const Lines& lines, const Color2Side& colors);
 	void ClearPatchs();
 	void ClearCovers();
 	void SetTransparency_Triangle(float t);
@@ -123,7 +97,6 @@ protected:
 	float m_Transparency_LineSkeleton;
 	float m_Transparency_Picture;
 
-	CURVEs	m_curve;
 	int     m_PicW;
 	int     m_PicH;
 	float   m_Scale;

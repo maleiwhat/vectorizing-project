@@ -75,9 +75,6 @@ VSObject::VSObject(ID3D10Device* pd3dDevice)
 			  DXUTGetDXGIBackBufferSurfaceDesc()->Height;
 }
 
-
-
-
 VSObject::~VSObject(void)
 {
 	SAFE_RELEASE(m_diffuseTexture[0]);
@@ -101,10 +98,6 @@ VSObject::~VSObject(void)
 	SAFE_RELEASE(m_pVertexLayout);
 	SAFE_RELEASE(m_pVertexLayout);
 }
-
-
-
-
 
 void VSObject::RenderDiffusion(ID3D10Device* pd3dDevice)
 {

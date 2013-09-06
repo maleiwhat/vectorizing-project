@@ -11,11 +11,6 @@ ColorConstraint_sptrs MakeColors(int regions, const cv::Mat& mask,
 cv::Vec3b& GetColor(cv::Mat& image, int x, int y);
 Vector3s2d GetLinesColor(cv::Mat img, const Lines& lines);
 
-struct Color2Side
-{
-	Vector3s2d left;
-	Vector3s2d right;
-};
 Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines);
 void OutputDiffusionCurve(std::string name, int w, int h, Color2Side& c2s,
                           Lines& lines);

@@ -901,8 +901,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		//m_BlackLine = SmoothingLen5(m_BlackLine, 1, 5);
 		les = GetLineEnds(m_BlackLine);
 		IncreaseDensity(m_BlackLine, m_BLineWidth);
-		IncreaseDensity(m_BlackLine, m_BLineWidth);
-		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 16, 8, 30);
+		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 10, 5, 15);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
 		ClearLineWidthByPercent(m_BLineWidth, 0.4);
@@ -911,7 +910,10 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0, 5);
 		d3dApp.AddLines(m_BlackLine, m_BLineWidth);
 		d3dApp.AddLines(m_BlackLine);
-		d3dApp.AddDiffusionLines(m_BlackLine);
+		Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine);
+		color2s.left = SmoothingLen5(color2s.left, 0, 15);
+		color2s.right = SmoothingLen5(color2s.right, 0, 15);
+		d3dApp.AddDiffusionLines(m_BlackLine, color2s);
 		//d3dApp.AddLines(showLines);
 		d3dApp.SetScaleTemporary(1);
 		d3dApp.BuildPoint();

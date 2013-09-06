@@ -7,6 +7,7 @@
 #include <opencv2/core/core.hpp>
 #include <deque>
 #include "math/Vector2.h"
+#include "math/Vector3.h"
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel CgalInexactKernel;
 typedef CgalInexactKernel::Point_2 CgalPoint;
@@ -74,3 +75,9 @@ struct LineEnd
 		  linkIdx1(0), linkIdx2(0), beglink(0), endlink(0) {}
 };
 typedef std::vector<LineEnd> LineEnds;
+
+struct Color2Side
+{
+	Vector3s2d left;
+	Vector3s2d right;
+};

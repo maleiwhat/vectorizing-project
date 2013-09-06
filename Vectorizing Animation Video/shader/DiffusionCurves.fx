@@ -498,11 +498,11 @@ PS_OUTPUT DiffusePS(PS_INPUT In)
 	kernel = max(0,kernel);
 	Out.oColor += g_inTex[0].SampleLevel(PointSampler, In.Tex.xy+float2(0,-kernel/g_diffY), 0);
 	Out.oColor += g_inTex[0].SampleLevel(PointSampler, In.Tex.xy+float2(0, kernel/g_diffY), 0);
-	if (g_blurOn)
-		Out.oColor += g_inTex[0].SampleLevel(PointSampler, In.Tex.xy, 0)*2;
-	if (g_blurOn)
-		Out.oColor /= 6;
-	else
+// 	if (g_blurOn)
+// 		Out.oColor += g_inTex[0].SampleLevel(PointSampler, In.Tex.xy, 0)*2;
+// 	if (g_blurOn)
+// 		Out.oColor /= 6;
+// 	else
 		Out.oColor /= 4;
 	return Out;
 }

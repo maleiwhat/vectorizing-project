@@ -871,10 +871,10 @@ void ConstructCurves()
 					pd[cPos + 1].lcolor = (1.0f - sN) * cL + sN * cNL;
 					pd[cPos + 0].rcolor = (1.0f - sI) * cR + sI * cNR;
 					pd[cPos + 1].rcolor = (1.0f - sN) * cR + sN * cNR;
-					pd[cPos + 0].lcolor.w = 1;
-					pd[cPos + 1].lcolor.w = 1;
-					pd[cPos + 0].rcolor.w = 1;
-					pd[cPos + 1].rcolor.w = 1;
+					pd[cPos + 0].lcolor.w = (1.0f - sI) * b + sI * bN;
+					pd[cPos + 1].lcolor.w = (1.0f - sN) * b + sN * bN;
+					pd[cPos + 0].rcolor.w = (1.0f - sI) * b + sI * bN;
+					pd[cPos + 1].rcolor.w = (1.0f - sN) * b + sN * bN;
 					pd[cPos + 0].pos = D3DXVECTOR2(p0.x, -p0.y);
 					pd[cPos + 1].pos = D3DXVECTOR2(p1.x, -p1.y);
 					if ((i2 == 0) && (t == 0.0f) && (sI < 0.5f / subSegNum))
