@@ -10,8 +10,9 @@ ColorConstraint_sptrs MakeColors(int regions, const cv::Mat& mask,
                                  const cv::Mat& img);
 cv::Vec3b& GetColor(cv::Mat& image, int x, int y);
 Vector3s2d GetLinesColor(cv::Mat img, const Lines& lines);
+Vector3s GetLinesColor(cv::Mat img, const Line& lines);
 
-Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines);
+Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines, double normal_len);
 void OutputDiffusionCurve(std::string name, int w, int h, Color2Side& c2s,
                           Lines& lines);
 cv::Mat MakeIsoSurfaceImg(cv::Mat img, int n);

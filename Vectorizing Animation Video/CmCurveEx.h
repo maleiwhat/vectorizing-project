@@ -22,25 +22,42 @@ public:
 
 	// Input kernel size for calculating derivatives, kSize should be 1, 3, 5 or 7
 	const cv::Mat& CalSecDer(int kSize = 5, float linkEndBound = 0.01f,
-	                         float linkStartBound = 0.1f);
+							 float linkStartBound = 0.1f);
 	const cv::Mat& CalSecDer(cv::Mat engery, int kSize = 5, float linkEndBound = 0.01f,
-		float linkStartBound = 0.1f);
+							 float linkStartBound = 0.1f);
+	const cv::Mat& CalSecDer2(int kSize = 5, float linkEndBound = 0.01f, float linkStartBound = 0.1f);
 	const cv::Mat& CalFirDer(int kSize = 5, float linkEndBound = 0.01f,
-	                         float linkStartBound = 0.1f);
+							 float linkStartBound = 0.1f);
 	const std::vector<CEdge>& Link(int shortRemoveBound = 3);
 
 	// Get data pointers
-	const cv::Mat& GetDer() { return m_pDer1f; }
-	const cv::Mat& GetDer2() { return m_pDer2; }
-	const cv::Mat& GetLineIdx() { return m_pLabel1i; } // Edge index start from 1
-	const cv::Mat& GetNextMap() { return m_pNext1i; }
-	const cv::Mat& GetOrnt() { return m_pOrnt1f; }
-	const std::vector<CEdge>& GetEdges() {return m_vEdge;}
+	const cv::Mat& GetDer()
+	{
+		return m_pDer1f;
+	}
+	const cv::Mat& GetDer2()
+	{
+		return m_pDer2;
+	}
+	const cv::Mat& GetLineIdx()
+	{
+		return m_pLabel1i;    // Edge index start from 1
+	}
+	const cv::Mat& GetNextMap()
+	{
+		return m_pNext1i;
+	}
+	const cv::Mat& GetOrnt()
+	{
+		return m_pOrnt1f;
+	}
+	const std::vector<CEdge>& GetEdges()
+	{
+		return m_vEdge;
+	}
 
 	static const int IND_BG = 0xffffffff, IND_NMS = 0xfffffffe,
-	                 IND_SR = 0xfffffffd; // Background, Non Maximal Suppress and Short Remove
-
-	static void Demo(const cv::Mat& img1u, bool isCartoon);
+					 IND_SR = 0xfffffffd; // Background, Non Maximal Suppress and Short Remove
 
 private:
 	const cv::Mat& m_img1f; // Input image
@@ -55,7 +72,10 @@ private:
 	typedef std::pair<float, cv::Point> PntImp;
 	std::vector<PntImp> m_StartPnt;
 	std::vector<CEdge> m_vEdge;
-	static bool linePointGreater(const PntImp& e1, const PntImp& e2) {return e1.first > e2.first;};
+	static bool linePointGreater(const PntImp& e1, const PntImp& e2)
+	{
+		return e1.first > e2.first;
+	};
 
 	int m_h, m_w; // Image size
 	int m_kSize; // Smooth kernel size: 1, 3, 5, 7
@@ -64,18 +84,19 @@ private:
 	void NoneMaximalSuppress(float linkEndBound, float linkStartBound);
 	void findEdge(cv::Point seed, CEdge& crtEdge, bool isBackWard);
 	bool goNext(cv::Point& pnt, float& ornt, CEdge& crtEdge, int orntInd,
-	            bool isBackward);
+				bool isBackward);
 	bool jumpNext(cv::Point& pnt, float& ornt, CEdge& crtEdge, int orntInd,
-	              bool isBackward);
+				  bool isBackward);
 
 	/* Compute the eigenvalues and eigenvectors of the Hessian matrix given by
 	dfdrr, dfdrc, and dfdcc, and sort them in descending order according to
 	their absolute values. */
 	static void compute_eigenvals(double dfdrr, double dfdrc, double dfdcc,
-	                              double eigval[2], double eigvec[2][2]);
+								  double eigval[2], double eigvec[2][2]);
 
 	static inline float angle(float ornt1, float orn2);
 	static inline void refreshOrnt(float& ornt, float& newOrnt);
+
 };
 
 extern cv::Point const DIRECTION4[4];
@@ -89,4 +110,11 @@ extern float const PI_HALF;
 const double EPS = 1e-8;        // Epsilon (zero value)
 #define CHK_IND(p) ((p).x >= 0 && (p).x < m_w && (p).y >= 0 && (p).y < m_h)
 
-template<typename T> inline int CmSgn(T number) {if (abs(number) < EPS) { return 0; } return number > 0 ? 1 : -1; }
+template<typename T> inline int CmSgn(T number)
+{
+	if (abs(number) < EPS)
+	{
+		return 0;
+	}
+	return number > 0 ? 1 : -1;
+}

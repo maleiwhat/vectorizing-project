@@ -152,6 +152,57 @@ void CmCurveEx::compute_eigenvals(double dfdrr, double dfdrc, double dfdcc,
 	}
 }
 
+const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
+									float linkStartBound)
+{
+	cv::Mat dxMat, dyMat;
+	Sobel(m_img1f, dxMat, CV_32F, 1, 0, kSize);
+	Sobel(m_img1f, dyMat, CV_32F, 0, 1, kSize);
+	cv::Mat dxx, dxy, dyy;
+	Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
+	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
+	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
+	cv::Mat pDer1f_2 = m_pDer1f.clone();
+	double eigval[2], eigvec[2][2];
+	for (int y = 0; y < m_h; y++)
+	{
+		float* xx = dxx.ptr<float>(y);
+		float* xy = dxy.ptr<float>(y);
+		float* yy = dyy.ptr<float>(y);
+		float* pOrnt = m_pOrnt1f.ptr<float>(y);
+		float* pDer = m_pDer1f.ptr<float>(y);
+		float* pDer2 = pDer1f_2.ptr<float>(y);
+		float* dx = dxMat.ptr<float>(y);
+		float* dy = dyMat.ptr<float>(y);
+		for (int x = 0; x < m_w; x++)
+		{
+			compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
+			pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
+			pOrnt[x] = pOrnt[x] < 0 ? pOrnt[x] + PI2 : pOrnt[x];
+			pDer[x] = float(eigval[0] > 0.0f ? powf(eigval[0], 1) : 0.0f);//計算二階導數
+			pDer2[x] = sqrt(dx[x] * dx[x] + dy[x] * dy[x]);
+		}
+	}
+	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
+	normalize(pDer1f_2, pDer1f_2, 0, 1, cv::NORM_MINMAX);
+	GaussianBlur(pDer1f_2, pDer1f_2, cv::Size(3, 3), 0, 0);
+	for (int y = 0; y < m_h; y++)
+	{
+		float* pDer = m_pDer1f.ptr<float>(y);
+		float* pDer2 = pDer1f_2.ptr<float>(y);
+		for (int x = 0; x < m_w; x++)
+		{
+			//pDer[x] = max(pDer2[x], pDer[x]);
+			pDer[x] = pDer2[x] * 0.7f + pDer[x] * 0.3f;
+			pDer[x] = powf(pDer[x], 0.8);
+		}
+	}
+	//GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0, 0);
+	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
+	NoneMaximalSuppress(linkEndBound, linkStartBound);
+	return m_pDer1f;
+}
+
 const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
 									float linkStartBound)
 {
@@ -753,39 +804,4 @@ bool CmCurveEx::jumpNext(cv::Point& pnt, float& ornt, CEdge& crtEdge,
 	}
 
 	return false;
-}
-
-void CmCurveEx::Demo(const cv::Mat& img1u, bool isCartoon)
-{
-	cv::Mat srcImg1f, show3u = cv::Mat::zeros(img1u.size(), CV_8UC3);
-	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
-	CmCurveEx dEdge(srcImg1f);
-
-	if (isCartoon)
-	{
-		dEdge.CalSecDer(5, 0.01f, 0.1f);
-	}
-	else
-	{
-		dEdge.CalFirDer(5, 0.05f, 0.2f);
-	}
-
-	dEdge.Link();
-	const std::vector<CEdge>& edges = dEdge.GetEdges();
-
-	for (size_t i = 0; i < edges.size(); i++)
-	{
-		cv::Vec3b color(rand() % 255, rand() % 255, rand() % 255);
-		const CvLine& pnts = edges[i].pnts;
-
-		for (size_t j = 0; j < pnts.size(); j++)
-		{
-			show3u.at<cv::Vec3b>(pnts[j]) = color;
-		}
-	}
-
-	imshow("Derivatives", dEdge.GetDer());
-	imshow("GetLineIdx", dEdge.GetNextMap());
-	imshow("Image", img1u);
-	imshow("Curve", show3u);
 }

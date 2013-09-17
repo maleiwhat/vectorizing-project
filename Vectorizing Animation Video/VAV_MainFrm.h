@@ -33,6 +33,8 @@ public:
 	vavImage    m_cannyImage;
 	Lines		m_BlackLine;
 	Lines		m_BLineWidth;
+	// use for block
+	Lines		m_BlackLine2;
 	int     m_PatchTransparency;
 	int     m_SelectPatchTransparency;
 	int     m_BlackRegionThreshold;

@@ -51,22 +51,38 @@ cv::Vec3b& GetColor(cv::Mat& image, int x, int y)
 
 Vector3s2d GetLinesColor(cv::Mat img, const Lines& lines)
 {
+	vavImage vimg(img);
 	Vector3s2d ans;
-	double scale = 1.0 / 255.0;
 	for (auto it = lines.cbegin(); it != lines.cend(); ++it)
 	{
 		ans.push_back(Vector3s());
 		Vector3s& li = ans.back();
 		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2)
 		{
-			cv::Vec3b& color = GetColor(img, it2->x, it2->y);
-			li.push_back(Vector3(color[2]*scale, color[1]*scale, color[0]*scale));
+			double r = vimg.GetBilinearR(it2->x, it2->y);
+			double g = vimg.GetBilinearG(it2->x, it2->y);
+			double b = vimg.GetBilinearB(it2->x, it2->y);
+			li.push_back(Vector3(r, g, b));
 		}
 	}
 	return ans;
 }
 
-Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines)
+Vector3s GetLinesColor(cv::Mat img, const Line& lines)
+{
+	vavImage vimg(img);
+	Vector3s ans;
+	for (auto it2 = lines.cbegin(); it2 != lines.cend(); ++it2)
+	{
+		double r = vimg.GetBilinearR(it2->x, it2->y);
+		double g = vimg.GetBilinearG(it2->x, it2->y);
+		double b = vimg.GetBilinearB(it2->x, it2->y);
+		ans.push_back(Vector3(r, g, b));
+	}
+	return ans;
+}
+
+Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines, double normal_len)
 {
 	vavImage vimg(img);
 	Vector2s2d normals(lines.size());
@@ -102,7 +118,7 @@ Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines)
 		li.resize(it->size());
 		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
-			Vector2 pos = *it2 - normals[i][j]*3;
+			Vector2 pos = *it2 - normals[i][j] * normal_len;
 			double r = vimg.GetBilinearR(pos.x, pos.y);
 			double g = vimg.GetBilinearG(pos.x, pos.y);
 			double b = vimg.GetBilinearB(pos.x, pos.y);
@@ -113,7 +129,7 @@ Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines)
 		j = 0;
 		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
-			Vector2 pos = *it2 + normals[i][j]*3;
+			Vector2 pos = *it2 + normals[i][j] * normal_len;
 			double r = vimg.GetBilinearR(pos.x, pos.y);
 			double g = vimg.GetBilinearG(pos.x, pos.y);
 			double b = vimg.GetBilinearB(pos.x, pos.y);

@@ -140,7 +140,7 @@ D3DApp::D3DApp()
 	m_polySize = 0.5;
 	diffTex = 0;
 	diff2Tex = 0;
-	diffSteps = 8;
+	diffSteps = 10;
 	m_diffdistDirTexture = NULL;
 	m_diffuseTexture[0] = NULL;
 	m_diffuseTexture[1] = NULL;
@@ -1273,15 +1273,6 @@ void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths,
 		lv.width.x = now_linewidth[0];
 		lv.width.y = now_linewidth[1];
 		m_LinesVertices.push_back(lv);
-		SkeletonLineVertex slv;
-		slv.color.x = r;
-		slv.color.y = g;
-		slv.color.z = b;
-		slv.p1.x = now_line[0].x;
-		slv.p1.y = m_PicH - now_line[0].y;
-		slv.p2.x = now_line[1].x;
-		slv.p2.y = m_PicH - now_line[1].y;
-		m_SkeletonLinesVertices.push_back(slv);
 		for (int j = 1; j < now_line.size() - 2; ++j)
 		{
 			lv.color.x = now_color[j][0];
@@ -1298,11 +1289,6 @@ void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths,
 			lv.width.x = now_linewidth[j];
 			lv.width.y = now_linewidth[j + 1];
 			m_LinesVertices.push_back(lv);
-			slv.p1.x = now_line[j].x;
-			slv.p1.y = m_PicH - now_line[j].y;
-			slv.p2.x = now_line[j + 1].x;
-			slv.p2.y = m_PicH - now_line[j + 1].y;
-			m_SkeletonLinesVertices.push_back(slv);
 		}
 		lv.color.x = now_color[now_line.size() - 1][0];
 		lv.color.y = now_color[now_line.size() - 1][1];
@@ -1318,11 +1304,6 @@ void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths,
 		lv.width.x = now_linewidth[now_line.size() - 2];
 		lv.width.y = now_linewidth[now_line.size() - 1];
 		m_LinesVertices.push_back(lv);
-		slv.p1.x = now_line[now_line.size() - 2].x;
-		slv.p1.y = m_PicH - now_line[now_line.size() - 2].y;
-		slv.p2.x = now_line[now_line.size() - 1].x;
-		slv.p2.y = m_PicH - now_line[now_line.size() - 1].y;
-		m_SkeletonLinesVertices.push_back(slv);
 	}
 }
 
@@ -1373,15 +1354,6 @@ void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths)
 		lv.width.x = now_linewidth[0];
 		lv.width.y = now_linewidth[1];
 		m_LinesVertices.push_back(lv);
-		SkeletonLineVertex slv;
-		slv.color.x = r;
-		slv.color.y = g;
-		slv.color.z = b;
-		slv.p1.x = now_line[0].x;
-		slv.p1.y = m_PicH - now_line[0].y;
-		slv.p2.x = now_line[1].x;
-		slv.p2.y = m_PicH - now_line[1].y;
-		m_SkeletonLinesVertices.push_back(slv);
 		for (int j = 1; j < now_line.size() - 2; ++j)
 		{
 			lv.p1.x = now_line[j - 1].x;
@@ -1395,11 +1367,6 @@ void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths)
 			lv.width.x = now_linewidth[j];
 			lv.width.y = now_linewidth[j + 1];
 			m_LinesVertices.push_back(lv);
-			slv.p1.x = now_line[j].x;
-			slv.p1.y = m_PicH - now_line[j].y;
-			slv.p2.x = now_line[j + 1].x;
-			slv.p2.y = m_PicH - now_line[j + 1].y;
-			m_SkeletonLinesVertices.push_back(slv);
 		}
 		lv.p1.x = now_line[now_line.size() - 3].x;
 		lv.p1.y = m_PicH - now_line[now_line.size() - 3].y;
@@ -1412,11 +1379,6 @@ void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths)
 		lv.width.x = now_linewidth[now_line.size() - 2];
 		lv.width.y = now_linewidth[now_line.size() - 1];
 		m_LinesVertices.push_back(lv);
-		slv.p1.x = now_line[now_line.size() - 2].x;
-		slv.p1.y = m_PicH - now_line[now_line.size() - 2].y;
-		slv.p2.x = now_line[now_line.size() - 1].x;
-		slv.p2.y = m_PicH - now_line[now_line.size() - 1].y;
-		m_SkeletonLinesVertices.push_back(slv);
 	}
 }
 
@@ -1554,15 +1516,6 @@ void D3DApp::AddLines(const Lines& lines, const Lines& linewidths)
 		lv.widthL.x = now_linewidth[0].y;
 		lv.widthL.y = now_linewidth[1].y;
 		m_Lines2wVertices.push_back(lv);
-		SkeletonLineVertex slv;
-		slv.color.x = r;
-		slv.color.y = g;
-		slv.color.z = b;
-		slv.p1.x = now_line[0].x;
-		slv.p1.y = m_PicH - now_line[0].y;
-		slv.p2.x = now_line[1].x;
-		slv.p2.y = m_PicH - now_line[1].y;
-		m_SkeletonLinesVertices.push_back(slv);
 		for (int j = 1; j < now_line.size() - 2; ++j)
 		{
 			lv.p1.x = now_line[j - 1].x;
@@ -1578,11 +1531,6 @@ void D3DApp::AddLines(const Lines& lines, const Lines& linewidths)
 			lv.widthL.x = now_linewidth[j].y;
 			lv.widthL.y = now_linewidth[j + 1].y;
 			m_Lines2wVertices.push_back(lv);
-			slv.p1.x = now_line[j].x;
-			slv.p1.y = m_PicH - now_line[j].y;
-			slv.p2.x = now_line[j + 1].x;
-			slv.p2.y = m_PicH - now_line[j + 1].y;
-			m_SkeletonLinesVertices.push_back(slv);
 		}
 		lv.p1.x = now_line[now_line.size() - 3].x;
 		lv.p1.y = m_PicH - now_line[now_line.size() - 3].y;
@@ -1597,11 +1545,6 @@ void D3DApp::AddLines(const Lines& lines, const Lines& linewidths)
 		lv.widthL.x = now_linewidth[now_line.size() - 2].y;
 		lv.widthL.y = now_linewidth[now_line.size() - 1].y;
 		m_Lines2wVertices.push_back(lv);
-		slv.p1.x = now_line[now_line.size() - 2].x;
-		slv.p1.y = m_PicH - now_line[now_line.size() - 2].y;
-		slv.p2.x = now_line[now_line.size() - 1].x;
-		slv.p2.y = m_PicH - now_line[now_line.size() - 1].y;
-		m_SkeletonLinesVertices.push_back(slv);
 	}
 }
 
@@ -2150,6 +2093,7 @@ void D3DApp::AddDiffusionLines(const Lines& lines)
 
 void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 {
+	float scale = 1 / 128.0f;
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		CURVE_Vertexes curveline;
@@ -2160,40 +2104,43 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 			continue;
 		}
 		CURVE_Vertex vtx1, vtx2;
-		vtx1.lcolor.w = 0;
-		vtx1.rcolor.w = 0;
-		vtx2.lcolor.w = 0;
-		vtx2.rcolor.w = 0;
+		vtx1.lcolor.w = 0.0;
+		vtx1.rcolor.w = 0.0;
+		vtx2.lcolor.w = 0.0;
+		vtx2.rcolor.w = 0.0;
 		for (int j = 1; j < now_line.size() - 1; ++j)
 		{
-			vtx1.lcolor.x = now_color[j].x;
-			vtx1.lcolor.y = now_color[j].y;
-			vtx1.lcolor.z = now_color[j].z;
-			vtx1.rcolor.x = now_color[j].x;
-			vtx1.rcolor.y = now_color[j].y;
-			vtx1.rcolor.z = now_color[j].z;
-			vtx2.lcolor.x = now_color[j + 1].x;
-			vtx2.lcolor.y = now_color[j + 1].y;
-			vtx2.lcolor.z = now_color[j + 1].z;
-			vtx2.rcolor.x = now_color[j + 1].x;
-			vtx2.rcolor.y = now_color[j + 1].y;
-			vtx2.rcolor.z = now_color[j + 1].z;
+			vtx1.lcolor.x = now_color[j].x * scale;
+			vtx1.lcolor.y = now_color[j].y * scale;
+			vtx1.lcolor.z = now_color[j].z * scale;
+			vtx1.rcolor = vtx1.lcolor;
+			vtx2.lcolor.x = now_color[j + 1].x * scale;
+			vtx2.lcolor.y = now_color[j + 1].y * scale;
+			vtx2.lcolor.z = now_color[j + 1].z * scale;
+			vtx2.rcolor = vtx2.lcolor;
 			vtx1.pos.x = now_line[j].x;
 			vtx1.pos.y = m_PicH - now_line[j].y;
 			vtx2.pos.x = now_line[j + 1].x;
 			vtx2.pos.y = m_PicH - now_line[j + 1].y;
-			curveline.push_back(vtx1);
-			curveline.push_back(vtx2);
+			if (now_line[j].x > 2 && now_line[j].x < m_PicW - 3 &&
+					now_line[j].y > 2 && now_line[j].y < m_PicH - 3)
+			{
+				curveline.push_back(vtx1);
+				curveline.push_back(vtx2);
+			}
 		}
-		curveline.front().nb = D3DXVECTOR2(10000.0f, 10000.0f);
-		for (int j = 2; j < curveline.size(); j += 2)
+		if (curveline.size() > 3)
 		{
-			curveline[j].nb = curveline[j - 2].pos;
-			curveline[j - 1].nb = curveline[j + 1].pos;
+			curveline.front().nb = D3DXVECTOR2(10000.0f, 10000.0f);
+			for (int j = 2; j < curveline.size(); j += 2)
+			{
+				curveline[j].nb = curveline[j - 2].pos;
+				curveline[j - 1].nb = curveline[j + 1].pos;
+			}
+			(curveline.end() - 2)->nb = (curveline.end() - 4)->pos;
+			curveline.back().nb = D3DXVECTOR2(10000.0f, 10000.0f);
+			m_CurveVertexes.insert(m_CurveVertexes.end(), curveline.begin(), curveline.end());
 		}
-		(curveline.end() - 2)->nb = (curveline.end() - 4)->pos;
-		curveline.back().nb = D3DXVECTOR2(10000.0f, 10000.0f);
-		m_CurveVertexes.insert(m_CurveVertexes.end(), curveline.begin(), curveline.end());
 	}
 }
 
@@ -2215,7 +2162,7 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 		vtx1.rcolor.w = 0;
 		vtx2.lcolor.w = 0;
 		vtx2.rcolor.w = 0;
-		for (int j = 1; j < now_line.size() - 1; ++j)
+		for (int j = 0; j < now_line.size() - 1; ++j)
 		{
 			vtx1.lcolor.x = now_lcolor[j].x * scale;
 			vtx1.lcolor.y = now_lcolor[j].y * scale;

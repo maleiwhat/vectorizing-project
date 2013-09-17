@@ -662,6 +662,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	// contour
 	TriangulationCgal_Sideline cgal_contour;
 	ImageSpline is2;
+	cv::Mat curveExtration;
 	if (m_DRAW_CONTOUR)
 	{
 		is2 = ComputeLines(m_vavImage, m_BlackRegionThreshold * 0.01);
@@ -771,28 +772,50 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		cv::Mat isoimg = MakeIsoSurfaceImg(m_vavImage, 4);
 		cv::imshow("isoimg", isoimg);
 	}
+
 	if (m_DRAW_PATCH || m_DRAW_SEPARATE_PATCH)
 	{
 		cv::imshow("vavImage", (cv::Mat)m_vavImage);
-		cv::Mat isoimg = MakeIsoSurfaceImg(m_vavImage, 12);
-		is = S3GetPatchs(isoimg, m_BlackRegionThreshold * 0.01, m_vavImage);
+		cv::Mat tmpimg = m_vavImage.Clone();
+		cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
+		cv::Mat isoimg = MakeIsoSurfaceImg(tmpimg, 12);
+		is = S3GetPatchs(isoimg, m_BlackRegionThreshold * 0.01, tmpimg);
 		cv::imshow("isoimg", isoimg);
 	}
+
 	if (m_DRAW_PATCH)
 	{
-		TriangulationCgal_Patch cgal_patch;
-		cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-		cgal_patch.AddImageSpline(is);
-		for (int i = 0; i < is.m_CvPatchs.size(); ++i)
+		Lines tmp;
+		Vector3s2d colors;
+		for (int i = 0; i < is.m_LineFragments.size(); ++i)
 		{
-			is.m_CvPatchs[i].SetImage(m_vavImage);
-			ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint3();
-			cgal_patch.AddColorConstraint(constraint_sptr);
+			Line& cps = is.m_LineFragments[i].m_Points;
+			for (int j = 0; j < cps.size(); ++j)
+			{
+				cps[j].x -= 0.5;
+				cps[j].y -= 0.5;
+			}
+			if (cps.size() > 5)
+			{
+				tmp.push_back(cps);
+			}
 		}
-		cgal_patch.SetCriteria(0.0, 4000);
-		cgal_patch.Compute();
-		d3dApp.AddColorTriangles(cgal_patch.GetTriangles());
-		d3dApp.AddTrianglesLine(cgal_patch.GetTriangles());
+		colors = GetLinesColor(m_vavImage, tmp);
+		colors = SmoothingLen5(colors, 0, 10);
+		d3dApp.AddDiffusionLines(tmp, colors);
+		//      TriangulationCgal_Patch cgal_patch;
+		//      cgal_patch.SetSize(m_vavI22mage.GetWidth(), m_vavImage.GetHeight());
+		//      cgal_patch.AddImageSpline(is);
+		//      for (int i = 0; i < is.m_CvPatchs.size(); ++i)
+		//      {
+		//          is.m_CvPatchs[i].SetImage(m_vavImage);
+		//          ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint3();
+		//          cgal_patch.AddColorConstraint(constraint_sptr);
+		//      }
+		//      cgal_patch.SetCriteria(0.0, 4000);
+		//      cgal_patch.Compute();
+		//      d3dApp.AddColorTriangles(cgal_patch.GetTriangles());
+		//      d3dApp.AddTrianglesLine(cgal_patch.GetTriangles());
 	}
 	// separate patch
 	if (m_DRAW_SEPARATE_PATCH)
@@ -898,7 +921,6 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		LineEnds les = GetLineEnds(m_BlackLine);
 		LinkLineEnds(les, 5, 20);
 		ConnectSimilarLines(les, m_BlackLine, m_BLineWidth);
-		//m_BlackLine = SmoothingLen5(m_BlackLine, 1, 5);
 		les = GetLineEnds(m_BlackLine);
 		IncreaseDensity(m_BlackLine, m_BLineWidth);
 		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 10, 5, 15);
@@ -909,18 +931,50 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 0, 5);
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0, 5);
 		d3dApp.AddLines(m_BlackLine, m_BLineWidth);
-		d3dApp.AddLines(m_BlackLine);
-		Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine);
-		color2s.left = SmoothingLen5(color2s.left, 0, 15);
-		color2s.right = SmoothingLen5(color2s.right, 0, 15);
-		d3dApp.AddDiffusionLines(m_BlackLine, color2s);
-		//d3dApp.AddLines(showLines);
+//		d3dApp.AddLines(m_BlackLine);
+// 		Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine, 1.5);
+// 		color2s.left = SmoothingLen5(color2s.left, 0, 10);
+// 		color2s.right = SmoothingLen5(color2s.right, 0, 10);
+// 		d3dApp.AddDiffusionLines(m_BlackLine, color2s);
+		// block line
+		dEdge.CalSecDer2(7, 0.0001f);
+		dEdge.Link();
+		tpnts2d.clear();
+		const CEdges& edges2 = dEdge.GetEdges();
+		for (size_t i = 0; i < edges2.size(); i++)
+		{
+			cv::Vec3b color(rand() % 155 + 100, rand() % 155 + 100, rand() % 155 + 100);
+			const std::vector<cv::Point>& pnts = edges2[i].pnts;
+			for (size_t j = 0; j < pnts.size(); j++)
+			{
+				show3u.at<cv::Vec3b>(pnts[j]) = color;
+			}
+			tpnts2d.push_back(edges2[i].pnts);
+		}
+		m_BlackLine2 = GetLines(tpnts2d, 0, 0);
+		Lines tmp_width = m_BlackLine2;
+		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.9, 5);
+		les = GetLineEnds(m_BlackLine2);
+		LinkLineEnds(les, 5, 20);
+		ConnectSimilarLines(les, m_BlackLine2, tmp_width);
+		les = GetLineEnds(m_BlackLine2);
+		IncreaseDensity(m_BlackLine2, tmp_width);
+		ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 5, 15);
+		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0, 5);
+		d3dApp.AddLines(m_BlackLine2);
+		
+		Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine2, 1.5);
+		color2s.left = SmoothingLen5(color2s.left, 0, 10);
+		color2s.right = SmoothingLen5(color2s.right, 0, 10);
+		d3dApp.AddDiffusionLines(m_BlackLine2, color2s);
+
 		d3dApp.SetScaleTemporary(1);
 		d3dApp.BuildPoint();
 		d3dApp.InterSetRenderTransparencyOutput2();
 		cv::Mat simg = d3dApp.DrawSceneToCvMat();
 		d3dApp.SetScaleRecovery();
 		cvtColor(simg, simg, CV_BGR2GRAY);
+		curveExtration = simg.clone();
 		AddEdge(simg);
 		std::vector<cv::Vec4i> hierarchy;
 		std::vector<std::vector<cv::Point>> contours;
@@ -935,7 +989,30 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			drawContours(drawing, contours, i, color, -1);
 		}
 		imshow("FillContours", drawing);
+
+		Dilation(curveExtration);
+		cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
+		is = S4GetPatchs(curveExtration, 0, 0);
+		Lines tmp;
+		Vector3s2d colors;
+		for (int i = 0; i < is.m_LineFragments.size(); ++i)
+		{
+			Line& cps = is.m_LineFragments[i].m_Points;
+			for (int j = 0; j < cps.size(); ++j)
+			{
+				cps[j].x -= 0.5;
+				cps[j].y -= 0.5;
+			}
+			if (cps.size() > 5)
+			{
+				tmp.push_back(cps);
+			}
+		}
+		colors = GetLinesColor(m_vavImage, tmp);
+		colors = SmoothingLen5(colors, 0, 10);
+		d3dApp.AddDiffusionLines(tmp, colors);
 	}
+	
 	if (m_DRAW_CANNY_EXTRACTION)
 	{
 		int t1 = 0, t2 = 30, a = 3;

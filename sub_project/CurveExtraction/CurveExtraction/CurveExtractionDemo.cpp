@@ -304,7 +304,6 @@ void UnsharpMask2(cv::Mat& img, float amount, float radius, float threshold)
 	cv::Mat highcontrast(img32F.rows, img32F.cols, img32F.type(), cv::Scalar(0));
 	AdjustContrast(img32F, highcontrast, amount);
 	imshow("img32F", highcontrast);
-
 	//原圖的模糊圖像
 	cv::GaussianBlur(img32F, blurimage, cv::Size(0, 0), radius);
 	//原圖與模糊圖作差
@@ -920,24 +919,25 @@ typedef std::vector<WeightData> Weights;
 
 void Demo(const Mat& img1u)
 {
-	Mat srcImg1f, show3u = Mat::zeros(img1u.size(), CV_8UC3);
-	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
-	//srcImg1f = img1u.clone();
+	Mat srcImg1f, show3u = img1u.clone();
+	srcImg1f = img1u.clone();
+	cvtColor(srcImg1f, srcImg1f, CV_BGR2GRAY);
+	srcImg1f.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
 	CmCurveEx dEdge(srcImg1f);
-	dEdge.CalSecDer(5, 0.01f);
+	dEdge.CalSecDer(5, 0.001f);
 	dEdge.Link();
 	const vector<CmEdge>& edges = dEdge.GetEdges();
 	for (size_t i = 0; i < edges.size(); i++)
 	{
-		Vec3b color(rand() % 155 + 100, rand() % 155 + 100, rand() % 155 + 100);
+		Vec3b color(255, 0, 0);
 		const vector<Point>& pnts = edges[i].pnts;
 		for (size_t j = 0; j < pnts.size(); j++)
 		{
 			show3u.at<Vec3b>(pnts[j]) = color;
 		}
 	}
-// 	imshow("Derivativs", dEdge.GetDer());
-// 	imshow("GetDer2", dEdge.GetDer2());
+//  imshow("Derivativs", dEdge.GetDer());
+//  imshow("GetDer2", dEdge.GetDer2());
 	imshow("Curv1", show3u);
 	waitKey(0);
 }
@@ -959,27 +959,24 @@ int main(int argc, char* argv[])
 		}
 	}
 	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
-
 	//UnsharpMask0(cImg, 20, 2, 0);
 	//UnsharpMask1(cImg, 105,2,0);
 	//UnsharpMask2(cImg, 150, 2, 0);
-	
 	imgf.convertTo(cImg, CV_8UC3, 255);
-// 	for (int r = 0; r < cImg.rows; r++)
-// 	{
-// 		for (int c = 0; c < cImg.cols; c++)
-// 		{
-// 			cv::Vec3b& s = cImg.at<cv::Vec3b>(r, c);
-// 			s[0] = int(s[0] * 3) % 255;
-// 			s[1] = int(s[1] * 3) % 255;
-// 			s[2] = int(s[2] * 3) % 255;
-// 		}
-// 	}
+//  for (int r = 0; r < cImg.rows; r++)
+//  {
+//      for (int c = 0; c < cImg.cols; c++)
+//      {
+//          cv::Vec3b& s = cImg.at<cv::Vec3b>(r, c);
+//          s[0] = int(s[0] * 3) % 255;
+//          s[1] = int(s[1] * 3) % 255;
+//          s[2] = int(s[2] * 3) % 255;
+//      }
+//  }
 	imshow("orgin", cImg);
 	//CmCurveEx::Demo( cImg, 1 );
 //  cImg.convertTo(cImg, CV_32FC3, 1.0 / 255);
 //  Flood_CollectWater(cImg, cImg2, 5, 5);
-	cvtColor(cImg, cImg, CV_BGR2GRAY);
 	Demo(cImg);
 //  for (int k = 0; k < 9; k++)
 //  {
