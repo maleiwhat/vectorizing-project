@@ -20,7 +20,7 @@ Lines GetLines(const CvLines& cvp)
 	return res;
 }
 
-Lines GetLines(const Lines& cvp)
+Lines GetLines(const Lines& cvp, double xOffset, double yOffset)
 {
 	Lines res;
 	for (auto it = cvp.begin(); it != cvp.end(); ++it)
@@ -28,7 +28,7 @@ Lines GetLines(const Lines& cvp)
 		Line li;
 		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
 		{
-			li.push_back(Vector2(it2->x, it2->y));
+			li.push_back(Vector2(it2->x + xOffset, it2->y + yOffset));
 		}
 		res.push_back(li);
 	}
@@ -272,7 +272,7 @@ Lines SmoothingLen5(const Lines& cvp, double centroidRadio, int repeat /*= 1*/)
 	return cps;
 }
 
-Vector3s SmoothingLen5( const Vector3s& cvp, double centroidRadio /*= 1.0*/, int repeat /*= 1*/ )
+Vector3s SmoothingLen5(const Vector3s& cvp, double centroidRadio /*= 1.0*/, int repeat /*= 1*/)
 {
 	if (cvp.size() <= 2)
 	{
@@ -304,10 +304,10 @@ Vector3s SmoothingLen5( const Vector3s& cvp, double centroidRadio /*= 1.0*/, int
 			for (int j = 2; j < cps.size() - 2; j ++)
 			{
 				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
-					6.0f;
+						   6.0f;
 				newcps.push_back(vec);
 				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
-					cps[j - 2]) / 5.0f);
+									 cps[j - 2]) / 5.0f);
 			}
 			int last = (int)cps.size() - 1;
 			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
@@ -323,7 +323,7 @@ Vector3s SmoothingLen5( const Vector3s& cvp, double centroidRadio /*= 1.0*/, int
 			for (int j = 2; j < (int)cps.size() - 2; j ++)
 			{
 				Vector3 nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
-					cps[j - 2]) / 5.0f;
+									   cps[j - 2]) / 5.0f;
 				nowCentroid = centroids[j - 1] - nowCentroid;
 				newcps.push_back(cps[j] + nowCentroid * centroidRadio);
 			}
@@ -337,7 +337,7 @@ Vector3s SmoothingLen5( const Vector3s& cvp, double centroidRadio /*= 1.0*/, int
 	return cps;
 }
 
-Vector3s2d SmoothingLen5( const Vector3s2d& cvp, double centroidRadio /*= 1.0*/, int repeat /*= 1*/ )
+Vector3s2d SmoothingLen5(const Vector3s2d& cvp, double centroidRadio /*= 1.0*/, int repeat /*= 1*/)
 {
 	Vector3s2d cps(cvp.size());
 	for (int i = 0; i < cvp.size(); ++i)

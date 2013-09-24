@@ -1395,9 +1395,9 @@ void D3DApp::AddLines(const Lines& lines)
 //      r = (rand() % 155 + 100) / 255.0f;
 //      g = (rand() % 155 + 100) / 255.0f;
 //      b = (rand() % 155 + 100) / 255.0f;
-		r = 255.0f;
+		r = 0.0f;
 		g = 0;
-		b = 0;
+		b = 255;
 		SkeletonLineVertex slv;
 		slv.color.x = r;
 		slv.color.y = g;
@@ -1605,7 +1605,7 @@ void D3DApp::AddLinesLine(const Lines& lines, const double_vector2d& linewidths)
 	AddLineSegs(lineSegs);
 }
 
-void D3DApp::InterDraw()
+void D3DApp::InterDraw(bool drawDiffusion)
 {
 	if (!m_Init)
 	{
@@ -1613,7 +1613,7 @@ void D3DApp::InterDraw()
 	}
 	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteON, 0);
 	//Draw Diffusion
-	if (m_CurveVertexes.size() > 0)
+	if (drawDiffusion && m_CurveVertexes.size() > 0)
 	{
 		m_DeviceContext->ClearRenderTargetView(m_TextureTV, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 		m_DeviceContext->ClearRenderTargetView(m_diffuseTextureTV[0], D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
@@ -1740,6 +1740,7 @@ void D3DApp::InterDraw()
 	}
 	float BlendFactor[4] = {0, 0, 0, 0};
 	m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
+	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
 	//Draw Picture
 	if (m_PicsVertices.size() > 0)
 	{
@@ -1889,7 +1890,7 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 		ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
 		ID3D11DepthStencilView* old_pDSV = DXUTGetD3D11DepthStencilView();
 		UINT NumViewports = 1;
-		D3D11_VIEWPORT pViewports[1];
+		D3D11_VIEWPORT pViewports[10];
 		m_DeviceContext->RSGetViewports(&NumViewports, &pViewports[0]);
 		m_DeviceContext->OMSetRenderTargets(1, &m_distDirTextureTV,
 											m_DrawTextureDepthStencilView);
@@ -1905,7 +1906,7 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 		InterSetScale(m_Scale);
 		InterSetLookCenter(0, 0);
 		InterSetSize(TexWidth, TexHeight);
-		InterDraw();
+		InterDraw(false);
 		ID3D11Texture2D* pTextureRead;
 		D3D11_TEXTURE2D_DESC texDescCV;
 		ZeroMemory(&texDescCV, sizeof(texDescCV));

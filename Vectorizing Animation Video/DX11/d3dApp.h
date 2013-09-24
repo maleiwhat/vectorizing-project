@@ -85,7 +85,7 @@ protected:
 	
 	void InterSetRenderTransparencyDefault();
 	void initDirect3D();
-	void InterDraw();
+	void InterDraw(bool drawDiffusion = true);
 	void InterSetLookCenter(float x, float y);
 	void InterSetScale(float s);
 	void InterSetSize(float w, float h);

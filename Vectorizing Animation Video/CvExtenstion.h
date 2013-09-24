@@ -54,7 +54,6 @@ PatchLines GetPatchSplines(CvPatchs& patchs, cv::Mat& patchImage);
 Lines GetAllLineFromLineImage(cv::Mat& lineImage);
 void    FixHole(cv::Mat& patchImage);
 void    FillSmallHole(cv::Mat& patchImage);
-Lines   GetLines(const CvLines& cvp);
 cv::Mat MakeLineImage(const cv::Mat& image, const Lines& lines);
 cv::Mat MakeLineImage(const cv::Mat& image, Patch& patch);
 

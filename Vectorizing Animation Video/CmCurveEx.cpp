@@ -199,6 +199,7 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 	}
 	//GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0, 0);
 	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
+	cv::imshow("m_pDer1f", m_pDer1f);
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
 	return m_pDer1f;
 }

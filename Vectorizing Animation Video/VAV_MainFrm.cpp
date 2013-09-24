@@ -772,7 +772,6 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		cv::Mat isoimg = MakeIsoSurfaceImg(m_vavImage, 4);
 		cv::imshow("isoimg", isoimg);
 	}
-
 	if (m_DRAW_PATCH || m_DRAW_SEPARATE_PATCH)
 	{
 		cv::imshow("vavImage", (cv::Mat)m_vavImage);
@@ -782,7 +781,6 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		is = S3GetPatchs(isoimg, m_BlackRegionThreshold * 0.01, tmpimg);
 		cv::imshow("isoimg", isoimg);
 	}
-
 	if (m_DRAW_PATCH)
 	{
 		Lines tmp;
@@ -862,8 +860,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BlackLine = GetLines(tpnts2d, 0, 0);
 		m_BlackLine = SmoothingLen5(m_BlackLine);
 		Lines normals = GetNormalsLen2(m_BlackLine);
-		GetVavView()->m_FeatureLines = m_BlackLine;
-		GetVavView()->m_FeatureNormals = normals;
+//      GetVavView()->m_FeatureLines = m_BlackLine;
+//      GetVavView()->m_FeatureNormals = normals;
 		Lines showLines;
 		Lines BLineWidth(m_BlackLine.size());
 		//vImage.ToExpImage();
@@ -932,12 +930,12 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0, 5);
 		d3dApp.AddLines(m_BlackLine, m_BLineWidth);
 //		d3dApp.AddLines(m_BlackLine);
-// 		Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine, 1.5);
-// 		color2s.left = SmoothingLen5(color2s.left, 0, 10);
-// 		color2s.right = SmoothingLen5(color2s.right, 0, 10);
-// 		d3dApp.AddDiffusionLines(m_BlackLine, color2s);
+//      Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine, 1.5);
+//      color2s.left = SmoothingLen5(color2s.left, 0, 10);
+//      color2s.right = SmoothingLen5(color2s.right, 0, 10);
+//      d3dApp.AddDiffusionLines(m_BlackLine, color2s);
 		// block line
-		dEdge.CalSecDer2(7, 0.0001f);
+		dEdge.CalSecDer2(7, 0.001f, 0.1f);
 		dEdge.Link();
 		tpnts2d.clear();
 		const CEdges& edges2 = dEdge.GetEdges();
@@ -956,18 +954,17 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.9, 5);
 		les = GetLineEnds(m_BlackLine2);
 		LinkLineEnds(les, 5, 20);
-		ConnectSimilarLines(les, m_BlackLine2, tmp_width);
+		//ConnectSimilarLines(les, m_BlackLine2, tmp_width);
 		les = GetLineEnds(m_BlackLine2);
-		IncreaseDensity(m_BlackLine2, tmp_width);
+		//IncreaseDensity(m_BlackLine2, tmp_width);
 		ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 5, 15);
 		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0, 5);
-		d3dApp.AddLines(m_BlackLine2);
-		
 		Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine2, 1.5);
 		color2s.left = SmoothingLen5(color2s.left, 0, 10);
 		color2s.right = SmoothingLen5(color2s.right, 0, 10);
 		d3dApp.AddDiffusionLines(m_BlackLine2, color2s);
-
+		m_BlackLine = GetLines(m_BlackLine2, 1, 1);
+		d3dApp.AddLines(m_BlackLine2);
 		d3dApp.SetScaleTemporary(1);
 		d3dApp.BuildPoint();
 		d3dApp.InterSetRenderTransparencyOutput2();
@@ -975,44 +972,56 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		d3dApp.SetScaleRecovery();
 		cvtColor(simg, simg, CV_BGR2GRAY);
 		curveExtration = simg.clone();
-		AddEdge(simg);
-		std::vector<cv::Vec4i> hierarchy;
-		std::vector<std::vector<cv::Point>> contours;
-		findContours(simg, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE,
-					 cv::Point(0, 0));
-		cv::Mat drawing = cv::Mat::zeros(simg.size(), CV_8UC3);
-		cv::RNG rng(12345);
-		for (int i = 0; i < contours.size(); i++)
-		{
-			cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
-										  rng.uniform(50, 255));
-			drawContours(drawing, contours, i, color, -1);
-		}
-		imshow("FillContours", drawing);
-
-		Dilation(curveExtration);
+		Dilation(curveExtration, 2, 3);
 		cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
-		is = S4GetPatchs(curveExtration, 0, 0);
-		Lines tmp;
-		Vector3s2d colors;
-		for (int i = 0; i < is.m_LineFragments.size(); ++i)
+		cv::Mat tmpimg = m_vavImage.Clone();
+		cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
+		cv::Mat isoimg = MakeIsoSurfaceImg(tmpimg, 12);
+		for (int i = 0; i < curveExtration.rows; i++)
 		{
-			Line& cps = is.m_LineFragments[i].m_Points;
-			for (int j = 0; j < cps.size(); ++j)
+			for (int j = 0; j < curveExtration.cols; j++)
 			{
-				cps[j].x -= 0.5;
-				cps[j].y -= 0.5;
-			}
-			if (cps.size() > 5)
-			{
-				tmp.push_back(cps);
+				cv::Vec3b& v = curveExtration.at<cv::Vec3b>(i, j);
+				if (v[0] > 0)
+				{
+					cv::Vec3b& dst = isoimg.at<cv::Vec3b>(i, j);
+					dst[0] = 0;
+					dst[1] = 0;
+					dst[2] = 0;
+				}
 			}
 		}
+		CvLines contours;
+		std::vector<cv::Vec4i> hierarchy;
+		cvtColor(isoimg, isoimg, CV_BGR2GRAY);
+		cv::imshow("isoimggray", isoimg);
+		cv::Canny(isoimg, isoimg, 10, 20, 3, true);
+		findContours(isoimg, contours, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+		Lines tmp = GetLines(contours, 1, 1);
+		tmp = SmoothingLen5(tmp, 0.5, 5);
+		d3dApp.AddLines(tmp);
+		Vector3s2d colors;
+		// very slow function S4GetPatchs
+//      is = S4GetPatchs(isoimg, 0, 0);
+//      Lines tmp;
+//      Vector3s2d colors;
+//      for (int i = 0; i < is.m_LineFragments.size(); ++i)
+//      {
+//          Line& cps = is.m_LineFragments[i].m_Points;
+//          for (int j = 0; j < cps.size(); ++j)
+//          {
+//              cps[j].x -= 0.5;
+//              cps[j].y -= 0.5;
+//          }
+//          if (cps.size() > 5)
+//          {
+//              tmp.push_back(cps);
+//          }
+//      }
 		colors = GetLinesColor(m_vavImage, tmp);
-		colors = SmoothingLen5(colors, 0, 10);
+		colors = SmoothingLen5(colors, 0.5, 5);
 		d3dApp.AddDiffusionLines(tmp, colors);
 	}
-	
 	if (m_DRAW_CANNY_EXTRACTION)
 	{
 		int t1 = 0, t2 = 30, a = 3;

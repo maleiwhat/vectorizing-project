@@ -40,7 +40,7 @@ public:
 	const vector<CEdge>& Link(int shortRemoveBound = 3);
 
 	// Get data pointers
-	const cv::Mat& GetDer() { return m_pDer1f; }
+	const cv::Mat& GetDer() { return m_pDer2f; }
 	const cv::Mat& GetDer2() { return m_pDer2; }
 	const cv::Mat& GetLineIdx() { return m_pLabel1i; } // Edge index start from 1
 	const cv::Mat& GetNextMap() { return m_pNext1i; }
@@ -56,7 +56,7 @@ private:
 	const cv::Mat& m_img1f; // Input image
 	cv::Mat m_color; // Input image
 	cv::Mat m_yuv; // Input image
-	cv::Mat m_pDer1f;   // First or secondary derivatives. 32FC1
+	cv::Mat m_pDer2f;   // First or secondary derivatives. 32FC1
 	cv::Mat m_pDer2;
 	cv::Mat m_pOrnt1f;  // Line orientation. 32FC1
 	cv::Mat m_pLabel1i;  // Line index, 32SC1.
