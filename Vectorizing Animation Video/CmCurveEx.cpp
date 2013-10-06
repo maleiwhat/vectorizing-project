@@ -70,7 +70,7 @@ CmCurveEx::CmCurveEx(const cv::Mat& srcImg1f, float maxOrntDif)
 	m_h = m_img1f.rows;
 	m_w = m_img1f.cols;
 	m_pDer2.create(m_h, m_w, CV_8UC1);
-	m_pDer1f.create(m_h, m_w, CV_32FC1);
+	m_pDer2f.create(m_h, m_w, CV_32FC1);
 	m_pOrnt1f.create(m_h, m_w, CV_32FC1);
 	m_pLabel1i.create(m_h, m_w, CV_32SC1);
 	m_pNext1i.create(m_h, m_w, CV_32SC1);
@@ -162,7 +162,7 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 	Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
 	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
 	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
-	cv::Mat pDer1f_2 = m_pDer1f.clone();
+	cv::Mat m_pDer1f = m_pDer2f.clone();
 	double eigval[2], eigvec[2][2];
 	for (int y = 0; y < m_h; y++)
 	{
@@ -170,38 +170,60 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		float* xy = dxy.ptr<float>(y);
 		float* yy = dyy.ptr<float>(y);
 		float* pOrnt = m_pOrnt1f.ptr<float>(y);
-		float* pDer = m_pDer1f.ptr<float>(y);
-		float* pDer2 = pDer1f_2.ptr<float>(y);
+		float* pDer2 = m_pDer2f.ptr<float>(y);
+		float* pDer1 = m_pDer1f.ptr<float>(y);
 		float* dx = dxMat.ptr<float>(y);
 		float* dy = dyMat.ptr<float>(y);
 		for (int x = 0; x < m_w; x++)
 		{
+			float tmp = atan2f(dx[x], -dy[x]);
+			tmp = tmp < 0 ? tmp + PI2 : tmp;
 			compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
 			pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
 			pOrnt[x] = pOrnt[x] < 0 ? pOrnt[x] + PI2 : pOrnt[x];
-			pDer[x] = float(eigval[0] > 0.0f ? powf(eigval[0], 1) : 0.0f);//計算二階導數
-			pDer2[x] = sqrt(dx[x] * dx[x] + dy[x] * dy[x]);
+
+			pDer2[x] = eigval[0];//計算二階導數
+			pDer1[x] = sqrt(dx[x] * dx[x] + dy[x] * dy[x]);
 		}
 	}
+	normalize(m_pDer2f, m_pDer2f, -1, 1, cv::NORM_MINMAX);
 	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
-	normalize(pDer1f_2, pDer1f_2, 0, 1, cv::NORM_MINMAX);
-	GaussianBlur(pDer1f_2, pDer1f_2, cv::Size(3, 3), 0, 0);
+	GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0, 0);
 	for (int y = 0; y < m_h; y++)
 	{
-		float* pDer = m_pDer1f.ptr<float>(y);
-		float* pDer2 = pDer1f_2.ptr<float>(y);
+		float* pDer2 = m_pDer2f.ptr<float>(y);
+		float* pDer1 = m_pDer1f.ptr<float>(y);
 		for (int x = 0; x < m_w; x++)
 		{
-			//pDer[x] = max(pDer2[x], pDer[x]);
-			pDer[x] = pDer2[x] * 0.7f + pDer[x] * 0.3f;
-			pDer[x] = powf(pDer[x], 0.8);
+			float v1 = pDer1[x] > 0 ? pDer1[x] * (1 - abs(pDer2[x])) : 0;
+			float v2 = pDer2[x] > 0 ? pDer2[x] * (1 - abs(pDer1[x])) : 0;
+			pDer2[x] = v1 + v2*0.6;
+			pDer2[x] = powf(pDer2[x], 1.3);
 		}
 	}
-	//GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0, 0);
-	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
-	cv::imshow("m_pDer1f", m_pDer1f);
+	cv::imshow("m_pDer1f", m_pDer2f);
+	if (1)
+	{
+		Sobel(m_pDer2f, dxx, CV_32F, 2, 0, kSize);
+		Sobel(m_pDer2f, dxy, CV_32F, 1, 1, kSize);
+		Sobel(m_pDer2f, dyy, CV_32F, 0, 2, kSize);
+		for (int y = 0; y < m_h; y++)
+		{
+			float* xx = dxx.ptr<float>(y);
+			float* xy = dxy.ptr<float>(y);
+			float* yy = dyy.ptr<float>(y);
+			float* pOrnt = m_pOrnt1f.ptr<float>(y);
+			for (int x = 0; x < m_w; x++)
+			{
+				compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
+				pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
+				pOrnt[x] = pOrnt[x] < 0 ? pOrnt[x] + PI2 : pOrnt[x];
+			}
+		}
+	}
+	normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
-	return m_pDer1f;
+	return m_pDer2f;
 }
 
 const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
@@ -218,7 +240,7 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
 		float* xy = dxy.ptr<float>(y);
 		float* yy = dyy.ptr<float>(y);
 		float* pOrnt = m_pOrnt1f.ptr<float>(y);
-		float* pDer = m_pDer1f.ptr<float>(y);
+		float* pDer = m_pDer2f.ptr<float>(y);
 		for (int x = 0; x < m_w; x++)
 		{
 			compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
@@ -231,9 +253,9 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
 		}
 	}
 	//GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0);
-	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
+	normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
-	return m_pDer1f;
+	return m_pDer2f;
 }
 
 const cv::Mat& CmCurveEx::CalSecDer( cv::Mat engery, int kSize /*= 5*/, float linkEndBound /*= 0.01f*/, float linkStartBound /*= 0.1f*/ )
@@ -250,7 +272,7 @@ const cv::Mat& CmCurveEx::CalSecDer( cv::Mat engery, int kSize /*= 5*/, float li
 		float* xy = dxy.ptr<float>(y);
 		float* yy = dyy.ptr<float>(y);
 		float* pOrnt = m_pOrnt1f.ptr<float>(y);
-		float* pDer = m_pDer1f.ptr<float>(y);
+		float* pDer = m_pDer2f.ptr<float>(y);
 
 		for (int x = 0; x < m_w; x++)
 		{
@@ -265,13 +287,13 @@ const cv::Mat& CmCurveEx::CalSecDer( cv::Mat engery, int kSize /*= 5*/, float li
 			pDer[x] = float(eigval[0] > 0.0f ? pow(eigval[0], 0.45) : 0.0f);//計算二階導數
 		}
 	}
-	m_pDer1f = engery;
-	GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0);
-	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
+	m_pDer2f = engery;
+	GaussianBlur(m_pDer2f, m_pDer2f, cv::Size(3, 3), 0);
+	normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
 
 	for (int y = 0; y < m_h; y++)
 	{
-		float* pDer = m_pDer1f.ptr<float>(y);
+		float* pDer = m_pDer2f.ptr<float>(y);
 		uchar* pDer2 = m_pDer2.ptr<uchar>(y);
 
 		for (int x = 0; x < m_w; x++)
@@ -289,7 +311,7 @@ const cv::Mat& CmCurveEx::CalSecDer( cv::Mat engery, int kSize /*= 5*/, float li
 
 	normalize(m_pDer2, m_pDer2, 0, 255, cv::NORM_MINMAX);
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
-	return m_pDer1f;
+	return m_pDer2f;
 }
 
 const cv::Mat& CmCurveEx::CalFirDer(int kSize, float linkEndBound,
@@ -304,7 +326,7 @@ const cv::Mat& CmCurveEx::CalFirDer(int kSize, float linkEndBound,
 		float* dx = dxMat.ptr<float>(y);
 		float* dy = dyMat.ptr<float>(y);
 		float* pOrnt = m_pOrnt1f.ptr<float>(y);
-		float* pDer = m_pDer1f.ptr<float>(y);
+		float* pDer = m_pDer2f.ptr<float>(y);
 
 		for (int x = 0; x < m_w; x++)
 		{
@@ -319,15 +341,15 @@ const cv::Mat& CmCurveEx::CalFirDer(int kSize, float linkEndBound,
 		}
 	}
 
-	GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0);
-	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
+	GaussianBlur(m_pDer2f, m_pDer2f, cv::Size(3, 3), 0);
+	normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
-	return m_pDer1f;
+	return m_pDer2f;
 }
 
 void CmCurveEx::NoneMaximalSuppress(float linkEndBound, float linkStartBound)
 {
-	CV_Assert(m_pDer1f.data != NULL && m_pLabel1i.data != NULL);
+	CV_Assert(m_pDer2f.data != NULL && m_pLabel1i.data != NULL);
 	m_StartPnt.clear();
 	m_StartPnt.reserve(int(0.08 * m_h * m_w));
 	PntImp linePoint;
@@ -335,7 +357,7 @@ void CmCurveEx::NoneMaximalSuppress(float linkEndBound, float linkStartBound)
 
 	for (int r = 1; r < m_h - 1; r++)
 	{
-		float* pDer = m_pDer1f.ptr<float>(r);
+		float* pDer = m_pDer2f.ptr<float>(r);
 		float* pOrnt = m_pOrnt1f.ptr<float>(r);
 		int* pLineInd = m_pLabel1i.ptr<int>(r);
 
@@ -353,8 +375,8 @@ void CmCurveEx::NoneMaximalSuppress(float linkEndBound, float linkStartBound)
 			cosN *= cosN;
 			sinN *= sinN;
 
-			if (pDer[c] >= (pDer[c + xSgn] * cosN + m_pDer1f.at<float>(r + ySgn, c) * sinN)
-					&& pDer[c] >= (pDer[c - xSgn] * cosN + m_pDer1f.at<float>(r - ySgn, c) * sinN))
+			if (pDer[c] >= (pDer[c + xSgn] * cosN + m_pDer2f.at<float>(r + ySgn, c) * sinN)
+					&& pDer[c] >= (pDer[c - xSgn] * cosN + m_pDer2f.at<float>(r - ySgn, c) * sinN))
 			{
 				pLineInd[c] = IND_NMS;
 
@@ -374,7 +396,7 @@ void CmCurveEx::NoneMaximalSuppress(float linkEndBound, float linkStartBound)
 
 const CEdges& CmCurveEx::Link(int shortRemoveBound /* = 3 */)
 {
-	CV_Assert(m_pDer1f.data != NULL && m_pLabel1i.data != NULL);
+	CV_Assert(m_pDer2f.data != NULL && m_pLabel1i.data != NULL);
 	sort(m_StartPnt.begin(), m_StartPnt.end(), linePointGreater);
 	m_pNext1i = -1;
 	m_vEdge.clear();

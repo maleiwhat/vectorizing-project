@@ -347,7 +347,7 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
 			float v1 = pDer1[x] > 0 ? pDer1[x] * (1 - abs(pDer2[x])) : 0;
 			float v2 = pDer2[x] > 0 ? pDer2[x] * (1 - abs(pDer1[x])) : 0;
 			pDer2[x] = v1 + v2;
-			pDer2[x] = powf(pDer2[x], 0.8);
+			pDer2[x] = powf(pDer2[x], 1.8);
 		}
 	}
 	cv::imshow("m_pDer1f", m_pDer2f);
@@ -372,15 +372,6 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
 	}
 	normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
-	float sum = 0;
-	for (int r = 0; r < m_pDer2f.rows; r++)
-	{
-		for (int c = 0; c < m_pDer2f.cols; c++)
-		{
-			float s = m_pDer2f.at<float>(r, c);
-			sum += s;
-		}
-	}
 	return m_pDer2f;
 }
 

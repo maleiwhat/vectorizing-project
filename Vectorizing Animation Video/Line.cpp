@@ -1616,3 +1616,48 @@ void FixEndWidth(Line& width, int len)
 	}
 }
 
+Vector3s FixLineColors(const Vector3s& cvp, int range, int findlimit)
+{
+	Vector3s cps = cvp;
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		if (0 == cvp[i].x)
+		{
+			Vector3 setValue;
+			int finds = 0, j = 1;
+			for (;j < range && finds < findlimit; ++j)
+			{
+				int left = i - j;
+				int right = i + j;
+				if (left > 0 && cvp[left].x > 0.0)
+				{
+					finds++;
+					setValue += cvp[left];
+				}
+				if (right < cvp.size() && cvp[right].x > 0.0)
+				{
+					finds++;
+					setValue += cvp[right];
+				}
+			}
+			if (finds > 0)
+			{
+				setValue /= finds;
+				cps[i] = setValue;
+			}
+		}
+	}
+	return cps;
+}
+
+Vector3s2d FixLineColors(const Vector3s2d& aLine, int range, int findlimit)
+{
+	Vector3s2d ans(aLine.size());
+	for (int i = 0; i < aLine.size(); ++i)
+	{
+		const Vector3s& aa = aLine.at(i);
+		ans[i] = FixLineColors(aa, range, findlimit);
+	}
+	return ans;
+}
+

@@ -45,6 +45,9 @@ Lines   LinesAdd(const Lines& aLine, const Lines& bLine);
 Line    LineSub(const Line& aLine, const Line& bLine);
 Lines   LinesSub(const Lines& aLine, const Lines& bLine);
 
+Vector3s	FixLineColors(const Vector3s& aLine, int range, int findlimit);
+Vector3s2d	FixLineColors(const Vector3s2d& aLine, int range, int findlimit);
+
 Line    FixLineWidths(const Line& aLine, int range);
 Lines   FixLineWidths(const Lines& aLine, int range);
 

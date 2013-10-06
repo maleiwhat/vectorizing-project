@@ -126,4 +126,5 @@ ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold);
 void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2);
 ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion);
 ImageSpline S5GetPatchs(const cv::Mat& image0, const cv::Mat& orig);
+Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion);
 cv::Mat MarkDiffence(cv::Mat src, int rectw, int recth);

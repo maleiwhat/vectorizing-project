@@ -33,7 +33,7 @@ public:
 	// Get data pointers
 	const cv::Mat& GetDer()
 	{
-		return m_pDer1f;
+		return m_pDer2f;
 	}
 	const cv::Mat& GetDer2()
 	{
@@ -62,7 +62,7 @@ public:
 private:
 	const cv::Mat& m_img1f; // Input image
 
-	cv::Mat m_pDer1f;   // First or secondary derivatives. 32FC1
+	cv::Mat m_pDer2f;   // First or secondary derivatives. 32FC1
 	cv::Mat m_pDer2;
 	cv::Mat m_pOrnt1f;  // Line orientation. 32FC1
 	cv::Mat m_pLabel1i;  // Line index, 32SC1.

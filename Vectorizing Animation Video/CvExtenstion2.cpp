@@ -59,9 +59,9 @@ Vector3s2d GetLinesColor(cv::Mat img, const Lines& lines)
 		Vector3s& li = ans.back();
 		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2)
 		{
-			double r = vimg.GetBilinearR(it2->x, it2->y);
-			double g = vimg.GetBilinearG(it2->x, it2->y);
-			double b = vimg.GetBilinearB(it2->x, it2->y);
+			double r = vimg.GetBilinearR_if0(it2->x, it2->y);
+			double g = vimg.GetBilinearG_if0(it2->x, it2->y);
+			double b = vimg.GetBilinearB_if0(it2->x, it2->y);
 			li.push_back(Vector3(r, g, b));
 		}
 	}
@@ -74,9 +74,9 @@ Vector3s GetLinesColor(cv::Mat img, const Line& lines)
 	Vector3s ans;
 	for (auto it2 = lines.cbegin(); it2 != lines.cend(); ++it2)
 	{
-		double r = vimg.GetBilinearR(it2->x, it2->y);
-		double g = vimg.GetBilinearG(it2->x, it2->y);
-		double b = vimg.GetBilinearB(it2->x, it2->y);
+		double r = vimg.GetBilinearR_if0(it2->x, it2->y);
+		double g = vimg.GetBilinearG_if0(it2->x, it2->y);
+		double b = vimg.GetBilinearB_if0(it2->x, it2->y);
 		ans.push_back(Vector3(r, g, b));
 	}
 	return ans;
@@ -119,9 +119,9 @@ Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines, double normal_len
 		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
 			Vector2 pos = *it2 - normals[i][j] * normal_len;
-			double r = vimg.GetBilinearR(pos.x, pos.y);
-			double g = vimg.GetBilinearG(pos.x, pos.y);
-			double b = vimg.GetBilinearB(pos.x, pos.y);
+			double r = vimg.GetBilinearR_if0(pos.x, pos.y);
+			double g = vimg.GetBilinearG_if0(pos.x, pos.y);
+			double b = vimg.GetBilinearB_if0(pos.x, pos.y);
 			li[j] = Vector3(r, g, b);
 		}
 		Vector3s& ri = ans_right[i];
@@ -130,9 +130,9 @@ Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines, double normal_len
 		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
 			Vector2 pos = *it2 + normals[i][j] * normal_len;
-			double r = vimg.GetBilinearR(pos.x, pos.y);
-			double g = vimg.GetBilinearG(pos.x, pos.y);
-			double b = vimg.GetBilinearB(pos.x, pos.y);
+			double r = vimg.GetBilinearR_if0(pos.x, pos.y);
+			double g = vimg.GetBilinearG_if0(pos.x, pos.y);
+			double b = vimg.GetBilinearB_if0(pos.x, pos.y);
 			ri[j] = Vector3(r, g, b);
 		}
 	}

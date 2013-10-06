@@ -919,8 +919,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		LineEnds les = GetLineEnds(m_BlackLine);
 		LinkLineEnds(les, 5, 20);
 		ConnectSimilarLines(les, m_BlackLine, m_BLineWidth);
-		les = GetLineEnds(m_BlackLine);
 		IncreaseDensity(m_BlackLine, m_BLineWidth);
+		les = GetLineEnds(m_BlackLine);
 		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 10, 5, 15);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
@@ -935,7 +935,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 //      color2s.right = SmoothingLen5(color2s.right, 0, 10);
 //      d3dApp.AddDiffusionLines(m_BlackLine, color2s);
 		// block line
-		dEdge.CalSecDer2(7, 0.001f, 0.1f);
+		dEdge.CalSecDer2(5, 0.001f);
 		dEdge.Link();
 		tpnts2d.clear();
 		const CEdges& edges2 = dEdge.GetEdges();
@@ -954,15 +954,11 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.9, 5);
 		les = GetLineEnds(m_BlackLine2);
 		LinkLineEnds(les, 5, 20);
-		//ConnectSimilarLines(les, m_BlackLine2, tmp_width);
+		ConnectSimilarLines(les, m_BlackLine2, tmp_width);
 		les = GetLineEnds(m_BlackLine2);
-		//IncreaseDensity(m_BlackLine2, tmp_width);
-		ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 5, 15);
+		IncreaseDensity(m_BlackLine2, tmp_width);
+		ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 6, 15);
 		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0, 5);
-		Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine2, 1.5);
-		color2s.left = SmoothingLen5(color2s.left, 0, 10);
-		color2s.right = SmoothingLen5(color2s.right, 0, 10);
-		d3dApp.AddDiffusionLines(m_BlackLine2, color2s);
 		m_BlackLine = GetLines(m_BlackLine2, 1, 1);
 		d3dApp.AddLines(m_BlackLine2);
 		d3dApp.SetScaleTemporary(1);
@@ -972,9 +968,10 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		d3dApp.SetScaleRecovery();
 		cvtColor(simg, simg, CV_BGR2GRAY);
 		curveExtration = simg.clone();
-		Dilation(curveExtration, 2, 3);
+		Dilation(curveExtration, 2, 1);
 		cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
 		cv::Mat tmpimg = m_vavImage.Clone();
+		cv::Mat sampleimg = m_vavImage.Clone();
 		cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
 		cv::Mat isoimg = MakeIsoSurfaceImg(tmpimg, 12);
 		for (int i = 0; i < curveExtration.rows; i++)
@@ -984,42 +981,84 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 				cv::Vec3b& v = curveExtration.at<cv::Vec3b>(i, j);
 				if (v[0] > 0)
 				{
-					cv::Vec3b& dst = isoimg.at<cv::Vec3b>(i, j);
-					dst[0] = 0;
-					dst[1] = 0;
-					dst[2] = 0;
+					cv::Vec3b& sam = sampleimg.at<cv::Vec3b>(i, j);
+					sam[0] = 0;
+					sam[1] = 0;
+					sam[2] = 0;
 				}
 			}
 		}
-		CvLines contours;
-		std::vector<cv::Vec4i> hierarchy;
-		cvtColor(isoimg, isoimg, CV_BGR2GRAY);
-		cv::imshow("isoimggray", isoimg);
-		cv::Canny(isoimg, isoimg, 10, 20, 3, true);
-		findContours(isoimg, contours, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
-		Lines tmp = GetLines(contours, 1, 1);
-		tmp = SmoothingLen5(tmp, 0.5, 5);
-		d3dApp.AddLines(tmp);
+		cvtColor(curveExtration, curveExtration, CV_BGR2GRAY);
+		Dilation(curveExtration, 2, 1);
+		cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
+		for (int i = 0; i < curveExtration.rows; i++)
+		{
+			for (int j = 0; j < curveExtration.cols; j++)
+			{
+				cv::Vec3b& v = curveExtration.at<cv::Vec3b>(i, j);
+				if (v[0] > 0)
+				{
+					cv::Vec3b& dst = isoimg.at<cv::Vec3b>(i, j);
+					dst[0] = 1;
+					dst[1] = 1;
+					dst[2] = 1;
+				}
+			}
+		}
+		cv::imshow("sampleimg", sampleimg);
+		Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine2, 2);
+		color2s.left = FixLineColors(color2s.left, 200, 3);
+		color2s.right = FixLineColors(color2s.right, 200, 3);
+		color2s.left = SmoothingLen5(color2s.left, 0, 3);
+		color2s.right = SmoothingLen5(color2s.right, 0, 3);
+		d3dApp.AddDiffusionLines(m_BlackLine2, color2s);
+		Lines tmp;
+// very fast function
+// 		{
+// 			cv::Mat mask, joint_mask;
+// 			mask.create(isoimg.rows + 2, isoimg.cols + 2, CV_8UC1);
+// 			mask = cv::Scalar::all(0);
+// 			joint_mask.create(isoimg.rows * 2 + 1, isoimg.cols * 2 + 1, CV_8UC1);
+// 			mask = cv::Scalar::all(0);
+// 			int cc = 1;
+// 			for (int i = 1; i < isoimg.rows - 1; i++)
+// 			{
+// 				for (int j = 1; j < isoimg.cols - 1; j++)
+// 				{
+// 					S3FloodFill(cc, isoimg, mask, joint_mask, 0, j, i, 0, 0);
+// 				}
+// 			}
+// 			CvLines contours;
+// 			std::vector<cv::Vec4i> hierarchy;
+// 			cvtColor(isoimg, isoimg, CV_BGR2GRAY);
+// 			cv::imshow("isoimggray", isoimg);
+// 			cv::Canny(isoimg, isoimg, 10, 20, 3, true);
+// 			findContours(isoimg, contours, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+// 			tmp = GetLines(contours, 1, 1);
+// 			tmp = SmoothingLen5(tmp, 0.5, 5);
+// 		}
+// very slow function S4GetPatchs
+		{
+			Lines lines = S6GetPatchs(isoimg, 0, 0);
+			for (int i = 0; i < lines.size(); ++i)
+			{
+				Line& cps = lines[i];
+				for (int j = 0; j < cps.size(); ++j)
+				{
+					cps[j].x -= 0.5;
+					cps[j].y -= 0.5;
+				}
+				if (cps.size() > 5)
+				{
+					tmp.push_back(cps);
+				}
+			}
+			d3dApp.AddLines(tmp);
+		}
 		Vector3s2d colors;
-		// very slow function S4GetPatchs
-//      is = S4GetPatchs(isoimg, 0, 0);
-//      Lines tmp;
-//      Vector3s2d colors;
-//      for (int i = 0; i < is.m_LineFragments.size(); ++i)
-//      {
-//          Line& cps = is.m_LineFragments[i].m_Points;
-//          for (int j = 0; j < cps.size(); ++j)
-//          {
-//              cps[j].x -= 0.5;
-//              cps[j].y -= 0.5;
-//          }
-//          if (cps.size() > 5)
-//          {
-//              tmp.push_back(cps);
-//          }
-//      }
-		colors = GetLinesColor(m_vavImage, tmp);
-		colors = SmoothingLen5(colors, 0.5, 5);
+		colors = GetLinesColor(sampleimg, tmp);
+		colors = FixLineColors(colors, 200, 3);
+		colors = SmoothingLen5(colors, 0, 3);
 		d3dApp.AddDiffusionLines(tmp, colors);
 	}
 	if (m_DRAW_CANNY_EXTRACTION)
@@ -1090,6 +1129,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	d3dApp.BuildPoint();
 	d3dApp.DrawScene();
 }
+
 void VAV_MainFrame::OnButtonSkeleton()
 {
 	// TODO: 在此加入您的命令處理常式程式碼

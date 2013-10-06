@@ -39,6 +39,11 @@ public:
 	double  GetBilinearG(double x, double y);
 	double  GetBilinearB(double x, double y);
 
+	// if any pixel is 0 return 0
+	double  GetBilinearR_if0(double x, double y);
+	double  GetBilinearG_if0(double x, double y);
+	double  GetBilinearB_if0(double x, double y);
+
 	double_vector GetRingLight(double x, double y, double radius, int div);
 	double_vector GetRingR(double x, double y, double radius, int div);
 	double_vector GetRingG(double x, double y, double radius, int div);
