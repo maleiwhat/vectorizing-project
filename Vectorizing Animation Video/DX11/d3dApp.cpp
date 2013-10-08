@@ -140,7 +140,7 @@ D3DApp::D3DApp()
 	m_polySize = 0.5;
 	diffTex = 0;
 	diff2Tex = 0;
-	diffSteps = 10;
+	diffSteps = 16;
 	m_diffdistDirTexture = NULL;
 	m_diffuseTexture[0] = NULL;
 	m_diffuseTexture[1] = NULL;
@@ -1227,23 +1227,20 @@ void D3DApp::AddBigPoint(float x, float y, D3DXVECTOR3 color)
 void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths,
 					  const Vector3s2d& colors)
 {
+	float scale = 1 / 255.0f;
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		const Line& now_line = lines[i];
 		const double_vector& now_linewidth = linewidths[i];
 		const Vector3s& now_color = colors[i];
-		float r, g, b;
-		r = (rand() % 155 + 100) / 255.0f;
-		g = (rand() % 155 + 100) / 255.0f;
-		b = (rand() % 155 + 100) / 255.0f;
 		if (now_line.size() < 3)
 		{
 			if (now_line.size() == 2)
 			{
 				LineVertex lv;
-				lv.color.x = now_color[0][0];
-				lv.color.y = now_color[0][1];
-				lv.color.z = now_color[0][2];
+				lv.color.x = now_color[0][0] * scale;
+				lv.color.y = now_color[0][1] * scale;
+				lv.color.z = now_color[0][2] * scale;
 				lv.p1.x = now_line[0].x;
 				lv.p1.y = m_PicH - now_line[0].y;
 				lv.p2.x = now_line[0].x;
@@ -1259,9 +1256,9 @@ void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths,
 			continue;
 		}
 		LineVertex lv;
-		lv.color.x = now_color[0][0];
-		lv.color.y = now_color[0][1];
-		lv.color.z = now_color[0][2];
+		lv.color.x = now_color[0][0] * scale;
+		lv.color.y = now_color[0][1] * scale;
+		lv.color.z = now_color[0][2] * scale;
 		lv.p1.x = now_line[0].x;
 		lv.p1.y = m_PicH - now_line[0].y;
 		lv.p2.x = now_line[0].x;
@@ -1275,9 +1272,9 @@ void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths,
 		m_LinesVertices.push_back(lv);
 		for (int j = 1; j < now_line.size() - 2; ++j)
 		{
-			lv.color.x = now_color[j][0];
-			lv.color.y = now_color[j][1];
-			lv.color.z = now_color[j][2];
+			lv.color.x = now_color[j][0] * scale;
+			lv.color.y = now_color[j][1] * scale;
+			lv.color.z = now_color[j][2] * scale;
 			lv.p1.x = now_line[j - 1].x;
 			lv.p1.y = m_PicH - now_line[j - 1].y;
 			lv.p2.x = now_line[j].x;
@@ -1290,9 +1287,9 @@ void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths,
 			lv.width.y = now_linewidth[j + 1];
 			m_LinesVertices.push_back(lv);
 		}
-		lv.color.x = now_color[now_line.size() - 1][0];
-		lv.color.y = now_color[now_line.size() - 1][1];
-		lv.color.z = now_color[now_line.size() - 1][2];
+		lv.color.x = now_color[now_line.size() - 1][0] * scale;
+		lv.color.y = now_color[now_line.size() - 1][1] * scale;
+		lv.color.z = now_color[now_line.size() - 1][2] * scale;
 		lv.p1.x = now_line[now_line.size() - 3].x;
 		lv.p1.y = m_PicH - now_line[now_line.size() - 3].y;
 		lv.p2.x = now_line[now_line.size() - 2].x;
@@ -1462,6 +1459,93 @@ void D3DApp::AddLines(const CvLine& now_line)
 		slv.p2.x = now_line[j - 1].x;
 		slv.p2.y = m_PicH - now_line[j - 1].y;
 		m_SkeletonLinesVertices.push_back(slv);
+	}
+}
+
+void D3DApp::AddLines(const Lines& lines, const Lines& linewidths, const Vector3s2d& colors)
+{
+	float scale = 1 / 300.0f;
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		const Line& now_line = lines[i];
+		const Line& now_linewidth = linewidths[i];
+		const Vector3s& now_color = colors[i];
+		if (now_line.size() < 3)
+		{
+			if (now_line.size() == 2)
+			{
+				LineVertex2w lv;
+				lv.color.x = now_color[0][0] * scale;
+				lv.color.y = now_color[0][1] * scale;
+				lv.color.z = now_color[0][2] * scale;
+				lv.p1.x = now_line[0].x;
+				lv.p1.y = m_PicH - now_line[0].y;
+				lv.p2.x = now_line[0].x;
+				lv.p2.y = m_PicH - now_line[0].y;
+				lv.p3.x = now_line[1].x;
+				lv.p3.y = m_PicH - now_line[1].y;
+				lv.p4.x = now_line[1].x;
+				lv.p4.y = m_PicH - now_line[1].y;
+				lv.widthR.x = now_linewidth[0].x;
+				lv.widthR.y = now_linewidth[1].x;
+				lv.widthL.x = now_linewidth[0].y;
+				lv.widthL.y = now_linewidth[1].y;
+				m_Lines2wVertices.push_back(lv);
+			}
+			continue;
+		}
+		LineVertex2w lv;
+		lv.color.x = now_color[0][0] * scale;
+		lv.color.y = now_color[0][1] * scale;
+		lv.color.z = now_color[0][2] * scale;
+		lv.p1.x = now_line[0].x;
+		lv.p1.y = m_PicH - now_line[0].y;
+		lv.p2.x = now_line[0].x;
+		lv.p2.y = m_PicH - now_line[0].y;
+		lv.p3.x = now_line[1].x;
+		lv.p3.y = m_PicH - now_line[1].y;
+		lv.p4.x = now_line[2].x;
+		lv.p4.y = m_PicH - now_line[2].y;
+		lv.widthR.x = now_linewidth[0].x;
+		lv.widthR.y = now_linewidth[1].x;
+		lv.widthL.x = now_linewidth[0].y;
+		lv.widthL.y = now_linewidth[1].y;
+		m_Lines2wVertices.push_back(lv);
+		for (int j = 1; j < now_line.size() - 2; ++j)
+		{
+			lv.color.x = now_color[j][0] * scale;
+			lv.color.y = now_color[j][1] * scale;
+			lv.color.z = now_color[j][2] * scale;
+			lv.p1.x = now_line[j - 1].x;
+			lv.p1.y = m_PicH - now_line[j - 1].y;
+			lv.p2.x = now_line[j].x;
+			lv.p2.y = m_PicH - now_line[j].y;
+			lv.p3.x = now_line[j + 1].x;
+			lv.p3.y = m_PicH - now_line[j + 1].y;
+			lv.p4.x = now_line[j + 2].x;
+			lv.p4.y = m_PicH - now_line[j + 2].y;
+			lv.widthR.x = now_linewidth[j].x;
+			lv.widthR.y = now_linewidth[j + 1].x;
+			lv.widthL.x = now_linewidth[j].y;
+			lv.widthL.y = now_linewidth[j + 1].y;
+			m_Lines2wVertices.push_back(lv);
+		}
+		lv.color.x = now_color[now_line.size() - 1][0] * scale;
+		lv.color.y = now_color[now_line.size() - 1][1] * scale;
+		lv.color.z = now_color[now_line.size() - 1][2] * scale;
+		lv.p1.x = now_line[now_line.size() - 3].x;
+		lv.p1.y = m_PicH - now_line[now_line.size() - 3].y;
+		lv.p2.x = now_line[now_line.size() - 2].x;
+		lv.p2.y = m_PicH - now_line[now_line.size() - 2].y;
+		lv.p3.x = now_line[now_line.size() - 1].x;
+		lv.p3.y = m_PicH - now_line[now_line.size() - 1].y;
+		lv.p4.x = now_line[now_line.size() - 1].x;
+		lv.p4.y = m_PicH - now_line[now_line.size() - 1].y;
+		lv.widthR.x = now_linewidth[now_line.size() - 2].x;
+		lv.widthR.y = now_linewidth[now_line.size() - 1].x;
+		lv.widthL.x = now_linewidth[now_line.size() - 2].y;
+		lv.widthL.y = now_linewidth[now_line.size() - 1].y;
+		m_Lines2wVertices.push_back(lv);
 	}
 }
 
@@ -2038,6 +2122,7 @@ void D3DApp::ClearCovers()
 
 void D3DApp::AddDiffusionLines(const Lines& lines)
 {
+	float scale = 1 / 255.0f;
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		CURVE_Vertexes curveline;
@@ -2047,13 +2132,13 @@ void D3DApp::AddDiffusionLines(const Lines& lines)
 			continue;
 		}
 		float r, g, b;
-		r = (rand() % 155 + 100) / 255.0f;
-		g = (rand() % 155 + 100) / 255.0f;
-		b = (rand() % 155 + 100) / 255.0f;
+		r = (rand() % 155 + 100) * scale;
+		g = (rand() % 155 + 100) * scale;
+		b = (rand() % 155 + 100) * scale;
 		float r2, g2, b2;
-		r2 = (rand() % 155 + 100) / 255.0f;
-		g2 = (rand() % 155 + 100) / 255.0f;
-		b2 = (rand() % 155 + 100) / 255.0f;
+		r2 = (rand() % 155 + 100) * scale;
+		g2 = (rand() % 155 + 100) * scale;
+		b2 = (rand() % 155 + 100) * scale;
 		CURVE_Vertex vtx1, vtx2;
 		vtx1.lcolor.x = r;
 		vtx1.lcolor.y = g;
@@ -2094,7 +2179,7 @@ void D3DApp::AddDiffusionLines(const Lines& lines)
 
 void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 {
-	float scale = 1 / 128.0f;
+	float scale = 1 / 255.0f;
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		CURVE_Vertexes curveline;
@@ -2109,13 +2194,13 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 		vtx1.rcolor.w = 0.0;
 		vtx2.lcolor.w = 0.0;
 		vtx2.rcolor.w = 0.0;
-		for (int j = 1; j < now_line.size() - 1; ++j)
+		for (int j = 0; j < now_line.size() - 1; ++j)
 		{
-			if (now_color[j].x == 0 || now_color[j].y == 0 || now_color[j].z == 0)
+			if (now_color[j].x == 0 && now_color[j].y == 0 && now_color[j].z == 0)
 			{
 				continue;
 			}
-			if (now_color[j+1].x == 0 || now_color[j+1].y == 0 || now_color[j+1].z == 0)
+			if (now_color[j + 1].x == 0 && now_color[j + 1].y == 0 && now_color[j + 1].z == 0)
 			{
 				continue;
 			}
@@ -2131,8 +2216,8 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 			vtx1.pos.y = m_PicH - now_line[j].y;
 			vtx2.pos.x = now_line[j + 1].x;
 			vtx2.pos.y = m_PicH - now_line[j + 1].y;
-			if (now_line[j].x > 2 && now_line[j].x < m_PicW - 3 &&
-					now_line[j].y > 2 && now_line[j].y < m_PicH - 3)
+//          if (now_line[j].x > 2 && now_line[j].x < m_PicW - 3 &&
+//                  now_line[j].y > 2 && now_line[j].y < m_PicH - 3)
 			{
 				curveline.push_back(vtx1);
 				curveline.push_back(vtx2);
@@ -2155,7 +2240,7 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 
 void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 {
-	float scale = 1 / 128.0f;
+	float scale = 1 / 255.0f;
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		CURVE_Vertexes curveline;

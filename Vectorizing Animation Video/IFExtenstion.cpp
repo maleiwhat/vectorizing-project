@@ -168,7 +168,10 @@ double_vector SmoothingLen5(const double_vector& data, double centroidRadio,
 		centroids.push_back((cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f);
 		newcps.push_back((cps[last - 1] * 2 + cps[last] + cps[last - 2]) * 0.25f);
 		newcps.push_back((cps[last - 1] + cps[last] * 2) / 3.0f);
-		cps = newcps;
+		if (cps.size() == newcps.size())
+		{
+			cps = newcps;
+		}
 		// move centroid
 		newcps.clear();
 		newcps.push_back(cps.front());
@@ -186,7 +189,10 @@ double_vector SmoothingLen5(const double_vector& data, double centroidRadio,
 		cert = centroids[last - 2] - cert;
 		newcps.push_back(cps[last - 1] + cert);
 		newcps.push_back(cps.back());
-		cps = newcps;
+		if (cps.size() == newcps.size())
+		{
+			cps = newcps;
+		}
 	}
 	return newcps;
 }

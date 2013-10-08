@@ -293,7 +293,10 @@ Vector3s SmoothingLen5(const Vector3s& cvp, double centroidRadio /*= 1.0*/, int 
 				newcps.push_back(vec);
 			}
 			newcps.push_back(cps.back());
-			cps = newcps;
+			if (cps.size() == newcps.size())
+			{
+				cps = newcps;
+			}
 		}
 		else
 		{
@@ -313,13 +316,16 @@ Vector3s SmoothingLen5(const Vector3s& cvp, double centroidRadio /*= 1.0*/, int 
 			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
 			centroids.push_back((cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f);
 			newcps.push_back(cps.back());
-			cps = newcps;
+			if (cps.size() == newcps.size())
+			{
+				cps = newcps;
+			}
 			// move centroid
 			newcps.clear();
 			newcps.push_back(cps.front());
-			Vector3 cert = (cps[0] + cps[1]  + cps[2]) / 3.0f;
+			Vector3 cert = (cps[0] + cps[1] + cps[2]) / 3.0f;
 			cert = centroids[0] - cert;
-			newcps.push_back(cps[1] + cert);
+			newcps.push_back(cps[1] + cert * centroidRadio);
 			for (int j = 2; j < (int)cps.size() - 2; j ++)
 			{
 				Vector3 nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
@@ -329,9 +335,12 @@ Vector3s SmoothingLen5(const Vector3s& cvp, double centroidRadio /*= 1.0*/, int 
 			}
 			cert = (cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f;
 			cert = centroids[last - 2] - cert;
-			newcps.push_back(cps[last - 1] + cert);
+			newcps.push_back(cps[last - 1] + cert * centroidRadio);
 			newcps.push_back(cps.back());
-			cps = newcps;
+			if (cps.size() == newcps.size())
+			{
+				cps = newcps;
+			}
 		}
 	}
 	return cps;

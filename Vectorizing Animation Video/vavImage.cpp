@@ -445,7 +445,7 @@ double vavImage::GetBilinearR(double x, double y)
 	double down = v[1] * abs(x - right_up.x);
 	down += v[3] * abs(x - left_up.x);
 	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
-	return ans * 0.5;
+	return ans;
 }
 
 double vavImage::GetBilinearG(double x, double y)
@@ -487,7 +487,7 @@ double vavImage::GetBilinearG(double x, double y)
 	double down = v[1] * abs(x - right_up.x);
 	down += v[3] * abs(x - left_up.x);
 	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
-	return ans * 0.5;
+	return ans;
 }
 
 double vavImage::GetBilinearB(double x, double y)
@@ -529,27 +529,31 @@ double vavImage::GetBilinearB(double x, double y)
 	double down = v[1] * abs(x - right_up.x);
 	down += v[3] * abs(x - left_up.x);
 	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
-	return ans * 0.5;
+	return ans;
 }
 
 
 double vavImage::GetBilinearR_if0(double x, double y)
 {
-	if (y < 0)
+	if (y < 0 || (y + 1 >= m_Image.rows) || x < 0 || (x + 1 >= m_Image.cols))
 	{
-		return 0;
-	}
-	if (y + 1 >= m_Image.rows)
-	{
-		return 0;
-	}
-	if (x < 0)
-	{
-		return 0;
-	}
-	if (x + 1 >= m_Image.cols)
-	{
-		return 0;
+		if (y < 0)
+		{
+			y = 0;
+		}
+		if (x < 0)
+		{
+			x = 0;
+		}
+		if (x + 1 >= m_Image.cols)
+		{
+			x = m_Image.cols - 1;
+		}
+		if (y + 1 >= m_Image.rows)
+		{
+			y = m_Image.rows - 1;
+		}
+		return m_Image.at<cv::Vec3b>((int)y, (int)x)[2];
 	}
 	Vector2 left_up, left_down;
 	Vector2 right_up, right_down;
@@ -568,22 +572,6 @@ double vavImage::GetBilinearR_if0(double x, double y)
 	v[3] = m_Image.at<cv::Vec3b>(right_down.y, right_down.x)[2];
 	if (v[0]*v[1]*v[2]*v[3] < 1)
 	{
-// 		if (v[0] > 0)
-// 		{
-// 			return v[0];
-// 		}
-// 		if (v[1] > 0)
-// 		{
-// 			return v[1];
-// 		}
-// 		if (v[2] > 0)
-// 		{
-// 			return v[2];
-// 		}
-// 		if (v[3] > 0)
-// 		{
-// 			return v[3];
-// 		}
 		return 0;
 	}
 	// bilinear interpolation
@@ -592,26 +580,30 @@ double vavImage::GetBilinearR_if0(double x, double y)
 	double down = v[1] * abs(x - right_up.x);
 	down += v[3] * abs(x - left_up.x);
 	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
-	return ans * 0.5;
+	return ans;
 }
 
 double vavImage::GetBilinearG_if0(double x, double y)
 {
-	if (y < 0)
+	if (y < 0 || (y + 1 >= m_Image.rows) || x < 0 || (x + 1 >= m_Image.cols))
 	{
-		return 0;
-	}
-	if (y + 1 >= m_Image.rows)
-	{
-		return 0;
-	}
-	if (x < 0)
-	{
-		return 0;
-	}
-	if (x + 1 >= m_Image.cols)
-	{
-		return 0;
+		if (y < 0)
+		{
+			y = 0;
+		}
+		if (x < 0)
+		{
+			x = 0;
+		}
+		if (x + 1 >= m_Image.cols)
+		{
+			x = m_Image.cols - 1;
+		}
+		if (y + 1 >= m_Image.rows)
+		{
+			y = m_Image.rows - 1;
+		}
+		return m_Image.at<cv::Vec3b>((int)y, (int)x)[1];
 	}
 	Vector2 left_up, left_down;
 	Vector2 right_up, right_down;
@@ -630,22 +622,6 @@ double vavImage::GetBilinearG_if0(double x, double y)
 	v[3] = m_Image.at<cv::Vec3b>(right_down.y, right_down.x)[1];
 	if (v[0]*v[1]*v[2]*v[3] < 1)
 	{
-// 		if (v[0] > 0)
-// 		{
-// 			return v[0];
-// 		}
-// 		if (v[1] > 0)
-// 		{
-// 			return v[1];
-// 		}
-// 		if (v[2] > 0)
-// 		{
-// 			return v[2];
-// 		}
-// 		if (v[3] > 0)
-// 		{
-// 			return v[3];
-// 		}
 		return 0;
 	}
 	// bilinear interpolation
@@ -654,26 +630,30 @@ double vavImage::GetBilinearG_if0(double x, double y)
 	double down = v[1] * abs(x - right_up.x);
 	down += v[3] * abs(x - left_up.x);
 	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
-	return ans * 0.5;
+	return ans;
 }
 
 double vavImage::GetBilinearB_if0(double x, double y)
 {
-	if (y < 0)
+	if (y < 0 || (y + 1 >= m_Image.rows) || x < 0 || (x + 1 >= m_Image.cols))
 	{
-		return 0;
-	}
-	if (y + 1 >= m_Image.rows)
-	{
-		return 0;
-	}
-	if (x < 0)
-	{
-		return 0;
-	}
-	if (x + 1 >= m_Image.cols)
-	{
-		return 0;
+		if (y < 0)
+		{
+			y = 0;
+		}
+		if (x < 0)
+		{
+			x = 0;
+		}
+		if (x + 1 >= m_Image.cols)
+		{
+			x = m_Image.cols - 1;
+		}
+		if (y + 1 >= m_Image.rows)
+		{
+			y = m_Image.rows - 1;
+		}
+		return m_Image.at<cv::Vec3b>((int)y, (int)x)[0];
 	}
 	Vector2 left_up, left_down;
 	Vector2 right_up, right_down;
@@ -692,22 +672,6 @@ double vavImage::GetBilinearB_if0(double x, double y)
 	v[3] = m_Image.at<cv::Vec3b>(right_down.y, right_down.x)[0];
 	if (v[0]*v[1]*v[2]*v[3] < 1)
 	{
-// 		if (v[0] > 0)
-// 		{
-// 			return v[0];
-// 		}
-// 		if (v[1] > 0)
-// 		{
-// 			return v[1];
-// 		}
-// 		if (v[2] > 0)
-// 		{
-// 			return v[2];
-// 		}
-// 		if (v[3] > 0)
-// 		{
-// 			return v[3];
-// 		}
 		return 0;
 	}
 	// bilinear interpolation
@@ -716,7 +680,7 @@ double vavImage::GetBilinearB_if0(double x, double y)
 	double down = v[1] * abs(x - right_up.x);
 	down += v[3] * abs(x - left_up.x);
 	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
-	return ans * 0.5;
+	return ans;
 }
 
 double_vector vavImage::GetRingLight(double x, double y, double radius, int div)
