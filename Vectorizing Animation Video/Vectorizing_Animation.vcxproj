@@ -280,6 +280,9 @@
     <ClInclude Include="ViewTree.h" />
     <ClInclude Include="VoronoiCgal_Patch.h" />
     <ClInclude Include="vtkShowHistogramTimerCallback.h" />
+    <ClInclude Include="zip\CryptoData.h" />
+    <ClInclude Include="zip\ZipData.h" />
+    <ClInclude Include="zip\ZipFolder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="algSpline.cpp" />
@@ -396,6 +399,9 @@
     <ClCompile Include="ViewTree.cpp" />
     <ClCompile Include="VoronoiCgal_Patch.cpp" />
     <ClCompile Include="vtkShowHistogramTimerCallback.cpp" />
+    <ClCompile Include="zip\CryptoData.cpp" />
+    <ClCompile Include="zip\ZipData.cpp" />
+    <ClCompile Include="zip\ZipFolder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\bigpoint.fx">

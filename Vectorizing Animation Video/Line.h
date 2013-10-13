@@ -62,6 +62,10 @@ Lines   SmoothingHas0Len5(const Lines& cvp, double centroidRadio = 1.0,
 						  int repeat = 1);
 Lines   SmoothingHas0Len3(const Lines& cvp, double centroidRadio = 1.0,
 						  int repeat = 1);
+Vector3s    SmoothingHas0Len5(const Vector3s& cvp, double centroidRadio = 1.0,
+						  int repeat = 1);
+Vector3s2d   SmoothingHas0Len5(const Vector3s2d& cvp, double centroidRadio = 1.0,
+						   int repeat = 1);
 
 Lines   SplitStraightLine(const Line& cvp, double angle);
 Lines   SplitStraightLine(const Lines& cvp, double angle);

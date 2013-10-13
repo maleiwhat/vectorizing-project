@@ -6,6 +6,8 @@
 #include <vector>
 #include <opencv2/core/core.hpp>
 #include <deque>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
 #include "math/Vector2.h"
 #include "math/Vector3.h"
 
@@ -80,4 +82,12 @@ struct Color2Side
 {
 	Vector3s2d left;
 	Vector3s2d right;
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & left;
+		ar & right;
+	}
 };

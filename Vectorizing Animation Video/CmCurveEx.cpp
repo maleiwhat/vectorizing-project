@@ -195,7 +195,7 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		{
 			float v1 = pDer1[x] > 0 ? pDer1[x] * (1 - abs(pDer2[x])) : 0;
 			float v2 = pDer2[x] > 0 ? pDer2[x] * (1 - abs(pDer1[x])) : 0;
-			pDer2[x] = v1 + v2;
+			pDer2[x] = v1 + v2*0.8;
 			sum += pDer2[x];
 		}
 	}
@@ -206,9 +206,9 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		float* pDer2 = m_pDer2f.ptr<float>(y);
 		for (int x = 0; x < m_w; x++)
 		{
-			if (pDer2[x] <= avg * 1)
+			if (pDer2[x] <= avg * 1.2)
 			{
-				pDer2[x] = powf(pDer2[x], 1.2);
+				pDer2[x] = powf(pDer2[x], 1.5);
 			}
 		}
 	}

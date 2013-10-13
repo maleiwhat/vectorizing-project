@@ -26,6 +26,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
 #include <float.h>
 #include "BasicMath.h"
 
@@ -39,19 +41,27 @@ you interpret the values.
 class Vector3
 {
 public:
-	double x, y, z;
-
+	float x, y, z;
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & x;
+		ar & y;
+		ar & z;
+	}
 public:
 	inline Vector3(): x(0), y(0), z(0)
 	{
 	}
 
-	inline Vector3(const double fX, const double fY, const double fZ)
+	inline Vector3(const float fX, const float fY, const float fZ)
 		: x(fX), y(fY), z(fZ)
 	{
 	}
 
-	inline explicit Vector3(const double afCoordinate[3])
+	inline explicit Vector3(const float afCoordinate[3])
 		: x(afCoordinate[0]),
 		  y(afCoordinate[1]),
 		  z(afCoordinate[2])
@@ -60,17 +70,17 @@ public:
 
 	inline explicit Vector3(const int afCoordinate[3])
 	{
-		x = (double)afCoordinate[0];
-		y = (double)afCoordinate[1];
-		z = (double)afCoordinate[2];
+		x = (float)afCoordinate[0];
+		y = (float)afCoordinate[1];
+		z = (float)afCoordinate[2];
 	}
 
-	inline explicit Vector3(double* const r)
+	inline explicit Vector3(float* const r)
 		: x(r[0]), y(r[1]), z(r[2])
 	{
 	}
 
-	inline explicit Vector3(const double scaler)
+	inline explicit Vector3(const float scaler)
 		: x(scaler)
 		, y(scaler)
 		, z(scaler)
@@ -87,24 +97,24 @@ public:
 		std::swap(z, other.z);
 	}
 
-	inline double operator [](const size_t i) const
+	inline float operator [](const size_t i) const
 	{
 		assert(i < 3);
 		return *(&x + i);
 	}
 
-	inline double& operator [](const size_t i)
+	inline float& operator [](const size_t i)
 	{
 		assert(i < 3);
 		return *(&x + i);
 	}
 	/// Pointer accessor for direct copying
-	inline double* ptr()
+	inline float* ptr()
 	{
 		return &x;
 	}
 	/// Pointer accessor for direct copying
-	inline const double* ptr() const
+	inline const float* ptr() const
 	{
 		return &x;
 	}
@@ -121,7 +131,7 @@ public:
 		return *this;
 	}
 
-	inline Vector3& operator = (const double fScaler)
+	inline Vector3& operator = (const float fScaler)
 	{
 		x = fScaler;
 		y = fScaler;
@@ -156,7 +166,7 @@ public:
 		           z - rkVector.z);
 	}
 
-	inline Vector3 operator * (const double fScalar) const
+	inline Vector3 operator * (const float fScalar) const
 	{
 		return Vector3(
 		           x * fScalar,
@@ -172,10 +182,10 @@ public:
 		           z * rhs.z);
 	}
 
-	inline Vector3 operator / (const double fScalar) const
+	inline Vector3 operator / (const float fScalar) const
 	{
 		assert(fScalar != 0.0f);
-		double fInv = 1.0f / fScalar;
+		float fInv = 1.0f / fScalar;
 		return Vector3(
 		           x * fInv,
 		           y * fInv,
@@ -201,7 +211,7 @@ public:
 	}
 
 	// overloaded operators to help Vector3
-	inline friend Vector3 operator * (const double fScalar, const Vector3& rkVector)
+	inline friend Vector3 operator * (const float fScalar, const Vector3& rkVector)
 	{
 		return Vector3(
 		           fScalar * rkVector.x,
@@ -209,7 +219,7 @@ public:
 		           fScalar * rkVector.z);
 	}
 
-	inline friend Vector3 operator / (const double fScalar, const Vector3& rkVector)
+	inline friend Vector3 operator / (const float fScalar, const Vector3& rkVector)
 	{
 		return Vector3(
 		           fScalar / rkVector.x,
@@ -217,7 +227,7 @@ public:
 		           fScalar / rkVector.z);
 	}
 
-	inline friend Vector3 operator + (const Vector3& lhs, const double rhs)
+	inline friend Vector3 operator + (const Vector3& lhs, const float rhs)
 	{
 		return Vector3(
 		           lhs.x + rhs,
@@ -225,7 +235,7 @@ public:
 		           lhs.z + rhs);
 	}
 
-	inline friend Vector3 operator + (const double lhs, const Vector3& rhs)
+	inline friend Vector3 operator + (const float lhs, const Vector3& rhs)
 	{
 		return Vector3(
 		           lhs + rhs.x,
@@ -233,7 +243,7 @@ public:
 		           lhs + rhs.z);
 	}
 
-	inline friend Vector3 operator - (const Vector3& lhs, const double rhs)
+	inline friend Vector3 operator - (const Vector3& lhs, const float rhs)
 	{
 		return Vector3(
 		           lhs.x - rhs,
@@ -241,7 +251,7 @@ public:
 		           lhs.z - rhs);
 	}
 
-	inline friend Vector3 operator - (const double lhs, const Vector3& rhs)
+	inline friend Vector3 operator - (const float lhs, const Vector3& rhs)
 	{
 		return Vector3(
 		           lhs - rhs.x,
@@ -258,7 +268,7 @@ public:
 		return *this;
 	}
 
-	inline Vector3& operator += (const double fScalar)
+	inline Vector3& operator += (const float fScalar)
 	{
 		x += fScalar;
 		y += fScalar;
@@ -274,7 +284,7 @@ public:
 		return *this;
 	}
 
-	inline Vector3& operator -= (const double fScalar)
+	inline Vector3& operator -= (const float fScalar)
 	{
 		x -= fScalar;
 		y -= fScalar;
@@ -282,7 +292,7 @@ public:
 		return *this;
 	}
 
-	inline Vector3& operator *= (const double fScalar)
+	inline Vector3& operator *= (const float fScalar)
 	{
 		x *= fScalar;
 		y *= fScalar;
@@ -298,10 +308,10 @@ public:
 		return *this;
 	}
 
-	inline Vector3& operator /= (const double fScalar)
+	inline Vector3& operator /= (const float fScalar)
 	{
 		assert(fScalar != 0.0);
-		double fInv = 1.0f / fScalar;
+		float fInv = 1.0f / fScalar;
 		x *= fInv;
 		y *= fInv;
 		z *= fInv;
@@ -323,7 +333,7 @@ public:
 	length (e.g. for just comparing lengths) use squaredLength()
 	instead.
 	*/
-	inline double length() const
+	inline float length() const
 	{
 		return sqrt(x * x + y * y + z * z);
 	}
@@ -338,7 +348,7 @@ public:
 	want to find the longest / shortest vector without incurring
 	the square root.
 	*/
-	inline double squaredLength() const
+	inline float squaredLength() const
 	{
 		return x * x + y * y + z * z;
 	}
@@ -350,7 +360,7 @@ public:
 	distance (e.g. for just comparing distances) use squaredDistance()
 	instead.
 	*/
-	inline double distance(const Vector3& rhs) const
+	inline float distance(const Vector3& rhs) const
 	{
 		return (*this - rhs).length();
 	}
@@ -365,7 +375,7 @@ public:
 	Use this if you want to find the longest / shortest distance
 	without incurring the square root.
 	*/
-	inline double squaredDistance(const Vector3& rhs) const
+	inline float squaredDistance(const Vector3& rhs) const
 	{
 		return (*this - rhs).squaredLength();
 	}
@@ -382,9 +392,9 @@ public:
 	vec Vector with which to calculate the dot product (together
 	with this one).
 	@returns
-	A double representing the dot product value.
+	A float representing the dot product value.
 	*/
-	inline double dotProduct(const Vector3& vec) const
+	inline float dotProduct(const Vector3& vec) const
 	{
 		return x * vec.x + y * vec.y + z * vec.z;
 	}
@@ -399,7 +409,7 @@ public:
 	@returns
 	A Real representing the absolute dot product value.
 	*/
-	inline double absDotProduct(const Vector3& vec) const
+	inline float absDotProduct(const Vector3& vec) const
 	{
 		return Math::Abs(x * vec.x) + Math::Abs(y * vec.y) + Math::Abs(z * vec.z);
 	}
@@ -413,14 +423,14 @@ public:
 	will be no changes made to their components.
 	@returns The previous length of the vector.
 	*/
-	inline double normalise()
+	inline float normalise()
 	{
-		double fLength = Math::Sqrt(x * x + y * y + z * z);
+		float fLength = Math::Sqrt(x * x + y * y + z * z);
 
 		// Will also work for zero-sized vectors, but will change nothing
 		if (fLength > 1e-08)
 		{
-			double fInvLength = 1.0f / fLength;
+			float fInvLength = 1.0f / fLength;
 			x *= fInvLength;
 			y *= fInvLength;
 			z *= fInvLength;
@@ -543,7 +553,7 @@ public:
 	*/
 	inline Vector3 perpendicular(void) const
 	{
-		static const double fSquareZero = (double)(1e-06 * 1e-06);
+		static const float fSquareZero = (float)(1e-06 * 1e-06);
 		Vector3 perp = this->crossProduct(Vector3::UNIT_X);
 
 		// Check length
@@ -564,7 +574,7 @@ public:
 	*/
 	inline Radian angleBetween(const Vector3& dest)
 	{
-		double lenProduct = length() * dest.length();
+		float lenProduct = length() * dest.length();
 
 		// Divide by zero check
 		if (lenProduct < 1e-6f)
@@ -572,15 +582,15 @@ public:
 			lenProduct = 1e-6f;
 		}
 
-		double f = dotProduct(dest) / lenProduct;
-		f = Math::Clamp(f, (double) - 1.0f, (double)1.0f);
+		float f = dotProduct(dest) / lenProduct;
+		f = Math::Clamp(f, (float) - 1.0f, (float)1.0f);
 		return Math::ACos(f);
 	}
 
 	/** Returns true if this vector is zero length. */
 	inline bool isZeroLength(void) const
 	{
-		double sqlen = (x * x) + (y * y) + (z * z);
+		float sqlen = (x * x) + (y * y) + (z * z);
 		return (sqlen < (1e-06 * 1e-06));
 	}
 
@@ -607,7 +617,7 @@ public:
 	@param tolerance The amount that each element of the vector may vary by
 	and still be considered equal
 	*/
-	inline bool positionEquals(const Vector3& rhs, double tolerance = 1e-03) const
+	inline bool positionEquals(const Vector3& rhs, float tolerance = 1e-03) const
 	{
 		return Math::RealEqual(x, rhs.x, tolerance) &&
 		       Math::RealEqual(y, rhs.y, tolerance) &&
@@ -620,7 +630,7 @@ public:
 	@param tolerance The amount (related to the scale of vectors) that distance
 	of the vector may vary by and still be considered close
 	*/
-	inline bool positionCloses(const Vector3& rhs, double tolerance = 1e-03f) const
+	inline bool positionCloses(const Vector3& rhs, float tolerance = 1e-03f) const
 	{
 		return squaredDistance(rhs) <=
 		       (squaredLength() + rhs.squaredLength()) * tolerance;
@@ -636,7 +646,7 @@ public:
 	inline bool directionEquals(const Vector3& rhs,
 	                            const Radian& tolerance) const
 	{
-		double dot = dotProduct(rhs);
+		float dot = dotProduct(rhs);
 		Radian angle = Math::ACos(dot);
 		return Math::Abs(angle.valueRadians()) <= tolerance.valueRadians();
 	}

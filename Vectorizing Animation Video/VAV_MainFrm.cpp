@@ -13,6 +13,8 @@
 //
 
 #include "stdafx.h"
+#include <fstream>
+#include <iostream>
 #include "VAV_App.h"
 #include "VAV_MainFrm.h"
 #include "VAV_View.h"
@@ -26,6 +28,7 @@
 #include "CmCurveEx.h"
 #include "Line.h"
 #include "CvExtenstion0.h"
+#include "zip/ZipFolder.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -852,7 +855,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		Lines showLines;
 		Lines BLineWidth(m_BlackLine.size());
 		//vImage.ToExpImage();
-		const double blackRadio = 1;
+		const double blackRadio = 0.7;
 		for (int idx1 = 0; idx1 < m_BlackLine.size(); ++idx1)
 		{
 			const Line& nowLine = m_BlackLine[idx1];
@@ -909,7 +912,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		IncreaseDensity(m_BlackLine, m_BLineWidth);
 		les = GetLineEnds(m_BlackLine);
 		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 10, 5, 15);
-		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 5);
+// 		m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
+// 		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 5);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 50);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 100);
 		ClearLineWidthByPercent(m_BLineWidth, 0.4);
@@ -958,7 +962,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		cv::Mat tmpimg = m_vavImage.Clone();
 		cv::Mat sampleimg = m_vavImage.Clone();
 		cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
-		cv::Mat isoimg = MakeIsoSurfaceImg(tmpimg, 8);
+		cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
+		cv::Mat isoimg = MakeIsoSurfaceImg(tmpimg, 12);
 		for (int i = 0; i < curveExtration.rows; i++)
 		{
 			for (int j = 0; j < curveExtration.cols; j++)
@@ -997,7 +1002,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		color2s.left = SmoothingLen5(color2s.left, 0, 3);
 		color2s.right = SmoothingLen5(color2s.right, 0, 3);
 		d3dApp.AddDiffusionLines(m_BlackLine2, color2s);
-		Lines tmp;
+		Lines diffusionConstrant;
 // canny extraction
 //      {
 //          cv::Mat mask, joint_mask;
@@ -1027,21 +1032,35 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		for (int i = 0; i < lines.size(); ++i)
 		{
 			Line& cps = lines[i];
-			tmp.push_back(cps);
-			for (int j = 0; j < cps.size(); ++j)
-			{
-				cps[j].x += 1;
-				cps[j].y += 1;
-			}
+			diffusionConstrant.push_back(cps);
+// 			for (int j = 0; j < cps.size(); ++j)
+// 			{
+// 				cps[j].x += 1;
+// 				cps[j].y += 1;
+// 			}
 		}
-		//lines = SmoothingLen5(lines, 0, 1);
-		tmp = SmoothingLen5(tmp, 0, 1);
-		d3dApp.AddLines(tmp);
+		diffusionConstrant = SmoothingLen5(diffusionConstrant, 0, 1);
+		d3dApp.AddLines(diffusionConstrant);
 		Vector3s2d colors;
-		colors = GetLinesColor(sampleimg, tmp);
+		colors = GetLinesColor(m_vavImage, diffusionConstrant);
 		colors = FixLineColors(colors, 400, 4);
-		//colors = SmoothingLen5(colors, 0, 10);
-		d3dApp.AddDiffusionLines(tmp, colors);
+		colors = SmoothingLen5(colors, 0, 3);
+		d3dApp.AddDiffusionLines(diffusionConstrant, colors);
+		{
+			std::ofstream ofs("curve.txt", std::ios::binary);
+			if (ofs.is_open())
+			{
+				boost::archive::binary_oarchive oa(ofs);
+				oa << m_BlackLine;
+				oa << m_BLineWidth;
+				oa << lineColors;
+				oa << diffusionConstrant;
+				oa << colors;
+				oa << m_BlackLine2;
+				oa << color2s;
+			}
+			ofs.close();
+		}
 	}
 	if (m_DRAW_CANNY_EXTRACTION)
 	{

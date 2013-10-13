@@ -284,7 +284,7 @@ Vector3s SmoothingLen5(const Vector3s& cvp, double centroidRadio /*= 1.0*/, int 
 	for (int repeatCount = 0; repeatCount < repeat; repeatCount++)
 	{
 		newcps.clear();
-		if (cps.size() <= 5)
+		if (cps.size() <= 6)
 		{
 			newcps.push_back(cps.front());
 			for (int j = 1; j < cps.size() - 1; j ++)
@@ -301,46 +301,57 @@ Vector3s SmoothingLen5(const Vector3s& cvp, double centroidRadio /*= 1.0*/, int 
 		else
 		{
 			centroids.clear();
-			newcps.push_back(cps.front());
-			centroids.push_back((cps[0] + cps[1]  + cps[2]) / 3.0f);
-			newcps.push_back((cps[0] + cps[1] * 2 + cps[2]) * 0.25);
-			for (int j = 2; j < cps.size() - 2; j ++)
+			centroids.push_back((cps[0] + cps[1] + cps[2]) * 0.33);
+// 			newcps.push_back(cps[0]);
+// 			newcps.push_back((cps[0] + cps[1] + cps[2]) * 0.33);
+			for (int j = 0; j < 5; j ++)
 			{
-				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
-						   6.0f;
+				newcps.push_back(cps[j]);
+				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+					cps[j - 2]) / 5.0f);
+			}
+			for (int j = 5; j < cps.size() - 5; j ++)
+			{
+				Vector3 vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) * 0.166;
 				newcps.push_back(vec);
 				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
 									 cps[j - 2]) / 5.0f);
 			}
-			int last = (int)cps.size() - 1;
-			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
-			centroids.push_back((cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f);
-			newcps.push_back(cps.back());
+			for (int j = cps.size() - 5; j < cps.size(); j ++)
+			{
+				newcps.push_back(cps[j]);
+				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+					cps[j - 2]) / 5.0f);
+			}
+// 			int last = (int)cps.size() - 1;
+// 			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
+// 			centroids.push_back((cps[last] + cps[last - 1]  + cps[last - 2]) * 0.33);
+// 			newcps.push_back(cps.back());
 			if (cps.size() == newcps.size())
 			{
 				cps = newcps;
 			}
 			// move centroid
-			newcps.clear();
-			newcps.push_back(cps.front());
-			Vector3 cert = (cps[0] + cps[1] + cps[2]) / 3.0f;
-			cert = centroids[0] - cert;
-			newcps.push_back(cps[1] + cert * centroidRadio);
-			for (int j = 2; j < (int)cps.size() - 2; j ++)
-			{
-				Vector3 nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
-									   cps[j - 2]) / 5.0f;
-				nowCentroid = centroids[j - 1] - nowCentroid;
-				newcps.push_back(cps[j] + nowCentroid * centroidRadio);
-			}
-			cert = (cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f;
-			cert = centroids[last - 2] - cert;
-			newcps.push_back(cps[last - 1] + cert * centroidRadio);
-			newcps.push_back(cps.back());
-			if (cps.size() == newcps.size())
-			{
-				cps = newcps;
-			}
+//          newcps.clear();
+//          newcps.push_back(cps.front());
+//          Vector3 cert = (cps[0] + cps[1] + cps[2]) / 3.0f;
+//          cert = centroids[0] - cert;
+//          newcps.push_back(cps[1] + cert * centroidRadio);
+//          for (int j = 2; j < (int)cps.size() - 2; j ++)
+//          {
+//              Vector3 nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+//                                     cps[j - 2]) / 5.0f;
+//              nowCentroid = centroids[j - 1] - nowCentroid;
+//              newcps.push_back(cps[j] + nowCentroid * centroidRadio);
+//          }
+//          cert = (cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f;
+//          cert = centroids[last - 2] - cert;
+//          newcps.push_back(cps[last - 1] + cert * centroidRadio);
+//          newcps.push_back(cps.back());
+//          if (cps.size() == newcps.size())
+//          {
+//              cps = newcps;
+//          }
 		}
 	}
 	return cps;
@@ -683,6 +694,74 @@ Lines SmoothingHas0Len5(const Lines& cvp, double centroidRadio, int num)
 	{
 		const Line& aa = cvp.at(i);
 		ans[i] = SmoothingHas0Len5(aa, centroidRadio, num);
+	}
+	return ans;
+}
+
+Vector3s SmoothingHas0Len5(const Vector3s& cvp, double centroidRadio /*= 1.0*/, int repeat /*= 1*/)
+{
+	if (cvp.size() <= 2)
+	{
+		return cvp;
+	}
+	Vector3s cps = cvp;
+	Vector3s newcps;
+	for (int repeatCount = 0; repeatCount < repeat; repeatCount++)
+	{
+		newcps.clear();
+		if (cps.size() <= 5)
+		{
+			newcps.push_back(cps.front());
+			for (int j = 1; j < cps.size() - 1; j ++)
+			{
+				auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1]) * 0.25;
+				newcps.push_back(vec);
+			}
+			newcps.push_back(cps.back());
+			cps = newcps;
+		}
+		else
+		{
+			newcps.push_back(cps.front() * 0.8);
+			newcps.push_back((cps[0] + cps[1] * 2 + cps[2]) * 0.25);
+			for (int j = 2; j < (int)cps.size() - 2; j ++)
+			{
+				if (cps[j].x > 0 || cps[j].y > 0 || cps[j].z > 0)
+				{
+					int zero = 0;
+					for (int k = j - 2; k <= j + 2; ++k)
+					{
+						if (cps[k].x < 0.01)
+						{
+							zero++;
+						}
+					}
+					auto vec = (cps[j] * (2 + zero) + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+								cps[j - 2]) / 6.0f;
+					newcps.push_back(vec);
+				}
+				else
+				{
+					newcps.push_back(Vector3());
+				}
+			}
+			int last = (int)cps.size() - 1;
+			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
+			newcps.push_back(cps.back() * 0.8);
+			cps = newcps;
+		}
+	}
+	return cps;
+}
+
+Vector3s2d SmoothingHas0Len5(const Vector3s2d& cvp, double centroidRadio /*= 1.0*/,
+							 int repeat /*= 1*/)
+{
+	Vector3s2d ans(cvp.size());
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Vector3s& aa = cvp.at(i);
+		ans[i] = SmoothingHas0Len5(aa, centroidRadio, repeat);
 	}
 	return ans;
 }
@@ -1630,29 +1709,79 @@ Vector3s FixLineColors(const Vector3s& cvp, int range, int findlimit)
 	Vector3s cps = cvp;
 	for (int i = 0; i < cvp.size(); ++i)
 	{
-		if (0 == cvp[i].x)
+		if (0 >= cvp[i].x)
 		{
-			Vector3 setValue;
+			double setValueX = 0;
 			int finds = 0, j = 1;
-			for (;j < range && finds < findlimit; ++j)
+			for (; j < range && finds < findlimit; ++j)
 			{
 				int left = i - j;
 				int right = i + j;
 				if (left > 0 && cvp[left].x > 0.0)
 				{
 					finds++;
-					setValue += cvp[left];
+					setValueX += cvp[left].x;
 				}
 				if (right < cvp.size() && cvp[right].x > 0.0)
 				{
 					finds++;
-					setValue += cvp[right];
+					setValueX += cvp[right].x;
 				}
 			}
 			if (finds > 0)
 			{
-				setValue /= finds;
-				cps[i] = setValue;
+				setValueX /= finds;
+				cps[i].x = setValueX;
+			}
+		}
+		if (0 >= cvp[i].y)
+		{
+			double setValueX = 0;
+			int finds = 0, j = 1;
+			for (; j < range && finds < findlimit; ++j)
+			{
+				int left = i - j;
+				int right = i + j;
+				if (left > 0 && cvp[left].y > 0.0)
+				{
+					finds++;
+					setValueX += cvp[left].y;
+				}
+				if (right < cvp.size() && cvp[right].y > 0.0)
+				{
+					finds++;
+					setValueX += cvp[right].y;
+				}
+			}
+			if (finds > 0)
+			{
+				setValueX /= finds;
+				cps[i].y = setValueX;
+			}
+		}
+		if (0 >= cvp[i].z)
+		{
+			double setValueX = 0;
+			int finds = 0, j = 1;
+			for (; j < range && finds < findlimit; ++j)
+			{
+				int left = i - j;
+				int right = i + j;
+				if (left > 0 && cvp[left].z > 0.0)
+				{
+					finds++;
+					setValueX += cvp[left].z;
+				}
+				if (right < cvp.size() && cvp[right].z > 0.0)
+				{
+					finds++;
+					setValueX += cvp[right].z;
+				}
+			}
+			if (finds > 0)
+			{
+				setValueX /= finds;
+				cps[i].z = setValueX;
 			}
 		}
 	}
