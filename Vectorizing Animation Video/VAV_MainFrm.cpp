@@ -850,8 +850,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BlackLine = GetLines(tpnts2d, 0, 0);
 		m_BlackLine = SmoothingLen5(m_BlackLine);
 		Lines normals = GetNormalsLen2(m_BlackLine);
-//      GetVavView()->m_FeatureLines = m_BlackLine;
-//      GetVavView()->m_FeatureNormals = normals;
+		GetVavView()->m_FeatureLines = m_BlackLine;
+		GetVavView()->m_FeatureNormals = normals;
 		Lines showLines;
 		Lines BLineWidth(m_BlackLine.size());
 		//vImage.ToExpImage();
@@ -912,8 +912,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		IncreaseDensity(m_BlackLine, m_BLineWidth);
 		les = GetLineEnds(m_BlackLine);
 		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 10, 5, 15);
-// 		m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
-// 		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 5);
+//      m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
+//      m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 5);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 50);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 100);
 		ClearLineWidthByPercent(m_BLineWidth, 0.4);
@@ -996,7 +996,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			}
 		}
 		cv::imshow("sampleimg", sampleimg);
-		Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine2, 2.5);
+		Color2Side color2s = GetLinesColor2SideSmart(m_vavImage, m_BlackLine2);
+		//Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine2, 2.5);
 		color2s.left = FixLineColors(color2s.left, 200, 3);
 		color2s.right = FixLineColors(color2s.right, 200, 3);
 		color2s.left = SmoothingLen5(color2s.left, 0, 3);
@@ -1033,14 +1034,14 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		{
 			Line& cps = lines[i];
 			diffusionConstrant.push_back(cps);
-// 			for (int j = 0; j < cps.size(); ++j)
-// 			{
-// 				cps[j].x += 1;
-// 				cps[j].y += 1;
-// 			}
+//          for (int j = 0; j < cps.size(); ++j)
+//          {
+//              cps[j].x += 1;
+//              cps[j].y += 1;
+//          }
 		}
 		diffusionConstrant = SmoothingLen5(diffusionConstrant, 0, 1);
-		d3dApp.AddLines(diffusionConstrant);
+		//d3dApp.AddLines(diffusionConstrant);
 		Vector3s2d colors;
 		colors = GetLinesColor(m_vavImage, diffusionConstrant);
 		colors = FixLineColors(colors, 400, 4);

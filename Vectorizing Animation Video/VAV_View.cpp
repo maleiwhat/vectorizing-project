@@ -246,7 +246,7 @@ void VAV_View::OnMouseMove(UINT nFlags, CPoint point)
 	if (m_LButtonDown)
 	{
 		m_MouseMove = point;
-		//ShowLineNormal();
+		ShowLineNormal();
 	}
 }
 
@@ -272,7 +272,7 @@ void VAV_View::OnLButtonDown(UINT nFlags, CPoint point)
 	m_LButtonDown = true;
 	m_MouseMove = point;
 	CView::OnLButtonDown(nFlags, point);
-	//ShowLineNormal();
+	ShowLineNormal();
 }
 vavImage* VAV_View::GetImage()
 {
@@ -352,7 +352,8 @@ void VAV_View::ShowLineNormal()
 	for (auto it1 = m_FeatureLines.begin(); it1 != m_FeatureLines.end(); ++it1, ++i)
 	{
 		j = 0;
-		for (auto it2 = it1->begin(); it2 != it1->end(); ++it2, ++j)
+		auto tend = --(it1->end());
+		for (auto it2 = it1->begin(); it2 != tend; ++it2, ++j)
 		{
 			double nowDis = click.squaredDistance(*it2);
 			if (nowDis < dis)
@@ -372,9 +373,9 @@ void VAV_View::ShowLineNormal()
 		Vector2 end(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
 					LINE_WIDTH);
 		Vector2 start2(m_FeatureLines[idx1][idx2 + 1] -
-					   m_FeatureNormals[idx1][idx2 + 1] * LINE_WIDTH);
-		Vector2 end2(m_FeatureLines[idx1][idx2 + 1] +
-					 m_FeatureNormals[idx1][idx2 + 1] * LINE_WIDTH);
+					   m_FeatureNormals[idx1][idx2] * LINE_WIDTH);
+		Vector2 end2(m_FeatureLines[idx1][idx2] +
+					 m_FeatureNormals[idx1][idx2] * LINE_WIDTH);
 		double_vector line1 = m_ExpImage.GetLineLight(start.x, start.y, end.x, end.y,
 							  360);
 		double_vector line2 = m_ExpImage.GetLineLight(start2.x, start2.y, end2.x,
@@ -401,12 +402,12 @@ void VAV_View::ShowLineNormal()
 		}
 		line1 = SmoothingLen5(line1, 0.0, 3);
 		line2 = SmoothingLen5(line2, 0.0, 3);
-		double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
-											10, 50), LINE_WIDTH * 2);
-		double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
-											10, 50), LINE_WIDTH * 2);
+		double_vector width1 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line1),
+											15, 50), LINE_WIDTH * 2);
+		double_vector width2 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line2),
+											15, 50), LINE_WIDTH * 2);
 		const double blackRadio = 0.6;
-		if (width1.size() >= 2 && width2.size() >= 2)
+		if (width1.size() == 2 && width2.size() == 2)
 		{
 			Line line1;
 			line1.push_back(m_FeatureLines[idx1][idx2] - m_FeatureNormals[idx1][idx2] *

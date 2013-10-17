@@ -492,3 +492,127 @@ double_vector GetLineWidth(const double_vector& data, double lineWidth,
 	}
 	return double_vector();
 }
+
+double_vector GetColorWidth( const double_vector& data, double lineWidth, double zero /*= 290*/ )
+{
+	double_vector ans;
+	bool end = false;
+	const int size = (int)data.size();
+	int zcount = 0;
+	for (int i = size / 2; i > 0 && !end; --i)
+	{
+		if (data[i] > zero)
+		{
+			zcount = 0;
+			for (int j = i; j >= 0; --j)
+			{
+				if (data[j] < zero)
+				{
+					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
+					end = true;
+					break;
+				}
+				else if (data[j] == zero)
+				{
+					zcount++;
+				}
+				if (zcount > 20)
+				{
+					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
+					end = true;
+				}
+			}
+			zcount = 0;
+		}
+		else if (data[i] < zero)
+		{
+			zcount = 0;
+			for (int j = i; j >= 0; --j)
+			{
+				if (data[j] > zero)
+				{
+					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
+					end = true;
+					break;
+				}
+				else if (data[j] == zero)
+				{
+					zcount++;
+				}
+				if (zcount > 20)
+				{
+					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
+					end = true;
+				}
+			}
+			zcount = 0;
+		}
+		if (data[i] == zero)
+		{
+			zcount++;
+		}
+		if (zcount > 20)
+		{
+			ans.push_back(lineWidth * 0.5 - i * lineWidth / 360.0);
+			end = true;
+		}
+	}
+	end = false;
+	for (int i = size / 2; i < size; ++i)
+	{
+		if (data[i] < zero)
+		{
+			zcount = 0;
+			for (int j = i; j < size; ++j)
+			{
+				if (data[j] > zero)
+				{
+					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
+					return ans;
+				}
+				else if (data[j] == zero)
+				{
+					zcount++;
+				}
+				if (zcount > 20)
+				{
+					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
+					return ans;
+				}
+			}
+			zcount = 0;
+		}
+		else if (data[i] > zero)
+		{
+			zcount = 0;
+			for (int j = i; j <= size; ++j)
+			{
+				if (data[j] <= zero)
+				{
+					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
+					return ans;
+				}
+				else if (data[j] == zero)
+				{
+					zcount++;
+				}
+				if (zcount > 20)
+				{
+					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
+					return ans;
+				}
+			}
+			zcount = 0;
+		}
+		if (data[i] == zero)
+		{
+			zcount++;
+		}
+		if (zcount > 20)
+		{
+			ans.push_back(lineWidth * 0.5 - i * lineWidth / 360.0);
+			return ans;
+		}
+	}
+	return double_vector();
+}

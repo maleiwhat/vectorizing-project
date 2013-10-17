@@ -302,56 +302,56 @@ Vector3s SmoothingLen5(const Vector3s& cvp, double centroidRadio /*= 1.0*/, int 
 		{
 			centroids.clear();
 			centroids.push_back((cps[0] + cps[1] + cps[2]) * 0.33);
-// 			newcps.push_back(cps[0]);
-// 			newcps.push_back((cps[0] + cps[1] + cps[2]) * 0.33);
-			for (int j = 0; j < 5; j ++)
-			{
-				newcps.push_back(cps[j]);
-				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
-					cps[j - 2]) / 5.0f);
-			}
-			for (int j = 5; j < cps.size() - 5; j ++)
+			newcps.push_back(cps[0]);
+			newcps.push_back((cps[0] + cps[1] + cps[2]) * 0.33);
+// 			for (int j = 0; j < 5; j ++)
+// 			{
+// 				newcps.push_back(cps[j]);
+// 				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+// 					cps[j - 2]) / 5.0f);
+// 			}
+			for (int j = 2; j < cps.size() - 2; j ++)
 			{
 				Vector3 vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) * 0.166;
 				newcps.push_back(vec);
 				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
 									 cps[j - 2]) / 5.0f);
 			}
-			for (int j = cps.size() - 5; j < cps.size(); j ++)
-			{
-				newcps.push_back(cps[j]);
-				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
-					cps[j - 2]) / 5.0f);
-			}
-// 			int last = (int)cps.size() - 1;
-// 			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
-// 			centroids.push_back((cps[last] + cps[last - 1]  + cps[last - 2]) * 0.33);
-// 			newcps.push_back(cps.back());
+// 			for (int j = cps.size() - 5; j < cps.size(); j ++)
+// 			{
+// 				newcps.push_back(cps[j]);
+// 				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+// 					cps[j - 2]) / 5.0f);
+// 			}
+			int last = (int)cps.size() - 1;
+			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
+			centroids.push_back((cps[last] + cps[last - 1]  + cps[last - 2]) * 0.33);
+			newcps.push_back(cps.back());
 			if (cps.size() == newcps.size())
 			{
 				cps = newcps;
 			}
 			// move centroid
-//          newcps.clear();
-//          newcps.push_back(cps.front());
-//          Vector3 cert = (cps[0] + cps[1] + cps[2]) / 3.0f;
-//          cert = centroids[0] - cert;
-//          newcps.push_back(cps[1] + cert * centroidRadio);
-//          for (int j = 2; j < (int)cps.size() - 2; j ++)
-//          {
-//              Vector3 nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
-//                                     cps[j - 2]) / 5.0f;
-//              nowCentroid = centroids[j - 1] - nowCentroid;
-//              newcps.push_back(cps[j] + nowCentroid * centroidRadio);
-//          }
-//          cert = (cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f;
-//          cert = centroids[last - 2] - cert;
-//          newcps.push_back(cps[last - 1] + cert * centroidRadio);
-//          newcps.push_back(cps.back());
-//          if (cps.size() == newcps.size())
-//          {
-//              cps = newcps;
-//          }
+			newcps.clear();
+			newcps.push_back(cps.front());
+			Vector3 cert = (cps[0] + cps[1] + cps[2]) / 3.0f;
+			cert = centroids[0] - cert;
+			newcps.push_back(cps[1] + cert * centroidRadio);
+			for (int j = 2; j < (int)cps.size() - 2; j ++)
+			{
+				Vector3 nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+									cps[j - 2]) / 5.0f;
+				nowCentroid = centroids[j - 1] - nowCentroid;
+				newcps.push_back(cps[j] + nowCentroid * centroidRadio);
+			}
+			cert = (cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f;
+			cert = centroids[last - 2] - cert;
+			newcps.push_back(cps[last - 1] + cert * centroidRadio);
+			newcps.push_back(cps.back());
+			if (cps.size() == newcps.size())
+			{
+				cps = newcps;
+			}
 		}
 	}
 	return cps;
