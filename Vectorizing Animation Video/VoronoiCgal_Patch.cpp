@@ -1,3 +1,5 @@
+
+#ifdef USE_CGAL
 #include <algorithm>
 #include "VoronoiCgal_Patch.h"
 #include "CgalPatch.h"
@@ -389,3 +391,4 @@ void VoronoiCgal_Patch::mark_domains(Delaunay& cdt)
 		}
 	}
 }
+#endif // USE_CGAL

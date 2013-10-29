@@ -86,10 +86,10 @@ void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 	out3.pos.z = 0;
 	out3.pos.w = 1;
 	out3.color.xyz = input[0].c1;
-	out3.color.w = centerAlpha*0.25;
+	out3.color.w = centerAlpha*0.1;
 	out3.pos.xy = input[0].p1;
 	triStream.Append( out3 );
-	out3.color.w = centerAlpha*0.25;
+	out3.color.w = centerAlpha*0.1;
 	out3.pos.xy = input[0].p3;
 	triStream.Append( out3 );
 	out3.color.w = centerAlpha;
@@ -98,10 +98,10 @@ void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 	out3.color.w = centerAlpha;
 	out3.pos.xy = input[0].p33;
 	triStream.Append( out3 );
-	out3.color.w = centerAlpha*0.25;
+	out3.color.w = centerAlpha*0.1;
 	out3.pos.xy = input[0].p2;
 	triStream.Append( out3 );
-	out3.color.w = centerAlpha*0.25;
+	out3.color.w = centerAlpha*0.1;
 	out3.pos.xy = input[0].p4;
 	triStream.Append( out3 );
 	triStream.RestartStrip();
@@ -111,7 +111,7 @@ float4 PS(GS_OUT pIn) : SV_Target
 {
 //discard;
 	//return float4(0,0,0, pIn.color.w);
-	return float4(pIn.color.x, pIn.color.y, pIn.color.z, pow(pIn.color.w, 0.8));
+	return float4(pIn.color.x, pIn.color.y, pIn.color.z, pow(pIn.color.w, 0.5));
 }
 
 RasterizerState NoCull

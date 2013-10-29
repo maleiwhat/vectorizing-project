@@ -1,4 +1,5 @@
 ﻿#pragma once
+#ifdef USE_CGAL
 #include <iostream>
 #include "TriangulationBase.h"
 #pragma warning( push, 0 )
@@ -99,6 +100,4 @@ public:
 
 };
 
-
-
-
+#endif // USE_CGAL

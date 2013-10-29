@@ -548,6 +548,9 @@
     <ClCompile Include="zip\ZipData.cpp">
       <Filter>zip</Filter>
     </ClCompile>
+    <ClCompile Include="VAV_MainFrm2.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\picture.fx">

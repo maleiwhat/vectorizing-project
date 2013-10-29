@@ -41,11 +41,14 @@ public:
 	void AddLines(const Lines& lines, const double_vector2d& linewidths,
 				  const Vector3s2d& colors);
 	void AddLines(const Lines& lines, const double_vector2d& linewidths);
+	void AddLinesWidth(const Lines& lines, const Lines& linewidths);
 	void AddLines(const Lines& lines, const Lines& linewidths);
 	void AddLines(const Lines& lines);
+#ifdef USE_CGAL
 	void AddLines(const CgalLines& lines);
+#endif // USE_CGAL
 	void AddLines(const CvLine& lines);
-	void AddLines(const Lines& lines, const Lines& linewidths, const Vector3s2d& colors);
+	void AddLinesWidth(const Lines& lines, const Lines& linewidths, const Vector3s2d& colors);
 	void AddLinesCover(const Lines& lines);
 	void AddLinesLine(const Lines& lines, const double_vector2d& linewidths);
 	void AddLineSegs(const LineSegs& lines);
@@ -54,6 +57,7 @@ public:
 	void AddDiffusionLines(const Lines& lines, const Color2Side& colors);
 	void ClearPatchs();
 	void ClearCovers();
+	void ClearSkeletonLines();
 	void SetTransparency_Triangle(float t);
 	void SetTransparency_SelectPatch(float t);
 	void SetTransparency_TriangleLine(float t);

@@ -7,24 +7,20 @@ double_vector Curvature(const double_vector& angles)
 {
 	double_vector ans = angles;
 	ans[0] = 0;
-
 	for (int i = 1; i < ans.size(); i++)
 	{
 		ans[i] = angles[i] - angles[i - 1];
 	}
-
 	return ans;
 }
 
 double_vector Accumulation(const double_vector& line)
 {
 	double_vector ans = line;
-
 	for (int i = 1; i < line.size(); i++)
 	{
 		ans[i] = ans[i] + ans[i - 1];
 	}
-
 	return ans;
 }
 
@@ -32,12 +28,10 @@ double_vector AbsAccumulation(const double_vector& line)
 {
 	double_vector ans = line;
 	ans[0] = abs(ans[0]);
-
 	for (int i = 1; i < line.size(); i++)
 	{
 		ans[i] = abs(ans[i]) + ans[i - 1];
 	}
-
 	return ans;
 }
 
@@ -62,7 +56,7 @@ double_vector ConvertToAngle(const double_vector& data, double zero)
 	}
 	{
 		int last = (int)data.size() - 2;
-		double dy = tmp[last-1] - tmp[last - 3];
+		double dy = tmp[last - 1] - tmp[last - 3];
 		double angle = atan2(3, dy) / M_PI * 180 + zero;
 		ans.push_back(angle);
 		dy = tmp[last] - tmp[last - 1];
@@ -493,18 +487,19 @@ double_vector GetLineWidth(const double_vector& data, double lineWidth,
 	return double_vector();
 }
 
-double_vector GetColorWidth( const double_vector& data, double lineWidth, double zero /*= 290*/ )
+double_vector GetColorWidth(const double_vector& data, double lineWidth, double zero /*= 290*/)
 {
 	double_vector ans;
 	bool end = false;
 	const int size = (int)data.size();
+	const int skip = 60;
 	int zcount = 0;
-	for (int i = size / 2; i > 0 && !end; --i)
+	for (int x = size / 2 - skip; x > 0 && !end; --x)
 	{
-		if (data[i] > zero)
+		if (data[x] > zero)
 		{
 			zcount = 0;
-			for (int j = i; j >= 0; --j)
+			for (int j = x; j >= 0; --j)
 			{
 				if (data[j] < zero)
 				{
@@ -524,10 +519,10 @@ double_vector GetColorWidth( const double_vector& data, double lineWidth, double
 			}
 			zcount = 0;
 		}
-		else if (data[i] < zero)
+		else if (data[x] < zero)
 		{
 			zcount = 0;
-			for (int j = i; j >= 0; --j)
+			for (int j = x; j >= 0; --j)
 			{
 				if (data[j] > zero)
 				{
@@ -547,23 +542,27 @@ double_vector GetColorWidth( const double_vector& data, double lineWidth, double
 			}
 			zcount = 0;
 		}
-		if (data[i] == zero)
+		else if (zcount > 20)
+		{
+			ans.push_back(lineWidth * 0.5 - x * lineWidth / 360.0);
+			end = true;
+		}
+		if (data[x] == zero)
 		{
 			zcount++;
 		}
-		if (zcount > 20)
-		{
-			ans.push_back(lineWidth * 0.5 - i * lineWidth / 360.0);
-			end = true;
-		}
+	}
+	if (ans.size() > 1)
+	{
+		ans.resize(1);
 	}
 	end = false;
-	for (int i = size / 2; i < size; ++i)
+	for (int x = size / 2 + skip; x < size; ++x)
 	{
-		if (data[i] < zero)
+		if (data[x] < zero)
 		{
 			zcount = 0;
-			for (int j = i; j < size; ++j)
+			for (int j = x; j < size; ++j)
 			{
 				if (data[j] > zero)
 				{
@@ -576,20 +575,20 @@ double_vector GetColorWidth( const double_vector& data, double lineWidth, double
 				}
 				if (zcount > 20)
 				{
-					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
+					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
 					return ans;
 				}
 			}
 			zcount = 0;
 		}
-		else if (data[i] > zero)
+		else if (data[x] > zero)
 		{
 			zcount = 0;
-			for (int j = i; j <= size; ++j)
+			for (int j = x; j < size; ++j)
 			{
 				if (data[j] <= zero)
 				{
-					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
+					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
 					return ans;
 				}
 				else if (data[j] == zero)
@@ -598,20 +597,20 @@ double_vector GetColorWidth( const double_vector& data, double lineWidth, double
 				}
 				if (zcount > 20)
 				{
-					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
+					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
 					return ans;
 				}
 			}
 			zcount = 0;
 		}
-		if (data[i] == zero)
+		else if (zcount > 20)
+		{
+			ans.push_back(x * lineWidth / 360.0 - lineWidth * 0.5);
+			return ans;
+		}
+		if (data[x] == zero)
 		{
 			zcount++;
-		}
-		if (zcount > 20)
-		{
-			ans.push_back(lineWidth * 0.5 - i * lineWidth / 360.0);
-			return ans;
 		}
 	}
 	return double_vector();

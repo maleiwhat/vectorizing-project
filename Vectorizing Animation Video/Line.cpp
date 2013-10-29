@@ -4,51 +4,9 @@
 #include "Line.h"
 #include "math/Quaternion.h"
 #include "IFExtenstion.h"
+#include "ColorConstraintMedian.h"
 
-Lines GetLines(const CvLines& cvp)
-{
-	Lines res;
-	for (auto it = cvp.begin(); it != cvp.end(); ++it)
-	{
-		Line li;
-		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
-		{
-			li.push_back(Vector2(it2->x, it2->y));
-		}
-		res.push_back(li);
-	}
-	return res;
-}
-
-Lines GetLines(const Lines& cvp, double xOffset, double yOffset)
-{
-	Lines res;
-	for (auto it = cvp.begin(); it != cvp.end(); ++it)
-	{
-		Line li;
-		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
-		{
-			li.push_back(Vector2(it2->x + xOffset, it2->y + yOffset));
-		}
-		res.push_back(li);
-	}
-	return res;
-}
-
-Lines GetLines(const CvLines& cvp, double xOffset, double yOffset)
-{
-	Lines lines;
-	for (auto it1 = cvp.begin(); it1 != cvp.end(); ++it1)
-	{
-		lines.push_back(Line());
-		for (auto it2 = it1->begin(); it2 != it1->end(); ++it2)
-		{
-			lines.back().push_back(Vector2(it2->x + xOffset, it2->y + yOffset));
-		}
-	}
-	return lines;
-}
-
+#ifdef USE_CGAL
 Lines GetLines(const CgalLines& cvp, double xOffset, double yOffset)
 {
 	Lines lines;
@@ -63,25 +21,6 @@ Lines GetLines(const CgalLines& cvp, double xOffset, double yOffset)
 	return lines;
 }
 
-Line GetLine(const CvLine& cvp, double xOffset, double yOffset)
-{
-	Line line;
-	for (auto it2 = cvp.begin(); it2 != cvp.end(); ++it2)
-	{
-		line.push_back(Vector2(it2->x + xOffset, it2->y + yOffset));
-	}
-	return line;
-}
-
-Line GetLine(const Line& cvp, double xOffset, double yOffset)
-{
-	Line line;
-	for (auto it2 = cvp.begin(); it2 != cvp.end(); ++it2)
-	{
-		line.push_back(Vector2(it2->x + xOffset, it2->y + yOffset));
-	}
-	return line;
-}
 
 Line GetLine(const CgalLine& cvp, double xOffset, double yOffset)
 {
@@ -93,19 +32,6 @@ Line GetLine(const CgalLine& cvp, double xOffset, double yOffset)
 	return line;
 }
 
-CvLines GetCvLines(const Lines& cvp, double xOffset/*=0*/, double yOffset/*=0*/)
-{
-	CvLines lines;
-	for (auto it1 = cvp.begin(); it1 != cvp.end(); ++it1)
-	{
-		lines.push_back(CvLine());
-		for (auto it2 = it1->begin(); it2 != it1->end(); ++it2)
-		{
-			lines.back().push_back(cv::Point(int(it2->x + xOffset), int(it2->y + yOffset)));
-		}
-	}
-	return lines;
-}
 
 CvLines GetCvLines(const CgalLines& cvp, double xOffset/*=0*/,
 				   double yOffset/*=0*/)
@@ -123,15 +49,6 @@ CvLines GetCvLines(const CgalLines& cvp, double xOffset/*=0*/,
 	return lines;
 }
 
-CvLine GetCvLine(const Line& cvp, double xOffset/*=0*/, double yOffset/*=0*/)
-{
-	CvLine line;
-	for (auto it2 = cvp.begin(); it2 != cvp.end(); ++it2)
-	{
-		line.push_back(cv::Point(int(it2->x + xOffset), int(it2->y + yOffset)));
-	}
-	return line;
-}
 
 CvLine GetCvLine(const CgalLine& cvp, double xOffset/*=0*/,
 				 double yOffset/*=0*/)
@@ -195,6 +112,97 @@ CgalLine GetCgalLine(const Line& cvp, double xOffset/*=0*/,
 	}
 	return line;
 }
+#endif // USE_CGAL
+
+Lines GetLines(const CvLines& cvp)
+{
+	Lines res;
+	for (auto it = cvp.begin(); it != cvp.end(); ++it)
+	{
+		Line li;
+		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
+		{
+			li.push_back(Vector2(it2->x, it2->y));
+		}
+		res.push_back(li);
+	}
+	return res;
+}
+
+Lines GetLines(const Lines& cvp, double xOffset, double yOffset)
+{
+	Lines res;
+	for (auto it = cvp.begin(); it != cvp.end(); ++it)
+	{
+		Line li;
+		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
+		{
+			li.push_back(Vector2(it2->x + xOffset, it2->y + yOffset));
+		}
+		res.push_back(li);
+	}
+	return res;
+}
+
+Lines GetLines(const CvLines& cvp, double xOffset, double yOffset)
+{
+	Lines lines;
+	for (auto it1 = cvp.begin(); it1 != cvp.end(); ++it1)
+	{
+		lines.push_back(Line());
+		for (auto it2 = it1->begin(); it2 != it1->end(); ++it2)
+		{
+			lines.back().push_back(Vector2(it2->x + xOffset, it2->y + yOffset));
+		}
+	}
+	return lines;
+}
+
+Line GetLine(const CvLine& cvp, double xOffset, double yOffset)
+{
+	Line line;
+	for (auto it2 = cvp.begin(); it2 != cvp.end(); ++it2)
+	{
+		line.push_back(Vector2(it2->x + xOffset, it2->y + yOffset));
+	}
+	return line;
+}
+
+Line GetLine(const Line& cvp, double xOffset, double yOffset)
+{
+	Line line;
+	for (auto it2 = cvp.begin(); it2 != cvp.end(); ++it2)
+	{
+		line.push_back(Vector2(it2->x + xOffset, it2->y + yOffset));
+	}
+	return line;
+}
+
+
+CvLines GetCvLines(const Lines& cvp, double xOffset/*=0*/, double yOffset/*=0*/)
+{
+	CvLines lines;
+	for (auto it1 = cvp.begin(); it1 != cvp.end(); ++it1)
+	{
+		lines.push_back(CvLine());
+		for (auto it2 = it1->begin(); it2 != it1->end(); ++it2)
+		{
+			lines.back().push_back(cv::Point(int(it2->x + xOffset), int(it2->y + yOffset)));
+		}
+	}
+	return lines;
+}
+
+CvLine GetCvLine(const Line& cvp, double xOffset/*=0*/, double yOffset/*=0*/)
+{
+	CvLine line;
+	for (auto it2 = cvp.begin(); it2 != cvp.end(); ++it2)
+	{
+		line.push_back(cv::Point(int(it2->x + xOffset), int(it2->y + yOffset)));
+	}
+	return line;
+}
+
 
 Line SmoothingLen5(const Line& cvp, double centroidRadio, int repeat)
 {
@@ -304,12 +312,12 @@ Vector3s SmoothingLen5(const Vector3s& cvp, double centroidRadio /*= 1.0*/, int 
 			centroids.push_back((cps[0] + cps[1] + cps[2]) * 0.33);
 			newcps.push_back(cps[0]);
 			newcps.push_back((cps[0] + cps[1] + cps[2]) * 0.33);
-// 			for (int j = 0; j < 5; j ++)
-// 			{
-// 				newcps.push_back(cps[j]);
-// 				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
-// 					cps[j - 2]) / 5.0f);
-// 			}
+//          for (int j = 0; j < 5; j ++)
+//          {
+//              newcps.push_back(cps[j]);
+//              centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+//                  cps[j - 2]) / 5.0f);
+//          }
 			for (int j = 2; j < cps.size() - 2; j ++)
 			{
 				Vector3 vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) * 0.166;
@@ -317,12 +325,12 @@ Vector3s SmoothingLen5(const Vector3s& cvp, double centroidRadio /*= 1.0*/, int 
 				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
 									 cps[j - 2]) / 5.0f);
 			}
-// 			for (int j = cps.size() - 5; j < cps.size(); j ++)
-// 			{
-// 				newcps.push_back(cps[j]);
-// 				centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
-// 					cps[j - 2]) / 5.0f);
-// 			}
+//          for (int j = cps.size() - 5; j < cps.size(); j ++)
+//          {
+//              newcps.push_back(cps[j]);
+//              centroids.push_back((cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
+//                  cps[j - 2]) / 5.0f);
+//          }
 			int last = (int)cps.size() - 1;
 			newcps.push_back((cps[last] + cps[last - 1] * 2 + cps[last - 2]) * 0.25);
 			centroids.push_back((cps[last] + cps[last - 1]  + cps[last - 2]) * 0.33);
@@ -340,7 +348,7 @@ Vector3s SmoothingLen5(const Vector3s& cvp, double centroidRadio /*= 1.0*/, int 
 			for (int j = 2; j < (int)cps.size() - 2; j ++)
 			{
 				Vector3 nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
-									cps[j - 2]) / 5.0f;
+									   cps[j - 2]) / 5.0f;
 				nowCentroid = centroids[j - 1] - nowCentroid;
 				newcps.push_back(cps[j] + nowCentroid * centroidRadio);
 			}
@@ -443,6 +451,10 @@ Line GetNormalsLen3(const Line& cvp)
 
 Line GetNormalsLen2(const Line& cvp)
 {
+	if (cvp.size() < 2)
+	{
+		return Line(cvp.size());
+	}
 	Line normals;
 	normals.push_back(Quaternion::GetRotation(cvp[1] - cvp[0], -90));
 	for (int i = 1; i < cvp.size(); ++i)
@@ -1709,7 +1721,7 @@ Vector3s FixLineColors(const Vector3s& cvp, int range, int findlimit)
 	Vector3s cps = cvp;
 	for (int i = 0; i < cvp.size(); ++i)
 	{
-		if (0 >= cvp[i].x)
+		if (0.01 >= cvp[i].x)
 		{
 			double setValueX = 0;
 			int finds = 0, j = 1;
@@ -1717,7 +1729,7 @@ Vector3s FixLineColors(const Vector3s& cvp, int range, int findlimit)
 			{
 				int left = i - j;
 				int right = i + j;
-				if (left > 0 && cvp[left].x > 0.0)
+				if (left > 0 && cvp[left].x > 0.01)
 				{
 					finds++;
 					setValueX += cvp[left].x;
@@ -1734,7 +1746,7 @@ Vector3s FixLineColors(const Vector3s& cvp, int range, int findlimit)
 				cps[i].x = setValueX;
 			}
 		}
-		if (0 >= cvp[i].y)
+		if (0.01 >= cvp[i].y)
 		{
 			double setValueX = 0;
 			int finds = 0, j = 1;
@@ -1742,7 +1754,7 @@ Vector3s FixLineColors(const Vector3s& cvp, int range, int findlimit)
 			{
 				int left = i - j;
 				int right = i + j;
-				if (left > 0 && cvp[left].y > 0.0)
+				if (left > 0 && cvp[left].y > 0.01)
 				{
 					finds++;
 					setValueX += cvp[left].y;
@@ -1759,7 +1771,7 @@ Vector3s FixLineColors(const Vector3s& cvp, int range, int findlimit)
 				cps[i].y = setValueX;
 			}
 		}
-		if (0 >= cvp[i].z)
+		if (0.01 >= cvp[i].z)
 		{
 			double setValueX = 0;
 			int finds = 0, j = 1;
@@ -1767,7 +1779,7 @@ Vector3s FixLineColors(const Vector3s& cvp, int range, int findlimit)
 			{
 				int left = i - j;
 				int right = i + j;
-				if (left > 0 && cvp[left].z > 0.0)
+				if (left > 0 && cvp[left].z > 0.01)
 				{
 					finds++;
 					setValueX += cvp[left].z;
@@ -1797,5 +1809,99 @@ Vector3s2d FixLineColors(const Vector3s2d& aLine, int range, int findlimit)
 		ans[i] = FixLineColors(aa, range, findlimit);
 	}
 	return ans;
+}
+
+double GetLightV3P(const Vector3* v)
+{
+	return v[0][0] * 0.299 + v[0][1] * 0.587 + v[0][2] * 0.114;
+}
+
+bool LightCompareV3P(const Vector3* v1, const Vector3* v2)
+{
+	return GetLightV3P(v1) < GetLightV3P(v2);
+}
+typedef std::vector<Vector3*> Vector3Ps;
+
+Vector3s HistormMappingLight(const Vector3s& color, double radio)
+{
+	Vector3Ps tmp(color.size());
+	for (int i = 0; i < color.size(); ++i)
+	{
+		tmp[i] = const_cast<Vector3*>(&color[i]);
+	}
+	std::sort(tmp.begin(), tmp.end(), LightCompareV3P);
+	int left_idx = (1 - radio) * 0.5 * color.size();
+	int right_idx = color.size() - left_idx - 1;
+	Vector3s ans(color.size());
+	double step = (right_idx - left_idx + 1) / (double)color.size();
+	for (int i = 0; i < color.size(); ++i)
+	{
+		int oidx = tmp[i] - &color[0];
+		int idx = left_idx + i * step;
+		ans[oidx] = *tmp[idx];
+	}
+	return ans;
+}
+
+Vector3s2d HistormMappingLight(const Vector3s2d& color, double radio)
+{
+	Vector3s2d ans(color.size());
+	for (int i = 0; i < color.size(); ++i)
+	{
+		const Vector3s& cc = color.at(i);
+		ans[i] = HistormMappingLight(cc, radio);
+	}
+	return ans;
+}
+
+Vector3s HistormMappingHSV(const Vector3s& color, double radio)
+{
+	Vector3s ans(color.size());
+	return ans;
+}
+
+Vector3s MedianLen5(const Vector3s& cvp, int repeat /*= 1*/)
+{
+	Vector3s cps = cvp;
+	Vector3s newcps;
+	for (int repeatCount = 0; repeatCount < repeat; repeatCount++)
+	{
+		newcps.clear();
+		for (int i = 0; i < cps.size(); ++i)
+		{
+			int s_idx = i - 2;
+			int e_idx = i + 3;
+			if (s_idx < 0)
+			{
+				s_idx = 0;
+			}
+			if (e_idx - s_idx < 5)
+			{
+				e_idx = s_idx + 5;
+			}
+			if (e_idx > cvp.size())
+			{
+				e_idx = cvp.size();
+				s_idx = e_idx - 5;
+			}
+			Vector3s tmp;
+			tmp.insert(tmp.end(), cps.begin() + s_idx, cps.begin() + e_idx);
+			std::sort(tmp.begin(), tmp.end());
+			newcps.push_back(tmp[tmp.size() / 2]);
+		}
+		cps = newcps;
+	}
+	return cps;
+}
+
+Vector3s2d MedianLen5( const Vector3s2d& cvp, int repeat /*= 1*/ )
+{
+	Vector3s2d cps(cvp.size());
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Vector3s& nowLine = cvp[i];
+		cps[i] = MedianLen5(nowLine, repeat);
+	}
+	return cps;
 }
 

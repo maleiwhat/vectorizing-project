@@ -1,19 +1,11 @@
 #pragma once
 #include "LineDef.h"
 
-Lines   GetLines(const CvLines& cvp, double xOffset = 0, double yOffset = 0);
-Lines   GetLines(const Lines& cvp, double xOffset = 0, double yOffset = 0);
-Lines   GetLines(const CgalLines& cvp, double xOffset = 0, double yOffset = 0);
-Line    GetLine(const CvLine& cvp, double xOffset = 0, double yOffset = 0);
-Line    GetLine(const Line& cvp, double xOffset = 0, double yOffset = 0);
-Line    GetLine(const CgalLine& cvp, double xOffset = 0, double yOffset = 0);
-
-CvLines GetCvLines(const Lines& cvp, double xOffset = 0, double yOffset = 0);
-CvLines GetCvLines(const CgalLines& cvp, double xOffset = 0,
-				   double yOffset = 0);
-CvLine  GetCvLine(const Line& cvp, double xOffset = 0, double yOffset = 0);
+#ifdef USE_CGAL
+CvLines GetCvLines(const CgalLines& cvp, double xOffset = 0, double yOffset = 0);
 CvLine  GetCvLine(const CgalLine& cvp, double xOffset = 0, double yOffset = 0);
-
+Lines   GetLines(const CgalLines& cvp, double xOffset = 0, double yOffset = 0);
+Line    GetLine(const CgalLine& cvp, double xOffset = 0, double yOffset = 0);
 CgalLines   GetCgalLines(const CvLines& cvp, double xOffset = 0,
 						 double yOffset = 0);
 CgalLines   GetCgalLines(const Lines& cvp, double xOffset = 0,
@@ -22,19 +14,25 @@ CgalLine    GetCgalLine(const CvLine& cvp, double xOffset = 0,
 						double yOffset = 0);
 CgalLine    GetCgalLine(const Line& cvp, double xOffset = 0,
 						double yOffset = 0);
+#endif // USE_CGAL
 
-Line    SmoothingLen5(const Line& cvp, double centroidRadio = 1.0,
-					  int repeat = 1);
-Line    SmoothingLen3(const Line& cvp, double centroidRadio = 1.0,
-					  int repeat = 1);
-Lines   SmoothingLen5(const Lines& cvp, double centroidRadio = 1.0,
-					  int repeat = 1);
-Lines   SmoothingLen3(const Lines& cvp, double centroidRadio = 1.0,
-					  int repeat = 1);
-Vector3s    SmoothingLen5(const Vector3s& cvp, double centroidRadio = 1.0,
-					  int repeat = 1);
-Vector3s2d   SmoothingLen5(const Vector3s2d& cvp, double centroidRadio = 1.0,
-					  int repeat = 1);
+Lines   GetLines(const CvLines& cvp, double xOffset = 0, double yOffset = 0);
+Lines   GetLines(const Lines& cvp, double xOffset = 0, double yOffset = 0);
+
+Line    GetLine(const CvLine& cvp, double xOffset = 0, double yOffset = 0);
+Line    GetLine(const Line& cvp, double xOffset = 0, double yOffset = 0);
+
+CvLines GetCvLines(const Lines& cvp, double xOffset = 0, double yOffset = 0);
+CvLine  GetCvLine(const Line& cvp, double xOffset = 0, double yOffset = 0);
+
+Line    SmoothingLen5(const Line& cvp, double centroidRadio = 1.0, int repeat = 1);
+Line    SmoothingLen3(const Line& cvp, double centroidRadio = 1.0, int repeat = 1);
+Lines   SmoothingLen5(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);
+Lines   SmoothingLen3(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);
+Vector3s    SmoothingLen5(const Vector3s& cvp, double centroidRadio = 1.0, int repeat = 1);
+Vector3s2d   SmoothingLen5(const Vector3s2d& cvp, double centroidRadio = 1.0, int repeat = 1);
+Vector3s    MedianLen5(const Vector3s& cvp, int repeat = 1);
+Vector3s2d    MedianLen5(const Vector3s2d& cvp, int repeat = 1);
 
 Line    GetNormalsLen2(const Line& cvp);
 Line    GetNormalsLen3(const Line& cvp);
@@ -45,8 +43,12 @@ Lines   LinesAdd(const Lines& aLine, const Lines& bLine);
 Line    LineSub(const Line& aLine, const Line& bLine);
 Lines   LinesSub(const Lines& aLine, const Lines& bLine);
 
-Vector3s	FixLineColors(const Vector3s& aLine, int range, int findlimit);
-Vector3s2d	FixLineColors(const Vector3s2d& aLine, int range, int findlimit);
+Vector3s    HistormMappingLight(const Vector3s& color, double radio);
+Vector3s2d  HistormMappingLight(const Vector3s2d& color, double radio);
+Vector3s    HistormMappingHSV(const Vector3s& color, double radio);
+
+Vector3s    FixLineColors(const Vector3s& aLine, int range, int findlimit);
+Vector3s2d  FixLineColors(const Vector3s2d& aLine, int range, int findlimit);
 
 Line    FixLineWidths(const Line& aLine, int range);
 Lines   FixLineWidths(const Lines& aLine, int range);
@@ -63,9 +65,9 @@ Lines   SmoothingHas0Len5(const Lines& cvp, double centroidRadio = 1.0,
 Lines   SmoothingHas0Len3(const Lines& cvp, double centroidRadio = 1.0,
 						  int repeat = 1);
 Vector3s    SmoothingHas0Len5(const Vector3s& cvp, double centroidRadio = 1.0,
-						  int repeat = 1);
+							  int repeat = 1);
 Vector3s2d   SmoothingHas0Len5(const Vector3s2d& cvp, double centroidRadio = 1.0,
-						   int repeat = 1);
+							   int repeat = 1);
 
 Lines   SplitStraightLine(const Line& cvp, double angle);
 Lines   SplitStraightLine(const Lines& cvp, double angle);
@@ -104,4 +106,3 @@ void IncreaseDensity(Line& pos, Line& pos2);
 void IncreaseDensity(Lines& pos, Lines& pos2);
 void FixBeginWidth(Line& width, int len);
 void FixEndWidth(Line& width, int len);
-

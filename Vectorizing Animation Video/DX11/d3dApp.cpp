@@ -5,6 +5,7 @@
 #include <auto_link_effect11.hpp>
 #include "math/Quaternion.h"
 #include <strsafe.h>
+#include "Line.h"
 
 D3DApp::D3DApp()
 {
@@ -1392,9 +1393,9 @@ void D3DApp::AddLines(const Lines& lines)
 //      r = (rand() % 155 + 100) / 255.0f;
 //      g = (rand() % 155 + 100) / 255.0f;
 //      b = (rand() % 155 + 100) / 255.0f;
-		r = 0.0f;
+		r = 1;
 		g = 0;
-		b = 255;
+		b = 0;
 		SkeletonLineVertex slv;
 		slv.color.x = r;
 		slv.color.y = g;
@@ -1410,6 +1411,7 @@ void D3DApp::AddLines(const Lines& lines)
 	}
 }
 
+#ifdef USE_CGAL
 void D3DApp::AddLines(const CgalLines& lines)
 {
 	for (int i = 0; i < lines.size(); ++i)
@@ -1437,6 +1439,7 @@ void D3DApp::AddLines(const CgalLines& lines)
 		}
 	}
 }
+#endif // USE_CGAL
 
 void D3DApp::AddLines(const CvLine& now_line)
 {
@@ -1462,9 +1465,9 @@ void D3DApp::AddLines(const CvLine& now_line)
 	}
 }
 
-void D3DApp::AddLines(const Lines& lines, const Lines& linewidths, const Vector3s2d& colors)
+void D3DApp::AddLinesWidth(const Lines& lines, const Lines& linewidths, const Vector3s2d& colors)
 {
-	float scale = 1 / 300.0f;
+	float scale = 1 / 255.0f;
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		const Line& now_line = lines[i];
@@ -1550,6 +1553,44 @@ void D3DApp::AddLines(const Lines& lines, const Lines& linewidths, const Vector3
 }
 
 void D3DApp::AddLines(const Lines& lines, const Lines& linewidths)
+{
+	Lines normals = GetNormalsLen2(lines);
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		const Line& now_line = lines[i];
+		const Line& now_width = linewidths[i];
+		const Line& now_normal = normals[i];
+		if (now_line.size() < 2)
+		{
+			continue;
+		}
+		float r, g, b;
+		r = 0;
+		g = 1;
+		b = 0;
+		SkeletonLineVertex slv;
+		slv.color.x = r;
+		slv.color.y = g;
+		slv.color.z = b;
+		for (int j = 1; j < now_line.size(); ++j)
+		{
+			Vector2 gapl = now_normal[j] * now_width[j].x;
+			Vector2 gapr = now_normal[j] * now_width[j].y;
+			slv.p1.x = now_line[j].x - gapl.x;
+			slv.p1.y = m_PicH - (now_line[j].y - gapl.y);
+			slv.p2.x = now_line[j - 1].x - gapl.x;
+			slv.p2.y = m_PicH - (now_line[j - 1].y - gapl.y);
+			m_SkeletonLinesVertices.push_back(slv);
+			slv.p1.x = now_line[j].x + gapr.x;
+			slv.p1.y = m_PicH - (now_line[j].y + gapr.y);
+			slv.p2.x = now_line[j - 1].x + gapr.x;
+			slv.p2.y = m_PicH - (now_line[j - 1].y + gapr.y);
+			m_SkeletonLinesVertices.push_back(slv);
+		}
+	}
+}
+
+void D3DApp::AddLinesWidth(const Lines& lines, const Lines& linewidths)
 {
 	for (int i = 0; i < lines.size(); ++i)
 	{
@@ -2185,7 +2226,7 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 		CURVE_Vertexes curveline;
 		const Line& now_line = lines[i];
 		const Vector3s& now_color = colors[i];
-		if (now_line.size() < 2)
+		if (now_line.size() < 10)
 		{
 			continue;
 		}
@@ -2216,12 +2257,8 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 			vtx1.pos.y = m_PicH - now_line[j].y;
 			vtx2.pos.x = now_line[j + 1].x;
 			vtx2.pos.y = m_PicH - now_line[j + 1].y;
-//          if (now_line[j].x > 2 && now_line[j].x < m_PicW - 3 &&
-//                  now_line[j].y > 2 && now_line[j].y < m_PicH - 3)
-			{
-				curveline.push_back(vtx1);
-				curveline.push_back(vtx2);
-			}
+			curveline.push_back(vtx1);
+			curveline.push_back(vtx2);
 		}
 		if (curveline.size() > 3)
 		{
@@ -2266,6 +2303,14 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 			{
 				continue;
 			}
+			if (now_lcolor[j + 1].x == 0 && now_lcolor[j + 1].y == 0 && now_lcolor[j + 1].z == 0)
+			{
+				continue;
+			}
+			if (now_rcolor[j + 1].x == 0 && now_rcolor[j + 1].y == 0 && now_rcolor[j + 1].z == 0)
+			{
+				continue;
+			}
 			vtx1.lcolor.x = now_lcolor[j].x * scale;
 			vtx1.lcolor.y = now_lcolor[j].y * scale;
 			vtx1.lcolor.z = now_lcolor[j].z * scale;
@@ -2299,4 +2344,9 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 		curveline.back().nb = D3DXVECTOR2(10000.0f, 10000.0f);
 		m_CurveVertexes.insert(m_CurveVertexes.end(), curveline.begin(), curveline.end());
 	}
+}
+
+void D3DApp::ClearSkeletonLines()
+{
+	m_SkeletonLinesVertices.clear();
 }

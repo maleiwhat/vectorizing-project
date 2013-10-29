@@ -141,11 +141,14 @@ Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines, double normal_len
 	return ans;
 }
 
-Color2Side GetLinesColor2SideSmart(cv::Mat img, const Lines& lines)
+Color2Side GetLinesColor2SideSmart(cv::Mat img, cv::Mat color, const Lines& lines,
+								   Lines& BLineWidth)
 {
 	vavImage vimg(img);
+	vavImage vcolor(color);
 	Lines showLines;
-	Lines BLineWidth(lines.size());
+	BLineWidth.clear();
+	BLineWidth.resize(lines.size());
 	Vector2s2d normals(lines.size());
 	for (int i = 0; i < lines.size() ; ++i)
 	{
@@ -181,17 +184,15 @@ Color2Side GetLinesColor2SideSmart(cv::Mat img, const Lines& lines)
 			Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
 			Vector2 start2(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * LINE_WIDTH);
 			Vector2 end2(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * LINE_WIDTH);
-			double_vector line1 = vimg.GetLineLight(start.x, start.y, end.x, end.y,
-													360);
-			double_vector line2 = vimg.GetLineLight(start2.x, start2.y, end2.x, end2.y,
-													360);
+			double_vector line1 = vimg.GetLineLight(start.x, start.y, end.x, end.y, 360);
+			double_vector line2 = vimg.GetLineLight(start2.x, start2.y, end2.x, end2.y, 360);
 			line1 = SmoothingLen5(line1, 0.0, 3);
 			line2 = SmoothingLen5(line2, 0.0, 3);
 			double_vector width1 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line1),
-												15, 50), LINE_WIDTH * 2);
+												 15, 50), LINE_WIDTH * 2);
 			double_vector width2 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line2),
-												15, 50), LINE_WIDTH * 2);
-			if (width1.size() >= 2 && width2.size() >= 2 && abs(width2[0] - width2[1]) < 1)
+												 15, 50), LINE_WIDTH * 2);
+			if (width1.size() >= 2 && width2.size() >= 2)
 			{
 				Line line1;
 				line1.push_back(nowLine[idx2] - nowNormals[idx2] * width1[0] * blackRadio);
@@ -231,10 +232,10 @@ Color2Side GetLinesColor2SideSmart(cv::Mat img, const Lines& lines)
 		{
 			if (lineWidths[j][0] > 0)
 			{
-				Vector2 pos = *it2 - normals[i][j] * (lineWidths[j][0]+0.5);
-				double r = vimg.GetBilinearR_if0(pos.x, pos.y);
-				double g = vimg.GetBilinearG_if0(pos.x, pos.y);
-				double b = vimg.GetBilinearB_if0(pos.x, pos.y);
+				Vector2 pos = *it2 - normals[i][j] * (lineWidths[j][0] + 0.5);
+				double r = vcolor.GetBilinearR_if0(pos.x, pos.y);
+				double g = vcolor.GetBilinearG_if0(pos.x, pos.y);
+				double b = vcolor.GetBilinearB_if0(pos.x, pos.y);
 				li[j] = Vector3(r, g, b);
 			}
 		}
@@ -245,10 +246,10 @@ Color2Side GetLinesColor2SideSmart(cv::Mat img, const Lines& lines)
 		{
 			if (lineWidths[j][1] > 0)
 			{
-				Vector2 pos = *it2 + normals[i][j] * (lineWidths[j][1]+0.5);
-				double r = vimg.GetBilinearR_if0(pos.x, pos.y);
-				double g = vimg.GetBilinearG_if0(pos.x, pos.y);
-				double b = vimg.GetBilinearB_if0(pos.x, pos.y);
+				Vector2 pos = *it2 + normals[i][j] * (lineWidths[j][1] + 0.5);
+				double r = vcolor.GetBilinearR_if0(pos.x, pos.y);
+				double g = vcolor.GetBilinearG_if0(pos.x, pos.y);
+				double b = vcolor.GetBilinearB_if0(pos.x, pos.y);
 				ri[j] = Vector3(r, g, b);
 			}
 		}
