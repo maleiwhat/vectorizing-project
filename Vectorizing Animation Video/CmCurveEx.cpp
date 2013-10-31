@@ -206,7 +206,7 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		float* pDer2 = m_pDer2f.ptr<float>(y);
 		for (int x = 0; x < m_w; x++)
 		{
-			if (pDer2[x] <= avg * 1.2)
+			if (pDer2[x] <= avg * 1.1)
 			{
 				pDer2[x] = powf(pDer2[x], 1.5);
 			}

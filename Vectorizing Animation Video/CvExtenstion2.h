@@ -14,6 +14,7 @@ Vector3s GetLinesColor(cv::Mat img, const Line& lines);
 
 Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines, double normal_len);
 Color2Side GetLinesColor2SideSmart(cv::Mat img, cv::Mat color, const Lines& lines, Lines& BLineWidth);
+Color2Side GetLinesColor2SideSmart2(cv::Mat img, cv::Mat color, const Lines& lines, Lines& BLineWidth);
 void OutputDiffusionCurve(std::string name, int w, int h, Color2Side& c2s,
 						  Lines& lines);
 cv::Mat MakeIsoSurfaceImg(cv::Mat img, int n);

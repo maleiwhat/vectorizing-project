@@ -449,7 +449,7 @@ double vavImage::GetBilinearR(double x, double y)
 	double down = v[1] * abs(x - right_up.x);
 	down += v[3] * abs(x - left_up.x);
 	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
-	return ans * 0.5;
+	return ans;
 }
 
 double vavImage::GetBilinearG(double x, double y)
@@ -495,7 +495,7 @@ double vavImage::GetBilinearG(double x, double y)
 	double down = v[1] * abs(x - right_up.x);
 	down += v[3] * abs(x - left_up.x);
 	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
-	return ans * 0.5;
+	return ans;
 }
 
 double vavImage::GetBilinearB(double x, double y)
@@ -541,7 +541,7 @@ double vavImage::GetBilinearB(double x, double y)
 	double down = v[1] * abs(x - right_up.x);
 	down += v[3] * abs(x - left_up.x);
 	double ans = up * abs(y - left_down.y) + down * abs(y - left_up.y);
-	return ans * 0.5;
+	return ans;
 }
 
 
@@ -860,41 +860,18 @@ double_vector vavImage::GetLineLight(double x1, double y1, double x2, double y2,
 	return ans;
 }
 
-double_vector vavImage::GetLineR(double x1, double y1, double x2, double y2, int div)
+Vector3s vavImage::GetLineColor(double x1, double y1, double x2, double y2, int div)
 {
-	double_vector ans;
+	Vector3s ans;
 	double step = 1.0 / (div - 1);
 	Vector2 ahead(x2 - x1, y2 - y1);
 	ahead *= step;
 	for (int i = 0; i < div; ++i)
 	{
-		ans.push_back(GetBilinearR(x1 +  ahead.x * i, y1 +  ahead.y * i));
-	}
-	return ans;
-}
-
-double_vector vavImage::GetLineG(double x1, double y1, double x2, double y2, int div)
-{
-	double_vector ans;
-	double step = 1.0 / (div - 1);
-	Vector2 ahead(x2 - x1, y2 - y1);
-	ahead *= step;
-	for (int i = 0; i < div; ++i)
-	{
-		ans.push_back(GetBilinearG(x1 +  ahead.x * i, y1 +  ahead.y * i));
-	}
-	return ans;
-}
-
-double_vector vavImage::GetLineB(double x1, double y1, double x2, double y2, int div)
-{
-	double_vector ans;
-	double step = 1.0 / (div - 1);
-	Vector2 ahead(x2 - x1, y2 - y1);
-	ahead *= step;
-	for (int i = 0; i < div; ++i)
-	{
-		ans.push_back(GetBilinearB(x1 +  ahead.x * i, y1 +  ahead.y * i));
+		double r = GetBilinearR_if0(x1 +  ahead.x * i, y1 +  ahead.y * i);
+		double g = GetBilinearG_if0(x1 +  ahead.x * i, y1 +  ahead.y * i);
+		double b = GetBilinearB_if0(x1 +  ahead.x * i, y1 +  ahead.y * i);
+		ans.push_back(Vector3(r, g, b));
 	}
 	return ans;
 }

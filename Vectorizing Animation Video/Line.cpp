@@ -1721,79 +1721,29 @@ Vector3s FixLineColors(const Vector3s& cvp, int range, int findlimit)
 	Vector3s cps = cvp;
 	for (int i = 0; i < cvp.size(); ++i)
 	{
-		if (0.01 >= cvp[i].x)
+		if (cvp[i].length() < 1)
 		{
-			double setValueX = 0;
+			Vector3 setValueX;
 			int finds = 0, j = 1;
 			for (; j < range && finds < findlimit; ++j)
 			{
 				int left = i - j;
 				int right = i + j;
-				if (left > 0 && cvp[left].x > 0.01)
+				if (left > 0 && cvp[left].length() > 1)
 				{
 					finds++;
-					setValueX += cvp[left].x;
+					setValueX += cvp[left];
 				}
-				if (right < cvp.size() && cvp[right].x > 0.0)
+				if (right < cvp.size() && cvp[right].length() > 1)
 				{
 					finds++;
-					setValueX += cvp[right].x;
-				}
-			}
-			if (finds > 0)
-			{
-				setValueX /= finds;
-				cps[i].x = setValueX;
-			}
-		}
-		if (0.01 >= cvp[i].y)
-		{
-			double setValueX = 0;
-			int finds = 0, j = 1;
-			for (; j < range && finds < findlimit; ++j)
-			{
-				int left = i - j;
-				int right = i + j;
-				if (left > 0 && cvp[left].y > 0.01)
-				{
-					finds++;
-					setValueX += cvp[left].y;
-				}
-				if (right < cvp.size() && cvp[right].y > 0.0)
-				{
-					finds++;
-					setValueX += cvp[right].y;
+					setValueX += cvp[right];
 				}
 			}
 			if (finds > 0)
 			{
 				setValueX /= finds;
-				cps[i].y = setValueX;
-			}
-		}
-		if (0.01 >= cvp[i].z)
-		{
-			double setValueX = 0;
-			int finds = 0, j = 1;
-			for (; j < range && finds < findlimit; ++j)
-			{
-				int left = i - j;
-				int right = i + j;
-				if (left > 0 && cvp[left].z > 0.01)
-				{
-					finds++;
-					setValueX += cvp[left].z;
-				}
-				if (right < cvp.size() && cvp[right].z > 0.0)
-				{
-					finds++;
-					setValueX += cvp[right].z;
-				}
-			}
-			if (finds > 0)
-			{
-				setValueX /= finds;
-				cps[i].z = setValueX;
+				cps[i] = setValueX;
 			}
 		}
 	}
@@ -1879,9 +1829,9 @@ Vector3s MedianLen5(const Vector3s& cvp, int repeat /*= 1*/)
 			{
 				e_idx = s_idx + 5;
 			}
-			if (e_idx > cvp.size())
+			if (e_idx >= cvp.size())
 			{
-				e_idx = cvp.size();
+				e_idx = cvp.size() - 1;
 				s_idx = e_idx - 5;
 			}
 			Vector3s tmp;
@@ -1894,7 +1844,7 @@ Vector3s MedianLen5(const Vector3s& cvp, int repeat /*= 1*/)
 	return cps;
 }
 
-Vector3s2d MedianLen5( const Vector3s2d& cvp, int repeat /*= 1*/ )
+Vector3s2d MedianLen5(const Vector3s2d& cvp, int repeat /*= 1*/)
 {
 	Vector3s2d cps(cvp.size());
 	for (int i = 0; i < cvp.size(); ++i)
@@ -1905,3 +1855,57 @@ Vector3s2d MedianLen5( const Vector3s2d& cvp, int repeat /*= 1*/ )
 	return cps;
 }
 
+Vector3s MedianLen(const Vector3s& cvp, int len, int repeat /*= 1*/)
+{
+	if (cvp.size() < 3)
+	{
+		return cvp;
+	}
+	Vector3s cps = cvp;
+	Vector3s newcps;
+	const int mius = (len - 1) / 2;
+	const int add = (len + 1) / 2;
+	for (int repeatCount = 0; repeatCount < repeat; repeatCount++)
+	{
+		newcps.clear();
+		for (int i = 0; i < cps.size(); ++i)
+		{
+			int s_idx = i - mius;
+			int e_idx = i + add;
+			if (s_idx < 0)
+			{
+				s_idx = 0;
+			}
+			if (e_idx - s_idx < len)
+			{
+				e_idx = s_idx + len;
+			}
+			if (e_idx >= cvp.size())
+			{
+				e_idx = cvp.size() - 1;
+				s_idx = e_idx - len;
+			}
+			if (s_idx < 0)
+			{
+				s_idx = 0;
+			}
+			Vector3s tmp;
+			tmp.insert(tmp.end(), cps.begin() + s_idx, cps.begin() + e_idx);
+			std::sort(tmp.begin(), tmp.end());
+			newcps.push_back(tmp[tmp.size() / 2]);
+		}
+		cps = newcps;
+	}
+	return cps;
+}
+
+Vector3s2d MedianLen(const Vector3s2d& cvp, int len, int repeat /*= 1*/)
+{
+	Vector3s2d cps(cvp.size());
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Vector3s& nowLine = cvp[i];
+		cps[i] = MedianLen(nowLine, len, repeat);
+	}
+	return cps;
+}

@@ -47,11 +47,11 @@ public:
 	bool	WriteToDisk(const std::wstring& path);
 	bool	ReadFromDisk(const std::string& path);
 	bool	ReadFromDisk(const std::wstring& path);
-	inline int	GetOriginalSize() {return m_OriginalSize;}
-	inline int	GetEncryptionSize() {if(m_IsEncryption){return m_EncryptionSize;} return 0;}
+	inline size_t	GetOriginalSize() {return m_OriginalSize;}
+	inline size_t	GetEncryptionSize() {if(m_IsEncryption){return m_EncryptionSize;} return 0;}
 	inline const Bytes&	GetData() {return m_Data;}
 	inline const Bytes& GetDigest() {return m_Digest;}
-	inline int	IsEncryption() {return m_IsEncryption;}
+	inline size_t	IsEncryption() {return m_IsEncryption;}
 	void	DecryptData(Byte* password, size_t len);
 	void	DecryptData(const std::string& password);
 	void	DecryptData(const std::wstring& password);

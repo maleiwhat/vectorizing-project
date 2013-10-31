@@ -60,9 +60,7 @@ public:
 	double_vector GetHorizontalB(double x, double y, double radius, int div);
 
 	double_vector GetLineLight(double x1, double y1, double x2, double y2, int div);
-	double_vector GetLineR(double x1, double y1, double x2, double y2, int div);
-	double_vector GetLineG(double x1, double y1, double x2, double y2, int div);
-	double_vector GetLineB(double x1, double y1, double x2, double y2, int div);
+	Vector3s GetLineColor(double x1, double y1, double x2, double y2, int div);
 
 	bool	IsBlackLine(double x, double y, double radius);
 	void	ToExpImage();

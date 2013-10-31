@@ -87,26 +87,7 @@ Vector3s GetLinesColor(cv::Mat img, const Line& lines)
 Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines, double normal_len)
 {
 	vavImage vimg(img);
-	Vector2s2d normals(lines.size());
-	for (int i = 0; i < lines.size() ; ++i)
-	{
-		const Line& now_line = lines[i];
-		normals[i].resize(now_line.size());
-		for (int j = 0; j < now_line.size() - 1 ; ++j)
-		{
-			normals[i][j] = Quaternion::GetRotation(now_line[j + 1] - now_line[j],
-													-90);
-		}
-		normals[i].back() = Quaternion::GetRotation(now_line[now_line.size() - 1] -
-							now_line[now_line.size() - 2], -90);
-	}
-	for (int i = 0; i < normals.size() ; ++i)
-	{
-		for (int j = 0; j < normals[i].size() ; ++j)
-		{
-			normals[i][j].normalise();
-		}
-	}
+	Lines normals = GetNormalsLen2(lines);
 	Color2Side ans;
 	Vector3s2d& ans_left = ans.left;
 	Vector3s2d& ans_right = ans.right;
@@ -149,63 +130,25 @@ Color2Side GetLinesColor2SideSmart(cv::Mat img, cv::Mat color, const Lines& line
 	Lines showLines;
 	BLineWidth.clear();
 	BLineWidth.resize(lines.size());
-	Vector2s2d normals(lines.size());
-	for (int i = 0; i < lines.size() ; ++i)
-	{
-		const Line& now_line = lines[i];
-		normals[i].resize(now_line.size());
-		for (int j = 0; j < now_line.size() - 1 ; ++j)
-		{
-			normals[i][j] = Quaternion::GetRotation(now_line[j + 1] - now_line[j],
-													-90);
-		}
-		normals[i].back() = Quaternion::GetRotation(now_line[now_line.size() - 1] -
-							now_line[now_line.size() - 2], -90);
-	}
-	for (int i = 0; i < normals.size() ; ++i)
-	{
-		for (int j = 0; j < normals[i].size() ; ++j)
-		{
-			normals[i][j].normalise();
-		}
-	}
+	Lines normals = GetNormalsLen2(lines);
 	normals = SmoothingLen5(normals, 0, 3);
-	const double blackRadio = 0.7;
+	const double blackRadio = 1;
 	for (int idx1 = 0; idx1 < lines.size(); ++idx1)
 	{
 		const Line& nowLine = lines[idx1];
 		const Line& nowNormals = normals[idx1];
 		Line& lineWidths = BLineWidth[idx1];
 		lineWidths.clear();
-		for (int idx2 = 0; idx2 < nowLine.size() - 1; ++idx2)
+		for (int idx2 = 0; idx2 < nowLine.size(); ++idx2)
 		{
 			const double LINE_WIDTH = 4;
 			Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
 			Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
-			Vector2 start2(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * LINE_WIDTH);
-			Vector2 end2(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * LINE_WIDTH);
 			double_vector line1 = vimg.GetLineLight(start.x, start.y, end.x, end.y, 360);
-			double_vector line2 = vimg.GetLineLight(start2.x, start2.y, end2.x, end2.y, 360);
-			line1 = SmoothingLen5(line1, 0.0, 3);
-			line2 = SmoothingLen5(line2, 0.0, 3);
 			double_vector width1 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line1),
 												 15, 50), LINE_WIDTH * 2);
-			double_vector width2 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line2),
-												 15, 50), LINE_WIDTH * 2);
-			if (width1.size() >= 2 && width2.size() >= 2)
+			if (width1.size() == 2)
 			{
-				Line line1;
-				line1.push_back(nowLine[idx2] - nowNormals[idx2] * width1[0] * blackRadio);
-				line1.push_back(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * width2[0] *
-								blackRadio);
-				line1 = GetLine(line1, 0.5, 0.5);
-				Line line2;
-				line2.push_back(nowLine[idx2] + nowNormals[idx2] * width1[1] * blackRadio);
-				line2.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[1] *
-								blackRadio);
-				line2 = GetLine(line2, 0.5, 0.5);
-				showLines.push_back(line1);
-				showLines.push_back(line2);
 				// save line width
 				lineWidths.push_back(Vector2(width1[0] * blackRadio, width1[1] * blackRadio));
 			}
@@ -232,7 +175,7 @@ Color2Side GetLinesColor2SideSmart(cv::Mat img, cv::Mat color, const Lines& line
 		{
 			if (lineWidths[j][0] > 0)
 			{
-				Vector2 pos = *it2 - normals[i][j] * (lineWidths[j][0] + 0.5);
+				Vector2 pos = *it2 - normals[i][j] * (lineWidths[j][0]);
 				double r = vcolor.GetBilinearR_if0(pos.x, pos.y);
 				double g = vcolor.GetBilinearG_if0(pos.x, pos.y);
 				double b = vcolor.GetBilinearB_if0(pos.x, pos.y);
@@ -246,7 +189,7 @@ Color2Side GetLinesColor2SideSmart(cv::Mat img, cv::Mat color, const Lines& line
 		{
 			if (lineWidths[j][1] > 0)
 			{
-				Vector2 pos = *it2 + normals[i][j] * (lineWidths[j][1] + 0.5);
+				Vector2 pos = *it2 + normals[i][j] * (lineWidths[j][1]);
 				double r = vcolor.GetBilinearR_if0(pos.x, pos.y);
 				double g = vcolor.GetBilinearG_if0(pos.x, pos.y);
 				double b = vcolor.GetBilinearB_if0(pos.x, pos.y);
@@ -254,6 +197,45 @@ Color2Side GetLinesColor2SideSmart(cv::Mat img, cv::Mat color, const Lines& line
 			}
 		}
 	}
+	return ans;
+}
+
+Color2Side GetLinesColor2SideSmart2(cv::Mat img, cv::Mat color, const Lines& lines,
+								   Lines& BLineWidth)
+{
+	vavImage vimg(img);
+	vavImage vcolor(color);
+	Lines showLines;
+	BLineWidth.clear();
+	BLineWidth.resize(lines.size());
+	Lines normals = GetNormalsLen2(lines);
+	normals = SmoothingLen5(normals, 0, 3);
+	const double blackRadio = 1;
+	Color2Side ans;
+	Vector3s2d& ans_left = ans.left;
+	Vector3s2d& ans_right = ans.right;
+	ans_left.resize(lines.size());
+	ans_right.resize(lines.size());
+	for (int idx1 = 0; idx1 < lines.size(); ++idx1)
+	{
+		const Line& nowLine = lines[idx1];
+		const Line& nowNormals = normals[idx1];
+		Vector3s& nowLineL = ans_left[idx1];
+		Vector3s& nowLineR = ans_right[idx1];
+		for (int idx2 = 0; idx2 < nowLine.size(); ++idx2)
+		{
+			const double LINE_WIDTH = 4;
+			Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
+			Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
+			Vector3s line1 = vcolor.GetLineColor(nowLine[idx2].x, nowLine[idx2].y, start.x, start.y, 360);
+			Vector3s line2 = vcolor.GetLineColor(nowLine[idx2].x, nowLine[idx2].y, end.x, end.y, 360);
+			std::sort(line1.begin(), line1.end(), LightCompareVector3);
+			std::sort(line2.begin(), line2.end(), LightCompareVector3);
+			nowLineL.push_back(line1[line1.size()*2/3]);
+			nowLineR.push_back(line2[line2.size()*2/3]);
+		}
+	}
+	
 	return ans;
 }
 
