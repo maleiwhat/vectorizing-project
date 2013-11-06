@@ -200,14 +200,11 @@ Color2Side GetLinesColor2SideSmart(cv::Mat img, cv::Mat color, const Lines& line
 	return ans;
 }
 
-Color2Side GetLinesColor2SideSmart2(cv::Mat img, cv::Mat color, const Lines& lines,
-								   Lines& BLineWidth)
+Color2Side GetLinesColor2SideSmart2(cv::Mat img, cv::Mat color, const Lines& lines)
 {
 	vavImage vimg(img);
 	vavImage vcolor(color);
 	Lines showLines;
-	BLineWidth.clear();
-	BLineWidth.resize(lines.size());
 	Lines normals = GetNormalsLen2(lines);
 	normals = SmoothingLen5(normals, 0, 3);
 	const double blackRadio = 1;
@@ -227,15 +224,87 @@ Color2Side GetLinesColor2SideSmart2(cv::Mat img, cv::Mat color, const Lines& lin
 			const double LINE_WIDTH = 4;
 			Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
 			Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
-			Vector3s line1 = vcolor.GetLineColor(nowLine[idx2].x, nowLine[idx2].y, start.x, start.y, 360);
-			Vector3s line2 = vcolor.GetLineColor(nowLine[idx2].x, nowLine[idx2].y, end.x, end.y, 360);
+			Vector3s line1 = vcolor.GetLineColor(nowLine[idx2].x, nowLine[idx2].y, start.x, start.y, 120);
+			Vector3s line2 = vcolor.GetLineColor(nowLine[idx2].x, nowLine[idx2].y, end.x, end.y, 120);
+			line1.erase(line1.begin(), line1.begin() + 30);
+			line2.erase(line2.begin(), line2.begin() + 30);
 			std::sort(line1.begin(), line1.end(), LightCompareVector3);
 			std::sort(line2.begin(), line2.end(), LightCompareVector3);
-			nowLineL.push_back(line1[line1.size()*2/3]);
-			nowLineR.push_back(line2[line2.size()*2/3]);
+			nowLineL.push_back(line1[line1.size() / 2]);
+			nowLineR.push_back(line2[line2.size() / 2]);
 		}
 	}
-	
+	return ans;
+}
+
+
+Color2Side GetLinesColor2SideSmart3(cv::Mat img, cv::Mat color, const Lines& lines, double length)
+{
+	length *= length;
+	vavImage vimg(img);
+	vavImage vcolor(color);
+	Lines showLines;
+	Lines normals = GetNormalsLen2(lines);
+	normals = SmoothingLen5(normals, 0, 3);
+	const double blackRadio = 1;
+	Color2Side ans;
+	Vector3s2d& ans_left = ans.left;
+	Vector3s2d& ans_right = ans.right;
+	ans_left.resize(lines.size());
+	ans_right.resize(lines.size());
+	for (int idx1 = 0; idx1 < lines.size(); ++idx1)
+	{
+		const Line& nowLine = lines[idx1];
+		const Line& nowNormals = normals[idx1];
+		Vector3s& nowLineL = ans_left[idx1];
+		Vector3s& nowLineR = ans_right[idx1];
+		for (int idx2 = 0; idx2 < nowLine.size(); ++idx2)
+		{
+			const double LINE_WIDTH = 5;
+			Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
+			Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
+			Vector3s line1 = vcolor.GetLineColor(nowLine[idx2].x, nowLine[idx2].y, start.x, start.y, 120);
+			Vector3s line2 = vcolor.GetLineColor(nowLine[idx2].x, nowLine[idx2].y, end.x, end.y, 120);
+			Vector3s lineOK1, lineOK2;
+			Vector3 src = vcolor.GetBilinearColor(nowLine[idx2].x, nowLine[idx2].y);
+			for (int lid = 30; lid < line1.size(); ++lid)
+			{
+				if (src.squaredDistance(line1[lid]) > length)
+				{
+					lineOK1.push_back(line1[lid]);
+				}
+			}
+			if (lineOK1.empty())
+			{
+				//nowLineL.push_back(Vector3());
+				std::sort(line1.begin(), line1.end(), LightCompareVector3);
+				nowLineL.push_back(line1[line1.size() * 3 / 4]);
+			}
+			else
+			{
+				std::sort(lineOK1.begin(), lineOK1.end(), LightCompareVector3);
+				nowLineL.push_back(lineOK1[lineOK1.size() / 2]);
+			}
+			for (int lid = 30; lid < line2.size(); ++lid)
+			{
+				if (src.squaredDistance(line2[lid]) > length)
+				{
+					lineOK2.push_back(line2[lid]);
+				}
+			}
+			if (lineOK2.empty())
+			{
+				//nowLineR.push_back(Vector3());
+				std::sort(line2.begin(), line2.end(), LightCompareVector3);
+				nowLineR.push_back(line2[line2.size() * 3 / 4]);
+			}
+			else
+			{
+				std::sort(lineOK2.begin(), lineOK2.end(), LightCompareVector3);
+				nowLineR.push_back(lineOK2[lineOK2.size() / 2]);
+			}
+		}
+	}
 	return ans;
 }
 

@@ -61,6 +61,7 @@ public:
 
 	double_vector GetLineLight(double x1, double y1, double x2, double y2, int div);
 	Vector3s GetLineColor(double x1, double y1, double x2, double y2, int div);
+	Vector3 GetBilinearColor(double x, double y);
 
 	bool	IsBlackLine(double x, double y, double radius);
 	void	ToExpImage();

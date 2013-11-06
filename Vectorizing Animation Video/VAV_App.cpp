@@ -142,6 +142,7 @@ BOOL VAV_App::InitInstance()
 
 int VAV_App::ExitInstance()
 {
+	//m_bSaveState = FALSE;
 	// TODO: 處理其他您已經加入的資源
 	AfxOleTerm(FALSE);
 	return CWinAppEx::ExitInstance();

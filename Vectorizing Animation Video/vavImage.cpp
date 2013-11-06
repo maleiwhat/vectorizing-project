@@ -893,3 +893,11 @@ void vavImage::ToExpImage()
 	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
 	imgf.convertTo(m_Image, CV_8UC3, 255);
 }
+
+Vector3 vavImage::GetBilinearColor(double x, double y)
+{
+	double r = GetBilinearR_if0(x, y);
+	double g = GetBilinearG_if0(x, y);
+	double b = GetBilinearB_if0(x, y);
+	return Vector3(r, g, b);
+}
