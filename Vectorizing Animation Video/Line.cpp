@@ -1909,3 +1909,36 @@ Vector3s2d MedianLen(const Vector3s2d& cvp, int len, int repeat /*= 1*/)
 	}
 	return cps;
 }
+
+void ClearJointArea(const LineEnds& les, Lines& pos, Color2Side& color2s, double len)
+{
+	double sdistance = len * len;
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		const LineEnd& le1 = les[i];
+		Vector3s2d& colorls2d = color2s.left;
+		Vector3s2d& colorrs2d = color2s.right;
+		for (int j = 0; j < (int)pos.size(); ++j)
+		{
+			Line& line = pos[j];
+			Vector3s& colorls = colorls2d[j];
+			Vector3s& colorrs = colorrs2d[j];
+			if (line.size() > len * 2+4)
+			{
+				for (int k = 0; k < (int)line.size(); ++k)
+				{
+					if (line[k].squaredDistance(le1.beg) < sdistance)
+					{
+						colorls[k] = Vector3();
+						colorrs[k] = Vector3();
+					}
+					else if (line[k].squaredDistance(le1.end) < sdistance)
+					{
+						colorls[k] = Vector3();
+						colorrs[k] = Vector3();
+					}
+				}
+			}
+		}
+	}
+}

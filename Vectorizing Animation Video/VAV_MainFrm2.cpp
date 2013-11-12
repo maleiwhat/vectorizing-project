@@ -284,7 +284,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		Vector3s2d lineColors;
 		lineColors = GetLinesColor(m_vavImage, m_BlackLine);
 		lineColors = SmoothingLen5(lineColors, 0, 10);
-		m_BlackLine = GetLines(m_BlackLine, 0.5, 0.5);
+		m_BlackLine = GetLines(m_BlackLine, 1, 1);
 		d3dApp.AddLinesWidth(m_BlackLine, m_BLineWidth, lineColors);
 		// block line
 		dEdge.CalSecDer2(5, 0.001f);
@@ -305,12 +305,14 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		Lines tmp_width = m_BlackLine2;
 		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.9, 5);
 		les = GetLineEnds(m_BlackLine2);
-		LinkLineEnds(les, 5, 20);
+		LinkLineEnds(les, 5, 5);
 		ConnectSimilarLines(les, m_BlackLine2, tmp_width);
-		les = GetLineEnds(m_BlackLine2);
 		IncreaseDensity(m_BlackLine2, tmp_width);
-		ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 6, 15);
-		//m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.2, 5);
+		les = GetLineEnds(m_BlackLine2);
+		ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 6, 5);
+// 		les = GetLineEnds(m_BlackLine2);
+// 		ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 6, 20);
+		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.2, 5);
 		d3dApp.AddLines(m_BlackLine2);
 		d3dApp.SetScaleTemporary(1);
 		d3dApp.BuildPoint();
@@ -360,23 +362,22 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		}
 		cv::imshow("sampleimg", sampleimg);
 		Lines ColorWidth;
-		Color2Side color2s = GetLinesColor2SideSmart3(m_vavImage, sampleimg, m_BlackLine2, 25);
+		Color2Side color2s = GetLinesColor2SideSmart3(m_vavImage, sampleimg, m_BlackLine2, 30);
 		//Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine2, 2.5);
 		color2s.left = FixLineColors(color2s.left, 600, 10);
 		color2s.right = FixLineColors(color2s.right, 600, 10);
-//      color2s.left = HistormMappingLight(color2s.left, 0.5);
-//      color2s.right = HistormMappingLight(color2s.right, 0.5);
+		les = GetLineEnds(m_BlackLine2);
+		ClearJointArea(les, m_BlackLine2, color2s, 5);
+		color2s.left = FixLineColors(color2s.left, 600, 1);
+// 		color2s.right = FixLineColors(color2s.right, 600, 1);
 		color2s.left = MedianLen(color2s.left, 10, 3);
 		color2s.right = MedianLen(color2s.right, 10, 3);
 		color2s.left = SmoothingLen5(color2s.left, 0, 5);
 		color2s.right = SmoothingLen5(color2s.right, 0, 5);
-		m_BlackLine2 = GetLines(m_BlackLine2, -0.5, -0.5);
 		d3dApp.AddDiffusionLines(m_BlackLine2, color2s);
 		Lines normals2 = GetNormalsLen2(m_BlackLine2);
 		GetVavView()->m_FeatureLines = m_BlackLine2;
 		GetVavView()->m_FeatureNormals = normals2;
-		//d3dApp.AddLines(m_BlackLine);
-		d3dApp.AddLines(m_BlackLine2);
 		//d3dApp.AddLines(m_BlackLine2, ColorWidth);
 		Lines diffusionConstrant;
 		// edge extraction
@@ -387,13 +388,18 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			diffusionConstrant.push_back(cps);
 		}
 		diffusionConstrant = SmoothingLen5(diffusionConstrant, 0, 1);
-		d3dApp.AddLines(diffusionConstrant);
 		Vector3s2d colors;
 		colors = GetLinesColor(m_vavImage, diffusionConstrant);
 		colors = FixLineColors(colors, 400, 10);
 		//colors = MedianLen(colors, 20, 3);
 		colors = SmoothingLen5(colors, 0, 10);
-		d3dApp.AddDiffusionLines(diffusionConstrant, colors);
+		//d3dApp.AddDiffusionLines(diffusionConstrant, colors);
+// draw red line
+		m_BlackLine2 = GetLines(m_BlackLine2, 0.5, 0.5);
+		diffusionConstrant = GetLines(diffusionConstrant, 0.5, 0.5);
+		//d3dApp.AddLines(m_BlackLine);
+		d3dApp.AddLines(m_BlackLine2);
+		d3dApp.AddLines(diffusionConstrant);
 		{
 			std::ofstream ofs("curve.txt", std::ios::binary);
 			if (ofs.is_open())

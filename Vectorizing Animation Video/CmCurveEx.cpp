@@ -195,7 +195,7 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		{
 			float v1 = pDer1[x] > 0 ? pDer1[x] * (1 - abs(pDer2[x])) : 0;
 			float v2 = pDer2[x] > 0 ? pDer2[x] * (1 - abs(pDer1[x])) : 0;
-			pDer2[x] = v1 + v2*0.7;
+			pDer2[x] = v1 + v2*0.8;
 			sum += pDer2[x];
 		}
 	}
