@@ -1923,19 +1923,35 @@ void ClearJointArea(const LineEnds& les, Lines& pos, Color2Side& color2s, double
 			Line& line = pos[j];
 			Vector3s& colorls = colorls2d[j];
 			Vector3s& colorrs = colorrs2d[j];
-			if (line.size() > len * 2+4)
+			if (line.size() > 3)
 			{
 				for (int k = 0; k < (int)line.size(); ++k)
 				{
 					if (line[k].squaredDistance(le1.beg) < sdistance)
 					{
-						colorls[k] = Vector3();
-						colorrs[k] = Vector3();
+						if (k > 0 && k < line.size() - 1)
+						{
+							if (colorls[k+1] == Vector3::ZERO &&
+								colorls[k-1] == Vector3::ZERO)
+							{
+								continue;
+							}
+						}
+						colorls[k] = Vector3::ZERO;
+						colorrs[k] = Vector3::ZERO;
 					}
 					else if (line[k].squaredDistance(le1.end) < sdistance)
 					{
-						colorls[k] = Vector3();
-						colorrs[k] = Vector3();
+						if (k > 0 && k < line.size() - 1)
+						{
+							if (colorls[k+1] == Vector3::ZERO &&
+								colorls[k-1] == Vector3::ZERO)
+							{
+								continue;
+							}
+						}
+						colorls[k] = Vector3::ZERO;
+						colorrs[k] = Vector3::ZERO;
 					}
 				}
 			}

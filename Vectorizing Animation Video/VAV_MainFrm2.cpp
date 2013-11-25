@@ -273,10 +273,9 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		IncreaseDensity(m_BlackLine, m_BLineWidth);
 		les = GetLineEnds(m_BlackLine);
 		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 10, 8, 15);
-		m_BLineWidth = FixLineWidths(m_BLineWidth, 5);
 		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 5);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 50);
-		m_BLineWidth = FixLineWidths(m_BLineWidth, 100);
+		//m_BLineWidth = FixLineWidths(m_BLineWidth, 100);
 		ClearLineWidthByPercent(m_BLineWidth, 0.4);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
 		m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 0, 5);
@@ -309,7 +308,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		ConnectSimilarLines(les, m_BlackLine2, tmp_width);
 		IncreaseDensity(m_BlackLine2, tmp_width);
 		les = GetLineEnds(m_BlackLine2);
-		ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 6, 5);
+		ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 5, 15);
 // 		les = GetLineEnds(m_BlackLine2);
 // 		ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 6, 20);
 		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.2, 5);
@@ -344,7 +343,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			}
 		}
 		cvtColor(curveExtration, curveExtration, CV_BGR2GRAY);
-		Dilation(curveExtration, 2, 3);
+		Dilation(curveExtration, 2, 2);
 		cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
 		for (int i = 0; i < curveExtration.rows; i++)
 		{
@@ -367,9 +366,9 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		color2s.left = FixLineColors(color2s.left, 600, 10);
 		color2s.right = FixLineColors(color2s.right, 600, 10);
 		les = GetLineEnds(m_BlackLine2);
-		ClearJointArea(les, m_BlackLine2, color2s, 5);
+		ClearJointArea(les, m_BlackLine2, color2s, 8);
 		color2s.left = FixLineColors(color2s.left, 600, 1);
-// 		color2s.right = FixLineColors(color2s.right, 600, 1);
+		color2s.right = FixLineColors(color2s.right, 600, 1);
 		color2s.left = MedianLen(color2s.left, 10, 3);
 		color2s.right = MedianLen(color2s.right, 10, 3);
 		color2s.left = SmoothingLen5(color2s.left, 0, 5);
@@ -393,9 +392,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		colors = FixLineColors(colors, 400, 10);
 		//colors = MedianLen(colors, 20, 3);
 		colors = SmoothingLen5(colors, 0, 10);
-		//d3dApp.AddDiffusionLines(diffusionConstrant, colors);
+		d3dApp.AddDiffusionLines(diffusionConstrant, colors);
 // draw red line
-		m_BlackLine2 = GetLines(m_BlackLine2, 0.5, 0.5);
 		diffusionConstrant = GetLines(diffusionConstrant, 0.5, 0.5);
 		//d3dApp.AddLines(m_BlackLine);
 		d3dApp.AddLines(m_BlackLine2);

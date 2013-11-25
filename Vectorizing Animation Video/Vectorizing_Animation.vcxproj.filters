@@ -312,6 +312,12 @@
     <ClInclude Include="zip\CryptoData.h">
       <Filter>zip</Filter>
     </ClInclude>
+    <ClInclude Include="ReadVideo.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="DiffusionFrame.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="algSpline.cpp">
@@ -549,6 +555,12 @@
       <Filter>zip</Filter>
     </ClCompile>
     <ClCompile Include="VAV_MainFrm2.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="ReadVideo.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="DiffusionFrame.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>

@@ -19,6 +19,8 @@
 #include "PropertiesWnd.h"
 #include "vavImage.h"
 #include "Patch.h"
+#include "ReadVideo.h"
+#include "DiffusionFrame.h"
 
 class VAV_View;
 class VAV_MainFrame : public CFrameWndEx
@@ -33,6 +35,8 @@ public:
 	vavImage    m_cannyImage;
 	Lines		m_BlackLine;
 	Lines		m_BLineWidth;
+	ReadVideo	m_ReadVideo;
+	DiffusionFrames	m_DiffusionFrames;
 	// use for block
 	Lines		m_BlackLine2;
 	int     m_PatchTransparency;
@@ -55,6 +59,7 @@ public:
 	void    ShowPatch(double x, double y);
 // §@·~
 public:
+	void AddFrame(cv::Mat img);
 	void OnFileOpenVideo();
 	void OnFileOpenPicture();
 	VAV_View* GetVavView();
