@@ -66,24 +66,12 @@ public:
 	void SetTransparency_Picture(float t);
 
 	void ClearTriangles();
-	int  Width()
-	{
-		return m_ClientWidth;
-	}
-	int  Height()
-	{
-		return m_ClientHeight;
-	};
+	int  GetWidth();
+	int  GetHeight();
 	void SetTexture(ID3D11ShaderResourceView* tex);
 
-	ID3D11Device* GetDevice()
-	{
-		return m_pd3dDevice;
-	}
-	ID3D11DeviceContext* GetDeviceContext()
-	{
-		return m_DeviceContext;
-	}
+	ID3D11Device* GetDevice();
+	ID3D11DeviceContext* GetDeviceContext();
 	void InterSetRenderTransparencyOutput1();
 	void InterSetRenderTransparencyOutput2();
 protected:

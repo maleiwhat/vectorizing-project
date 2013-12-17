@@ -54,6 +54,7 @@ BEGIN_MESSAGE_MAP(VAV_View, CView)
 	ON_WM_NCMOUSEMOVE()
 	ON_WM_NCMBUTTONUP()
 	ON_WM_LBUTTONUP()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 // VAV_View 建構/解構
@@ -328,7 +329,6 @@ void VAV_View::SetPictureSize(int w, int h)
 	m_D3DApp.SetPictureSize(w, h);
 }
 
-
 void VAV_View::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
@@ -340,7 +340,7 @@ void VAV_View::ShowLineNormal()
 {
 	double realX = (m_MouseMove.x - m_LookCenter.x) / m_Scale - m_LookCenter.x *
 				   0.5;
-	double realY = (m_PicH * m_Scale - m_D3DApp.Height() + m_MouseMove.y
+	double realY = (m_PicH * m_Scale - m_D3DApp.GetHeight() + m_MouseMove.y
 					- m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
 	printf("%3.2f %3.2f\n", realX, realY);
 	m_D3DApp.SetLookCenter(m_LookCenter.x, m_LookCenter.y);
@@ -387,7 +387,8 @@ void VAV_View::ShowLineNormal()
 		m_TimerCallback->m_data[5] = ConvertToSquareWave(ConvertToAngle(line1), 10, 50);
 		m_TimerCallback->Unlock();
 		Lines push;
-		{ // show test line
+		{
+			// show test line
 			start.x += 0.5;
 			start.y += 0.5;
 			end.x += 0.5;
@@ -403,9 +404,9 @@ void VAV_View::ShowLineNormal()
 		line1 = SmoothingLen5(line1, 0.0, 3);
 		line2 = SmoothingLen5(line2, 0.0, 3);
 		double_vector width1 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line1),
-											15, 50), LINE_WIDTH * 2);
+											 15, 50), LINE_WIDTH * 2);
 		double_vector width2 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line2),
-											15, 50), LINE_WIDTH * 2);
+											 15, 50), LINE_WIDTH * 2);
 		const double blackRadio = 0.6;
 		if (width1.size() == 2 && width2.size() == 2)
 		{
@@ -479,4 +480,22 @@ unsigned __stdcall VAV_View::MyThreadFunc(LPVOID lpParam)
 	std::cout << "timerId: " << timerId << std::endl;
 	me->m_interactor->Start();
 	return 0;
+}
+
+void VAV_View::OnTimer(UINT_PTR nIDEvent)
+{
+	DiffusionFrames& dframes = GetMainFrame()->m_DiffusionFrames;
+	static int i = 0;
+	if (i >= dframes.size())
+	{
+		i = 0;
+	}
+	m_D3DApp.ClearTriangles();
+	m_D3DApp.ClearSkeletonLines();
+	m_D3DApp.AddLinesWidth(dframes[i].m_BlackLine, dframes[i].m_BLineWidth, dframes[i].lineColors);
+	m_D3DApp.AddDiffusionLines(dframes[i].diffusionConstrant, dframes[i].colors);
+	m_D3DApp.AddDiffusionLines(dframes[i].m_BlackLine2, dframes[i].color2s);
+	m_D3DApp.BuildPoint();
+	m_D3DApp.DrawScene();
+	i++;
 }

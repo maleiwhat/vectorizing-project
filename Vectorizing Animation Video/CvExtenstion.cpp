@@ -2093,7 +2093,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			tmp_image.at<cv::Vec3b>(i + 1, j + 1) = image.at<cv::Vec3b>(i , j);
 		}
 	}
-	//imshow("tmp_image", tmp_image);
+	imshow("tmp_image", tmp_image);
 	//cv::waitKey();
 	cv::Mat gap_image;
 	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
@@ -2587,7 +2587,7 @@ Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			tmp_image.at<cv::Vec3b>(i + 1, j + 1) = image.at<cv::Vec3b>(i , j);
 		}
 	}
-	//imshow("tmp_image", tmp_image);
+	imshow("tmp_image", tmp_image);
 	cv::Mat gap_image;
 	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
 	gap_image = cv::Scalar(0);
@@ -2725,7 +2725,7 @@ Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	{
 		Line& cps = lines[i];
 		Line newcps;
-		for (int j = 2; j < cps.size(); j ++)
+		for (int j = 0; j < cps.size(); j ++)
 		{
 			if (int(cps[j].x) % 2 == 0 && int(cps[j].y) % 2 == 0)
 			{

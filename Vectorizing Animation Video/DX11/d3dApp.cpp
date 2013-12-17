@@ -1385,10 +1385,6 @@ void D3DApp::AddLines(const Lines& lines)
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		const Line& now_line = lines[i];
-		if (now_line.size() < 2)
-		{
-			continue;
-		}
 		float r, g, b;
 //      r = (rand() % 155 + 100) / 255.0f;
 //      g = (rand() % 155 + 100) / 255.0f;
@@ -2226,10 +2222,6 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 		CURVE_Vertexes curveline;
 		const Line& now_line = lines[i];
 		const Vector3s& now_color = colors[i];
-		if (now_line.size() < 10)
-		{
-			continue;
-		}
 		CURVE_Vertex vtx1, vtx2;
 		vtx1.lcolor.w = 0.0;
 		vtx1.rcolor.w = 0.0;
@@ -2349,4 +2341,24 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 void D3DApp::ClearSkeletonLines()
 {
 	m_SkeletonLinesVertices.clear();
+}
+
+int D3DApp::GetWidth()
+{
+	return m_ClientWidth;
+}
+
+int D3DApp::GetHeight()
+{
+	return m_ClientHeight;
+}
+
+ID3D11Device* D3DApp::GetDevice()
+{
+	return m_pd3dDevice;
+}
+
+ID3D11DeviceContext* D3DApp::GetDeviceContext()
+{
+	return m_DeviceContext;
 }

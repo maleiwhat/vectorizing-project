@@ -444,3 +444,4 @@ void GetInverseBySVD(Matrix_row& dst, Matrix_row& src)
 	dst = prod(m1, dst);
 }
 #endif
+

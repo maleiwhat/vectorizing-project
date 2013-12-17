@@ -464,26 +464,6 @@ void VAV_MainFrame::OnComboColorinterpolation()
 	// TODO: 在此加入您的命令處理常式程式碼
 }
 
-void VAV_MainFrame::OnFileOpenVideo()
-{
-	CFileDialog dlg(TRUE);
-	dlg.m_ofn.lpstrFilter   = L"All Files (*.*)\0*.*\0\0";
-	dlg.m_ofn.lpstrTitle    = L"Load File";
-	CString filename;
-	if (dlg.DoModal() == IDOK)
-	{
-		filename = dlg.GetPathName(); // return full path and filename
-		if (filename.GetLength() > 1)
-		{
-			m_ReadVideo.Read(ConvStr::GetStr(filename.GetString()));
-			for (int i=0;i<25;++i)
-			{
-				AddFrame(m_ReadVideo.GetFrame());
-			}
-		}
-	}
-}
-
 void VAV_MainFrame::OnFileOpenPicture()
 {
 	CFileDialog dlg(TRUE);
@@ -1117,6 +1097,7 @@ void VAV_MainFrame::OnUpdateCheckDrawCannyExtraction(CCmdUI* pCmdUI)
 void VAV_MainFrame::AddFrame(cv::Mat img)
 {
 	D3DApp& d3dApp = GetVavView()->GetD3DApp();
+	d3dApp.SetPictureSize(img.cols, img.rows);
 	vavImage vImage = img;
 	vImage.ToExpImage();
 	cv::Mat imgf, curveExtration, show3u = cv::Mat::zeros(vImage.GetCvMat().size(), CV_8UC3);
@@ -1143,7 +1124,7 @@ void VAV_MainFrame::AddFrame(cv::Mat img)
 	Lines showLines;
 	Lines BLineWidth(m_BlackLine.size());
 	Lines normals = GetNormalsLen2(m_BlackLine);
-	const double blackRadio = 0.7;
+	const double blackRadio = 0.5;
 	for (int idx1 = 0; idx1 < m_BlackLine.size(); ++idx1)
 	{
 		const Line& nowLine = m_BlackLine[idx1];
@@ -1206,7 +1187,7 @@ void VAV_MainFrame::AddFrame(cv::Mat img)
 	m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 0, 5);
 	m_BlackLine = SmoothingLen5(m_BlackLine, 0, 5);
 	Vector3s2d lineColors;
-	lineColors = GetLinesColor(m_vavImage, m_BlackLine);
+	lineColors = GetLinesColor(img, m_BlackLine);
 	lineColors = SmoothingLen5(lineColors, 0, 10);
 	m_BlackLine = GetLines(m_BlackLine, 1, 1);
 	d3dApp.AddLinesWidth(m_BlackLine, m_BLineWidth, lineColors);
@@ -1246,10 +1227,10 @@ void VAV_MainFrame::AddFrame(cv::Mat img)
 	d3dApp.ClearSkeletonLines();
 	cvtColor(simg, simg, CV_BGR2GRAY);
 	curveExtration = simg.clone();
-	//Dilation(curveExtration, 2, 1);
+	Dilation(curveExtration, 2, 1);
 	cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
-	cv::Mat tmpimg = m_vavImage.Clone();
-	cv::Mat sampleimg = m_vavImage.Clone();
+	cv::Mat tmpimg = img.clone();
+	cv::Mat sampleimg = img.clone();
 	cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
 	cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
 	cv::Mat isoimg = MakeIsoSurfaceImg(tmpimg, 12);
@@ -1286,8 +1267,8 @@ void VAV_MainFrame::AddFrame(cv::Mat img)
 	}
 	cv::imshow("sampleimg", sampleimg);
 	Lines ColorWidth;
-	Color2Side color2s = GetLinesColor2SideSmart3(m_vavImage, sampleimg, m_BlackLine2, 30);
-	//Color2Side color2s = GetLinesColor2Side(m_vavImage, m_BlackLine2, 2.5);
+	//Color2Side color2s = GetLinesColor2SideSmart3(img, sampleimg, m_BlackLine2, 30);
+	Color2Side color2s = GetLinesColor2Side(img, m_BlackLine2, 2);
 	color2s.left = FixLineColors(color2s.left, 600, 10);
 	color2s.right = FixLineColors(color2s.right, 600, 10);
 	les = GetLineEnds(m_BlackLine2);
@@ -1298,37 +1279,47 @@ void VAV_MainFrame::AddFrame(cv::Mat img)
 	color2s.right = MedianLen(color2s.right, 10, 3);
 	color2s.left = SmoothingLen5(color2s.left, 0, 5);
 	color2s.right = SmoothingLen5(color2s.right, 0, 5);
-	d3dApp.AddDiffusionLines(m_BlackLine2, color2s);
-	Lines normals2 = GetNormalsLen2(m_BlackLine2);
-	GetVavView()->m_FeatureLines = m_BlackLine2;
-	GetVavView()->m_FeatureNormals = normals2;
-	//d3dApp.AddLines(m_BlackLine2, ColorWidth);
-	Lines diffusionConstrant;
 	// edge extraction
-	Lines lines = S6GetPatchs(isoimg, 0, 0);
-	for (int i = 0; i < lines.size(); ++i)
-	{
-		Line& cps = lines[i];
-		diffusionConstrant.push_back(cps);
-	}
+	Lines diffusionConstrant = S6GetPatchs(isoimg, 0, 0);
 	diffusionConstrant = SmoothingLen5(diffusionConstrant, 0, 1);
 	Vector3s2d colors;
-	colors = GetLinesColor(m_vavImage, diffusionConstrant);
-	colors = FixLineColors(colors, 400, 10);
-	//colors = MedianLen(colors, 20, 3);
-	colors = SmoothingLen5(colors, 0, 10);
-	d3dApp.AddDiffusionLines(diffusionConstrant, colors);
-	// draw red line
+	colors = GetLinesColor(img, diffusionConstrant);
 	diffusionConstrant = GetLines(diffusionConstrant, 0.5, 0.5);
-	//d3dApp.AddLines(m_BlackLine);
-	d3dApp.AddLines(m_BlackLine2);
-	d3dApp.AddLines(diffusionConstrant);
+	//colors = FixLineColors(colors, 400, 10);
+	//colors = MedianLen(colors, 20, 3);
+	colors = SmoothingLen5(colors, 0, 2);
+	// draw red line
 	m_DiffusionFrames.push_back(DiffusionFrame());
-	m_DiffusionFrames.back().m_BlackLine;
-	m_DiffusionFrames.back().m_BLineWidth;
-	m_DiffusionFrames.back().lineColors;
-	m_DiffusionFrames.back().diffusionConstrant;
-	m_DiffusionFrames.back().colors;
-	m_DiffusionFrames.back().m_BlackLine2;
-	m_DiffusionFrames.back().color2s;
+	m_DiffusionFrames.back().m_BlackLine = m_BlackLine;
+	m_DiffusionFrames.back().m_BLineWidth = m_BLineWidth;
+	m_DiffusionFrames.back().lineColors = lineColors;
+	m_DiffusionFrames.back().diffusionConstrant = diffusionConstrant;
+	m_DiffusionFrames.back().colors = colors;
+	m_DiffusionFrames.back().m_BlackLine2 = m_BlackLine2;
+	m_DiffusionFrames.back().color2s = color2s;
+}
+
+void VAV_MainFrame::OnFileOpenVideo()
+{
+	CFileDialog dlg(TRUE);
+	dlg.m_ofn.lpstrFilter   = L"All Files (*.*)\0*.*\0\0";
+	dlg.m_ofn.lpstrTitle    = L"Load File";
+	CString filename;
+	if (dlg.DoModal() == IDOK)
+	{
+		filename = dlg.GetPathName(); // return full path and filename
+		if (filename.GetLength() > 1)
+		{
+			m_ReadVideo.Read(ConvStr::GetStr(filename.GetString()));
+			for (int i = 0; i < 200; ++i)
+			{
+				cv::Mat img = m_ReadVideo.GetFrame();
+				if (img.cols > 0)
+				{
+					AddFrame(img);
+				}
+			}
+		}
+	}
+	GetVavView()->SetTimer(100, 50, 0);
 }

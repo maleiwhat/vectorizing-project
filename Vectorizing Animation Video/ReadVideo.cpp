@@ -28,6 +28,7 @@ ReadVideo::~ReadVideo(void)
 
 bool ReadVideo::Read(std::string path)
 {
+	m_pFormatCtx = NULL;
 	av_register_all();
 	if (avformat_open_input(&m_pFormatCtx, path.c_str(), NULL, NULL) != 0)
 	{
@@ -104,10 +105,11 @@ cv::Mat ReadVideo::GetFrame()
 						  m_pFrame->linesize, 0, m_pCodecCtx->height, m_pFrameRGB->data,
 						  m_pFrameRGB->linesize);
 				res = _GetFrame(m_pFrameRGB, m_pCodecCtx->width, m_pCodecCtx->height);
+				av_free_packet(&m_packet);
+				return res;
 			}
 		}
 		av_free_packet(&m_packet);
-		return res;
 	}
 	return cv::Mat();
 }
@@ -123,9 +125,9 @@ cv::Mat ReadVideo::_GetFrame(AVFrame* pFrame, int width, int height)
 		for (int i = 0; i < width * 3; i += 3)
 		{
 			cv::Vec3b& c = res.at<cv::Vec3b>(y, i / 3);
-			c[0] = t_data[i];
+			c[0] = t_data[i + 2];
 			c[1] = t_data[i + 1];
-			c[2] = t_data[i + 2];
+			c[2] = t_data[i];
 		}
 	}
 	delete t_data;
