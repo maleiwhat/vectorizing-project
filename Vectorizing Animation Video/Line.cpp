@@ -1618,6 +1618,105 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 	}
 }
 
+void ConnectNearestLines(const LineEnds& les, Lines& pos, Color2Side& width, double d1, double d2,
+						 double angle)
+{
+	d1 *= d1;
+	d2 *= d2;
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		const LineEnd& le1 = les[i];
+		int minbegp = -1, minbeg_angle = angle, minbeg_dis = d2;
+		int minendp = -1, minend_angle = angle, minend_dis = d2;
+		Vector2 begdst, enddst;
+		for (int j = 0; j < pos.size(); ++j)
+		{
+			Line& nowLine = pos[j];
+			for (int k = 0; k < nowLine.size(); k += 5)
+			{
+				if (le1.beg.squaredDistance(nowLine[k]) < d1)
+				{
+					int p = k - 5, ep = k + 5;
+					if (p < 0)
+					{
+						p = 0;
+					}
+					if (ep >= nowLine.size())
+					{
+						ep = nowLine.size() - 1;
+					}
+					for (; p < ep; p++)
+					{
+						int dis = le1.beg.squaredDistance(nowLine[p]);
+						Vector2 p1 = nowLine[p] - le1.beg;
+						double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+						angle1 = abs(le1.angleBeg - angle1);
+						if (dis < minbeg_dis &&  angle1 < minbeg_angle)
+						{
+							minbeg_angle = angle1;
+							minbeg_dis = dis;
+							minbegp = p;
+							begdst = nowLine[minbegp];
+						}
+					}
+				}
+				if (le1.end.squaredDistance(nowLine[k]) < d1)
+				{
+					int p = k - 5, ep = k + 5;
+					if (p < 0)
+					{
+						p = 0;
+					}
+					if (ep >= nowLine.size())
+					{
+						ep = nowLine.size() - 1;
+					}
+					for (; p < ep; p++)
+					{
+						int dis = le1.end.squaredDistance(nowLine[p]);
+						Vector2 p1 = nowLine[p] - le1.end;
+						double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+						angle1 = abs(le1.angleEnd - angle1);
+						if (dis < minend_dis && angle1 < minend_angle)
+						{
+							minend_angle = angle1;
+							minend_dis = dis;
+							minendp = p;
+							enddst = nowLine[minendp];
+						}
+					}
+				}
+			}
+		}
+		if (minbegp != -1)
+		{
+			Line& elongation = pos[le1.idx1];
+			Vector3s& elongationw1 = width.left[le1.idx1];
+			Vector3s& elongationw2 = width.right[le1.idx1];
+			elongation.insert(elongation.begin(), begdst);
+			elongationw1.insert(elongationw1.begin(), elongationw1.front());
+			elongationw2.insert(elongationw2.begin(), elongationw2.front());
+			{
+				FixBeginWidth(elongationw1, 20);
+				FixBeginWidth(elongationw2, 20);
+			}
+		}
+		if (minendp != -1)
+		{
+			Line& elongation = pos[le1.idx1];
+			Vector3s& elongationw1 = width.left[le1.idx1];
+			Vector3s& elongationw2 = width.right[le1.idx1];
+			elongation.insert(elongation.end(), enddst);
+			elongationw1.insert(elongationw1.end(), elongationw1.back());
+			elongationw2.insert(elongationw2.end(), elongationw2.back());
+			{
+				FixEndWidth(elongationw1, 20);
+				FixEndWidth(elongationw2, 20);
+			}
+		}
+	}
+}
+
 void IncreaseDensity(Line& pos, Line& pos2)
 {
 	{
@@ -1686,6 +1785,36 @@ void FixBeginWidth(Line& width, int len)
 	}
 }
 
+void FixBeginWidth(Vector3s& width, int len)
+{
+	int sidx = 0;
+	int eidx = len;
+	if (eidx >= width.size())
+	{
+		eidx = (int)width.size() - 1;
+	}
+	double max_width = 0.5;
+	int widx = -1;
+	Vector3 w;
+	for (int i = sidx; i < eidx; ++i)
+	{
+		Vector3& v1 = width[i];
+		if (v1.x + v1.y > max_width)
+		{
+			max_width = v1.x + v1.y;
+			widx = i;
+			w = v1;
+		}
+	}
+	if (widx != -1)
+	{
+		for (int j = sidx; j < widx; ++j)
+		{
+			width[j] = w;
+		}
+	}
+}
+
 void FixEndWidth(Line& width, int len)
 {
 	int sidx = (int)width.size() - 1;
@@ -1700,6 +1829,36 @@ void FixEndWidth(Line& width, int len)
 	for (int i = sidx; i > eidx ; --i)
 	{
 		Vector2& v1 = width[i];
+		if (v1.x + v1.y > max_width)
+		{
+			max_width = v1.x + v1.y;
+			widx = i;
+			w = v1;
+		}
+	}
+	if (widx != -1)
+	{
+		for (int j = (int)sidx; j > widx; --j)
+		{
+			width[j] = w;
+		}
+	}
+}
+
+void FixEndWidth(Vector3s& width, int len)
+{
+	int sidx = (int)width.size() - 1;
+	int eidx = (int)width.size() - 1 - len;
+	if (eidx < 0)
+	{
+		eidx = 0;
+	}
+	double max_width = 0.5;
+	int widx = -1;
+	Vector3 w;
+	for (int i = sidx; i > eidx ; --i)
+	{
+		Vector3& v1 = width[i];
 		if (v1.x + v1.y > max_width)
 		{
 			max_width = v1.x + v1.y;
@@ -1931,8 +2090,8 @@ void ClearJointArea(const LineEnds& les, Lines& pos, Color2Side& color2s, double
 					{
 						if (k > 0 && k < line.size() - 1)
 						{
-							if (colorls[k+1] == Vector3::ZERO &&
-								colorls[k-1] == Vector3::ZERO)
+							if (colorls[k + 1] == Vector3::ZERO &&
+									colorls[k - 1] == Vector3::ZERO)
 							{
 								continue;
 							}
@@ -1944,8 +2103,8 @@ void ClearJointArea(const LineEnds& les, Lines& pos, Color2Side& color2s, double
 					{
 						if (k > 0 && k < line.size() - 1)
 						{
-							if (colorls[k+1] == Vector3::ZERO &&
-								colorls[k-1] == Vector3::ZERO)
+							if (colorls[k + 1] == Vector3::ZERO &&
+									colorls[k - 1] == Vector3::ZERO)
 							{
 								continue;
 							}
@@ -1957,4 +2116,88 @@ void ClearJointArea(const LineEnds& les, Lines& pos, Color2Side& color2s, double
 			}
 		}
 	}
+}
+
+void ConnectSimilarColor2Side(const LineEnds& les, Lines& pos, Color2Side& width)
+{
+	std::vector<bool> marked(pos.size(), false);
+	Lines newpos;
+	Vector3s2d newwidth1;
+	Vector3s2d newwidth2;
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		const LineEnd& le1 = les[i];
+		if (le1.linkIdx1 != 0 && le1.linkIdx2 == 0)
+		{
+			if (!marked[le1.idx1])
+			{
+				Line addline;
+				Vector3s addwidth1;
+				Vector3s addwidth2;
+				const LineEnd* nowle = &le1;
+				const LineEnd* last = 0;
+				while (nowle)
+				{
+					marked[nowle->idx1] = 1;
+					const Line& loopline = pos[nowle->idx1];
+					const Vector3s& loopwidth1 = width.left[nowle->idx1];
+					const Vector3s& loopwidth2 = width.right[nowle->idx1];
+					const LineEnd* next = 0;
+					if (last == 0)
+					{
+						next = nowle->linkIdx1;
+					}
+					else if (last == nowle->linkIdx1)
+					{
+						next = nowle->linkIdx2;
+					}
+					else
+					{
+						next = nowle->linkIdx1;
+					}
+					if (last == nowle->endlink)
+					{
+						addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+						addwidth1.insert(addwidth1.end(), loopwidth1.rbegin(), loopwidth1.rend());
+						addwidth2.insert(addwidth2.end(), loopwidth2.rbegin(), loopwidth2.rend());
+					}
+					else if (last == nowle->beglink)
+					{
+						addline.insert(addline.end(), loopline.begin(), loopline.end());
+						addwidth1.insert(addwidth1.end(), loopwidth1.begin(), loopwidth1.end());
+						addwidth2.insert(addwidth2.end(), loopwidth2.begin(), loopwidth2.end());
+					}
+					else if (next == nowle->beglink)
+					{
+						addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+						addwidth1.insert(addwidth1.end(), loopwidth1.rbegin(), loopwidth1.rend());
+						addwidth2.insert(addwidth2.end(), loopwidth2.rbegin(), loopwidth2.rend());
+					}
+					else if (next == nowle->endlink)
+					{
+						addline.insert(addline.end(), loopline.begin(), loopline.end());
+						addwidth1.insert(addwidth1.end(), loopwidth1.begin(), loopwidth1.end());
+						addwidth2.insert(addwidth2.end(), loopwidth2.begin(), loopwidth2.end());
+					}
+					last = nowle;
+					nowle = next;
+				}
+				newpos.push_back(addline);
+				newwidth1.push_back(addwidth1);
+				newwidth2.push_back(addwidth2);
+			}
+		}
+	}
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		if (!marked[i])
+		{
+			newpos.push_back(pos[i]);
+			newwidth1.push_back(width.left[i]);
+			newwidth2.push_back(width.right[i]);
+		}
+	}
+	pos = newpos;
+	width.left = newwidth1;
+	width.right = newwidth2;
 }

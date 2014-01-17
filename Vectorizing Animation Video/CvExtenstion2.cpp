@@ -260,7 +260,7 @@ Color2Side GetLinesColor2SideSmart3(cv::Mat img, cv::Mat color, const Lines& lin
 		Vector3s& nowLineR = ans_right[idx1];
 		for (int idx2 = 0; idx2 < nowLine.size(); ++idx2)
 		{
-			const double LINE_WIDTH = 5;
+			const double LINE_WIDTH = 4;
 			Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
 			Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
 			Vector3s line1 = vcolor.GetLineColor(nowLine[idx2].x, nowLine[idx2].y, start.x, start.y, 120);
@@ -278,7 +278,7 @@ Color2Side GetLinesColor2SideSmart3(cv::Mat img, cv::Mat color, const Lines& lin
 			{
 				//nowLineL.push_back(Vector3());
 				std::sort(line1.begin(), line1.end(), LightCompareVector3);
-				nowLineL.push_back(line1[line1.size() * 3 / 4]);
+				nowLineL.push_back(line1[line1.size() / 2]);
 			}
 			else
 			{
@@ -296,7 +296,7 @@ Color2Side GetLinesColor2SideSmart3(cv::Mat img, cv::Mat color, const Lines& lin
 			{
 				//nowLineR.push_back(Vector3());
 				std::sort(line2.begin(), line2.end(), LightCompareVector3);
-				nowLineR.push_back(line2[line2.size() * 3 / 4]);
+				nowLineR.push_back(line2[line2.size() / 2]);
 			}
 			else
 			{
@@ -390,13 +390,13 @@ cv::Mat MakeIsoSurfaceImg(cv::Mat img, int n)
 		for (int j = 0; j < img.cols; j++)
 		{
 			cv::Vec3b& v = img.at<cv::Vec3b>(i, j);
-			float vv = 0.299 * v[2] + 0.587 * v[1] + 0.114 * v[0];
-			vv = int(vv / n) * n;
+//          float vv = 0.299 * v[2] + 0.587 * v[1] + 0.114 * v[0];
+//          vv = int(vv / n) * n;
 			cv::Vec3b& a = ans.at<cv::Vec3b>(i, j);
-			a[0] = a[1] = a[2] = vv;
-//          a[0] = int(v[0] / n) * n;
-//          a[1] = int(v[1] / n) * n;
-//          a[2] = int(v[2] / n) * n;
+			//a[0] = a[1] = a[2] = vv;
+			a[0] = int(v[0] / n) * n;
+			a[1] = int(v[1] / n) * n;
+			a[2] = int(v[2] / n) * n;
 		}
 	}
 	return ans;

@@ -1643,9 +1643,9 @@ void LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y)
 //  int g = cc / 255 ;
 //  int r = cc / (255 * 255);
 	cc++;
-	int b = rand() % 255;
-	int g = rand() % 255;
-	int r = rand() % 255;
+	int b = rand() % 250 + 1;
+	int g = rand() % 250 + 1;
+	int r = rand() % 250 + 1;
 	cv::Point seed(x, y);
 	cv::Rect ccomp;
 	cv::Scalar newVal(b, g, r);
@@ -2734,6 +2734,288 @@ Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		}
 		cps = newcps;
 	}
+//  for (int i = 0; i < lines.size(); ++i)
+//  {
+//      Line& cps = lines[i];
+//      if (/*cps.front() == cps.back() && */cps.size() <= 11)
+//      {
+//          lines.erase(lines.begin() + i);
+//          i--;
+//      }
+//  }
 	return lines;
+}
+
+cv::Mat S6GetEngrgy(const cv::Mat& image0, int dilation, int erosion)
+{
+	assert(image0.type() == CV_8UC3);
+	cv::Mat img1u, img2u, cImg2, res, res2;
+	cImg2 = image0.clone();
+	cvtColor(image0, img1u, CV_BGR2GRAY);
+	cv::Mat srcImg1f, show3u = cv::Mat::zeros(img1u.size(), CV_8UC3);
+	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
+	cv::Mat mask, image, joint_mask, tmp_image, joint_image;
+	image0.copyTo(image);
+	joint_mask.create(image.rows * 2 + 1, image.cols * 2 + 1, CV_8UC1);
+	tmp_image.create(image.rows + 2, image.cols + 2, CV_8UC3);
+	res.create(image0.rows, image0.cols, CV_32FC1);
+	joint_mask = cv::Scalar::all(0);
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	image0.copyTo(image);
+	mask = cv::Scalar::all(0);
+	res = cv::Scalar::all(0);
+	res2 = res.clone();
+	int cc = 1;
+	//imshow("image", image);
+	for (int i = 1; i < image.rows - 1; i++)
+	{
+		for (int j = 1; j < image.cols - 1; j++)
+		{
+			S3FloodFill(cc, image, mask, joint_mask, 0, j, i, dilation, erosion);
+		}
+	}
+	// create bigger image to fix border problem
+	tmp_image = cv::Scalar::all(0);
+	for (int i = 0; i < image.rows ; i++)
+	{
+		for (int j = 0; j < image.cols ; j++)
+		{
+			tmp_image.at<cv::Vec3b>(i + 1, j + 1) = image.at<cv::Vec3b>(i , j);
+		}
+	}
+	cv::Mat gap_image;
+	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
+	gap_image = cv::Scalar(0);
+	// Find Boundary
+	for (int i = 0; i < joint_mask.rows ; i++)
+	{
+		for (int j = 0; j < joint_mask.cols ; j++)
+		{
+			int id2 = i % 2;
+			int jd2 = j % 2;
+			cv::Vec3b& v = tmp_image.at<cv::Vec3b>(i / 2, j / 2);
+			if ((v[0] + v[1] + v[2]) == 0)
+			{
+				if (i > 0 && j > 0)
+				{
+					gap_image.at<uchar>(i - 1 , j - 1) = 255;
+				}
+			}
+			if (id2 == 1 && jd2 == 1)
+			{
+				continue;
+			}
+			if (id2 == 0 && jd2 == 0)
+			{
+				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2, j / 2);
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2, j / 2 + 1);
+				cv::Vec3b& v3 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2);
+				cv::Vec3b& v4 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+				if (v1 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+				if (v1 != v3)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+				if (v4 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+				if (v4 != v3)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+			}
+			else if (id2 == 1)
+			{
+				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2);
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+				if (v1 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+			}
+			else if (jd2 == 1)
+			{
+				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2 , j / 2 + 1);
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+				if (v1 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+			}
+		}
+	}
+	//imshow("joint_mask", joint_mask);
+	//cv::waitKey();
+	//imshow("gap_image", gap_image);
+	mask.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	// show joint
+	for (int i = 0; i < joint_mask.rows ; i++)
+	{
+		for (int j = 0; j < joint_mask.cols ; j++)
+		{
+			if (joint_mask.at<uchar>(i, j) >= 3) // joint
+			{
+				joint_mask.at<uchar>(i, j) = 255;
+			}
+			else if (joint_mask.at<uchar>(i, j) > 0)
+			{
+				joint_mask.at<uchar>(i, j) = 60;
+			}
+		}
+	}
+	// create smaller image to fix border problem
+	joint_image.create(joint_mask.rows , joint_mask.cols , CV_8UC3);
+	joint_image = cv::Scalar::all(0);
+	tmp_image = joint_image.clone();
+	for (int i = 0; i < joint_image.rows ; i++)
+	{
+		for (int j = 0; j < joint_image.cols ; j++)
+		{
+			if (joint_mask.at<uchar>(i , j) == 255) // joint
+			{
+				cv::Vec3b& v1 = joint_image.at<cv::Vec3b>(i, j);
+				v1[0] = 255;
+				v1[1] = 255;
+				v1[2] = 255;
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i, j);
+				v2[0] = 255;
+				v2[1] = 255;
+				v2[2] = 255;
+				gap_image.at<uchar>(i, j) = 128;
+			}
+			else if (joint_mask.at<uchar>(i , j) == 60)
+			{
+				cv::Vec3b& v1 = joint_image.at<cv::Vec3b>(i, j);
+				v1[0] = 255;
+				v1[1] = 255;
+				v1[2] = 255;
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i, j);
+				v2[0] = 60;
+				v2[1] = 60;
+				v2[2] = 60;
+				gap_image.at<uchar>(i, j) = 128;
+			}
+		}
+	}
+	mask = cv::Scalar::all(0);
+	cc = 1;
+	for (int i = 0; i < tmp_image.rows; i++)
+	{
+		for (int j = 0; j < tmp_image.cols; j++)
+		{
+			LineFloodFill(tmp_image, mask, cc, j, i);
+		}
+	}
+	//cv::namedWindow("LineFloodFill", 0);
+	imshow("LineFloodFill", tmp_image);
+	for (int i = 1; i < tmp_image.rows - 1; i++)
+	{
+		for (int j = 1; j < tmp_image.cols - 1; j++)
+		{
+			cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i, j);
+			if (v1[0] == 0)
+			{
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i - 1, j - 1);
+				cv::Vec3b& v3 = tmp_image.at<cv::Vec3b>(i - 1, j + 1);
+				cv::Vec3b& v4 = tmp_image.at<cv::Vec3b>(i + 1, j - 1);
+				cv::Vec3b& v5 = tmp_image.at<cv::Vec3b>(i + 1, j + 1);
+				if (v2[0] > 0 && v3[0] > 0 && v4[0] > 0 && v5[0] > 0)
+				{
+					v1[0] = 255;
+					v1[1] = 255;
+					v1[2] = 255;
+				}
+			}
+		}
+	}
+	for (int i = 1; i < tmp_image.rows - 1; i++)
+	{
+		for (int j = 1; j < tmp_image.cols - 1; j++)
+		{
+			cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i, j);
+			if (v1[0] == 0)
+			{
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i - 1, j);
+				cv::Vec3b& v3 = tmp_image.at<cv::Vec3b>(i + 1, j);
+				cv::Vec3b& v4 = tmp_image.at<cv::Vec3b>(i , j - 1);
+				cv::Vec3b& v5 = tmp_image.at<cv::Vec3b>(i , j + 1);
+				if (v2[0] > 0 && v3[0] > 0 && v4[0] > 0 && v5[0] > 0)
+				{
+					v1[0] = 255;
+					v1[1] = 255;
+					v1[2] = 255;
+				}
+			}
+		}
+	}
+	for (int i = 1; i < tmp_image.rows - 1; i++)
+	{
+		for (int j = 1; j < tmp_image.cols - 1; j++)
+		{
+			cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i, j);
+			if (v1[0] != 255)
+			{
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i - 1, j);
+				cv::Vec3b& v3 = tmp_image.at<cv::Vec3b>(i + 1, j);
+				cv::Vec3b& v4 = tmp_image.at<cv::Vec3b>(i , j - 1);
+				cv::Vec3b& v5 = tmp_image.at<cv::Vec3b>(i , j + 1);
+				if (v2[0] == 255 && v3[0] == 255 && v4[0] == 255 && v5[0] == 255)
+				{
+					v1[0] = 255;
+					v1[1] = 255;
+					v1[2] = 255;
+				}
+			}
+		}
+	}
+//  cv::Mat tmp2 = tmp_image.clone();
+//  for (int i = 1; i < tmp_image.rows - 1; i++)
+//  {
+//      for (int j = 1; j < tmp_image.cols - 1; j++)
+//      {
+//          cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i, j);
+//          if (v1[0] == 255)
+//          {
+//              cv::Vec3b& v2 = tmp2.at<cv::Vec3b>(i - 1, j);
+//              cv::Vec3b& v3 = tmp2.at<cv::Vec3b>(i + 1, j);
+//              cv::Vec3b& v4 = tmp2.at<cv::Vec3b>(i , j - 1);
+//              cv::Vec3b& v5 = tmp2.at<cv::Vec3b>(i , j + 1);
+//              if (v2[0] == 0 || v3[0] == 0 || v4[0] == 0 || v5[0] == 0)
+//              {
+//                  v1[0] = 0;
+//                  v1[1] = 0;
+//                  v1[2] = 0;
+//              }
+//          }
+//      }
+//  }
+	imshow("final", tmp_image);
+	for (int i = 1; i < tmp_image.rows - 1; i++)
+	{
+		for (int j = 1; j < tmp_image.cols - 1; j++)
+		{
+			float& v1 = res.at<float>(i / 2, j / 2);
+			cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i, j);
+			if (v2[0] == 255)
+			{
+				v1 = 255;
+			}
+		}
+	}
+	char path[256];
+	static int ii = 0;
+	++ii;
+	sprintf(path, "res%d.png", ii);
+	imwrite(path, res);
+	sprintf(path, "tmp%d.png", ii);
+	imwrite(path, tmp_image);
+	//imshow("res2", res);
+	//cv::waitKey();
+	return res;
 }
 

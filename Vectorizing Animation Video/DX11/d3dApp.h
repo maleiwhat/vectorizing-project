@@ -231,9 +231,9 @@ protected:
 	float m_fWidth;
 	float m_fHeight;
 	float m_polySize;
-	int diffTex;
-	int diff2Tex;
-	int diffSteps;
+	int m_diffTex;
+	int m_diff2Tex;
+	int m_diffSteps;
 	int m_cNum;
 	int m_cSegNum;
 	D3DXVECTOR2 m_pan;
@@ -241,7 +241,7 @@ protected:
 	ID3D11Buffer*           m_pCurveVertexBuffer;
 	ID3D11InputLayout*      m_pCurveVertex2Layout;
 	ID3D11Buffer*           m_pCurveVertex2Buffer;
-	CURVE_Vertexes  m_CurveVertexes;
+	CURVE_Vertexes			m_CurveVertexes;
 
 	// two textures used interleavedly for diffusion
 	ID3D11Texture2D*    m_diffuseTexture[2];
@@ -277,12 +277,11 @@ protected:
 	ID3DX11EffectScalarVariable* m_pPolySize;
 	// diffusion curve part end
 
-	D3D11_BUFFER_DESC       m_vbd;
+	D3D11_BUFFER_DESC	m_vbd;
 	DXUTUI*             m_DXUT_UI;
 	// Derived class should set these in derived constructor to customize starting values.
-	std::wstring    m_MainWndCaption;
-	D3D_DRIVER_TYPE m_d3dDriverType;
-	D3DXCOLOR   m_ClearColor;
+	D3D_DRIVER_TYPE		m_d3dDriverType;
+	D3DXCOLOR			m_ClearColor;
 	int     m_ClientWidth;
 	int     m_ClientHeight;
 };

@@ -125,7 +125,6 @@ D3DApp::D3DApp()
 	m_FrameStats = L"";
 	m_DXUT_UI = NULL;
 	//mFont               = 0;
-	m_MainWndCaption = L"D3D11 Application";
 	m_d3dDriverType  = D3D_DRIVER_TYPE_HARDWARE;
 	//md3dDriverType  = D3D_DRIVER_TYPE_REFERENCE;
 	m_ClearColor     = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
@@ -139,9 +138,9 @@ D3DApp::D3DApp()
 	m_pCurveVertex2Buffer = NULL;
 	m_pDepthStencil = NULL;
 	m_polySize = 0.5;
-	diffTex = 0;
-	diff2Tex = 0;
-	diffSteps = 16;
+	m_diffTex = 0;
+	m_diff2Tex = 0;
+	m_diffSteps = 16;
 	m_diffdistDirTexture = NULL;
 	m_diffuseTexture[0] = NULL;
 	m_diffuseTexture[1] = NULL;
@@ -1768,7 +1767,7 @@ void D3DApp::InterDraw(bool drawDiffusion)
 											   0);
 		//construct the curve triangles in the geometry shader and render them directly
 		ID3D11RenderTargetView* destTexTV[3];
-		destTexTV[0] = m_diffuseTextureTV[1 - diffTex];
+		destTexTV[0] = m_diffuseTextureTV[1 - m_diffTex];
 		destTexTV[1] = m_diffdistDirTextureTV;
 		destTexTV[2] = m_otherTextureTV;
 		m_DeviceContext->OMSetRenderTargets(3, destTexTV, m_pDepthStencilView);
@@ -1778,8 +1777,8 @@ void D3DApp::InterDraw(bool drawDiffusion)
 			m_pDrawVectorsTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
 			m_DeviceContext->Draw(m_CurveVertexes.size(), 0);
 		}
-		diffTex = 1 - diffTex;
-		diff2Tex = 1 - diff2Tex;
+		m_diffTex = 1 - m_diffTex;
+		m_diff2Tex = 1 - m_diff2Tex;
 		// setup the pipeline for the following image-space algorithms
 		m_DeviceContext->IASetInputLayout(m_pCurveVertex2Layout);
 		stride = sizeof(VSO_Vertex);
@@ -1788,9 +1787,9 @@ void D3DApp::InterDraw(bool drawDiffusion)
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		// diffuse the texture in both directions
 		HR(m_pInTex[1]->SetResource(m_diffdistDirTextureRV));
-		for (int i = 0; i < diffSteps; i++)
+		for (int i = 0; i < m_diffSteps; i++)
 		{
-			if (i > diffSteps * 0.5)
+			if (i > m_diffSteps * 0.5)
 			{
 				m_blurOn->SetFloat(1);
 			}
@@ -1799,16 +1798,16 @@ void D3DApp::InterDraw(bool drawDiffusion)
 				m_blurOn->SetFloat(0);
 			}
 			// SA strategy
-			HR(m_pPolySize->SetFloat(1.0 - (float)(i) / (float)diffSteps));
+			HR(m_pPolySize->SetFloat(1.0 - (float)(i) / (float)m_diffSteps));
 			// SH strategy
 			// V( m_pPolySize->SetFloat( 1.0 ) );
 			// if (i>diffSteps-diffSteps/2)
 			// {
 			//         V( m_pPolySize->SetFloat( (float)(diffSteps-i)/(float)(diffSteps/2) ) );
 			// }
-			m_DeviceContext->OMSetRenderTargets(1, &m_diffuseTextureTV[1 - diffTex], NULL);
-			(m_pInTex[0]->SetResource(m_diffuseTextureRV[diffTex]));
-			diffTex = 1 - diffTex;
+			m_DeviceContext->OMSetRenderTargets(1, &m_diffuseTextureTV[1 - m_diffTex], NULL);
+			(m_pInTex[0]->SetResource(m_diffuseTextureRV[m_diffTex]));
+			m_diffTex = 1 - m_diffTex;
 			m_pDiffuseTechnique->GetDesc(&techDesc);
 			for (UINT p = 0; p < techDesc.Passes; ++p)
 			{
@@ -1817,10 +1816,10 @@ void D3DApp::InterDraw(bool drawDiffusion)
 			}
 		}
 		// anti alias the lines
-		m_DeviceContext->OMSetRenderTargets(1, &m_diffuseTextureTV[1 - diffTex], NULL);
-		HR(m_pInTex[0]->SetResource(m_diffuseTextureRV[diffTex]));
+		m_DeviceContext->OMSetRenderTargets(1, &m_diffuseTextureTV[1 - m_diffTex], NULL);
+		HR(m_pInTex[0]->SetResource(m_diffuseTextureRV[m_diffTex]));
 		HR(m_pInTex[1]->SetResource(m_otherTextureRV));
-		diffTex = 1 - diffTex;
+		m_diffTex = 1 - m_diffTex;
 		HR(m_pDiffTex->SetResource(m_diffdistDirTextureRV));
 		m_pLineAntiAliasTechnique->GetDesc(&techDesc);
 		for (UINT p = 0; p < techDesc.Passes; ++p)
@@ -1840,7 +1839,7 @@ void D3DApp::InterDraw(bool drawDiffusion)
 		offset = 0;
 		m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertex2Buffer, &stride, &offset);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		HR(m_pDiffTex->SetResource(m_diffuseTextureRV[diffTex]));
+		HR(m_pDiffTex->SetResource(m_diffuseTextureRV[m_diffTex]));
 		//HR(m_pDiffTex->SetResource(m_diffdistDirTextureRV));
 		m_pDisplayImage->GetDesc(&techDesc);
 		for (UINT p = 0; p < techDesc.Passes; ++p)

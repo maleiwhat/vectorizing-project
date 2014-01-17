@@ -102,11 +102,16 @@ void LinkLineEnds(LineEnds& les, double distance, double angle);
 bool CheckLinkEndSimilarity(const LineEnd& lhs, const LineEnd& rhs,
 							LineEnd::LinkMethod c, double angle);
 void ConnectSimilarLines(const LineEnds& les, Lines& pos, Lines& width);
+void ConnectSimilarColor2Side(const LineEnds& les, Lines& pos, Color2Side& width);
 LineEnds FindLinkHead(const LineEnds& lhs, int lineNum);
 void ClearJointArea(const LineEnds& les, Lines& pos, Color2Side& color2s, double len);
 void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d1, double d2,
+						 double angle);
+void ConnectNearestLines(const LineEnds& les, Lines& pos, Color2Side& width, double d1, double d2,
 						 double angle);
 void IncreaseDensity(Line& pos, Line& pos2);
 void IncreaseDensity(Lines& pos, Lines& pos2);
 void FixBeginWidth(Line& width, int len);
 void FixEndWidth(Line& width, int len);
+void FixBeginWidth(Vector3s& width, int len);
+void FixEndWidth(Vector3s& width, int len);
