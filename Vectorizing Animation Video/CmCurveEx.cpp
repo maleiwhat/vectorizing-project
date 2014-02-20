@@ -153,14 +153,28 @@ void CmCurveEx::compute_eigenvals(double dfdrr, double dfdrc, double dfdcc,
 const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 									 float linkStartBound)
 {
-	cv::Mat dxMat, dyMat;
+	cv::Mat dxMat, dyMat, blur;
+	//GaussianBlur(m_img1f, blur, cv::Size(3, 3), 0, 0);
 	Sobel(m_img1f, dxMat, CV_32F, 1, 0, kSize);
 	Sobel(m_img1f, dyMat, CV_32F, 0, 1, kSize);
 	cv::Mat dxx, dxy, dyy;
 	Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
 	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
 	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
-	cv::imshow("dxy", dxy);
+	cv::imshow("dxy2", dxy);
+	Laplacian(m_img1f, dxy, CV_32F, kSize, 1, -0.3);
+	cv::imshow("dxy-0.3", dxy);
+//  GaussianBlur(dyMat, dyMat, cv::Size(3, 3), 0, 0);
+//  GaussianBlur(dxy, dxy, cv::Size(3, 3), 0, 0);
+	cv::imshow("dx", dxMat);
+	cv::imshow("dy", dyMat);
+	cv::Mat kx, ky;
+	getDerivKernels(kx, ky, 1, 0, 5);
+	sepFilter2D(m_img1f, dxMat, CV_32F, kx, ky, cv::Point(-1, -1), 0);
+	getDerivKernels(kx, ky, 0, 1, 5);
+	sepFilter2D(m_img1f, dyMat, CV_32F, kx, ky, cv::Point(-1, -1), 0);
+	cv::imshow("dx2", dxMat);
+	cv::imshow("dy2", dyMat);
 	cv::Mat m_pDer1f = m_pDer2f.clone();
 	double eigval[2], eigvec[2][2];
 	for (int y = 0; y < m_h; y++)
@@ -187,7 +201,8 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 	normalize(m_pDer2f, m_pDer2f, -1, 1, cv::NORM_MINMAX);
 	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
 	GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0, 0);
-	double sum = 0, avg;
+	double sum2 = 0, avg2;
+	double sum1 = 0, avg1;
 	for (int y = 0; y < m_h; y++)
 	{
 		float* pDer2 = m_pDer2f.ptr<float>(y);
@@ -196,26 +211,28 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		{
 			float v1 = pDer1[x] > 0 ? pDer1[x] * (1 - abs(pDer2[x])) : 0;
 			float v2 = pDer2[x] > 0 ? pDer2[x] * (1 - abs(pDer1[x])) : 0;
+			pDer1[x] = v1;
 			pDer2[x] = v1 + v2;
-			sum += pDer2[x];
+			sum2 += pDer2[x];
 		}
 	}
-	avg = sum / (m_h * m_w);
-	printf("avg: %d\n", avg);
+	avg2 = sum2 / (m_h * m_w);
+	printf("avg: %d\n", avg2);
 	for (int y = 0; y < m_h; y++)
 	{
 		float* pDer2 = m_pDer2f.ptr<float>(y);
 		for (int x = 0; x < m_w; x++)
 		{
-			if (pDer2[x] <= avg * 1.2)
+			//if (pDer2[x] <= avg2 * 1)
 			{
-				pDer2[x] = powf(pDer2[x], 1.5);
+				pDer2[x] = powf(pDer2[x], 2);
 			}
 		}
 	}
 	normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
 	cv::imshow("m_pDer1f", m_pDer1f);
-	cv::imshow("m_pDer1f", m_pDer2f);
+	cv::imshow("m_pDer2f", m_pDer2f);
+	cv::waitKey();
 	if (1)
 	{
 		Sobel(m_pDer2f, dxx, CV_32F, 2, 0, kSize);

@@ -98,6 +98,10 @@ double  GetLineWidthPercent(const Line& cvp);
 void    ClearLineWidthByPercent(Lines& widths, double angle);
 
 LineEnds GetLineEnds(const Lines& cvp);
+JointLinks2d GetLineJoints(const Lines& cvp);
+JointLinks2d GetLineExtremity(const Lines& cvp);
+void ReLineExtremity(JointLinks2d ljs, const Lines& cvp);
+
 void LinkLineEnds(LineEnds& les, double distance, double angle);
 bool CheckLinkEndSimilarity(const LineEnd& lhs, const LineEnd& rhs,
 							LineEnd::LinkMethod c, double angle);

@@ -216,8 +216,8 @@ void ImageSpline::SmoothingFragments()
 //
 //          if (last != vec)
 //          {
-//              float angle1 = atan2(last.x, last.y) / M_PI * 180;
-//              float angle2 = atan2(vec.x, vec.y) / M_PI * 180;
+//              float angle1 = atan2(last.x, last.y) * M_1_PI * 180;
+//              float angle2 = atan2(vec.x, vec.y) * M_1_PI * 180;
 //
 //              if (angle2 - angle1 > 0)
 //              {

@@ -933,7 +933,7 @@ double_vector ComputeAngle(const Line& line)
 	for (int i = 1; i < line.size(); i++)
 	{
 		Vector2 vec = line[i] - line[i - 1];
-		ans[i] = atan2(vec.x, vec.y) / M_PI * 180;
+		ans[i] = atan2(vec.x, vec.y) * M_1_PI * 180;
 	}
 	ans[0] = ans[1];
 	return ans;
@@ -965,11 +965,11 @@ Endpoints GetEndpoints(const Lines& cvp)
 	{
 		const Line& nowLine = cvp.at(i);
 		Vector2 vec = nowLine[0] - nowLine[2];
-		double angle = atan2(vec.x, vec.y) / M_PI * 180;
+		double angle = atan2(vec.x, vec.y) * M_1_PI * 180;
 		ans.push_back(Endpoint(nowLine.front(), i, 0, angle));
 		int last = (int)nowLine.size() - 1;
 		vec = nowLine[last] - nowLine[last - 2];
-		angle = atan2(vec.x, vec.y) / M_PI * 180;
+		angle = atan2(vec.x, vec.y) * M_1_PI * 180;
 		ans.push_back(Endpoint(nowLine.back(), i, last, angle));
 	}
 	return ans;
@@ -1045,7 +1045,7 @@ bool CheckEndpointSimilarity(const Endpoint& lhs, const Endpoint& rhs,
 							 double angle)
 {
 	Vector2 vec = lhs.pos - rhs.pos;
-	double linkAngle = atan2(vec.x, vec.y) / M_PI * 180;
+	double linkAngle = atan2(vec.x, vec.y) * M_1_PI * 180;
 	double refAngleL = lhs.angle + 180;
 	double refAngleR = rhs.angle + 180;
 	if (refAngleL >= 360)
@@ -1274,8 +1274,8 @@ LineEnds GetLineEnds(const Lines& cvp)
 		int last = (int)nowLine.size() - 1;
 		Vector2 p1 = nowLine[0] - nowLine[2];
 		Vector2 p2 = nowLine[last] - nowLine[last - 2];
-		double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
-		double angle2 = fmod(360 + atan2(p2.x, p2.y) / M_PI * 180, 360);
+		double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
+		double angle2 = fmod(360 + atan2(p2.x, p2.y) * M_1_PI * 180, 360);
 		ans.push_back(LineEnd(nowLine.front(), nowLine.back(), i, last, angle1,
 							  angle2));
 	}
@@ -1365,7 +1365,7 @@ bool CheckLinkEndSimilarity(const LineEnd& lhs, const LineEnd& rhs,
 		if (abs(lhs.angleBeg - (rhs.angleBeg - 180)) < angle)
 		{
 			Vector2 p1 = rhs.beg - lhs.beg;
-			double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+			double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
 			if (abs(lhs.angleBeg - angle1) < angle)
 			{
 				return true;
@@ -1376,7 +1376,7 @@ bool CheckLinkEndSimilarity(const LineEnd& lhs, const LineEnd& rhs,
 		if (abs(lhs.angleBeg - (rhs.angleEnd - 180)) < angle)
 		{
 			Vector2 p1 = rhs.end - lhs.beg;
-			double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+			double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
 			if (abs(lhs.angleBeg - angle1) < angle)
 			{
 				return true;
@@ -1387,7 +1387,7 @@ bool CheckLinkEndSimilarity(const LineEnd& lhs, const LineEnd& rhs,
 		if (abs(lhs.angleEnd - (rhs.angleBeg - 180)) < angle)
 		{
 			Vector2 p1 = rhs.beg - lhs.end;
-			double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+			double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
 			if (abs(lhs.angleEnd - angle1) < angle)
 			{
 				return true;
@@ -1398,7 +1398,7 @@ bool CheckLinkEndSimilarity(const LineEnd& lhs, const LineEnd& rhs,
 		if (abs(lhs.angleEnd - (rhs.angleEnd - 180)) < angle)
 		{
 			Vector2 p1 = rhs.end - lhs.end;
-			double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+			double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
 			if (abs(lhs.angleEnd - angle1) < angle)
 			{
 				return true;
@@ -1527,9 +1527,9 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 	for (int i = 0; i < (int)les.size(); ++i)
 	{
 		const LineEnd& le1 = les[i];
-		int minbegp = -1, minbeg_angle = angle, minbeg_dis = d2;
-		int minendp = -1, minend_angle = angle, minend_dis = d2;
-		double hitbeg_width, hitend_width;
+		int minbegp = -1, minbeg_angle = angle, minbeg_dis = d2, minbeg_id = -1;
+		int minendp = -1, minend_angle = angle, minend_dis = d2, minend_id = -1;
+		double hitbeg_width = 0, hitend_width = 0;
 		Vector2 begdst, enddst;
 		for (int j = 0; j < pos.size(); ++j)
 		{
@@ -1552,7 +1552,7 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 					{
 						int dis = le1.beg.squaredDistance(nowLine[p]);
 						Vector2 p1 = nowLine[p] - le1.beg;
-						double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+						double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
 						angle1 = abs(le1.angleBeg - angle1);
 						if (dis < minbeg_dis &&  angle1 < minbeg_angle)
 						{
@@ -1561,6 +1561,7 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 							minbegp = p;
 							begdst = nowLine[minbegp];
 							hitbeg_width = nowWidth[minbegp].x + nowWidth[minbegp].y;
+							minbeg_id = j;
 						}
 					}
 				}
@@ -1579,7 +1580,7 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 					{
 						int dis = le1.end.squaredDistance(nowLine[p]);
 						Vector2 p1 = nowLine[p] - le1.end;
-						double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+						double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
 						angle1 = abs(le1.angleEnd - angle1);
 						if (dis < minend_dis && angle1 < minend_angle)
 						{
@@ -1588,31 +1589,198 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 							minendp = p;
 							enddst = nowLine[minendp];
 							hitend_width = nowWidth[minendp].x + nowWidth[minendp].y;
+							minend_id = j;
 						}
 					}
 				}
 			}
 		}
+		const int ELONGATION_LEN = 40;
 		if (minbegp != -1)
 		{
+			Line& orgin = pos[minbeg_id];
+			Line& orginw = width[minbeg_id];
 			Line& elongation = pos[le1.idx1];
 			Line& elongationw = width[le1.idx1];
+			Line normals = GetNormalsLen2(orgin);
 			elongation.insert(elongation.begin(), begdst);
 			elongationw.insert(elongationw.begin(), elongationw.front());
 			//if (hitbeg_width > 0.5)
 			{
 				FixBeginWidth(elongationw, 20);
 			}
+			int orgin_id1 = minbegp - 2;
+			int orgin_id2 = minbegp + 2;
+			if (orgin_id1 >= 0 && orgin_id2 < orgin.size())
+			{
+				Vector2 n1 = orgin[minbegp] + normals[minbegp] * 2;
+				Vector2 n2 = orgin[minbegp] - normals[minbegp] * 2;
+				Vector2 vec1 = orgin[orgin_id1] - orgin[orgin_id2];
+				Vector2 vec2 = elongation[0] - elongation[1];
+				vec1.normalise();
+				vec2.normalise();
+				double side_angle1 = acos(vec1.dotProduct(vec2)) * 180 * M_1_PI;
+				double side_angle2 = acos(vec1.dotProduct(-vec2)) * 180 * M_1_PI;
+				if (side_angle1 < 45 || side_angle2 < 45)
+				{
+					double dis1 = orgin[orgin_id1].squaredDistance(elongation[0] + vec2 * 2);
+					double dis2 = orgin[orgin_id2].squaredDistance(elongation[0] + vec2 * 2);
+					double ndis1 = n1.squaredDistance(elongation[1]);
+					double ndis2 = n2.squaredDistance(elongation[1]);
+					double nlen = orgin[minbegp].distance(elongation[1]);
+					for (int h = minendp - 20; h < minendp + 20 && h < orgin.size(); ++h)
+					{
+						if (h < 0)
+						{
+							h = 0;
+						}
+						double tlen = orgin[h].distance(elongation[1]);
+						if (tlen < nlen)
+						{
+							nlen = tlen;
+						}
+					}
+					nlen *= 0.3;
+					if (dis1 < dis2 && orgin_id1 < ELONGATION_LEN)
+					{
+						elongation.erase(elongation.begin());
+						if (ndis1 < ndis2)
+						{
+							for (int i = minbegp; i >= 0; --i)
+							{
+								elongationw.insert(elongationw.begin(), elongationw.front());
+								elongation.insert(elongation.begin(), orgin[i] + normals[i] *nlen * (i / (double)minbegp));
+							}
+						}
+						else
+						{
+							for (int i = minbegp; i >= 0; --i)
+							{
+								elongationw.insert(elongationw.begin(), elongationw.front());
+								elongation.insert(elongation.begin(), orgin[i] - normals[i] *nlen * (i / (double)minbegp));
+							}
+						}
+						//elongation.insert(elongation.begin(), orgin.front());
+					}
+					else if (dis1 < dis2 && (orgin.size() - orgin_id1) < ELONGATION_LEN)
+					{
+						elongation.erase(elongation.begin());
+						int div = orgin.size() - minbegp;
+//                      if (ndis1 < ndis2)
+//                      {
+//                          for (int i = minbegp; i < orgin.size(); ++i)
+//                          {
+//                              elongationw.insert(elongationw.begin(), elongationw.front());
+//                              elongation.insert(elongation.begin(),
+//                                                orgin[i] + normals[i] *nlen * ((orgin.size() - i) / (double)div));
+//                          }
+//                      }
+//                      else
+//                      {
+//                          for (int i = minbegp; i < orgin.size(); ++i)
+//                          {
+//                              elongationw.insert(elongationw.begin(), elongationw.front());
+//                              elongation.insert(elongation.begin(),
+//                                                orgin[i] - normals[i] *nlen * ((orgin.size() - i) / (double)div));
+//                          }
+//                      }
+						//elongation.insert(elongation.begin(), orgin.back());
+					}
+				}
+			}
 		}
 		if (minendp != -1)
 		{
+			Line& orgin = pos[minend_id];
+			Line& orginw = width[minend_id];
 			Line& elongation = pos[le1.idx1];
 			Line& elongationw = width[le1.idx1];
+			Line normals = GetNormalsLen2(orgin);
 			elongation.insert(elongation.end(), enddst);
 			elongationw.insert(elongationw.end(), elongationw.back());
 			//if (hitend_width > 0.5)
 			{
 				FixEndWidth(elongationw, 20);
+			}
+			int orgin_id1 = minendp - 2;
+			int orgin_id2 = minendp + 2;
+			if (orgin_id1 >= 0 && orgin_id2 < orgin.size())
+			{
+				Vector2 n1 = orgin[minendp] + normals[minendp] * 2;
+				Vector2 n2 = orgin[minendp] - normals[minendp] * 2;
+				int last = elongation.size() - 1;
+				Vector2 vec1 = orgin[orgin_id1] - orgin[orgin_id2];
+				Vector2 vec2 = elongation[last] - elongation[last - 1];
+				vec1.normalise();
+				vec2.normalise();
+				double side_angle1 = acos(vec1.dotProduct(vec2)) * 180 * M_1_PI;
+				double side_angle2 = acos(vec1.dotProduct(-vec2)) * 180 * M_1_PI;
+				if (side_angle1 < 45 || side_angle2 < 45)
+				{
+					double dis1 = orgin[orgin_id1].squaredDistance(elongation[last] + vec2 * 2);
+					double dis2 = orgin[orgin_id2].squaredDistance(elongation[last] + vec2 * 2);
+					double ndis1 = n1.squaredDistance(elongation[last - 1]);
+					double ndis2 = n2.squaredDistance(elongation[last - 1]);
+					double nlen = orgin[minendp].distance(elongation[last - 1]);
+					for (int h = minendp - 20; h < minendp + 20 && h < orgin.size(); ++h)
+					{
+						if (h < 0)
+						{
+							h = 0;
+						}
+						double tlen = orgin[h].distance(elongation[last - 1]);
+						if (tlen < nlen)
+						{
+							nlen = tlen;
+						}
+					}
+					nlen *= 0.4;
+					if (dis1 < dis2 && orgin_id1 < ELONGATION_LEN)
+					{
+						elongation.erase(elongation.end() - 1);
+						if (ndis1 < ndis2)
+						{
+							for (int i = minendp; i >= 0; --i)
+							{
+								elongationw.insert(elongationw.end(), elongationw.back());
+								elongation.insert(elongation.end(), orgin[i] + normals[i] *nlen * (i / (double)minendp));
+							}
+						}
+						else
+						{
+							for (int i = minendp; i >= 0; --i)
+							{
+								elongationw.insert(elongationw.end(), elongationw.back());
+								elongation.insert(elongation.end(), orgin[i] - normals[i] *nlen * (i / (double)minendp));
+							}
+						}
+						//elongation.insert(elongation.end(), orgin.front());
+					}
+					else if (dis1 > dis2 && (orgin.size() - orgin_id1) < ELONGATION_LEN)
+					{
+						elongation.erase(elongation.end() - 1);
+						int div = orgin.size() - minendp;
+						if (ndis1 < ndis2)
+						{
+							for (int i = minendp; i < orgin.size(); ++i)
+							{
+								elongationw.insert(elongationw.end(), elongationw.back());
+								elongation.insert(elongation.end(),
+												  orgin[i] + normals[i]*nlen * ((orgin.size() - i) / (double)div));
+							}
+						}
+						else
+						{
+							for (int i = minendp; i < orgin.size(); ++i)
+							{
+								elongationw.insert(elongationw.end(), elongationw.back());
+								elongation.insert(elongation.end(),
+												  orgin[i] - normals[i]*nlen * ((orgin.size() - i) / (double)div));
+							}
+						}
+						//elongation.insert(elongation.end(), orgin.back());
+					}
+				}
 			}
 		}
 	}
@@ -1649,7 +1817,7 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Color2Side& width, dou
 					{
 						int dis = le1.beg.squaredDistance(nowLine[p]);
 						Vector2 p1 = nowLine[p] - le1.beg;
-						double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+						double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
 						angle1 = abs(le1.angleBeg - angle1);
 						if (dis < minbeg_dis &&  angle1 < minbeg_angle)
 						{
@@ -1675,7 +1843,7 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Color2Side& width, dou
 					{
 						int dis = le1.end.squaredDistance(nowLine[p]);
 						Vector2 p1 = nowLine[p] - le1.end;
-						double angle1 = fmod(360 + atan2(p1.x, p1.y) / M_PI * 180, 360);
+						double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
 						angle1 = abs(le1.angleEnd - angle1);
 						if (dis < minend_dis && angle1 < minend_angle)
 						{
@@ -2201,3 +2369,18 @@ void ConnectSimilarColor2Side(const LineEnds& les, Lines& pos, Color2Side& width
 	width.left = newwidth1;
 	width.right = newwidth2;
 }
+
+JointLinks2d GetLineJoints(const Lines& cvp, const LineEnds& les)
+{
+	return JointLinks2d();
+}
+
+JointLinks2d GetLineExtremity(const Lines& cvp)
+{
+	return JointLinks2d();
+}
+
+void ReLineExtremity(JointLinks2d ljs, const Lines& cvp)
+{
+}
+

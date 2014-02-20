@@ -892,6 +892,10 @@ void vavImage::ToExpImage()
 	}
 	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
 	imgf.convertTo(m_Image, CV_8UC3, 255);
+// 	for (int i = 1; i <= 3; i = i + 2)
+// 	{
+// 		bilateralFilter(m_Image.clone(), m_Image, i, i * 2, i / 2);
+// 	}
 }
 
 Vector3 vavImage::GetBilinearColor(double x, double y)

@@ -82,6 +82,21 @@ struct LineEnd
 };
 typedef std::vector<LineEnd> LineEnds;
 
+struct JointLink
+{
+	int     id;
+	bool    isFront;
+};
+typedef std::vector<JointLink> JointLinks;
+
+typedef std::vector<JointLinks> JointLinks2d;
+
+struct ExtremityLine
+{
+
+};
+
+
 struct Color2Side
 {
 	Vector3s2d left;
@@ -89,9 +104,9 @@ struct Color2Side
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
+	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & left;
-		ar & right;
+		ar& left;
+		ar& right;
 	}
 };

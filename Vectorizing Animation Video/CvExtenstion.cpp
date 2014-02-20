@@ -11,6 +11,7 @@
 #include "SplineShape.h"
 #include "math\Vector2.h"
 #include "CvExtenstion2.h"
+#include "CvExtenstion0.h"
 
 
 Weights wm_init;
@@ -2051,7 +2052,7 @@ void FillSmallHole(cv::Mat& patchImage)
 
 ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold)
 {
-	cv::Mat image;
+	cv::Mat image, test;
 	img.convertTo(image, CV_32FC3);
 	Collect_Water(image, image, 5, 5, BlackRegionThreshold);
 	ImageSpline is = S4GetPatchs(image, 0, 0);
@@ -2306,7 +2307,15 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			}
 		}
 		cps = newcps;
+		newcps.clear();
+		for (int j = 0; j < cps.size(); j += 5)
+		{
+			newcps.push_back(cps[j]);
+		}
+		cps = newcps;
 	}
+	is.SmoothingFragments();
+	is.SmoothingFragments();
 	is.SmoothingFragments();
 	return is;
 }

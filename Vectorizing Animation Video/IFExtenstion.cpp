@@ -42,25 +42,25 @@ double_vector ConvertToAngle(const double_vector& data, double zero)
 	double_vector ans;
 	{
 		double dy = tmp[2] - tmp[0];
-		double angle = atan2(3, dy) / M_PI * 180 + zero;
+		double angle = atan2(3, dy) * M_1_PI * 180 + zero;
 		ans.push_back(angle);
 		dy = tmp[3] - tmp[1];
-		angle = atan2(3, dy) / M_PI * 180 + zero;
+		angle = atan2(3, dy) * M_1_PI * 180 + zero;
 		ans.push_back(angle);
 	}
 	for (int i = 2; i < data.size() - 2; ++i)
 	{
 		double dy = tmp[i + 2] - tmp[i - 2];
-		double angle = atan2(3, dy) / M_PI * 180 + zero;
+		double angle = atan2(3, dy) * M_1_PI * 180 + zero;
 		ans.push_back(angle);
 	}
 	{
 		int last = (int)data.size() - 2;
 		double dy = tmp[last - 1] - tmp[last - 3];
-		double angle = atan2(3, dy) / M_PI * 180 + zero;
+		double angle = atan2(3, dy) * M_1_PI * 180 + zero;
 		ans.push_back(angle);
 		dy = tmp[last] - tmp[last - 1];
-		angle = atan2(3, dy) / M_PI * 180 + zero;
+		angle = atan2(3, dy) * M_1_PI * 180 + zero;
 		ans.push_back(angle);
 	}
 	return SmoothingLen5(ans, 0, 2);
