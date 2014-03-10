@@ -892,10 +892,10 @@ void vavImage::ToExpImage()
 	}
 	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
 	imgf.convertTo(m_Image, CV_8UC3, 255);
-// 	for (int i = 1; i <= 3; i = i + 2)
-// 	{
-// 		bilateralFilter(m_Image.clone(), m_Image, i, i * 2, i / 2);
-// 	}
+//  for (int i = 1; i <= 3; i = i + 2)
+//  {
+//      bilateralFilter(m_Image.clone(), m_Image, i, i * 2, i / 2);
+//  }
 }
 
 Vector3 vavImage::GetBilinearColor(double x, double y)
@@ -904,4 +904,61 @@ Vector3 vavImage::GetBilinearColor(double x, double y)
 	double g = GetBilinearG_if0(x, y);
 	double b = GetBilinearB_if0(x, y);
 	return Vector3(r, g, b);
+}
+
+int vavImage::GetIndex_no255(double x, double y)
+{
+	if (y < 1 || (y + 1 >= m_Image.rows) || x < 1 || (x + 1 >= m_Image.cols))
+	{
+		if (y < 0)
+		{
+			y = 0;
+		}
+		if (x < 0)
+		{
+			x = 0;
+		}
+		if (x + 1 >= m_Image.cols)
+		{
+			x = m_Image.cols - 1;
+		}
+		if (y + 1 >= m_Image.rows)
+		{
+			y = m_Image.rows - 1;
+		}
+	}
+	if (m_Image.at<cv::Vec3b>((int)y, (int)x)[0] != 255)
+	{
+		cv::Vec3b color = m_Image.at<cv::Vec3b>((int)y, (int)x);
+		int v = color[0] + color[1] * 255 + color[2] * 255 * 255;
+		return v;
+	}
+	Vector2 left_up, left_down;
+	Vector2 right_up, right_down;
+	left_up.x = floor(x);
+	left_up.y = floor(y);
+	left_down.x = left_up.x;
+	left_down.y = left_up.y + 1;
+	right_up.x = left_up.x + 1;
+	right_up.y = left_up.y;
+	right_down.x = left_up.x + 1;
+	right_down.y = left_up.y + 1;
+	double v[4];
+	cv::Vec3b c[4];
+	c[0] = m_Image.at<cv::Vec3b>(left_up.y, left_up.x);
+	c[1] = m_Image.at<cv::Vec3b>(left_down.y, left_down.x);
+	c[2] = m_Image.at<cv::Vec3b>(right_up.y, right_up.x);
+	c[3] = m_Image.at<cv::Vec3b>(right_down.y, right_down.x);
+	v[0] = c[0][0] + c[0][1] * 255 + c[0][2] * 255 * 255;
+	v[1] = c[1][0] + c[1][1] * 255 + c[1][2] * 255 * 255;
+	v[2] = c[2][0] + c[2][1] * 255 + c[2][2] * 255 * 255;
+	v[3] = c[3][0] + c[3][1] * 255 + c[3][2] * 255 * 255;
+	for (int i = 0; i < 4; ++i)
+	{
+		if (c[i][0] != 255)
+		{
+			return v[i];
+		}
+	}
+	return -1;
 }

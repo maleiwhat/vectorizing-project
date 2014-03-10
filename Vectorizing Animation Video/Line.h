@@ -56,6 +56,9 @@ Vector3s2d  FixLineColors(const Vector3s2d& aLine, int range, int findlimit);
 Line    FixLineWidths(const Line& aLine, int range);
 Lines   FixLineWidths(const Lines& aLine, int range);
 
+ints    FixIndexs(const ints& aLine, int range);
+ints2d  FixIndexs(const ints2d& aLine, int range);
+
 Line    CleanOrphanedLineWidths(const Line& aLine, int num);
 Lines   CleanOrphanedLineWidths(const Lines& aLine, int num);
 

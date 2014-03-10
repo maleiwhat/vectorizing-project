@@ -2082,7 +2082,10 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	{
 		for (int j = 1; j < image.cols - 1; j++)
 		{
-			S3FloodFill(cc, image, mask, joint_mask, 0, j, i, dilation, erosion);
+			if (image.at<cv::Vec3b>(i, j)[0] != 255)
+			{
+				S3FloodFill(cc, image, mask, joint_mask, 0, j, i, dilation, erosion);
+			}
 		}
 	}
 	// create bigger image to fix border problem
@@ -2222,7 +2225,10 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	{
 		for (int j = 0; j < tmp_image.cols; j++)
 		{
-			LineFloodFill(tmp_image, mask, cc, j, i);
+			if (image.at<cv::Vec3b>(i / 2, j / 2)[0] != 255)
+			{
+				LineFloodFill(tmp_image, mask, cc, j, i);
+			}
 		}
 	}
 	//cv::namedWindow("LineFloodFill", 0);
@@ -2307,16 +2313,16 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			}
 		}
 		cps = newcps;
-		newcps.clear();
-		for (int j = 0; j < cps.size(); j += 5)
-		{
-			newcps.push_back(cps[j]);
-		}
-		cps = newcps;
+//      newcps.clear();
+//      for (int j = 0; j < cps.size(); j += 5)
+//      {
+//          newcps.push_back(cps[j]);
+//      }
+//      cps = newcps;
 	}
 	is.SmoothingFragments();
-	is.SmoothingFragments();
-	is.SmoothingFragments();
+//  is.SmoothingFragments();
+//  is.SmoothingFragments();
 	return is;
 }
 

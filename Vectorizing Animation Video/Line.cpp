@@ -599,6 +599,51 @@ Lines FixLineWidths(const Lines& widths, int range)
 	return ans;
 }
 
+
+ints FixIndexs(const ints& cvp, int range)
+{
+	ints cps = cvp;
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		if (cvp[i] < 1)
+		{
+			int setValueX = -1;
+			int j = 1;
+			for (; j < range; ++j)
+			{
+				int left = i - j;
+				int right = i + j;
+				if (left > 0 && cvp[left] > 0)
+				{
+					setValueX = cvp[left];
+					break;
+				}
+				if (right < cvp.size() && cvp[right] > 0)
+				{
+					setValueX = cvp[right];
+					break;
+				}
+			}
+			if (setValueX != -1)
+			{
+				cps[i] = setValueX;
+			}
+		}
+	}
+	return cps;
+}
+
+ints2d FixIndexs(const ints2d& widths, int range)
+{
+	ints2d ans(widths.size());
+	for (int i = 0; i < widths.size(); ++i)
+	{
+		const ints& aa = widths.at(i);
+		ans[i] = FixIndexs(aa, range);
+	}
+	return ans;
+}
+
 Line CleanOrphanedLineWidths(const Line& cvp, int num)
 {
 	Line cps = cvp;

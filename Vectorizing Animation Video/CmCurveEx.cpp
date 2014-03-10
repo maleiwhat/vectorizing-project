@@ -212,7 +212,7 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 			float v1 = pDer1[x] > 0 ? pDer1[x] * (1 - abs(pDer2[x])) : 0;
 			float v2 = pDer2[x] > 0 ? pDer2[x] * (1 - abs(pDer1[x])) : 0;
 			pDer1[x] = v1;
-			pDer2[x] = v1 + v2;
+			pDer2[x] = v1 + v2*0.8;
 			sum2 += pDer2[x];
 		}
 	}
@@ -225,14 +225,13 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		{
 			//if (pDer2[x] <= avg2 * 1)
 			{
-				pDer2[x] = powf(pDer2[x], 2);
+				pDer2[x] = powf(pDer2[x], 1.5);
 			}
 		}
 	}
 	normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
 	cv::imshow("m_pDer1f", m_pDer1f);
 	cv::imshow("m_pDer2f", m_pDer2f);
-	cv::waitKey();
 	if (1)
 	{
 		Sobel(m_pDer2f, dxx, CV_32F, 2, 0, kSize);

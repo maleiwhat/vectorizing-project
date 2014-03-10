@@ -2,6 +2,7 @@
 #include "stdcv.h"
 #include <cmath>
 #include <algorithm>
+#include <deque>
 #include <iterator>
 #include "CvExtenstion.h"
 #include "CvExtenstion0.h"
@@ -1063,7 +1064,14 @@ bool LinkTrapBallBack(Line& li, const Vector2& ahead, cv::Mat& image,
 	return false;
 }
 
-
+bool IsSafePos2(cv::Mat img, int x, int y)
+{
+	if (x >= 1 && y >= 1 && x < img.cols - 1 && y < img.rows - 1)
+	{
+		return true;
+	}
+	return false;
+}
 
 bool IsSafePos(cv::Mat img, int x, int y)
 {
@@ -1135,7 +1143,8 @@ cv::Mat TrapBallMask1(cv::Mat LineImg, int size, int moprh)
 					{
 						int c;
 						c = rand();
-						MaskImgDraw(res, circle, v.x, v.y, cv::Vec3b(c % 254 + 1, (c / 255) % 255, (c * 10) % 255));
+						MaskImgDraw(res, circle, v.x, v.y, cv::Vec3b(c % 200 + 50, (c / 255) % 200 + 50,
+									(c * 10) % 200 + 50));
 					}
 					else
 					{
@@ -1145,8 +1154,8 @@ cv::Mat TrapBallMask1(cv::Mat LineImg, int size, int moprh)
 			}
 		}
 	}
-// 	cv::imshow("res", res);
-// 	cv::waitKey();
+//  cv::imshow("res", res);
+//  cv::waitKey();
 	return res;
 }
 
@@ -1199,7 +1208,7 @@ cv::Mat TrapBallMask2(cv::Mat LineImg, int size, int moprh)
 					test[7].y -= 1;
 					for (int i = 0; i < 8; ++i)
 					{
-						if (IsSafePos(hasFill, test[i].x, test[i].y)
+						if (IsSafePos2(hasFill, test[i].x, test[i].y)
 								&& (hasFill.at<uchar>(test[i].y, test[i].x) == 0)
 								&& CheckMaskImg2(res, circle, test[i].x, test[i].y))
 						{
@@ -1216,8 +1225,151 @@ cv::Mat TrapBallMask2(cv::Mat LineImg, int size, int moprh)
 			}
 		}
 	}
-// 	cv::imshow("res", res);
-// 	cv::waitKey();
+//  cv::imshow("res", res);
+//  cv::waitKey();
+	return res;
+}
+
+cv::Mat TrapBallMask3(cv::Mat LineImg, int size, int moprh)
+{
+	int size2 = size;
+	cv::Mat circle = getStructuringElement(moprh,
+										   cv::Size(size2, size2));
+	cv::Mat circlebig = getStructuringElement(moprh,
+						cv::Size(size2 + 2, size2 + 2));
+	cv::Mat res = LineImg.clone();
+	cv::Mat hasFill;
+	hasFill.create(LineImg.rows - size2, LineImg.cols - size2, CV_8UC1);
+	hasFill = cv::Scalar(0);
+	struct V2
+	{
+		V2() {}
+		V2(int x, int y): x(x), y(y) {}
+		int x, y;
+	};
+	typedef std::vector<V2> V2s;
+	for (int i = 1; i < LineImg.rows - size2; ++i)
+	{
+		for (int j = 1; j < LineImg.cols - size2; ++j)
+		{
+			if (CheckMaskImg3(LineImg, circlebig, circle, j, i))
+			{
+				V2s checks;
+				checks.push_back(V2(j, i));
+				while (!checks.empty())
+				{
+					V2 v = checks.back();
+					checks.pop_back();
+					V2 test[8];
+					for (int i = 0; i < 8; ++i)
+					{
+						test[i] = v;
+					}
+					test[0].y -= 1;
+					test[1].y += 1;
+					test[2].x -= 1;
+					test[3].x += 1;
+					test[4].x += 1;
+					test[4].y += 1;
+					test[5].x -= 1;
+					test[5].y += 1;
+					test[6].x += 1;
+					test[6].y -= 1;
+					test[7].x -= 1;
+					test[7].y -= 1;
+					for (int i = 0; i < 8; ++i)
+					{
+						if (IsSafePos2(hasFill, test[i].x, test[i].y)
+								&& (hasFill.at<uchar>(test[i].y, test[i].x) == 0)
+								&& CheckMaskImg3(res, circlebig, circle, test[i].x, test[i].y))
+						{
+							checks.push_back(test[i]);
+						}
+					}
+					if (hasFill.at<uchar>(v.y, v.x) == 0)
+					{
+						hasFill.at<uchar>(v.y, v.x) = 1;
+						cv::Vec3b cc = MaskImgGet(res, circle, v.x, v.y);
+						MaskImgDraw(res, circle, v.x, v.y, cc);
+					}
+				}
+			}
+		}
+	}
+	//  cv::imshow("res", res);
+	//  cv::waitKey();
+	return res;
+}
+
+
+cv::Mat TrapBallMask4(cv::Mat LineImg, int moprh)
+{
+	cv::Mat res = LineImg.clone();
+	struct V2
+	{
+		V2() {}
+		V2(int x, int y): x(x), y(y) {}
+		int x, y;
+	};
+	cv::Mat hasFill;
+	hasFill.create(LineImg.rows, LineImg.cols, CV_8UC1);
+	hasFill = cv::Scalar(0);
+	typedef std::deque<V2> V2s;
+	for (int i = 1; i < res.rows - 1; ++i)
+	{
+		for (int j = 1; j < res.cols - 1; ++j)
+		{
+			hasFill = cv::Scalar(0);
+			V2 test[4];
+			V2s checks;
+			checks.push_back(V2(j, i));
+			while (!checks.empty())
+			{
+				V2 v = checks.front();
+				checks.pop_front();
+				hasFill.at<uchar>(v.y, v.x) = 0;
+				if (res.at<cv::Vec3b>(v.y, v.x)[0] != 0)
+				{
+					continue;
+				}
+				for (int k = 0; k < 4; ++k)
+				{
+					test[k] = v;
+				}
+				test[0].y -= 1;
+				test[1].y += 1;
+				test[2].x -= 1;
+				test[3].x += 1;
+				bool hascolor = false;
+				for (int k = 0; k < 4; ++k)
+				{
+					if (IsSafePos(res, test[k].x, test[k].y))
+					{
+						cv::Vec3b cc = res.at<cv::Vec3b>(test[k].y, test[k].x);
+						if (cc[0] != 0 && cc[0] != 255)
+						{
+							res.at<cv::Vec3b>(v.y, v.x) = cc;
+							hascolor = true;
+							break;
+						}
+					}
+				}
+				if (hascolor)
+				{
+					for (int k = 0; k < 4; ++k)
+					{
+						if (IsSafePos(res, test[k].x, test[k].y)
+								&& (res.at<cv::Vec3b>(test[k].y, test[k].x)[0] == 0))
+						{
+							checks.push_back(test[k]);
+						}
+					}
+				}
+			}
+		}
+	}
+	//  cv::imshow("res", res);
+	//  cv::waitKey();
 	return res;
 }
 
@@ -1272,6 +1424,55 @@ bool CheckMaskImg2(cv::Mat LineImg, cv::Mat mask, int x, int y)
 	return has0 && hasNo0;
 }
 
+
+bool CheckMaskImg3(cv::Mat LineImg, cv::Mat maskbig, cv::Mat mask, int x, int y)
+{
+	bool has0 = false;
+	bool hasNo0 = false;
+	for (int i = 0; i < mask.rows; i++)
+	{
+		for (int j = 0; j < mask.cols; j++)
+		{
+			if (mask.at<uchar>(i, j) > 0)
+			{
+				if (LineImg.at<cv::Vec3b>(y + i , x + j)[0] == 255)
+				{
+					return false;
+				}
+				else if (LineImg.at<cv::Vec3b>(y + i , x + j)[0] == 0)
+				{
+					has0 = true;
+				}
+			}
+		}
+	}
+	cv::Vec3b test(0, 0, 0);
+	for (int i = 0; i < maskbig.rows; i++)
+	{
+		for (int j = 0; j < maskbig.cols; j++)
+		{
+			if (maskbig.at<uchar>(i, j) > 0)
+			{
+				char kk = LineImg.at<cv::Vec3b>(y + i - 1, x + j - 1)[0];
+				cv::Vec3b cc = LineImg.at<cv::Vec3b>(y + i - 1, x + j - 1);
+				if (kk != 0 && kk != 255)
+				{
+					hasNo0 = true;
+					if (test == cv::Vec3b(0, 0, 0))
+					{
+						test = cc;
+					}
+					else if (test != cc)
+					{
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return has0 && hasNo0;
+}
+
 void MaskImgDraw(cv::Mat LineImg, cv::Mat mask, int x, int y, cv::Vec3b c)
 {
 	for (int i = 0; i < mask.rows; i++)
@@ -1302,4 +1503,154 @@ cv::Vec3b MaskImgGet(cv::Mat LineImg, cv::Mat mask, int x, int y)
 		}
 	}
 	return cv::Vec3b();
+}
+
+cv::Mat ConvertToMedian(cv::Mat TestImg, cv::Mat src)
+{
+	cv::Mat res = TestImg.clone();
+	struct V2
+	{
+		V2() {}
+		V2(int x, int y): x(x), y(y) {}
+		int x, y;
+	};
+	cv::Mat hasFill;
+	hasFill.create(TestImg.rows, TestImg.cols, CV_8UC1);
+	hasFill = cv::Scalar(0);
+	typedef std::deque<V2> V2s;
+	for (int i = 1; i < res.rows - 1; ++i)
+	{
+		for (int j = 1; j < res.cols - 1; ++j)
+		{
+			if (res.at<cv::Vec3b>(i, j)[0] == 255 ||
+					res.at<cv::Vec3b>(i, j)[0] == 0 ||
+					hasFill.at<uchar>(i, j) != 0)
+			{
+				continue;
+			}
+			cv::Vec3b ori = res.at<cv::Vec3b>(i, j);
+			V2 test[4];
+			V2s checks;
+			V2s saves;
+			ColorConstraintMedian ccm;
+			checks.push_back(V2(j, i));
+			while (!checks.empty())
+			{
+				V2 v = checks.front();
+				saves.push_back(v);
+				checks.pop_front();
+				ccm.AddPoint(0, 0, src.at<cv::Vec3b>(v.y, v.x));
+				for (int k = 0; k < 4; ++k)
+				{
+					test[k] = v;
+				}
+				test[0].y -= 1;
+				test[1].y += 1;
+				test[2].x -= 1;
+				test[3].x += 1;
+				for (int k = 0; k < 4; ++k)
+				{
+					if (IsSafePos(res, test[k].x, test[k].y) &&
+							hasFill.at<uchar>(test[k].y, test[k].x) == 0)
+					{
+						cv::Vec3b cc = res.at<cv::Vec3b>(test[k].y, test[k].x);
+						if (ori == cc)
+						{
+							hasFill.at<uchar>(test[k].y, test[k].x) = 1;
+							checks.push_back(test[k]);
+						}
+					}
+				}
+			}
+			cv::Vec3b medcolor = ccm.GetColorCvPoint();
+			const uchar ERROR_MAX = 5;
+			for (int k = 0; k < saves.size(); ++k)
+			{
+				cv::Vec3b& ori = src.at<cv::Vec3b>(saves[k].y, saves[k].x);
+				cv::Vec3b& dst = res.at<cv::Vec3b>(saves[k].y, saves[k].x);
+				dst[0] = (ori[0] + medcolor[0]) * 0.5;
+				dst[0] = std::min<int>(dst[0], medcolor[0] + ERROR_MAX);
+				dst[0] = std::max<int>(dst[0], medcolor[0] - ERROR_MAX);
+				dst[1] = (ori[1] + medcolor[1]) * 0.5;
+				dst[1] = std::min<int>(dst[1], medcolor[1] + ERROR_MAX);
+				dst[1] = std::max<int>(dst[1], medcolor[1] - ERROR_MAX);
+				dst[2] = (ori[2] + medcolor[2]) * 0.5;
+				dst[2] = std::min<int>(dst[2], medcolor[2] + ERROR_MAX);
+				dst[2] = std::max<int>(dst[2], medcolor[2] - ERROR_MAX);
+			}
+		}
+	}
+	return res;
+}
+
+cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, Vector3s& output)
+{
+	output.clear();
+	int markid = 1;
+	cv::Mat res = src.clone();
+	struct V2
+	{
+		V2() {}
+		V2(int x, int y): x(x), y(y) {}
+		int x, y;
+	};
+	typedef std::deque<V2> V2s;
+	cv::Mat hasFill;
+	hasFill.create(src.rows, src.cols, CV_8UC1);
+	hasFill = cv::Scalar(0);
+	for (int i = 0; i < res.rows ; ++i)
+	{
+		for (int j = 0; j < res.cols ; ++j)
+		{
+			int v = res.at<cv::Vec3b>(i, j)[0] + res.at<cv::Vec3b>(i, j)[1] * 255 +
+					res.at<cv::Vec3b>(i, j)[2] * 255 * 255;
+			if (v != 0 && (res.at<cv::Vec3b>(i, j)[0] == 255 || v < markid))
+			{
+				continue;
+			}
+			cv::Vec3b ori = res.at<cv::Vec3b>(i, j);
+			V2 test[4];
+			V2s checks;
+			V2s saves;
+			checks.push_back(V2(j, i));
+			while (!checks.empty())
+			{
+				V2 v = checks.front();
+				saves.push_back(v);
+				checks.pop_front();
+				for (int k = 0; k < 4; ++k)
+				{
+					test[k] = v;
+				}
+				test[0].y -= 1;
+				test[1].y += 1;
+				test[2].x -= 1;
+				test[3].x += 1;
+				for (int k = 0; k < 4; ++k)
+				{
+					if (IsSafePos(res, test[k].x, test[k].y) &&
+							hasFill.at<uchar>(test[k].y, test[k].x) == 0)
+					{
+						cv::Vec3b cc = src.at<cv::Vec3b>(test[k].y, test[k].x);
+						if (ori == cc)
+						{
+							hasFill.at<uchar>(test[k].y, test[k].x) = 1;
+							checks.push_back(test[k]);
+						}
+					}
+				}
+			}
+			cv::Vec3b medcolor = cv::Vec3b(markid, markid / 255, markid / 255 / 255);
+			ColorConstraintMedian ccm;
+			for (int k = 0; k < saves.size(); ++k)
+			{
+				cv::Vec3b& dst = res.at<cv::Vec3b>(saves[k].y, saves[k].x);
+				ccm.AddPoint(0, 0, oriimg.at<cv::Vec3b>(saves[k].y, saves[k].x));
+				dst = medcolor;
+			}
+			markid++;
+			output.push_back(ccm.GetColorVector3());
+		}
+	}
+	return res;
 }

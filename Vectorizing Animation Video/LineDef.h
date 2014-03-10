@@ -110,3 +110,20 @@ private:
 		ar& right;
 	}
 };
+
+typedef std::vector<int> ints;
+typedef std::vector<ints> ints2d;
+struct Index2Side
+{
+	ints2d left;
+	ints2d right;
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& left;
+		ar& right;
+	}
+};
+

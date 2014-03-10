@@ -6,6 +6,7 @@
 #include "LineFragment.h"
 #include "PatchSpline.h"
 #include "ImageSpline.h"
+#include "ColorConstraint.h"
 
 cv::Mat CannyEdge(cv::Mat& image, double threshold1 = 0, double threshold2 = 30,
 				  int apertureSize = 3, bool L2gradient = false);
@@ -35,7 +36,12 @@ void GetMatrixf(int w, int h, floatptrs& ary, int x, int y, cv::Mat& img);
 
 cv::Mat TrapBallMask1(cv::Mat LineImg, int size, int moprh = cv::MORPH_ELLIPSE);
 cv::Mat TrapBallMask2(cv::Mat LineImg, int size, int moprh = cv::MORPH_ELLIPSE);
+cv::Mat TrapBallMask3(cv::Mat LineImg, int size, int moprh = cv::MORPH_ELLIPSE);
+cv::Mat TrapBallMask4(cv::Mat LineImg, int moprh = cv::MORPH_ELLIPSE);
+cv::Mat ConvertToMedian(cv::Mat LineImg, cv::Mat src);
+cv::Mat ConvertToIndex(cv::Mat src, cv::Mat ori, Vector3s& output);
 bool CheckMaskImg1(cv::Mat LineImg, cv::Mat mask, int x, int y);
 bool CheckMaskImg2(cv::Mat LineImg, cv::Mat mask, int x, int y);
+bool CheckMaskImg3(cv::Mat LineImg, cv::Mat maskbig, cv::Mat mask, int x, int y);
 void MaskImgDraw(cv::Mat LineImg, cv::Mat mask, int x, int y, cv::Vec3b c);
 cv::Vec3b MaskImgGet(cv::Mat LineImg, cv::Mat mask, int x, int y);
