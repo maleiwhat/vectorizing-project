@@ -74,9 +74,8 @@ public:
 	ID3D11DeviceContext* GetDeviceContext();
 	void InterSetRenderTransparencyOutput1();
 	void InterSetRenderTransparencyOutput2();
-protected:
-
 	void InterSetRenderTransparencyDefault();
+protected:
 	void initDirect3D();
 	void InterDraw(bool drawDiffusion = true);
 	void InterSetLookCenter(float x, float y);
@@ -112,7 +111,6 @@ protected:
 	ID3D11Texture2D*    m_DepthStencilBuffer;
 	ID3D11Texture2D*    m_DrawTextureDepthStencilBuffer;
 	ID3D11Texture2D*    m_DrawTexture;
-	ID3D11DepthStencilView* m_DepthStencilView2;
 	ID3D11RenderTargetView* m_RenderTargetView;
 	ID3D11RenderTargetView* m_distDirTextureTV;
 	ID3D11ShaderResourceView* m_distDirTextureRV;
@@ -241,7 +239,7 @@ protected:
 	ID3D11Buffer*           m_pCurveVertexBuffer;
 	ID3D11InputLayout*      m_pCurveVertex2Layout;
 	ID3D11Buffer*           m_pCurveVertex2Buffer;
-	CURVE_Vertexes			m_CurveVertexes;
+	CURVE_Vertexes          m_CurveVertexes;
 
 	// two textures used interleavedly for diffusion
 	ID3D11Texture2D*    m_diffuseTexture[2];
@@ -277,11 +275,11 @@ protected:
 	ID3DX11EffectScalarVariable* m_pPolySize;
 	// diffusion curve part end
 
-	D3D11_BUFFER_DESC	m_vbd;
+	D3D11_BUFFER_DESC   m_vbd;
 	DXUTUI*             m_DXUT_UI;
 	// Derived class should set these in derived constructor to customize starting values.
-	D3D_DRIVER_TYPE		m_d3dDriverType;
-	D3DXCOLOR			m_ClearColor;
+	D3D_DRIVER_TYPE     m_d3dDriverType;
+	D3DXCOLOR           m_ClearColor;
 	int     m_ClientWidth;
 	int     m_ClientHeight;
 };

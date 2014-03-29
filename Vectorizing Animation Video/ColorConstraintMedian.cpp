@@ -13,7 +13,9 @@ bool LightCompareVector3(const Vector3& v1, const Vector3& v2)
 void ColorConstraintMedian::AddPoint(double x, double y, const cv::Vec3b& p)
 {
 	m_NeedComputeMedian = true;
+	m_Pos.push_back(Vector2(x, y));
 	m_Colors.push_back(Vector3(p[0], p[1], p[2]));
+	m_ColorsOri.push_back(Vector3(p[0], p[1], p[2]));
 }
 
 void ColorConstraintMedian::AddPoint(double x, double y, const Vector3& p)
@@ -26,6 +28,8 @@ void ColorConstraintMedian::Clear()
 {
 	m_NeedComputeMedian = true;
 	m_Colors.clear();
+	m_ColorsOri.clear();
+	m_Pos.clear();
 }
 
 Vector3 ColorConstraintMedian::GetColorVector3()
@@ -34,8 +38,29 @@ Vector3 ColorConstraintMedian::GetColorVector3()
 	{
 		ComputeMedian();
 	}
-
 	return m_Median;
+}
+
+Vector3 ColorConstraintMedian::GetColorVector3(double x, double y)
+{
+	if (m_NeedComputeMedian)
+	{
+		ComputeMedian();
+	}
+	Vector2 dst(x, y);
+	double min_dis = m_Pos[0].distance(dst);
+	int idx = 0;
+	for (int i = 1; i < m_Pos.size(); ++i)
+	{
+		double v = m_Pos[i].distance(dst);
+		if (v < min_dis)
+		{
+			min_dis = v;
+			idx = i;
+		}
+	}
+	//return m_ColorsOri[idx];
+	return (m_ColorsOri[idx]*0.3 + m_Median*0.7);
 }
 
 cv::Vec3b ColorConstraintMedian::GetColorCvPoint()
@@ -44,7 +69,6 @@ cv::Vec3b ColorConstraintMedian::GetColorCvPoint()
 	{
 		ComputeMedian();
 	}
-
 	cv::Vec3b res;
 	res[0] = m_Median[2];
 	res[1] = m_Median[1];
@@ -60,7 +84,6 @@ ColorConstraintMedian::ColorConstraintMedian(): m_NeedComputeMedian(true),
 void ColorConstraintMedian::ComputeMedian()
 {
 	m_NeedComputeMedian = false;
-
 	if (!m_Colors.empty())
 	{
 		std::sort(m_Colors.begin(), m_Colors.end(), LightCompareVector3);

@@ -54,6 +54,19 @@ public:
 	bool	m_DRAW_ISOSURFACE;
 	bool	m_DRAW_CURVE_EXTRACTION;
 	bool	m_DRAW_CANNY_EXTRACTION;
+	// new
+	bool	m_CONSTRAINT_CURVES_PARAMETER_1;
+	bool	m_CONSTRAINT_CURVES_PARAMETER_2;
+	bool	m_ISOSURFACE_REGION;
+	bool	m_ISOSURFACE_CONSTRAINT;
+	bool	m_ISOSURFACE_CONSTRAINT_VECTORIZATION;
+	bool	m_DECORATIVE_CURVES;
+	bool	m_DECORATIVE_CURVES_CONSTRAINT;
+	bool	m_BOUNDARY_CURVES;
+	bool	m_BOUNDARY_CURVES_CONSTRAINT;
+	bool	m_REGION_GROWING;
+	bool	m_BLACK_LINE_VECTORIZATION;
+	bool	m_BOUNDARY_CURVES_VECTORIZATION;
 
 	CvPatchs    m_CvPatchs;
 	void    ShowPatch(double x, double y);
@@ -144,6 +157,31 @@ public:
 	afx_msg void OnUpdateCheckDrawCurveExtraction(CCmdUI *pCmdUI);
 	afx_msg void OnCheckDrawCannyExtraction();
 	afx_msg void OnUpdateCheckDrawCannyExtraction(CCmdUI *pCmdUI);
+	afx_msg void OnCheck_ConstraintCurvesParameter1();
+	afx_msg void OnUpdateCheck_ConstraintCurvesParameter1(CCmdUI *pCmdUI);
+	afx_msg void OnCheck_ConstraintCurvesParameter2();
+	afx_msg void OnUpdateCheck_ConstraintCurvesParameter2(CCmdUI *pCmdUI);
+	afx_msg void OnCheck_IsosurfaceConstraint();
+	afx_msg void OnUpdateCheck_IsosurfaceConstraint(CCmdUI *pCmdUI);
+	afx_msg void OnCheck_DecorativeCurves();
+	afx_msg void OnUpdateCheck_DecorativeCurves(CCmdUI *pCmdUI);
+	afx_msg void OnCheck_BoundaryCurves();
+	afx_msg void OnUpdateCheck_BoundaryCurves(CCmdUI *pCmdUI);
+	afx_msg void OnCheck_RegionGrowing();
+	afx_msg void OnUpdateCheck_RegionGrowing(CCmdUI *pCmdUI);
+	afx_msg void OnCheck_BlackLineVectorization();
+	afx_msg void OnUpdateCheck_BlackLineVectorization(CCmdUI *pCmdUI);
+	afx_msg void OnCheck__IsosurfaceConstraintVectorization();
+	afx_msg void OnUpdateCheck_IsosurfaceConstraintVectorization(CCmdUI *pCmdUI);
+	afx_msg void OnButton_BuildVectorization();
+	afx_msg void OnCheck_DecorativeCurvesConstraint();
+	afx_msg void OnUpdateCheck_DecorativeCurvesConstraint(CCmdUI *pCmdUI);
+	afx_msg void OnCheck_BoundaryCurvesConstraint();
+	afx_msg void OnUpdateCheck_BoundaryCurvesConstraint(CCmdUI *pCmdUI);
+	afx_msg void OnCheck_BoundaryCurvesVectorization();
+	afx_msg void OnUpdateCheck_BoundaryCurvesVectorization(CCmdUI *pCmdUI);
+	afx_msg void OnCheck_IsosurfaceRegion();
+	afx_msg void OnUpdateCheck_IsosurfaceRegion(CCmdUI *pCmdUI);
 };
 
 

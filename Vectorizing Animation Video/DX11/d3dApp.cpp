@@ -17,7 +17,6 @@ D3DApp::D3DApp()
 	m_DrawTexture = NULL;
 	m_distDirTextureRV = NULL;
 	m_distDirTextureTV = NULL;
-	m_DepthStencilView2 = NULL;
 	m_RenderTargetView = NULL;
 	m_DepthStencilView = NULL;
 	m_DeviceContext = NULL;
@@ -178,7 +177,6 @@ D3DApp::~D3DApp()
 	ReleaseCOM(m_SwapChain);
 	ReleaseCOM(m_DepthStencilBuffer);
 	ReleaseCOM(m_DrawTexture);
-	ReleaseCOM(m_DepthStencilView2);
 	ReleaseCOM(m_RenderTargetView);
 	ReleaseCOM(m_DepthStencilView);
 	ReleaseCOM(m_DeviceContext);
@@ -226,6 +224,9 @@ void D3DApp::initApp(HWND hWnd, int w, int h)
 	m_ClientHeight = h;
 	initDirect3D();
 	LoadBlend();
+	m_ClientWidth = 0;
+	m_ClientHeight = 0;
+	OnResize(w, h);
 }
 
 void D3DApp::initDirect3D()
@@ -237,7 +238,6 @@ void D3DApp::initDirect3D()
 	m_pd3dDevice = m_DXUT_UI->GetDevice();
 	m_DeviceContext = m_DXUT_UI->GetDeviceContext();
 	m_SwapChain = m_DXUT_UI->GetSwapChaine();
-	OnResize(m_ClientWidth, m_ClientHeight);
 	m_vbd.Usage = D3D11_USAGE_IMMUTABLE;
 	m_vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	m_vbd.CPUAccessFlags = 0;
@@ -247,12 +247,16 @@ void D3DApp::initDirect3D()
 
 void D3DApp::OnResize(int w, int h)
 {
+	if (!m_pd3dDevice)
+	{
+		return;
+	}
 	if (0 == w || 0 == h)
 	{
 		w = m_ClientWidth;
 		h = m_ClientHeight;
 	}
-	if (!m_pd3dDevice)
+	else if (m_ClientWidth == w && m_ClientHeight == h)
 	{
 		return;
 	}
@@ -261,11 +265,36 @@ void D3DApp::OnResize(int w, int h)
 	printf("w: %d h:%d\n", m_ClientWidth, m_ClientHeight);
 	// Release the old views, as they hold references to the buffers we
 	// will be destroying.  Also release the old depth/stencil buffer.
+	// main
 	ReleaseCOM(m_RenderTargetView);
 	ReleaseCOM(m_DepthStencilView);
 	ReleaseCOM(m_DepthStencilBuffer);
 	ReleaseCOM(m_BackBuffer);
 	ReleaseCOM(m_distDirTextureRV);
+	// bitmap
+	ReleaseCOM(m_distDirTextureTV);
+	ReleaseCOM(m_distDirTextureRV);
+	ReleaseCOM(m_DrawTextureDepthStencilBuffer);
+	ReleaseCOM(m_DrawTextureDepthStencilView);
+	ReleaseCOM(m_DrawTexture);
+	ReleaseCOM(m_BackBuffer);
+	// diffusion
+	ReleaseCOM(m_diffuseTexture[0]);
+	ReleaseCOM(m_diffuseTexture[1]);
+	ReleaseCOM(m_diffdistDirTexture);
+	ReleaseCOM(m_Texture);
+	ReleaseCOM(m_pDepthStencil);
+	ReleaseCOM(m_otherTexture);
+	ReleaseCOM(m_diffuseTextureRV[0]);
+	ReleaseCOM(m_diffuseTextureTV[0]);
+	ReleaseCOM(m_diffuseTextureRV[1]);
+	ReleaseCOM(m_diffuseTextureTV[1]);
+	ReleaseCOM(m_diffdistDirTextureRV);
+	ReleaseCOM(m_diffdistDirTextureTV);
+	ReleaseCOM(m_TextureRV);
+	ReleaseCOM(m_TextureTV);
+	ReleaseCOM(m_otherTextureRV);
+	ReleaseCOM(m_otherTextureTV);
 	DXUTResizeDXGIBuffers(w, h, 0);
 	// Resize the swap chain and recreate the render target view.
 	//HR(mSwapChain->ResizeBuffers(2, mClientWidth, mClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, 0));
@@ -278,9 +307,9 @@ void D3DApp::OnResize(int w, int h)
 	depthStencilDesc.Height    = h;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count   = 4; // multisampling must match
-	depthStencilDesc.SampleDesc.Quality = 1; // swap chain values.
+	depthStencilDesc.Format    = DXGI_FORMAT_D32_FLOAT;
+	depthStencilDesc.SampleDesc.Count   = 1; // multisampling must match
+	depthStencilDesc.SampleDesc.Quality = 0; // swap chain values.
 	depthStencilDesc.Usage          = D3D11_USAGE_DEFAULT;
 	depthStencilDesc.BindFlags      = D3D11_BIND_DEPTH_STENCIL;
 	depthStencilDesc.CPUAccessFlags = 0;
@@ -320,21 +349,6 @@ void D3DApp::OnResize(int w, int h)
 	HR(m_pd3dDevice->CreateTexture2D(&texdesc, NULL, &m_pDepthStencil));
 	HR(m_pd3dDevice->CreateDepthStencilView(m_pDepthStencil, NULL, &m_pDepthStencilView));
 	//create diffusion textures (2 for ping pong rendering)
-	ReleaseCOM(m_diffuseTexture[0]);
-	ReleaseCOM(m_diffuseTexture[1]);
-	ReleaseCOM(m_diffdistDirTexture);
-	ReleaseCOM(m_otherTexture);
-	ReleaseCOM(m_Texture);
-	ReleaseCOM(m_diffuseTextureRV[0]);
-	ReleaseCOM(m_diffuseTextureTV[0]);
-	ReleaseCOM(m_diffuseTextureRV[1]);
-	ReleaseCOM(m_diffuseTextureTV[1]);
-	ReleaseCOM(m_diffdistDirTextureRV);
-	ReleaseCOM(m_diffdistDirTextureTV);
-	ReleaseCOM(m_TextureRV);
-	ReleaseCOM(m_TextureTV);
-	ReleaseCOM(m_otherTextureRV);
-	ReleaseCOM(m_otherTextureTV);
 	texdesc.Width = w;
 	texdesc.Height = h;
 	//texdesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -383,7 +397,7 @@ void D3DApp::OnDrawToBimapResize()
 	depthStencilDesc.Height    = m_ClientHeight;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.Format    = DXGI_FORMAT_D32_FLOAT;
 	depthStencilDesc.SampleDesc.Count   = 1; // multisampling must match
 	depthStencilDesc.SampleDesc.Quality = 0; // swap chain values.
 	depthStencilDesc.Usage          = D3D11_USAGE_DEFAULT;
@@ -440,7 +454,7 @@ void D3DApp::OnDrawToBimapResize()
 
 void D3DApp::DrawScene()
 {
-	if (!m_DXUT_UI)
+	if (!m_DXUT_UI || !m_RenderTargetView || !m_DepthStencilView)
 	{
 		return;
 	}
@@ -892,10 +906,12 @@ void D3DApp::BuildPoint()
 		m_pd3dDevice->CreateBuffer(&m_vbd, &vinitData, &m_pCurveVertexBuffer);
 		// render to view
 		//create the screen space quad
+		float xmin = -1, xmax = 1;
+		float ymin = -1, ymax = 1;
 		D3DXVECTOR3 pos[3 * 2] =
 		{
-			D3DXVECTOR3(-1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(-1.0f, 1.0f, +0.5f),
-			D3DXVECTOR3(1.0f, -1.0f, +0.5f), D3DXVECTOR3(1.0f, 1.0f, +0.5f), D3DXVECTOR3(-1.0f, 1.0f, +0.5f)
+			D3DXVECTOR3(xmin, ymin, +0.5f), D3DXVECTOR3(xmax, ymin, +0.5f), D3DXVECTOR3(xmin, ymax, +0.5f),
+			D3DXVECTOR3(xmax, ymin, +0.5f), D3DXVECTOR3(xmax, ymax, +0.5f), D3DXVECTOR3(xmin, ymax, +0.5f)
 		};
 		D3DXVECTOR2 tex[3 * 2] =
 		{
@@ -1168,6 +1184,7 @@ void D3DApp::InterSetScale(float s)
 	m_Lines_Scale->SetFloat(s);
 	m_Lines2w_Scale->SetFloat(s);
 	m_SkeletonLines_Scale->SetFloat(s);
+	m_pScale->SetFloat(s);
 }
 
 void D3DApp::ClearPatchs()
@@ -1740,6 +1757,8 @@ void D3DApp::InterDraw(bool drawDiffusion)
 		m_DeviceContext->ClearRenderTargetView(m_diffuseTextureTV[1], D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 		m_DeviceContext->ClearRenderTargetView(m_otherTextureTV, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 		m_DeviceContext->ClearRenderTargetView(m_diffdistDirTextureTV, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+		m_DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+		m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 		// diffusion curve part
 		HRESULT hr;
 		D3DX11_TECHNIQUE_DESC techDesc;
@@ -1748,14 +1767,8 @@ void D3DApp::InterDraw(bool drawDiffusion)
 		//store the old render targets and viewports
 		ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
 		ID3D11DepthStencilView* old_pDSV = DXUTGetD3D11DepthStencilView();
-		UINT NumViewports = 1;
-		D3D11_VIEWPORT pViewports[20];
-		m_DeviceContext->RSGetViewports(&NumViewports, &pViewports[0]);
+		m_DeviceContext->OMGetRenderTargets(1, &old_pRTV, &old_pDSV);
 		// set the shader variables, they are valid through the whole rendering pipeline
-		HR(m_pScale->SetFloat(m_Scale));
-		m_pan.x = m_LookCenterX;
-		m_pan.y = m_LookCenterY;
-		HR(m_pPan->SetFloatVector(m_pan));
 		HR(m_pPolySize->SetFloat(m_polySize));
 		// render the triangles to the highest input texture level (assuming they are already defined!)
 		m_DeviceContext->IASetInputLayout(m_pCurveVertexLayout);
@@ -1763,8 +1776,6 @@ void D3DApp::InterDraw(bool drawDiffusion)
 		offset = 0;
 		m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertexBuffer, &stride, &offset);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-		m_DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f,
-											   0);
 		//construct the curve triangles in the geometry shader and render them directly
 		ID3D11RenderTargetView* destTexTV[3];
 		destTexTV[0] = m_diffuseTextureTV[1 - m_diffTex];
@@ -1827,11 +1838,19 @@ void D3DApp::InterDraw(bool drawDiffusion)
 			m_pLineAntiAliasTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
 			m_DeviceContext->Draw(6, 0);
 		}
-		//restore old render targets
-		m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
-		m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
 		// render to view
-		m_DeviceContext->OMSetRenderTargets(1, &m_TextureTV, m_pDepthStencilView);
+		m_DeviceContext->OMSetRenderTargets(1, &m_TextureTV, 0);
+		if (m_PicsVertices.size() > 0)
+		{
+			m_Pics_PMap->SetResource(m_Pics_Texture);
+			UINT offset = 0;
+			UINT stride2 = sizeof(PictureVertex);
+			m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+			m_DeviceContext->IASetInputLayout(m_Pics_PLayout);
+			m_DeviceContext->IASetVertexBuffers(0, 1, &m_Pics_Buffer, &stride2, &offset);
+			m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+			m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
+		}
 		// Set the input layout
 		m_DeviceContext->IASetInputLayout(m_pCurveVertex2Layout);
 		// Set vertex buffer
@@ -1839,15 +1858,27 @@ void D3DApp::InterDraw(bool drawDiffusion)
 		offset = 0;
 		m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertex2Buffer, &stride, &offset);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		HR(m_pDiffTex->SetResource(m_diffuseTextureRV[m_diffTex]));
-		//HR(m_pDiffTex->SetResource(m_diffdistDirTextureRV));
+		//HR(m_pDiffTex->SetResource(m_diffuseTextureRV[m_diffTex]));
+		HR(m_pDiffTex->SetResource(m_diffdistDirTextureRV));
 		m_pDisplayImage->GetDesc(&techDesc);
 		for (UINT p = 0; p < techDesc.Passes; ++p)
 		{
 			m_pDisplayImage->GetPassByIndex(p)->Apply(0, m_DeviceContext);
 			m_DeviceContext->Draw(6, 0);
 		}
+		//restore old render targets
 		m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV, old_pDSV);
+		if (m_PicsVertices.size() > 0)
+		{
+			m_Pics_PMap->SetResource(m_Pics_Texture);
+			UINT offset = 0;
+			UINT stride2 = sizeof(PictureVertex);
+			m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+			m_DeviceContext->IASetInputLayout(m_Pics_PLayout);
+			m_DeviceContext->IASetVertexBuffers(0, 1, &m_Pics_Buffer, &stride2, &offset);
+			m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+			m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
+		}
 		offset = 0;
 		m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertex2Buffer, &stride, &offset);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1858,6 +1889,7 @@ void D3DApp::InterDraw(bool drawDiffusion)
 			m_DeviceContext->Draw(6, 0);
 		}
 	}
+	InterSetRenderTransparencyDefault();
 	float BlendFactor[4] = {0, 0, 0, 0};
 	m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
 	m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
@@ -1973,6 +2005,9 @@ void D3DApp::InterSetLookCenter(float x, float y)
 	m_Lines2w_CenterY->SetFloat(y);
 	m_SkeletonLines_CenterX->SetFloat(x);
 	m_SkeletonLines_CenterY->SetFloat(y);
+	m_pan.x = x;
+	m_pan.y = y;
+	m_pPan->SetFloatVector(m_pan);
 }
 
 void D3DApp::InterSetSize(float w, float h)
@@ -1997,8 +2032,8 @@ void D3DApp::InterSetSize(float w, float h)
 	m_Lines2w_Height->SetFloat(h);
 	m_SkeletonLines_Width->SetFloat(w);
 	m_SkeletonLines_Height->SetFloat(h);
-	HR(m_pDiffX->SetFloat(w));
-	HR(m_pDiffY->SetFloat(h));
+	m_pDiffX->SetFloat(w);
+	m_pDiffY->SetFloat(h);
 }
 
 cv::Mat D3DApp::DrawSceneToCvMat()
@@ -2009,11 +2044,13 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 	{
 		ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
 		ID3D11DepthStencilView* old_pDSV = DXUTGetD3D11DepthStencilView();
+		m_DeviceContext->OMGetRenderTargets(1, &old_pRTV, &old_pDSV);
 		UINT NumViewports = 1;
 		D3D11_VIEWPORT pViewports[10];
 		m_DeviceContext->RSGetViewports(&NumViewports, &pViewports[0]);
 		m_DeviceContext->OMSetRenderTargets(1, &m_distDirTextureTV,
 											m_DrawTextureDepthStencilView);
+		m_DeviceContext->ClearDepthStencilView(m_DrawTextureDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 		m_DeviceContext->ClearRenderTargetView(m_distDirTextureTV, m_ClearColor);
 		D3D11_VIEWPORT vp;
 		vp.TopLeftX = 0;
@@ -2026,7 +2063,7 @@ cv::Mat D3DApp::DrawSceneToCvMat()
 		InterSetScale(m_Scale);
 		InterSetLookCenter(0, 0);
 		InterSetSize(TexWidth, TexHeight);
-		InterDraw(false);
+		InterDraw();
 		ID3D11Texture2D* pTextureRead;
 		D3D11_TEXTURE2D_DESC texDescCV;
 		ZeroMemory(&texDescCV, sizeof(texDescCV));
@@ -2085,7 +2122,7 @@ void D3DApp::InterSetRenderTransparencyOutput1()
 	m_Lines_Alpha->SetFloat(1);
 	m_Lines2w_CenterAlpha->SetFloat(1);
 	m_SkeletonLines_Alpha->SetFloat(0.1);
-	m_TransparencySV_Picture->SetFloat(0);
+	m_TransparencySV_Picture->SetFloat(1);
 }
 
 void D3DApp::InterSetRenderTransparencyOutput2()

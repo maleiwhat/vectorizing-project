@@ -39,6 +39,7 @@
 IMPLEMENT_DYNCREATE(VAV_MainFrame, CFrameWndEx)
 
 BEGIN_MESSAGE_MAP(VAV_MainFrame, CFrameWndEx)
+	// 0
 	ON_WM_CREATE()
 	ON_COMMAND_RANGE(ID_VIEW_APPLOOK_WIN_2000, ID_VIEW_APPLOOK_WINDOWS_7,
 					 &VAV_MainFrame::OnApplicationLook)
@@ -69,6 +70,7 @@ BEGIN_MESSAGE_MAP(VAV_MainFrame, CFrameWndEx)
 	ON_COMMAND(ID_BUTTON_Skeleton, &VAV_MainFrame::OnButtonSkeleton)
 	ON_COMMAND(ID_BUTTON_Sobel, &VAV_MainFrame::OnButtonSobel)
 	ON_COMMAND(ID_BUTTON_Laplace, &VAV_MainFrame::OnButtonLaplace)
+	// 1
 	ON_COMMAND(ID_SPIN_TransparencySelectPatch,
 			   &VAV_MainFrame::OnSpinTransparencySelectPatch)
 	ON_UPDATE_COMMAND_UI(ID_SPIN_TransparencySelectPatch,
@@ -115,7 +117,45 @@ BEGIN_MESSAGE_MAP(VAV_MainFrame, CFrameWndEx)
 	ON_COMMAND(ID_CHECK_DRAW_CANNY_EXTRACTION, &VAV_MainFrame::OnCheckDrawCannyExtraction)
 	ON_UPDATE_COMMAND_UI(ID_CHECK_DRAW_CANNY_EXTRACTION,
 						 &VAV_MainFrame::OnUpdateCheckDrawCannyExtraction)
-END_MESSAGE_MAP()
+	ON_COMMAND(ID_CHECK_Constraint_Curves_parameter_1,
+			   &VAV_MainFrame::OnCheck_ConstraintCurvesParameter1)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_Constraint_Curves_parameter_1,
+						 &VAV_MainFrame::OnUpdateCheck_ConstraintCurvesParameter1)
+	ON_COMMAND(ID_CHECK_Constraint_Curves_parameter_2,
+			   &VAV_MainFrame::OnCheck_ConstraintCurvesParameter2)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_Constraint_Curves_parameter_2,
+						 &VAV_MainFrame::OnUpdateCheck_ConstraintCurvesParameter2)
+	ON_COMMAND(ID_CHECK_Isosurface_Constraint, &VAV_MainFrame::OnCheck_IsosurfaceConstraint)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_Isosurface_Constraint,
+						 &VAV_MainFrame::OnUpdateCheck_IsosurfaceConstraint)
+	ON_COMMAND(ID_CHECK_Decorative_Curves, &VAV_MainFrame::OnCheck_DecorativeCurves)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_Decorative_Curves, &VAV_MainFrame::OnUpdateCheck_DecorativeCurves)
+	ON_COMMAND(ID_CHECK_Boundary_Curves, &VAV_MainFrame::OnCheck_BoundaryCurves)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_Boundary_Curves, &VAV_MainFrame::OnUpdateCheck_BoundaryCurves)
+	ON_COMMAND(ID_CHECK_Region_Growing, &VAV_MainFrame::OnCheck_RegionGrowing)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_Region_Growing, &VAV_MainFrame::OnUpdateCheck_RegionGrowing)
+	ON_COMMAND(ID_CHECK_Black_Line_Vectorization, &VAV_MainFrame::OnCheck_BlackLineVectorization)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_Black_Line_Vectorization,
+						 &VAV_MainFrame::OnUpdateCheck_BlackLineVectorization)
+	ON_COMMAND(ID_CHECK_Isosurface_Constraint_Vectorization,
+			   &VAV_MainFrame::OnCheck__IsosurfaceConstraintVectorization)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_Isosurface_Constraint_Vectorization,
+						 &VAV_MainFrame::OnUpdateCheck_IsosurfaceConstraintVectorization)
+	ON_COMMAND(ID_BUTTON_Build_Vectorization, &VAV_MainFrame::OnButton_BuildVectorization)
+	ON_COMMAND(ID_CHECK_Decorative_Curves_Constraint,
+			   &VAV_MainFrame::OnCheck_DecorativeCurvesConstraint)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_Decorative_Curves_Constraint,
+						 &VAV_MainFrame::OnUpdateCheck_DecorativeCurvesConstraint)
+	ON_COMMAND(ID_CHECK_Boundary_Curves_Constraint, &VAV_MainFrame::OnCheck_BoundaryCurvesConstraint)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_Boundary_Curves_Constraint,
+						 &VAV_MainFrame::OnUpdateCheck_BoundaryCurvesConstraint)
+	ON_COMMAND(ID_CHECK_Boundary_Curves_Vectorization,
+			   &VAV_MainFrame::OnCheck_BoundaryCurvesVectorization)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_Boundary_Curves_Vectorization,
+						 &VAV_MainFrame::OnUpdateCheck_BoundaryCurvesVectorization)
+						 ON_COMMAND(ID_CHECK_Isosurface_Region, &VAV_MainFrame::OnCheck_IsosurfaceRegion)
+						 ON_UPDATE_COMMAND_UI(ID_CHECK_Isosurface_Region, &VAV_MainFrame::OnUpdateCheck_IsosurfaceRegion)
+						 END_MESSAGE_MAP()
 
 // VAV_MainFrame 建構/解構
 #include <stdio.h>
@@ -142,6 +182,19 @@ VAV_MainFrame::VAV_MainFrame()
 	m_DRAW_ISOSURFACE = false;
 	m_DRAW_CURVE_EXTRACTION = true;
 	m_DRAW_CANNY_EXTRACTION = false;
+
+	m_CONSTRAINT_CURVES_PARAMETER_1 = true;
+	m_CONSTRAINT_CURVES_PARAMETER_2 = true;
+	m_ISOSURFACE_REGION = true;
+	m_ISOSURFACE_CONSTRAINT = true;
+	m_ISOSURFACE_CONSTRAINT_VECTORIZATION = true;
+	m_DECORATIVE_CURVES = true;
+	m_DECORATIVE_CURVES_CONSTRAINT = true;
+	m_BOUNDARY_CURVES = true;
+	m_BOUNDARY_CURVES_CONSTRAINT = true;
+	m_REGION_GROWING = true;
+	m_BLACK_LINE_VECTORIZATION = true;
+	m_BOUNDARY_CURVES_VECTORIZATION = true;
 }
 
 VAV_MainFrame::~VAV_MainFrame()
@@ -461,7 +514,6 @@ void VAV_MainFrame::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 
 void VAV_MainFrame::OnComboColorinterpolation()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 }
 
 void VAV_MainFrame::OnFileOpenPicture()
@@ -556,7 +608,6 @@ void VAV_MainFrame::OnButtonCanny()
 	{
 		return;
 	}
-	// TODO: 在此加入您的命令處理常式程式碼
 	int t1 = 0, t2 = 30, a = 3;
 	CMFCRibbonEdit* re;
 	CMFCRibbonBaseElement* tmp_ui = 0;
@@ -623,29 +674,24 @@ void VAV_MainFrame::OnButtonCanny()
 
 void VAV_MainFrame::OnSpinCannyThreshold1()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 }
 
 
 void VAV_MainFrame::OnSpinCannyThreshold2()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 }
 
 
 void VAV_MainFrame::OnSpinAperturesize()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 }
 
 void VAV_MainFrame::OnButtonControlPointInitialize()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 }
 
 void VAV_MainFrame::OnButtonSkeleton()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 	m_cannyImage = m_vavImage;
 	//Skeleton(m_cannyImage);
 	cv::Mat cw = cv::Mat(m_cannyImage).clone();
@@ -664,13 +710,11 @@ void VAV_MainFrame::OnButtonSkeleton()
 }
 void VAV_MainFrame::OnButtonSobel()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 	m_cannyImage = m_vavImage;
 	GetVavView()->SetTexture(m_cannyImage.GetDx11Texture());
 }
 void VAV_MainFrame::OnButtonLaplace()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 }
 void VAV_MainFrame::OnSpinTransparencySelectPatch()
 {
@@ -978,119 +1022,99 @@ void VAV_MainFrame::OnUpdateSpinTransparencylineskeleton(CCmdUI* pCmdUI)
 	GetVavView()->GetD3DApp().SetTransparency_LineSkeleton((
 				100 - m_LineSkeletonTransparency) * 0.01);
 }
-VAV_View* VAV_MainFrame::GetVavView()
-{
-	return ((VAV_View*)this->GetActiveView());
-}
 
 void VAV_MainFrame::OnCheckDrawPatch()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 	m_DRAW_PATCH = !m_DRAW_PATCH;
 }
 
 
 void VAV_MainFrame::OnUpdateCheckDrawPatch(CCmdUI* pCmdUI)
 {
-	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
 	pCmdUI->SetCheck(m_DRAW_PATCH);
 }
 
 
 void VAV_MainFrame::OnCheckDrawSeparatePatch()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 	m_DRAW_SEPARATE_PATCH = !m_DRAW_SEPARATE_PATCH;
 }
 
 
 void VAV_MainFrame::OnUpdateCheckDrawSeparatePatch(CCmdUI* pCmdUI)
 {
-	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
 	pCmdUI->SetCheck(m_DRAW_SEPARATE_PATCH);
 }
 
 
 void VAV_MainFrame::OnCheckDrawContour()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 	m_DRAW_CONTOUR = !m_DRAW_CONTOUR;
 }
 
 
 void VAV_MainFrame::OnUpdateCheckDrawContour(CCmdUI* pCmdUI)
 {
-	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
 	pCmdUI->SetCheck(m_DRAW_CONTOUR);
 }
 
 
 void VAV_MainFrame::OnCheckDrawContourControlPoint()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 	m_DRAW_CONTOUR_CONTROL_POINT = !m_DRAW_CONTOUR_CONTROL_POINT;
 }
 
 
 void VAV_MainFrame::OnUpdateCheckDrawContourControlPoint(CCmdUI* pCmdUI)
 {
-	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
 	pCmdUI->SetCheck(m_DRAW_CONTOUR_CONTROL_POINT);
 }
 
 
 void VAV_MainFrame::OnCheckDrawContourSkeletonPoint()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 	m_DRAW_CONTOUR_SKELETON_POINT = !m_DRAW_CONTOUR_SKELETON_POINT;
 }
 
 
 void VAV_MainFrame::OnUpdateCheckDrawContourSkeletonPoint(CCmdUI* pCmdUI)
 {
-	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
 	pCmdUI->SetCheck(m_DRAW_CONTOUR_SKELETON_POINT);
 }
 
 
 void VAV_MainFrame::OnCheckDrawIsosurface()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 	m_DRAW_ISOSURFACE = !m_DRAW_ISOSURFACE;
 }
 
 
 void VAV_MainFrame::OnUpdateCheckDrawIsosurface(CCmdUI* pCmdUI)
 {
-	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
 	pCmdUI->SetCheck(m_DRAW_ISOSURFACE);
 }
 
 
 void VAV_MainFrame::OnCheckDrawCurveExtraction()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 	m_DRAW_CURVE_EXTRACTION = !m_DRAW_CURVE_EXTRACTION;
 }
 
 
 void VAV_MainFrame::OnUpdateCheckDrawCurveExtraction(CCmdUI* pCmdUI)
 {
-	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
 	pCmdUI->SetCheck(m_DRAW_CURVE_EXTRACTION);
 }
 
 
 void VAV_MainFrame::OnCheckDrawCannyExtraction()
 {
-	// TODO: 在此加入您的命令處理常式程式碼
 	m_DRAW_CANNY_EXTRACTION = !m_DRAW_CANNY_EXTRACTION;
 }
 
 
 void VAV_MainFrame::OnUpdateCheckDrawCannyExtraction(CCmdUI* pCmdUI)
 {
-	// TODO: 在此加入您的命令更新 UI 處理常式程式碼
 	pCmdUI->SetCheck(m_DRAW_CANNY_EXTRACTION);
 }
 
@@ -1323,3 +1347,153 @@ void VAV_MainFrame::OnFileOpenVideo()
 	}
 	GetVavView()->SetTimer(100, 50, 0);
 }
+
+
+void VAV_MainFrame::OnCheck_ConstraintCurvesParameter1()
+{
+	m_CONSTRAINT_CURVES_PARAMETER_1 = !m_CONSTRAINT_CURVES_PARAMETER_1;
+}
+
+
+void VAV_MainFrame::OnUpdateCheck_ConstraintCurvesParameter1(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(m_CONSTRAINT_CURVES_PARAMETER_1);
+}
+
+
+void VAV_MainFrame::OnCheck_ConstraintCurvesParameter2()
+{
+	m_CONSTRAINT_CURVES_PARAMETER_2 = !m_CONSTRAINT_CURVES_PARAMETER_2;
+}
+
+
+void VAV_MainFrame::OnUpdateCheck_ConstraintCurvesParameter2(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(m_CONSTRAINT_CURVES_PARAMETER_2);
+}
+
+
+void VAV_MainFrame::OnCheck_IsosurfaceConstraint()
+{
+	m_ISOSURFACE_CONSTRAINT = !m_ISOSURFACE_CONSTRAINT;
+}
+
+
+void VAV_MainFrame::OnUpdateCheck_IsosurfaceConstraint(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(m_ISOSURFACE_CONSTRAINT);
+}
+
+
+void VAV_MainFrame::OnCheck_DecorativeCurves()
+{
+	m_DECORATIVE_CURVES = !m_DECORATIVE_CURVES;
+}
+
+
+void VAV_MainFrame::OnUpdateCheck_DecorativeCurves(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(m_DECORATIVE_CURVES);
+}
+
+
+void VAV_MainFrame::OnCheck_BoundaryCurves()
+{
+	m_BOUNDARY_CURVES = !m_BOUNDARY_CURVES;
+}
+
+
+void VAV_MainFrame::OnUpdateCheck_BoundaryCurves(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(m_BOUNDARY_CURVES);
+}
+
+
+void VAV_MainFrame::OnCheck_RegionGrowing()
+{
+	m_REGION_GROWING = !m_REGION_GROWING;
+}
+
+
+void VAV_MainFrame::OnUpdateCheck_RegionGrowing(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(m_REGION_GROWING);
+}
+
+
+void VAV_MainFrame::OnCheck_BlackLineVectorization()
+{
+	m_BLACK_LINE_VECTORIZATION = !m_BLACK_LINE_VECTORIZATION;
+}
+
+
+void VAV_MainFrame::OnUpdateCheck_BlackLineVectorization(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(m_BLACK_LINE_VECTORIZATION);
+}
+
+
+void VAV_MainFrame::OnCheck__IsosurfaceConstraintVectorization()
+{
+	m_ISOSURFACE_CONSTRAINT_VECTORIZATION = !m_ISOSURFACE_CONSTRAINT_VECTORIZATION;
+}
+
+
+void VAV_MainFrame::OnUpdateCheck_IsosurfaceConstraintVectorization(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(m_ISOSURFACE_CONSTRAINT_VECTORIZATION);
+}
+
+VAV_View* VAV_MainFrame::GetVavView()
+{
+	return ((VAV_View*)this->GetActiveView());
+}
+
+
+void VAV_MainFrame::OnCheck_DecorativeCurvesConstraint()
+{
+	m_DECORATIVE_CURVES_CONSTRAINT = !m_DECORATIVE_CURVES_CONSTRAINT;
+}
+
+
+void VAV_MainFrame::OnUpdateCheck_DecorativeCurvesConstraint(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(m_DECORATIVE_CURVES_CONSTRAINT);
+}
+
+
+void VAV_MainFrame::OnCheck_BoundaryCurvesConstraint()
+{
+	m_BOUNDARY_CURVES_CONSTRAINT = !m_BOUNDARY_CURVES_CONSTRAINT;
+}
+
+
+void VAV_MainFrame::OnUpdateCheck_BoundaryCurvesConstraint(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(m_BOUNDARY_CURVES_CONSTRAINT);
+}
+
+
+void VAV_MainFrame::OnCheck_BoundaryCurvesVectorization()
+{
+	m_BOUNDARY_CURVES_VECTORIZATION = !m_BOUNDARY_CURVES_VECTORIZATION;
+}
+
+
+void VAV_MainFrame::OnUpdateCheck_BoundaryCurvesVectorization(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(m_BOUNDARY_CURVES_VECTORIZATION);
+}
+
+
+void VAV_MainFrame::OnCheck_IsosurfaceRegion()
+{
+	m_ISOSURFACE_REGION = !m_ISOSURFACE_REGION;
+}
+
+
+void VAV_MainFrame::OnUpdateCheck_IsosurfaceRegion(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(m_ISOSURFACE_REGION);
+}
+

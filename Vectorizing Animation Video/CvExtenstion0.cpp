@@ -1539,7 +1539,7 @@ cv::Mat ConvertToMedian(cv::Mat TestImg, cv::Mat src)
 				V2 v = checks.front();
 				saves.push_back(v);
 				checks.pop_front();
-				ccm.AddPoint(0, 0, src.at<cv::Vec3b>(v.y, v.x));
+				ccm.AddPoint(v.y, v.x, src.at<cv::Vec3b>(v.y, v.x));
 				for (int k = 0; k < 4; ++k)
 				{
 					test[k] = v;
@@ -1583,7 +1583,7 @@ cv::Mat ConvertToMedian(cv::Mat TestImg, cv::Mat src)
 	return res;
 }
 
-cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, Vector3s& output)
+cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, ColorConstraintMedians& output)
 {
 	output.clear();
 	int markid = 1;
@@ -1645,12 +1645,48 @@ cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, Vector3s& output)
 			for (int k = 0; k < saves.size(); ++k)
 			{
 				cv::Vec3b& dst = res.at<cv::Vec3b>(saves[k].y, saves[k].x);
-				ccm.AddPoint(0, 0, oriimg.at<cv::Vec3b>(saves[k].y, saves[k].x));
+				ccm.AddPoint(saves[k].x, saves[k].y, oriimg.at<cv::Vec3b>(saves[k].y, saves[k].x));
 				dst = medcolor;
 			}
 			markid++;
-			output.push_back(ccm.GetColorVector3());
+			output.push_back(ccm);
 		}
 	}
 	return res;
+}
+
+cv::Mat TrapBallMaskAll( cv::Mat image )
+{
+	cv::Mat stmp = image.clone();
+	for (int i = 0; i < stmp.rows; ++i)
+	{
+		for (int j = 0; j < stmp.cols; ++j)
+		{
+			if (stmp.at<cv::Vec3b>(i, j)[2] > 0)
+			{
+				stmp.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
+			}
+		}
+	}
+	//6
+	stmp = TrapBallMask1(stmp, 6);
+	stmp = TrapBallMask3(stmp, 5);
+	stmp = TrapBallMask3(stmp, 4);
+	stmp = TrapBallMask3(stmp, 3);
+	stmp = TrapBallMask3(stmp, 2);
+	//5
+	stmp = TrapBallMask1(stmp, 5);
+	stmp = TrapBallMask3(stmp, 4);
+	stmp = TrapBallMask3(stmp, 3);
+	stmp = TrapBallMask3(stmp, 2);
+	//      //4
+	stmp = TrapBallMask1(stmp, 4);
+	stmp = TrapBallMask3(stmp, 3);
+	stmp = TrapBallMask3(stmp, 2);
+	//      //3
+	stmp = TrapBallMask1(stmp, 3);
+	stmp = TrapBallMask3(stmp, 2);
+	//      //2
+	stmp = TrapBallMask4(stmp);
+	return stmp;
 }

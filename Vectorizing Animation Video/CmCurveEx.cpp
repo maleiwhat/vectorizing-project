@@ -161,20 +161,20 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 	Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
 	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
 	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
-	cv::imshow("dxy2", dxy);
+	//cv::imshow("dxy2", dxy);
 	Laplacian(m_img1f, dxy, CV_32F, kSize, 1, -0.3);
-	cv::imshow("dxy-0.3", dxy);
+	//cv::imshow("dxy-0.3", dxy);
 //  GaussianBlur(dyMat, dyMat, cv::Size(3, 3), 0, 0);
 //  GaussianBlur(dxy, dxy, cv::Size(3, 3), 0, 0);
-	cv::imshow("dx", dxMat);
-	cv::imshow("dy", dyMat);
+// 	cv::imshow("dx", dxMat);
+// 	cv::imshow("dy", dyMat);
 	cv::Mat kx, ky;
 	getDerivKernels(kx, ky, 1, 0, 5);
 	sepFilter2D(m_img1f, dxMat, CV_32F, kx, ky, cv::Point(-1, -1), 0);
 	getDerivKernels(kx, ky, 0, 1, 5);
 	sepFilter2D(m_img1f, dyMat, CV_32F, kx, ky, cv::Point(-1, -1), 0);
-	cv::imshow("dx2", dxMat);
-	cv::imshow("dy2", dyMat);
+	//cv::imshow("dx2", dxMat);
+	//cv::imshow("dy2", dyMat);
 	cv::Mat m_pDer1f = m_pDer2f.clone();
 	double eigval[2], eigvec[2][2];
 	for (int y = 0; y < m_h; y++)

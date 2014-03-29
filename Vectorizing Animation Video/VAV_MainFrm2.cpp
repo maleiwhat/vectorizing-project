@@ -196,18 +196,18 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		vImage.ToExpImage();
 		cv::Mat imgf, show3u = cv::Mat::zeros(vImage.GetCvMat().size(), CV_8UC3);
 		imgf = vImage;
-		for (int i = 1; i <= 2; i = i + 2)
-		{
-			bilateralFilter(imgf.clone(), imgf, i, i * 2, i / 2);
-		}
-		for (int i = 1; i <= 2; i = i + 2)
-		{
-			bilateralFilter(show3u.clone(), show3u, i, i * 2, i / 2);
-		}
+// 		for (int i = 1; i <= 2; i = i + 2)
+// 		{
+// 			bilateralFilter(imgf.clone(), imgf, i, i * 2, i / 2);
+// 		}
+// 		for (int i = 1; i <= 2; i = i + 2)
+// 		{
+// 			bilateralFilter(show3u.clone(), show3u, i, i * 2, i / 2);
+// 		}
 		cvtColor(imgf, imgf, CV_BGR2GRAY);
 		imgf.convertTo(imgf, CV_32F, 1.0 / 255);
 		CmCurveEx dEdge(imgf);
-		dEdge.CalSecDer(3, 0.0001f);
+		dEdge.CalSecDer(5, 0.0001f);
 		dEdge.Link();
 		CvLines tpnts2d;
 		const CEdges& edges = dEdge.GetEdges();
@@ -294,7 +294,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0, 10);
 		d3dApp.AddLinesWidth(m_BlackLine, m_BLineWidth, lineColors);
 		// block line
-		dEdge.CalSecDer2(5, 0.001f);
+		dEdge.CalSecDer2(7, 0.001f);
 		dEdge.Link();
 		tpnts2d.clear();
 		const CEdges& edges2 = dEdge.GetEdges();
@@ -326,154 +326,99 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		d3dApp.SetScaleRecovery();
 		d3dApp.ClearSkeletonLines();
 		stmp = simg.clone();
-		for (int i = 0; i < stmp.rows; ++i)
+		//stmp = TrapBallMaskAll(stmp);
+		
+		cvtColor(simg, simg, CV_BGR2GRAY);
+		curveExtration = simg.clone();
+		Dilation(curveExtration, 2, 1);
+		cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
+		cv::Mat tmpimg = m_vavImage.Clone();
+		cv::Mat sampleimg = m_vavImage.Clone();
+		cv::Mat   isoimg = MakeIsoSurfaceImg(tmpimg, 32);
+		for (int i = 0; i < curveExtration.rows; i++)
 		{
-			for (int j = 0; j < stmp.cols; ++j)
+			for (int j = 0; j < curveExtration.cols ; j++)
 			{
-				if (stmp.at<cv::Vec3b>(i, j)[2] > 0)
+				cv::Vec3b& v = curveExtration.at<cv::Vec3b>(i, j);
+				if (v[0] > 0)
 				{
-					stmp.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
+					cv::Vec3b& sam = sampleimg.at<cv::Vec3b>(i, j);
+					sam[0] = 0;
+					sam[1] = 0;
+					sam[2] = 0;
 				}
 			}
 		}
-		//6
-		stmp = TrapBallMask1(stmp, 6);
-		stmp = TrapBallMask3(stmp, 5);
-		stmp = TrapBallMask3(stmp, 4);
-		stmp = TrapBallMask3(stmp, 3);
-		stmp = TrapBallMask3(stmp, 2);
-		//5
-		stmp = TrapBallMask1(stmp, 5);
-		stmp = TrapBallMask3(stmp, 4);
-		stmp = TrapBallMask3(stmp, 3);
-		stmp = TrapBallMask3(stmp, 2);
-//      //4
-		stmp = TrapBallMask1(stmp, 4);
-		stmp = TrapBallMask3(stmp, 3);
-		stmp = TrapBallMask3(stmp, 2);
-		//stmp = TrapBallMask2(stmp, 2, cv::MORPH_RECT);
-//      stmp = TrapBallMask2(stmp, 2, cv::MORPH_RECT);
-//      //3
-		stmp = TrapBallMask1(stmp, 3);
-		stmp = TrapBallMask3(stmp, 2);
-//      stmp = TrapBallMask2(stmp, 2, cv::MORPH_RECT);
-//      stmp = TrapBallMask2(stmp, 2, cv::MORPH_RECT);
-//      //2
-//          stmp = TrapBallMask1(stmp, 2);
-//          stmp = TrapBallMask3(stmp, 1);
-//      stmp = TrapBallMask2(stmp, 2, cv::MORPH_RECT);
-//      stmp = TrapBallMask2(stmp, 2, cv::MORPH_RECT);
-//      stmp = TrapBallMask3(stmp, 1);
-		stmp = TrapBallMask4(stmp);
-		Vector3s ccms;
-		stmp = ConvertToIndex(stmp, m_vavImage.Clone(), ccms);
-		//normalize(stmp, stmp, 0, 255, cv::NORM_MINMAX);
-// 		cv::imshow("stmp", stmp);
-// 		ConvertToMedian(stmp, m_vavImage.Clone());
+		cvtColor(curveExtration, curveExtration, CV_BGR2GRAY);
+		Dilation(curveExtration, 2, 2);
+		cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
+		for (int i = 0; i < curveExtration.rows - 1; i++)
 		{
-//          cv::Mat tmpimg = m_vavImage.Clone();
-//          cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
-//          cv::imshow("stmp2", stmp);
-//          cv::waitKey();
-//          is = S4GetPatchs(stmp, 0, 0);
-//          Lines tmp;
-//          Vector3s2d colors;
-//          for (int i = 0; i < is.m_LineFragments.size(); ++i)
-//          {
-//              Line& cps = is.m_LineFragments[i].m_Points;
-//              for (int j = 0; j < cps.size(); ++j)
-//              {
-//                  cps[j].x -= 0.5;
-//                  cps[j].y -= 0.5;
-//              }
-//              if (cps.size() > 5)
-//              {
-//                  tmp.push_back(cps);
-//              }
-//          }
-//          colors = GetLinesColor(m_vavImage, tmp);
-//          colors = SmoothingLen5(colors, 0, 1);
-			Index2Side i2s = GetLinesIndex2Side(stmp, m_BlackLine2, 2);
-			i2s.left = FixIndexs(i2s.left, 10);
-			i2s.right = FixIndexs(i2s.right, 10);
-			Color2Side color2s2 = LinesIndex2Color(i2s, ccms);
-			//color2s2 = GetLinesColor2Side(m_vavImage, tmp, 0.5);
-			//d3dApp.AddDiffusionLines(tmp, colors);
-			d3dApp.AddDiffusionLines(m_BlackLine2, color2s2);
-			d3dApp.AddLines(m_BlackLine2);
+			for (int j = 0; j < curveExtration.cols - 1; j++)
+			{
+				cv::Vec3b& v = curveExtration.at<cv::Vec3b>(i, j);
+				if (v[0] > 0)
+				{
+					cv::Vec3b& dst = isoimg.at<cv::Vec3b>(i , j);
+					dst[0] = 1;
+					dst[1] = 1;
+					dst[2] = 1;
+				}
+			}
 		}
-		//cvtColor(simg, simg, CV_BGR2GRAY);
-		//curveExtration = simg.clone();
-		//Dilation(curveExtration, 2, 1);
-		//cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
-		//cv::Mat tmpimg = m_vavImage.Clone();
-		//cv::Mat sampleimg = m_vavImage.Clone();
-		//cv::Mat   isoimg = MakeIsoSurfaceImg(tmpimg, 32);
-		//for (int i = 0; i < curveExtration.rows; i++)
-		//{
-		//  for (int j = 0; j < curveExtration.cols ; j++)
-		//  {
-		//      cv::Vec3b& v = curveExtration.at<cv::Vec3b>(i, j);
-		//      if (v[0] > 0)
-		//      {
-		//          cv::Vec3b& sam = sampleimg.at<cv::Vec3b>(i, j);
-		//          sam[0] = 0;
-		//          sam[1] = 0;
-		//          sam[2] = 0;
-		//      }
-		//  }
-		//}
-//      cvtColor(curveExtration, curveExtration, CV_BGR2GRAY);
-//      Dilation(curveExtration, 2, 2);
-//      cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
-		//for (int i = 0; i < curveExtration.rows - 1; i++)
-		//{
-		//  for (int j = 0; j < curveExtration.cols - 1; j++)
-		//  {
-		//      cv::Vec3b& v = curveExtration.at<cv::Vec3b>(i, j);
-		//      if (v[0] > 0)
-		//      {
-		//          cv::Vec3b& dst = isoimg.at<cv::Vec3b>(i , j);
-		//          dst[0] = 1;
-		//          dst[1] = 1;
-		//          dst[2] = 1;
-		//      }
-		//  }
-		//}
-		//Lines ColorWidth;
-		//Color2Side color2s;
-		//color2s = GetLinesColor2SideSmart3(m_vavImage, sampleimg, m_BlackLine2, 30);
-		////color2s = GetLinesColor2Side(m_vavImage, m_BlackLine2, 3);
-		//color2s.left = FixLineColors(color2s.left, 600, 10);
-		//color2s.right = FixLineColors(color2s.right, 600, 10);
+		Lines ColorWidth;
+		Color2Side color2s;
+		color2s = GetLinesColor2SideSmart3(m_vavImage, sampleimg, m_BlackLine2, 30);
+		//color2s = GetLinesColor2Side(m_vavImage, m_BlackLine2, 3);
+		color2s.left = FixLineColors(color2s.left, 600, 10);
+		color2s.right = FixLineColors(color2s.right, 600, 10);
 //      ClearJointArea(les, m_BlackLine2, color2s, 3);
 //      les = GetLineEnds(m_BlackLine2);
 //      ConnectNearestLines(les, m_BlackLine2, color2s, 10, 6, 15);
 //      les = GetLineEnds(m_BlackLine2);
 //      LinkLineEnds(les, 5, 20);
-		//ConnectSimilarColor2Side(les, m_BlackLine2, color2s);
+//      ConnectSimilarColor2Side(les, m_BlackLine2, color2s);
 //      color2s.left = FixLineColors(color2s.left, 600, 1);
 //      color2s.right = FixLineColors(color2s.right, 600, 1);
 //      color2s.left = MedianLen(color2s.left, 10, 3);
 //      color2s.right = MedianLen(color2s.right, 10, 3);
 //      color2s.left = SmoothingLen5(color2s.left, 0, 5);
 //      color2s.right = SmoothingLen5(color2s.right, 0, 5);
-		//d3dApp.AddDiffusionLines(m_BlackLine2, color2s);
-//      Lines normals2 = GetNormalsLen2(m_BlackLine2);
-//      GetVavView()->m_FeatureLines = m_BlackLine2;
-//      GetVavView()->m_FeatureNormals = normals2;
+//      d3dApp.AddDiffusionLines(m_BlackLine2, color2s);
+		{
+			d3dApp.AddLines(m_BlackLine2);
+			d3dApp.SetScaleTemporary(1);
+			d3dApp.BuildPoint();
+			d3dApp.InterSetRenderTransparencyOutput2();
+			cv::Mat simg = d3dApp.DrawSceneToCvMat(), stmp;
+			d3dApp.SetScaleRecovery();
+			d3dApp.ClearSkeletonLines();
+			stmp = simg.clone();
+			stmp = TrapBallMaskAll(stmp);
+			ColorConstraintMedians ccms;
+			stmp = ConvertToIndex(stmp, m_vavImage.Clone(), ccms);
+			Index2Side i2s = GetLinesIndex2Side(stmp, m_BlackLine2, 2);
+			i2s.left = FixIndexs(i2s.left, 10);
+			i2s.right = FixIndexs(i2s.right, 10);
+			Color2Side color2s2 = LinesIndex2Color(m_BlackLine2, i2s, ccms);
+			d3dApp.AddDiffusionLines(m_BlackLine2, color2s2);
+			d3dApp.AddLines(m_BlackLine2);
+		}
+		Lines normals2 = GetNormalsLen2(m_BlackLine2);
+		GetVavView()->m_FeatureLines = m_BlackLine2;
+		GetVavView()->m_FeatureNormals = normals2;
 // edge extraction
-//      Lines diffusionConstrant = S6GetPatchs(isoimg, 0, 0);
-//      //diffusionConstrant = SmoothingLen5(diffusionConstrant, 0, 1);
-//      Color2Side color2s2;
-//      color2s2 = GetLinesColor2Side(m_vavImage, diffusionConstrant, 0.5);
-//      Vector3s2d colors;
-//      colors = GetLinesColor(m_vavImage, diffusionConstrant);
+		Lines diffusionConstrant = S6GetPatchs(isoimg, 0, 0);
+		//diffusionConstrant = SmoothingLen5(diffusionConstrant, 0, 1);
+		Color2Side color2s2;
+		color2s2 = GetLinesColor2Side(m_vavImage, diffusionConstrant, 0.5);
+		Vector3s2d colors;
+		colors = GetLinesColor(m_vavImage, diffusionConstrant);
 //      123
-		//colors = FixLineColors(colors, 400, 10);
-		//colors = MedianLen(colors, 20, 3);
-		//colors = SmoothingLen5(colors, 0, 2);
-		//d3dApp.AddDiffusionLines(diffusionConstrant, color2s2);
+		colors = FixLineColors(colors, 400, 10);
+		colors = MedianLen(colors, 20, 3);
+		colors = SmoothingLen5(colors, 0, 2);
+		d3dApp.AddDiffusionLines(diffusionConstrant, colors);
 // draw red line
 		//d3dApp.AddLines(m_BlackLine);
 		//d3dApp.AddLines(m_BlackLine2);

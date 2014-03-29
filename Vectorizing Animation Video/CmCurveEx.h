@@ -16,7 +16,7 @@
 class CmCurveEx
 {
 public:
-
+	CmCurveEx():m_img1f(cv::Mat()){}
 
 	CmCurveEx(const cv::Mat& srcImg1f, float maxOrntDif = 0.25f * CV_PI);
 

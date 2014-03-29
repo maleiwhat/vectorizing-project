@@ -109,6 +109,7 @@ public:
 	afx_msg void OnNcMButtonUp(UINT nHitTest, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+
 };
 
 #ifndef _DEBUG  // VAV_View.cpp ¤¤ªº°»¿ùª©¥»

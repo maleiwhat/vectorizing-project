@@ -72,7 +72,7 @@ VAV_View::VAV_View()
 	m_TimerCallback->m_renderWindow = m_renderWindow;
 	m_interactor = vtkOnlyNew;
 	m_TimerCallback->m_interactor = m_interactor;
-	m_thread = (HANDLE)_beginthreadex(NULL, 0, MyThreadFunc, this, 0, NULL);
+	//m_thread = (HANDLE)_beginthreadex(NULL, 0, MyThreadFunc, this, 0, NULL);
 }
 
 VAV_View::~VAV_View()
@@ -197,6 +197,7 @@ void VAV_View::OnInitialUpdate()
 void VAV_View::SetTexture(ID3D11ShaderResourceView* tex)
 {
 	m_D3DApp.SetScale(m_Scale);
+	
 	m_D3DApp.SetTexture(tex);
 	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
@@ -230,7 +231,7 @@ BOOL VAV_View::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	}
 	m_D3DApp.SetScale(m_Scale);
 	m_D3DApp.DrawScene();
-	//cv::imwrite("draw.png", m_D3DApp.DrawSceneToCvMat());
+	cv::imwrite("draw.png", m_D3DApp.DrawSceneToCvMat());
 	return CView::OnMouseWheel(nFlags, zDelta, pt);
 }
 
