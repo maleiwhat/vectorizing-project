@@ -38,7 +38,7 @@ void GetMatrixf(int w, int h, floatptrs& ary, int x, int y, cv::Mat& img);
 cv::Mat TrapBallMaskAll(cv::Mat image);
 cv::Mat TrapBallMask1(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE);
 cv::Mat TrapBallMask2(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE);
-cv::Mat TrapBallMask3(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE);
+cv::Mat TrapBallMask3(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE, int maxadd = 9999);
 cv::Mat TrapBallMask4(cv::Mat image, int moprh = cv::MORPH_ELLIPSE);
 cv::Mat ConvertToMedian(cv::Mat image, cv::Mat src);
 cv::Mat ConvertToIndex(cv::Mat src, cv::Mat ori, ColorConstraintMedians& output);

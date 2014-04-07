@@ -231,7 +231,7 @@ BOOL VAV_View::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	}
 	m_D3DApp.SetScale(m_Scale);
 	m_D3DApp.DrawScene();
-	cv::imwrite("draw.png", m_D3DApp.DrawSceneToCvMat());
+	cv::imwrite("draw.png", m_D3DApp.DrawSceneToCvMat(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f)));
 	return CView::OnMouseWheel(nFlags, zDelta, pt);
 }
 

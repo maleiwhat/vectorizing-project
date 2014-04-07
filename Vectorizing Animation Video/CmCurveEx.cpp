@@ -162,7 +162,7 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
 	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
 	//cv::imshow("dxy2", dxy);
-	Laplacian(m_img1f, dxy, CV_32F, kSize, 1, -0.3);
+	//Laplacian(m_img1f, dxy, CV_32F, kSize, 1, -0.3);
 	//cv::imshow("dxy-0.3", dxy);
 //  GaussianBlur(dyMat, dyMat, cv::Size(3, 3), 0, 0);
 //  GaussianBlur(dxy, dxy, cv::Size(3, 3), 0, 0);
@@ -230,8 +230,8 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		}
 	}
 	normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
-	cv::imshow("m_pDer1f", m_pDer1f);
-	cv::imshow("m_pDer2f", m_pDer2f);
+// 	cv::imshow("m_pDer1f", m_pDer1f);
+// 	cv::imshow("m_pDer2f", m_pDer2f);
 	if (1)
 	{
 		Sobel(m_pDer2f, dxx, CV_32F, 2, 0, kSize);

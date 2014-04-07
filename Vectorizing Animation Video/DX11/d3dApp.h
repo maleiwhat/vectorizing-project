@@ -29,7 +29,7 @@ public:
 	void SetScaleTemporary(float s);
 	void SetScaleRecovery();
 	void DrawScene();
-	cv::Mat DrawSceneToCvMat();
+	cv::Mat DrawSceneToCvMat(D3DXCOLOR backcolor = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 	void LoadBlend();
 	void BuildShaderFX();
 	void BuildPoint();
@@ -74,6 +74,7 @@ public:
 	ID3D11DeviceContext* GetDeviceContext();
 	void InterSetRenderTransparencyOutput1();
 	void InterSetRenderTransparencyOutput2();
+	void InterSetRenderTransparencyOutput3();
 	void InterSetRenderTransparencyDefault();
 protected:
 	void initDirect3D();

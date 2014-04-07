@@ -862,7 +862,7 @@ ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold,
 				tmp_image.at<cv::Vec3b>(i + 1, j + 1) = tmp_image2.at<cv::Vec3b>(i , j);
 			}
 		}
-		imshow("tmp_image", tmp_image);
+		//imshow("tmp_image", tmp_image);
 		mask_tmp = cv::Scalar::all(0);
 		for (int i = 1; i < image.rows - 1; i++)
 		{

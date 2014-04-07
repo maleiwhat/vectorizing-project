@@ -2182,6 +2182,55 @@ Vector3s HistormMappingHSV(const Vector3s& color, double radio)
 	return ans;
 }
 
+ints MedianLen5(const ints& cvp, int repeat /*= 1*/)
+{
+	ints cps = cvp;
+	ints newcps;
+	for (int repeatCount = 0; repeatCount < repeat; repeatCount++)
+	{
+		newcps.clear();
+		for (int i = 0; i < cps.size(); ++i)
+		{
+			int s_idx = i - 2;
+			int e_idx = i + 3;
+			if (s_idx < 0)
+			{
+				s_idx = 0;
+			}
+			if (e_idx - s_idx < 5)
+			{
+				e_idx = s_idx + 5;
+			}
+			if (e_idx >= cvp.size())
+			{
+				e_idx = cvp.size() - 1;
+				s_idx = e_idx - 5;
+			}
+			if (s_idx < 0)
+			{
+				s_idx = 0;
+			}
+			ints tmp;
+			tmp.insert(tmp.end(), cps.begin() + s_idx, cps.begin() + e_idx);
+			std::sort(tmp.begin(), tmp.end());
+			newcps.push_back(tmp[tmp.size() / 2]);
+		}
+		cps = newcps;
+	}
+	return cps;
+}
+
+ints2d MedianLen5(const ints2d& cvp, int repeat /*= 1*/)
+{
+	ints2d cps(cvp.size());
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const ints& nowLine = cvp[i];
+		cps[i] = MedianLen5(nowLine, repeat);
+	}
+	return cps;
+}
+
 Vector3s MedianLen5(const Vector3s& cvp, int repeat /*= 1*/)
 {
 	Vector3s cps = cvp;

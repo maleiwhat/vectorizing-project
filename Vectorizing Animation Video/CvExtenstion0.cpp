@@ -1230,7 +1230,7 @@ cv::Mat TrapBallMask2(cv::Mat LineImg, int size, int moprh)
 	return res;
 }
 
-cv::Mat TrapBallMask3(cv::Mat LineImg, int size, int moprh)
+cv::Mat TrapBallMask3(cv::Mat LineImg, int size, int moprh, int maxadd)
 {
 	int size2 = size;
 	cv::Mat circle = getStructuringElement(moprh,
@@ -1247,7 +1247,7 @@ cv::Mat TrapBallMask3(cv::Mat LineImg, int size, int moprh)
 		V2(int x, int y): x(x), y(y) {}
 		int x, y;
 	};
-	typedef std::vector<V2> V2s;
+	typedef std::deque<V2> V2s;
 	for (int i = 1; i < LineImg.rows - size2; ++i)
 	{
 		for (int j = 1; j < LineImg.cols - size2; ++j)
@@ -1256,6 +1256,7 @@ cv::Mat TrapBallMask3(cv::Mat LineImg, int size, int moprh)
 			{
 				V2s checks;
 				checks.push_back(V2(j, i));
+				int count = 0;
 				while (!checks.empty())
 				{
 					V2 v = checks.back();
@@ -1296,8 +1297,6 @@ cv::Mat TrapBallMask3(cv::Mat LineImg, int size, int moprh)
 			}
 		}
 	}
-	//  cv::imshow("res", res);
-	//  cv::waitKey();
 	return res;
 }
 
@@ -1315,7 +1314,7 @@ cv::Mat TrapBallMask4(cv::Mat LineImg, int moprh)
 	hasFill.create(LineImg.rows, LineImg.cols, CV_8UC1);
 	hasFill = cv::Scalar(0);
 	typedef std::deque<V2> V2s;
-	for (int i = 1; i < res.rows - 1; ++i)
+	for (int i = res.rows - 1; i > 1 ; --i)
 	{
 		for (int j = 1; j < res.cols - 1; ++j)
 		{
@@ -1670,22 +1669,22 @@ cv::Mat TrapBallMaskAll( cv::Mat image )
 	}
 	//6
 	stmp = TrapBallMask1(stmp, 6);
-	stmp = TrapBallMask3(stmp, 5);
-	stmp = TrapBallMask3(stmp, 4);
-	stmp = TrapBallMask3(stmp, 3);
-	stmp = TrapBallMask3(stmp, 2);
+	stmp = TrapBallMask3(stmp, 5, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
 	//5
 	stmp = TrapBallMask1(stmp, 5);
-	stmp = TrapBallMask3(stmp, 4);
-	stmp = TrapBallMask3(stmp, 3);
-	stmp = TrapBallMask3(stmp, 2);
+	stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
 	//      //4
 	stmp = TrapBallMask1(stmp, 4);
-	stmp = TrapBallMask3(stmp, 3);
-	stmp = TrapBallMask3(stmp, 2);
+	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
 	//      //3
-	stmp = TrapBallMask1(stmp, 3);
-	stmp = TrapBallMask3(stmp, 2);
+// 	stmp = TrapBallMask1(stmp, 3);
+// 	stmp = TrapBallMask3(stmp, 2);
 	//      //2
 	stmp = TrapBallMask4(stmp);
 	return stmp;
