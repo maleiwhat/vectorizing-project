@@ -462,7 +462,7 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 		cleft[i].resize(idx2s.left[i].size());
 		for (int j = 0; j < cleft[i].size(); ++j)
 		{
-			if (idx2s.left[i][j] > 0)
+			if (idx2s.left[i][j] > 0 && idx2s.left[i][j] <= ccms.size())
 			{
 				cleft[i][j] = ccms.at(idx2s.left[i][j] - 1).GetColorVector3(lines[i][j].x, lines[i][j].y);
 				int t = cleft[i][j][0];
@@ -476,7 +476,7 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 		cright[i].resize(idx2s.right[i].size());
 		for (int j = 0; j < cright[i].size(); ++j)
 		{
-			if (idx2s.right[i][j] > 0)
+			if (idx2s.right[i][j] > 0 && idx2s.right[i][j] <= ccms.size())
 			{
 				cright[i][j] = ccms.at(idx2s.right[i][j] - 1).GetColorVector3(lines[i][j].x, lines[i][j].y);
 				int t = cright[i][j][0];

@@ -1310,15 +1310,11 @@ cv::Mat TrapBallMask4(cv::Mat LineImg, int moprh)
 		V2(int x, int y): x(x), y(y) {}
 		int x, y;
 	};
-	cv::Mat hasFill;
-	hasFill.create(LineImg.rows, LineImg.cols, CV_8UC1);
-	hasFill = cv::Scalar(0);
 	typedef std::deque<V2> V2s;
 	for (int i = res.rows - 1; i > 1 ; --i)
 	{
 		for (int j = 1; j < res.cols - 1; ++j)
 		{
-			hasFill = cv::Scalar(0);
 			V2 test[4];
 			V2s checks;
 			checks.push_back(V2(j, i));
@@ -1326,7 +1322,6 @@ cv::Mat TrapBallMask4(cv::Mat LineImg, int moprh)
 			{
 				V2 v = checks.front();
 				checks.pop_front();
-				hasFill.at<uchar>(v.y, v.x) = 0;
 				if (res.at<cv::Vec3b>(v.y, v.x)[0] != 0)
 				{
 					continue;

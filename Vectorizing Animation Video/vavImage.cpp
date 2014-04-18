@@ -892,10 +892,24 @@ void vavImage::ToExpImage()
 	}
 	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
 	imgf.convertTo(m_Image, CV_8UC3, 255);
-//  for (int i = 1; i <= 3; i = i + 2)
-//  {
-//      bilateralFilter(m_Image.clone(), m_Image, i, i * 2, i / 2);
-//  }
+}
+
+void vavImage::ToLogImage()
+{
+	cv::Mat imgf;
+	m_Image.convertTo(imgf, CV_32FC3, 1.0 / 255);
+	for (int j = 0; j < m_Image.cols ; ++j)
+	{
+		for (int i = 0; i < m_Image.rows ; ++i)
+		{
+			cv::Vec3f& intensity = imgf.at<cv::Vec3f>(i, j);
+			intensity[0] = - pow((1 - intensity[0]), 0.5);
+			intensity[1] = - pow((1 - intensity[1]), 0.5);
+			intensity[2] = - pow((1 - intensity[2]), 0.5);
+		}
+	}
+	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
+	imgf.convertTo(m_Image, CV_8UC3, 255);
 }
 
 Vector3 vavImage::GetBilinearColor(double x, double y)
@@ -920,11 +934,11 @@ int vavImage::GetIndex_no255(double x, double y)
 		}
 		if (x + 1 >= m_Image.cols)
 		{
-			x = m_Image.cols - 1;
+			x = m_Image.cols - 2;
 		}
 		if (y + 1 >= m_Image.rows)
 		{
-			y = m_Image.rows - 1;
+			y = m_Image.rows - 2;
 		}
 	}
 	if (m_Image.at<cv::Vec3b>((int)y, (int)x)[0] != 255)

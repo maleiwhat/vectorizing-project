@@ -161,13 +161,9 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 	Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
 	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
 	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
-	//cv::imshow("dxy2", dxy);
-	//Laplacian(m_img1f, dxy, CV_32F, kSize, 1, -0.3);
-	//cv::imshow("dxy-0.3", dxy);
-//  GaussianBlur(dyMat, dyMat, cv::Size(3, 3), 0, 0);
-//  GaussianBlur(dxy, dxy, cv::Size(3, 3), 0, 0);
-// 	cv::imshow("dx", dxMat);
-// 	cv::imshow("dy", dyMat);
+// 	cv::imshow("dxy", dxy);
+//  	cv::imshow("dx", dxMat);
+//  	cv::imshow("dy", dyMat);
 	cv::Mat kx, ky;
 	getDerivKernels(kx, ky, 1, 0, 5);
 	sepFilter2D(m_img1f, dxMat, CV_32F, kx, ky, cv::Point(-1, -1), 0);
@@ -212,7 +208,7 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 			float v1 = pDer1[x] > 0 ? pDer1[x] * (1 - abs(pDer2[x])) : 0;
 			float v2 = pDer2[x] > 0 ? pDer2[x] * (1 - abs(pDer1[x])) : 0;
 			pDer1[x] = v1;
-			pDer2[x] = v1 + v2*0.8;
+			pDer2[x] = pow(v1, 0.7) + pow(v2, 0.7);
 			sum2 += pDer2[x];
 		}
 	}
@@ -332,6 +328,7 @@ const cv::Mat& CmCurveEx::CalSecDer(cv::Mat engery, int kSize /*= 5*/,
 //          }
 //      }
 //  }
+	
 	normalize(m_pDer2, m_pDer2, 0, 255, cv::NORM_MINMAX);
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
 	return m_pDer2f;

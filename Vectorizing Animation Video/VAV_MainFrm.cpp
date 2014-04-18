@@ -186,12 +186,12 @@ VAV_MainFrame::VAV_MainFrame()
 	m_CONSTRAINT_CURVES_PARAMETER_1 = true;
 	m_CONSTRAINT_CURVES_PARAMETER_2 = true;
 	m_ISOSURFACE_REGION = true;
-	m_ISOSURFACE_CONSTRAINT = true;
+	m_ISOSURFACE_CONSTRAINT = false;
 	m_ISOSURFACE_CONSTRAINT_VECTORIZATION = true;
 	m_DECORATIVE_CURVES = true;
-	m_DECORATIVE_CURVES_CONSTRAINT = true;
+	m_DECORATIVE_CURVES_CONSTRAINT = false;
 	m_BOUNDARY_CURVES = true;
-	m_BOUNDARY_CURVES_CONSTRAINT = true;
+	m_BOUNDARY_CURVES_CONSTRAINT = false;
 	m_REGION_GROWING = true;
 	m_BLACK_LINE_VECTORIZATION = true;
 	m_BOUNDARY_CURVES_VECTORIZATION = true;
@@ -653,21 +653,21 @@ void VAV_MainFrame::OnButtonCanny()
 	{
 		a = atoi(ConvStr::GetStr(re->GetEditText().GetString()).c_str());
 	}
-	//  m_cannyImage = m_vavImage;
-	//cv::Mat ce = CannyEdge(m_vavImage, t1, t2, a);
-	//Lines lines1 = ComputeEdgeLine(ce);
-	//  Lines lines = m_vavImage.AnimaEdge(5, 0.01, 0.1);
-	//  lines = ComputeTrappedBallEdge(m_vavImage, lines, 5);
-	//  cv::Mat lineImage = MakeLineImage(m_vavImage, lines);
-	//  lines = GetLines(GetSidelines(lineImage));
-	//  m_cannyImage.ShowEdgeLine(lines);
 	m_cannyImage = m_vavImage;
-	//Skeleton(m_cannyImage);
-	cv::Mat cw, cw2;
-	cw2 = m_cannyImage;
-	cw2.convertTo(cw, CV_32FC3);
-	Collect_Water(cw, cw, 5, 5, m_BlackRegionThreshold * 0.01);
-	m_cannyImage = cw;
+	cv::Mat ce = CannyEdge(m_vavImage, t1, t2, a);
+// 	Lines lines1 = ComputeEdgeLine(ce);
+// 	Lines lines = m_vavImage.AnimaEdge(5, 0.01, 0.1);
+// 	lines = ComputeTrappedBallEdge(m_vavImage, lines, 5);
+// 	cv::Mat lineImage = MakeLineImage(m_vavImage, lines);
+// 	lines = GetLines(GetSidelines(lineImage));
+// 	m_cannyImage.ShowEdgeLine(lines);
+	m_cannyImage = ce;
+// 	Skeleton(m_cannyImage);
+// 	cv::Mat cw, cw2;
+// 	cw2 = m_cannyImage;
+// 	cw2.convertTo(cw, CV_32FC3);
+// 	Collect_Water(cw, cw, 5, 5, m_BlackRegionThreshold * 0.01);
+// 	m_cannyImage = cw;
 	GetVavView()->SetTexture(m_cannyImage.GetDx11Texture());
 }
 
@@ -1199,10 +1199,10 @@ void VAV_MainFrame::AddFrame(cv::Mat img)
 	m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 5);
 	LineEnds les = GetLineEnds(m_BlackLine);
 	LinkLineEnds(les, 5, 20);
-	ConnectSimilarLines(les, m_BlackLine, m_BLineWidth);
+	ConnectLineEnds(les, m_BlackLine, m_BLineWidth);
 	IncreaseDensity(m_BlackLine, m_BLineWidth);
 	les = GetLineEnds(m_BlackLine);
-	ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 10, 8, 15);
+	ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 8, 15);
 	m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 5);
 	m_BLineWidth = FixLineWidths(m_BLineWidth, 50);
 	//m_BLineWidth = FixLineWidths(m_BLineWidth, 100);
@@ -1235,10 +1235,10 @@ void VAV_MainFrame::AddFrame(cv::Mat img)
 	m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.9, 5);
 	les = GetLineEnds(m_BlackLine2);
 	LinkLineEnds(les, 5, 5);
-	ConnectSimilarLines(les, m_BlackLine2, tmp_width);
+	ConnectLineEnds(les, m_BlackLine2, tmp_width);
 	IncreaseDensity(m_BlackLine2, tmp_width);
 	les = GetLineEnds(m_BlackLine2);
-	ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 5, 15);
+	ConnectNearestLines(les, m_BlackLine2, tmp_width, 5, 15);
 	//      les = GetLineEnds(m_BlackLine2);
 	//      ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 6, 20);
 	m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.2, 5);

@@ -47,20 +47,20 @@ Vector3 ColorConstraintMedian::GetColorVector3(double x, double y)
 	{
 		ComputeMedian();
 	}
-	Vector2 dst(x, y);
-	double min_dis = m_Pos[0].distance(dst);
-	int idx = 0;
-	for (int i = 1; i < m_Pos.size(); ++i)
-	{
-		double v = m_Pos[i].distance(dst);
-		if (v < min_dis)
-		{
-			min_dis = v;
-			idx = i;
-		}
-	}
-	//return m_ColorsOri[idx];
-	return (m_ColorsOri[idx]*0.3 + m_Median*0.7);
+// 	Vector2 dst(x, y);
+// 	double min_dis = m_Pos[0].distance(dst);
+// 	int idx = 0;
+// 	for (int i = 1; i < m_Pos.size(); ++i)
+// 	{
+// 		double v = m_Pos[i].distance(dst);
+// 		if (v < min_dis)
+// 		{
+// 			min_dis = v;
+// 			idx = i;
+// 		}
+// 	}
+	return m_Median;
+	//return (m_ColorsOri[idx]*0.3 + m_Median*0.7);
 }
 
 cv::Vec3b ColorConstraintMedian::GetColorCvPoint()

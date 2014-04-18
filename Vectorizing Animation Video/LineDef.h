@@ -51,9 +51,10 @@ struct Endpoint
 };
 typedef std::vector<Endpoint> Endpoints;
 
+struct LineEnd;
+typedef std::vector<LineEnd*> LineEnd_ptrs;
 struct LineEnd
 {
-
 	enum LinkMethod
 	{
 		NOTHING = 0,
@@ -72,30 +73,67 @@ struct LineEnd
 	double angleBeg, angleEnd;
 	LineEnd* beglink;
 	LineEnd* endlink;
+	LineEnd_ptrs beglinks;
+	LineEnd_ptrs endlinks;
+	bool haslink1, haslink2;
 	LineEnd()
 	{
 		memset(this, 0, sizeof(LineEnd));
 	}
 	LineEnd(const Vector2& p1, const Vector2& p2, int i1, int i2, double a1, double a2)
 		: beg(p1), end(p2), idx1(i1), idx2(i2), angleBeg(a1), angleEnd(a2),
-		  linkIdx1(0), linkIdx2(0), beglink(0), endlink(0) {}
+		  linkIdx1(0), linkIdx2(0), beglink(0), endlink(0), haslink1(0), haslink2(0) {}
 };
 typedef std::vector<LineEnd> LineEnds;
 
-struct JointLink
+struct LineEndPoint
 {
-	int     id;
-	bool    isFront;
+	enum BEGIN_END
+	{
+		BEGIN,
+		END
+	};
+	LineEnd le;
+	BEGIN_END dir;
 };
-typedef std::vector<JointLink> JointLinks;
-
-typedef std::vector<JointLinks> JointLinks2d;
-
-struct ExtremityLine
+typedef std::vector<LineEndPoint> LineEndPoints;
+struct Acute
 {
-
+	LineEndPoints leps;
+	Vector2 pos;
 };
-
+typedef std::vector<Acute> Acutes;
+void AddNewLineEndPoint(Acutes& res, const LineEndPoint& lep, double sdistance)
+{
+	Vector2 p;
+	if (lep.dir == LineEndPoint::BEGIN)
+	{
+		p = lep.le.beg;
+	}
+	else
+	{
+		p = lep.le.end;
+	}
+	bool isfind = false;
+	for (int i = 0; i < res.size(); ++i)
+	{
+		if (res[i].pos.squaredDistance(p) < sdistance)
+		{
+			isfind = true;
+			res[i].leps.push_back(lep);
+			double denominator = res[i].leps.size();
+			res[i].pos = res[i].pos * ((denominator - 1) / denominator) + (p / denominator);
+			break;
+		}
+	}
+	if (!isfind)
+	{
+		Acute ac;
+		ac.leps.push_back(lep);
+		ac.pos = p;
+		res.push_back(ac);
+	}
+}
 
 struct Color2Side
 {
