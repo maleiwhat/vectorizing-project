@@ -450,7 +450,7 @@ Index2Side GetLinesIndex2Side(cv::Mat img, const Lines& lines, double normal_len
 	return ans;
 }
 
-Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstraintMedians& ccms)
+Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstraintMathModels& ccms)
 {
 	Color2Side res;
 	res.left.resize(idx2s.left.size());
@@ -465,9 +465,6 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 			if (idx2s.left[i][j] > 0 && idx2s.left[i][j] <= ccms.size())
 			{
 				cleft[i][j] = ccms.at(idx2s.left[i][j] - 1).GetColorVector3(lines[i][j].x, lines[i][j].y);
-				int t = cleft[i][j][0];
-				cleft[i][j][0] = cleft[i][j][2];
-				cleft[i][j][2] = t;
 			}
 		}
 	}
@@ -479,9 +476,6 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 			if (idx2s.right[i][j] > 0 && idx2s.right[i][j] <= ccms.size())
 			{
 				cright[i][j] = ccms.at(idx2s.right[i][j] - 1).GetColorVector3(lines[i][j].x, lines[i][j].y);
-				int t = cright[i][j][0];
-				cright[i][j][0] = cright[i][j][2];
-				cright[i][j][2] = t;
 			}
 		}
 	}

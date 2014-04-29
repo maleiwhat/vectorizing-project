@@ -108,6 +108,7 @@ LineEnds GetLineEnds(const Lines& cvp);
 void MarkHasLink_LineEnds(LineEnds& les, const Lines& cvp);
 
 Acutes LinkLineAcutes(LineEnds& les, double distance, double angle);
+void LinkLineEnds180(LineEnds& les, double distance, double angle);
 void LinkLineEnds(LineEnds& les, double distance, double angle);
 bool CheckLinkEnd_Similarity180(const LineEnd& lhs, const LineEnd& rhs,
 							LineEnd::LinkMethod c, double angle);
@@ -115,6 +116,7 @@ bool CheckLinkEnd_Similarity(const LineEnd& lhs, const LineEnd& rhs,
 							LineEnd::LinkMethod c, double angle);
 void ConnectLineEnds(LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds2(const LineEnds& les, Lines& pos, Lines& width);
+void ConnectLineEnds3(const LineEnds& les, Lines& pos, Lines& width);
 void ConnectSimilarColor2Side(const LineEnds& les, Lines& pos, Color2Side& width);
 
 void ClearJointArea(const LineEnds& les, Lines& pos, Color2Side& color2s, double len);
@@ -130,3 +132,5 @@ void FixBeginWidth(Vector3s& width, int len);
 void FixEndWidth(Vector3s& width, int len);
 
 bool intersect(const Vector2& a1, const Vector2& a2, const Vector2& b1, const Vector2& b2);
+bool CheckAngle(double a1, double a2, double limitA);
+

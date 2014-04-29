@@ -1198,7 +1198,7 @@ void VAV_MainFrame::AddFrame(cv::Mat img)
 	m_BlackLine = GetLines(tpnts2d, 0.0, 0.0);
 	m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 5);
 	LineEnds les = GetLineEnds(m_BlackLine);
-	LinkLineEnds(les, 5, 20);
+	LinkLineEnds180(les, 5, 20);
 	ConnectLineEnds(les, m_BlackLine, m_BLineWidth);
 	IncreaseDensity(m_BlackLine, m_BLineWidth);
 	les = GetLineEnds(m_BlackLine);
@@ -1234,7 +1234,7 @@ void VAV_MainFrame::AddFrame(cv::Mat img)
 	Lines tmp_width = m_BlackLine2;
 	m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.9, 5);
 	les = GetLineEnds(m_BlackLine2);
-	LinkLineEnds(les, 5, 5);
+	LinkLineEnds180(les, 5, 5);
 	ConnectLineEnds(les, m_BlackLine2, tmp_width);
 	IncreaseDensity(m_BlackLine2, tmp_width);
 	les = GetLineEnds(m_BlackLine2);

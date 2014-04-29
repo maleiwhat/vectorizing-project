@@ -112,7 +112,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 5);
 		LineEnds les = GetLineEnds(m_BlackLine);
-		LinkLineEnds(les, 5, 15);
+		LinkLineEnds180(les, 5, 15);
 		ConnectLineEnds(les, m_BlackLine, m_BLineWidth);
 		IncreaseDensity(m_BlackLine, m_BLineWidth);
 		les = GetLineEnds(m_BlackLine);
@@ -219,27 +219,48 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.5, 5);
 		//m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0, 5);
 		LineEnds les = GetLineEnds(m_BlackLine2);
-		LinkLineEnds(les, 15, 20);
-		ConnectLineEnds(les, m_BlackLine2, tmp_width);
+		LinkLineEnds180(les, 5, 60);
+		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
 		les = GetLineEnds(m_BlackLine2);
-		LinkLineEnds(les, 5, 20);
-		ConnectLineEnds(les, m_BlackLine2, tmp_width);
+		LinkLineEnds180(les, 5, 60);
+		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+		les = GetLineEnds(m_BlackLine2);
+		LinkLineEnds180(les, 10, 40);
+		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+		les = GetLineEnds(m_BlackLine2);
+		LinkLineEnds180(les, 10, 40);
+		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+		les = GetLineEnds(m_BlackLine2);
+		LinkLineEnds180(les, 15, 20);
+		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+		les = GetLineEnds(m_BlackLine2);
+		LinkLineEnds180(les, 15, 30);
+		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+		les = GetLineEnds(m_BlackLine2);
+		LinkLineEnds(les, 5, 30);
+		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+		les = GetLineEnds(m_BlackLine2);
+		LinkLineEnds(les, 5, 180);
+		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+		les = GetLineEnds(m_BlackLine2);
+		LinkLineEnds(les, 5, 180);
+//      les = GetLineEnds(m_BlackLine2);
 //      LinkLineAcutes(les, 5, 45);
 //      ConnectLineEnds(les, m_BlackLine2, tmp_width);
-		//IncreaseDensity(m_BlackLine2, tmp_width);
+		IncreaseDensity(m_BlackLine2, tmp_width);
 		les = GetLineEnds(m_BlackLine2);
-		//ConnectNearestLines(les, m_BlackLine2, tmp_width, 15, 15);
-// 		les = GetLineEnds(m_BlackLine2);
-// 		MarkHasLink_LineEnds(les, m_BlackLine2);
-// 		ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 15);
-		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0, 5);
+		//MarkHasLink_LineEnds(les, m_BlackLine2);
+		ConnectNearestLines(les, m_BlackLine2, tmp_width, 8, 20);
+		les = GetLineEnds(m_BlackLine2);
+		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.8, 5);
 		d3dApp.AddLines(m_BlackLine2);
 		d3dApp.SetScaleTemporary(1);
 		d3dApp.BuildPoint();
 		d3dApp.InterSetRenderTransparencyOutput2();
 		ccp2_simg = d3dApp.DrawSceneToCvMat();
 		les = GetLineEnds(m_BlackLine2);
-		for (int i=0;i<les.size();++i)
+		for (int i = 0; i < les.size(); ++i)
 		{
 			Vector2 pb = les[i].beg;
 			Vector2 pe = les[i].end;
@@ -261,14 +282,16 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		stmp = simg.clone();
 		stmp = TrapBallMaskAll(stmp);
 		cv::imshow("Trap-Ball Region growing", stmp);
-		ColorConstraintMedians ccms;
+		ColorConstraintMathModels ccms;
 		stmp = ConvertToIndex(stmp, m_vavImage.Clone(), ccms);
 		Index2Side i2s = GetLinesIndex2Side(stmp, m_BlackLine2, 1);
-		i2s.left = FixIndexs(i2s.left, 30);
-		i2s.right = FixIndexs(i2s.right, 30);
-		i2s.left = MedianLen5(i2s.left, 3);
-		i2s.right = MedianLen5(i2s.right, 3);
+ 		i2s.left = FixIndexs(i2s.left, 30);
+ 		i2s.right = FixIndexs(i2s.right, 30);
+ 		i2s.left = MedianLen5(i2s.left, 3);
+ 		i2s.right = MedianLen5(i2s.right, 3);
 		Color2Side color2s2 = LinesIndex2Color(m_BlackLine2, i2s, ccms);
+		color2s2.left = FixLineColors(color2s2.left, 600, 10);
+		color2s2.right = FixLineColors(color2s2.right, 600, 10);
 		d3dApp.AddDiffusionLines(m_BlackLine2, color2s2);
 		d3dApp.AddLines(m_BlackLine2);
 	}
@@ -309,35 +332,14 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	}
 	Lines isosurfaceLines;
 	cv::Mat isoimg;
-	cv::Mat skeleton;
 	if (m_ISOSURFACE_REGION)
 	{
 		isoimg = m_vavImage.Clone();
 		cv::GaussianBlur(isoimg, isoimg, cv::Size(5, 5), 0, 0);
-		isoimg = MakeIsoSurfaceImg(isoimg, 16);
+		isoimg = MakeIsoSurfaceImg(isoimg, 24);
 		cv::Mat curveExtration = ccp2_simg.clone();
 		cvtColor(curveExtration, curveExtration, CV_BGR2GRAY);
-		Dilation(curveExtration, 2, 1);
-		skeleton = curveExtration.clone();
-		for (int i = 0; i < skeleton.rows; i++)
-		{
-			for (int j = 0; j < skeleton.cols; j++)
-			{
-				uchar& v = skeleton.at<uchar>(i, j);
-				if (v > 0)
-				{
-					v = 0;
-				}
-				else
-				{
-					v = 1;
-				}
-			}
-		}
-		cv::Mat sss;
-		normalize(skeleton, sss, 0, 254, cv::NORM_MINMAX);
-		cv::imshow("skeletonx", sss);
-		cvThin(skeleton, skeleton, 150);
+		Dilation(curveExtration, 2, 3);
 		cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
 		for (int i = 0; i < curveExtration.rows - 1; i++)
 		{
@@ -354,9 +356,6 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 			}
 		}
 		cv::imshow("IsoSurface", isoimg);
-		normalize(skeleton, skeleton, 0, 254, cv::NORM_MINMAX);
-		cvtColor(skeleton, skeleton, CV_GRAY2BGR);
-		cv::imshow("skeleton", skeleton);
 	}
 	if (m_ISOSURFACE_REGION &&
 			m_ISOSURFACE_CONSTRAINT)
@@ -364,7 +363,6 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		d3dApp.ClearSkeletonLines();
 		isosurfaceLines = S6GetPatchs(isoimg, 0, 0);
 		isosurfaceLines = SmoothingLen5(isosurfaceLines, 0, 2);
-		isosurfaceLines = GetAllLineFromLineImage(skeleton);
 		d3dApp.AddLines(isosurfaceLines);
 		d3dApp.BuildPoint();
 		d3dApp.InterSetRenderTransparencyOutput2();

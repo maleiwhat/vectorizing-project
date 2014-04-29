@@ -2253,14 +2253,14 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 		vtx2.rcolor.w = 0.0;
 		for (int j = 0; j < now_line.size() - 1; ++j)
 		{
-			if (now_color[j].x == 0 && now_color[j].y == 0 && now_color[j].z == 0)
-			{
-				continue;
-			}
-			if (now_color[j + 1].x == 0 && now_color[j + 1].y == 0 && now_color[j + 1].z == 0)
-			{
-				continue;
-			}
+// 			if (now_color[j].x == 0 && now_color[j].y == 0 && now_color[j].z == 0)
+// 			{
+// 				continue;
+// 			}
+// 			if (now_color[j + 1].x == 0 && now_color[j + 1].y == 0 && now_color[j + 1].z == 0)
+// 			{
+// 				continue;
+// 			}
 			vtx1.lcolor.x = now_color[j].x * scale;
 			vtx1.lcolor.y = now_color[j].y * scale;
 			vtx1.lcolor.z = now_color[j].z * scale;
@@ -2309,24 +2309,25 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 		vtx1.rcolor.w = 0;
 		vtx2.lcolor.w = 0;
 		vtx2.rcolor.w = 0;
-		for (int j = 0; j < now_line.size() - 1; ++j)
+		//for (int j = 0; j < now_line.size() - 1; ++j)
+		for (int j = 2; j < now_line.size() - 3; ++j)
 		{
-			if (now_lcolor[j].x == 0 && now_lcolor[j].y == 0 && now_lcolor[j].z == 0)
-			{
-				continue;
-			}
-			if (now_rcolor[j].x == 0 && now_rcolor[j].y == 0 && now_rcolor[j].z == 0)
-			{
-				continue;
-			}
-			if (now_lcolor[j + 1].x == 0 && now_lcolor[j + 1].y == 0 && now_lcolor[j + 1].z == 0)
-			{
-				continue;
-			}
-			if (now_rcolor[j + 1].x == 0 && now_rcolor[j + 1].y == 0 && now_rcolor[j + 1].z == 0)
-			{
-				continue;
-			}
+// 			if (now_lcolor[j].x == 0 && now_lcolor[j].y == 0 && now_lcolor[j].z == 0)
+// 			{
+// 				continue;
+// 			}
+// 			if (now_rcolor[j].x == 0 && now_rcolor[j].y == 0 && now_rcolor[j].z == 0)
+// 			{
+// 				continue;
+// 			}
+// 			if (now_lcolor[j + 1].x == 0 && now_lcolor[j + 1].y == 0 && now_lcolor[j + 1].z == 0)
+// 			{
+// 				continue;
+// 			}
+// 			if (now_rcolor[j + 1].x == 0 && now_rcolor[j + 1].y == 0 && now_rcolor[j + 1].z == 0)
+// 			{
+// 				continue;
+// 			}
 			vtx1.lcolor.x = now_lcolor[j].x * scale;
 			vtx1.lcolor.y = now_lcolor[j].y * scale;
 			vtx1.lcolor.z = now_lcolor[j].z * scale;

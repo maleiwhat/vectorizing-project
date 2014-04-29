@@ -2,6 +2,7 @@
 #include "shared_ptr.h"
 #include "ColorConstraintMedian.h"
 #include "ColorConstraintAverage.h"
+#include "ColorConstraintMathModel.h"
 SHARE_PTR(ColorConstraintMedian);
 SHARE_PTR(ColorConstraintAverage);
 

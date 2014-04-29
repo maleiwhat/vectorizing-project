@@ -52,6 +52,7 @@ struct Endpoint
 typedef std::vector<Endpoint> Endpoints;
 
 struct LineEnd;
+typedef std::vector<int> ints;
 typedef std::vector<LineEnd*> LineEnd_ptrs;
 struct LineEnd
 {
@@ -69,19 +70,19 @@ struct LineEnd
 	Vector2 end;
 	// angleBeg is p[0]-p[2]
 	// angleEnd is p[last]-p[last-2]
-	int idx1, idx2;
+	int idx, len;
 	double angleBeg, angleEnd;
 	LineEnd* beglink;
 	LineEnd* endlink;
-	LineEnd_ptrs beglinks;
-	LineEnd_ptrs endlinks;
+	ints beglinks;
+	ints endlinks;
 	bool haslink1, haslink2;
 	LineEnd()
 	{
 		memset(this, 0, sizeof(LineEnd));
 	}
 	LineEnd(const Vector2& p1, const Vector2& p2, int i1, int i2, double a1, double a2)
-		: beg(p1), end(p2), idx1(i1), idx2(i2), angleBeg(a1), angleEnd(a2),
+		: beg(p1), end(p2), idx(i1), len(i2), angleBeg(a1), angleEnd(a2),
 		  linkIdx1(0), linkIdx2(0), beglink(0), endlink(0), haslink1(0), haslink2(0) {}
 };
 typedef std::vector<LineEnd> LineEnds;

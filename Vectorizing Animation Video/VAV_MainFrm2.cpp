@@ -276,7 +276,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 5);
 		LineEnds les = GetLineEnds(m_BlackLine);
-		LinkLineEnds(les, 5, 20);
+		LinkLineEnds180(les, 5, 20);
 		ConnectLineEnds(les, m_BlackLine, m_BLineWidth);
 		IncreaseDensity(m_BlackLine, m_BLineWidth);
 		les = GetLineEnds(m_BlackLine);
@@ -313,7 +313,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		//m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.5, 5);
 		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0, 15);
 		les = GetLineEnds(m_BlackLine2);
-		LinkLineEnds(les, 5, 20);
+		LinkLineEnds180(les, 5, 20);
 		ConnectLineEnds(les, m_BlackLine2, tmp_width);
 		IncreaseDensity(m_BlackLine2, tmp_width);
 		les = GetLineEnds(m_BlackLine2);
@@ -395,7 +395,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			d3dApp.ClearSkeletonLines();
 			stmp = simg.clone();
 			stmp = TrapBallMaskAll(stmp);
-			ColorConstraintMedians ccms;
+			ColorConstraintMathModels ccms;
 			stmp = ConvertToIndex(stmp, m_vavImage.Clone(), ccms);
 			Index2Side i2s = GetLinesIndex2Side(stmp, m_BlackLine2, 2);
 			i2s.left = FixIndexs(i2s.left, 10);

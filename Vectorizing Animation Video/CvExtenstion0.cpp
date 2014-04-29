@@ -1577,7 +1577,7 @@ cv::Mat ConvertToMedian(cv::Mat TestImg, cv::Mat src)
 	return res;
 }
 
-cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, ColorConstraintMedians& output)
+cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, ColorConstraintMathModels& output)
 {
 	output.clear();
 	int markid = 1;
@@ -1596,9 +1596,9 @@ cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, ColorConstraintMedians& outp
 	{
 		for (int j = 0; j < res.cols ; ++j)
 		{
-			int v = res.at<cv::Vec3b>(i, j)[0] + res.at<cv::Vec3b>(i, j)[1] * 255 +
-					res.at<cv::Vec3b>(i, j)[2] * 255 * 255;
-			if (v != 0 && (res.at<cv::Vec3b>(i, j)[0] == 255 || v < markid))
+			int v = res.at<cv::Vec3b>(i, j)[0] + res.at<cv::Vec3b>(i, j)[1] * 256 +
+					res.at<cv::Vec3b>(i, j)[2] * 256 * 256;
+			if ((v != 0 && res.at<cv::Vec3b>(i, j)[0] == 255) || hasFill.at<uchar>(i, j) == 1)
 			{
 				continue;
 			}
@@ -1634,8 +1634,8 @@ cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, ColorConstraintMedians& outp
 					}
 				}
 			}
-			cv::Vec3b medcolor = cv::Vec3b(markid, markid / 255, markid / 255 / 255);
-			ColorConstraintMedian ccm;
+			cv::Vec3b medcolor = cv::Vec3b(markid, markid / 256, markid / 256 / 256);
+			ColorConstraintMathModel ccm;
 			for (int k = 0; k < saves.size(); ++k)
 			{
 				cv::Vec3b& dst = res.at<cv::Vec3b>(saves[k].y, saves[k].x);
@@ -1649,7 +1649,7 @@ cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, ColorConstraintMedians& outp
 	return res;
 }
 
-cv::Mat TrapBallMaskAll( cv::Mat image )
+cv::Mat TrapBallMaskAll(cv::Mat image)
 {
 	cv::Mat stmp = image.clone();
 	for (int i = 0; i < stmp.rows; ++i)
@@ -1659,6 +1659,10 @@ cv::Mat TrapBallMaskAll( cv::Mat image )
 			if (stmp.at<cv::Vec3b>(i, j)[2] > 0)
 			{
 				stmp.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
+			}
+			else
+			{
+				stmp.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
 			}
 		}
 	}
@@ -1677,9 +1681,10 @@ cv::Mat TrapBallMaskAll( cv::Mat image )
 	stmp = TrapBallMask1(stmp, 4);
 	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
 	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask4(stmp);
 	//      //3
-// 	stmp = TrapBallMask1(stmp, 3);
-// 	stmp = TrapBallMask3(stmp, 2);
+	stmp = TrapBallMask1(stmp, 3);
+	stmp = TrapBallMask3(stmp, 2);
 	//      //2
 	stmp = TrapBallMask4(stmp);
 	return stmp;

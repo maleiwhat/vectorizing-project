@@ -41,7 +41,7 @@ cv::Mat TrapBallMask2(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE);
 cv::Mat TrapBallMask3(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE, int maxadd = 9999);
 cv::Mat TrapBallMask4(cv::Mat image, int moprh = cv::MORPH_ELLIPSE);
 cv::Mat ConvertToMedian(cv::Mat image, cv::Mat src);
-cv::Mat ConvertToIndex(cv::Mat src, cv::Mat ori, ColorConstraintMedians& output);
+cv::Mat ConvertToIndex(cv::Mat src, cv::Mat ori, ColorConstraintMathModels& output);
 bool CheckMaskImg1(cv::Mat image, cv::Mat mask, int x, int y);
 bool CheckMaskImg2(cv::Mat image, cv::Mat mask, int x, int y);
 bool CheckMaskImg3(cv::Mat image, cv::Mat maskbig, cv::Mat mask, int x, int y);

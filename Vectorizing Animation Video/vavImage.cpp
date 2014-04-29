@@ -963,10 +963,10 @@ int vavImage::GetIndex_no255(double x, double y)
 	c[1] = m_Image.at<cv::Vec3b>(left_down.y, left_down.x);
 	c[2] = m_Image.at<cv::Vec3b>(right_up.y, right_up.x);
 	c[3] = m_Image.at<cv::Vec3b>(right_down.y, right_down.x);
-	v[0] = c[0][0] + c[0][1] * 255 + c[0][2] * 255 * 255;
-	v[1] = c[1][0] + c[1][1] * 255 + c[1][2] * 255 * 255;
-	v[2] = c[2][0] + c[2][1] * 255 + c[2][2] * 255 * 255;
-	v[3] = c[3][0] + c[3][1] * 255 + c[3][2] * 255 * 255;
+	v[0] = c[0][0] + c[0][1] * 256 + c[0][2] * 256 * 256;
+	v[1] = c[1][0] + c[1][1] * 256 + c[1][2] * 256 * 256;
+	v[2] = c[2][0] + c[2][1] * 256 + c[2][2] * 256 * 256;
+	v[3] = c[3][0] + c[3][1] * 256 + c[3][2] * 256 * 256;
 	for (int i = 0; i < 4; ++i)
 	{
 		if (c[i][0] != 255)

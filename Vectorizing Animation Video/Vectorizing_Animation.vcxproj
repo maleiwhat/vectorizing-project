@@ -207,6 +207,7 @@
     <ClInclude Include="CmCurveEx.h" />
     <ClInclude Include="ColorConstraint.h" />
     <ClInclude Include="ColorConstraintAverage.h" />
+    <ClInclude Include="ColorConstraintMathModel.h" />
     <ClInclude Include="ColorConstraintMedian.h" />
     <ClInclude Include="ColorConstraintRBF.h" />
     <ClInclude Include="ConvStr.h" />
@@ -301,6 +302,7 @@
     <ClCompile Include="clipper.cpp" />
     <ClCompile Include="CmCurveEx.cpp" />
     <ClCompile Include="ColorConstraintAverage.cpp" />
+    <ClCompile Include="ColorConstraintMathModel.cpp" />
     <ClCompile Include="ColorConstraintMedian.cpp" />
     <ClCompile Include="ColorConstraintRBF.cpp" />
     <ClCompile Include="ConvStr.cpp" />
