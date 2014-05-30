@@ -45,6 +45,8 @@ public:
 	double  GetBilinearB_if0(double x, double y);
 
 	int  GetIndex_no255(double x, double y);
+	int  GetIndex_if255(double x, double y);
+	int  GetIndex_hasno255(double x, double y);
 
 	double_vector GetRingLight(double x, double y, double radius, int div);
 	double_vector GetRingR(double x, double y, double radius, int div);

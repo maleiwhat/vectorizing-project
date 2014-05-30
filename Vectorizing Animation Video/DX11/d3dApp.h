@@ -52,6 +52,7 @@ public:
 	void AddLinesCover(const Lines& lines);
 	void AddLinesLine(const Lines& lines, const double_vector2d& linewidths);
 	void AddLineSegs(const LineSegs& lines);
+	void AddDiffusionLine(const Lines& lines, const Color2Side& colors, int idx);
 	void AddDiffusionLines(const Lines& lines);
 	void AddDiffusionLines(const Lines& lines, const Vector3s2d& colors);
 	void AddDiffusionLines(const Lines& lines, const Color2Side& colors);
@@ -231,7 +232,6 @@ protected:
 	float m_fHeight;
 	float m_polySize;
 	int m_diffTex;
-	int m_diff2Tex;
 	int m_diffSteps;
 	int m_cNum;
 	int m_cSegNum;

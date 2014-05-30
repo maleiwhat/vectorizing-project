@@ -18,6 +18,8 @@ public:
 	Vector3 GetColorVector3();
 	Vector3 GetColorVector3(double x, double y);
 	cv::Vec3b GetColorCvPoint();
+	cv::Vec3b GetColorCvPoint(double x, double y);
+	int Size();
 private:
 	void ComputeMedian();
 	Vector3s m_Colors;

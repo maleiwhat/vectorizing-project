@@ -269,7 +269,6 @@ void bgLogFile(const char* szFormat, ...)
 	{
 		glogfile = fopen("filelog.txt", "w");
 	}
-
 	va_list argptr;
 	va_start(argptr, szFormat);
 	vfprintf(glogfile, szFormat, argptr);
@@ -291,9 +290,9 @@ bool BgApp::OnInit()
 {
 	// Create the main frame window
 	g_frame = new BgMdiFrame((wxFrame*)NULL, -1,
-	                         "Edge Detection and Image SegmentatiON System (EDISON)",
-	                         wxPoint(10, 10), wxSize(1024, 768),
-	                         wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL);
+							 "Edge Detection and Image SegmentatiON System (EDISON)",
+							 wxPoint(10, 10), wxSize(1024, 768),
+							 wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL);
 #ifdef __WXMSW__
 #if 0
 	// Experimental: change the window menu
@@ -311,13 +310,13 @@ bool BgApp::OnInit()
 	// Make a menubar
 	wxMenu* file_menu = new wxMenu;
 	file_menu->Append(BG_NEW_EDGE_WINDOW, "New &edge window\tAlt-E",
-	                  "Create a new edge detect window");
+					  "Create a new edge detect window");
 	file_menu->Append(BG_NEW_SEGM_WINDOW, "New &segment window\tAlt-S",
-	                  "Create a new segmentation window");
+					  "Create a new segmentation window");
 	file_menu->Append(BG_LOAD_IMAGE_EDGE, "&Load edge image\tCtrl-L",
-	                  "Load a new image to perform edge detection");
+					  "Load a new image to perform edge detection");
 	file_menu->Append(BG_SEGM_LOAD_IMAGE, "&Load segment image\tShift-L",
-	                  "Load a new image to perform segmentation");
+					  "Load a new image to perform segmentation");
 	file_menu->Append(BG_QUIT, "E&xit\tAlt-X", "Quit the program");
 	wxMenu* help_menu = new wxMenu;
 	help_menu->Append(BG_ABOUT, "&About");
@@ -356,16 +355,16 @@ bool BgApp::OnInit()
 
 // Define my frame constructor
 BgMdiFrame::BgMdiFrame(wxWindow* parent,
-                       const wxWindowID id,
-                       const wxString& title,
-                       const wxPoint& pos,
-                       const wxSize& size,
-                       const long style)
+					   const wxWindowID id,
+					   const wxString& title,
+					   const wxPoint& pos,
+					   const wxSize& size,
+					   const long style)
 	: wxMDIParentFrame(parent, id, title, pos, size, style)
 {
 	logtext_ = new wxTextCtrl(this, -1, "Log window.\n",
-	                          wxDefaultPosition, wxDefaultSize,
-	                          wxTE_MULTILINE | wxSUNKEN_BORDER | wxTE_READONLY);
+							  wxDefaultPosition, wxDefaultSize,
+							  wxTE_MULTILINE | wxSUNKEN_BORDER | wxTE_READONLY);
 	logtext_->SetBackgroundColour("wheat");
 	bglogctrl_ = new bgLogTextCtrl(logtext_);
 	logTargetOld_ = wxLog::SetActiveTarget(bglogctrl_);
@@ -405,7 +404,6 @@ void BgMdiFrame::OnClose(wxCloseEvent& event)
 	if (event.CanVeto() && (gs_nFrames > 0))
 	{
 		wxString msg;
-
 		if (gs_nFrames == 1)
 		{
 			msg.Printf(_T("%d window still open, close anyhow?"), gs_nFrames);
@@ -414,90 +412,82 @@ void BgMdiFrame::OnClose(wxCloseEvent& event)
 		{
 			msg.Printf(_T("%d windows still open, close anyhow?"), gs_nFrames);
 		}
-
 		if (wxMessageBox(msg, "Please confirm",
-		                 wxICON_QUESTION | wxYES_NO) != wxYES)
+						 wxICON_QUESTION | wxYES_NO) != wxYES)
 		{
 			event.Veto();
 			return;
 		}
 	}
-
 	//indicate that the system is exiting
 	on_exit  = true;
 	wxLog::SetActiveTarget(logTargetOld_);
 	delete bglogctrl_;
 	delete logtext_;
-
 	// bgFileLog
 	if (glogfile != 0)
 	{
 		fclose(glogfile);
 	}
-
 	event.Skip();
 }
 
 //sets the title of the active child frame
 void BgMdiFrame::SetChildTitle(wxMDIChildFrame* activeChild, int zconst,
-                               int maxZoom, int minZoom)
+							   int maxZoom, int minZoom)
 {
 	wxString    title;
-
 	if (activeChild->GetId() == BG_EDGE_WINDOW)
 	{
 		BgMdiEdgeChild* edgeChild   = (BgMdiEdgeChild*) activeChild;
-
 		if (maxZoom)
 		{
 			title.Printf(_T("Edge Detection Frame %d - %s (%d x %d) x %d [Maximum Zoom]"),
-			             edgeChild->window_number_, edgeChild->filename_, edgeChild->width_,
-			             edgeChild->height_, zconst);
+						 edgeChild->window_number_, edgeChild->filename_, edgeChild->width_,
+						 edgeChild->height_, zconst);
 		}
 		else if (minZoom)
 		{
 			title.Printf(_T("Edge Detection Frame %d - %s (%d x %d) [Original Image]"),
-			             edgeChild->window_number_, edgeChild->filename_, edgeChild->width_,
-			             edgeChild->height_);
+						 edgeChild->window_number_, edgeChild->filename_, edgeChild->width_,
+						 edgeChild->height_);
 		}
 		else
 		{
 			title.Printf(_T("Edge Detection Frame %d - %s (%d x %d) x %d [Zoom]"),
-			             edgeChild->window_number_, edgeChild->filename_, edgeChild->width_,
-			             edgeChild->height_, zconst);
+						 edgeChild->window_number_, edgeChild->filename_, edgeChild->width_,
+						 edgeChild->height_, zconst);
 		}
 	}
 	else if (activeChild->GetId() == BG_SEGM_WINDOW)
 	{
 		BgMdiSegmentChild* segmChild    = (BgMdiSegmentChild*) activeChild;
-
 		if (maxZoom)
 		{
 			title.Printf(_T("Segmentation Frame %d - %s (%d x %d) x %d [Maximum Zoom]"),
-			             segmChild->window_number_, segmChild->filename_, segmChild->width_,
-			             segmChild->height_, zconst);
+						 segmChild->window_number_, segmChild->filename_, segmChild->width_,
+						 segmChild->height_, zconst);
 		}
 		else if (minZoom)
 		{
 			title.Printf(_T("Segmentation Frame %d - %s (%d x %d) [Original Image]"),
-			             segmChild->window_number_, segmChild->filename_, segmChild->width_,
-			             segmChild->height_);
+						 segmChild->window_number_, segmChild->filename_, segmChild->width_,
+						 segmChild->height_);
 		}
 		else
 		{
 			title.Printf(_T("Segmentation Frame %d - %s (%d x %d) x %d [Zoom]"),
-			             segmChild->window_number_, segmChild->filename_, segmChild->width_,
-			             segmChild->height_, zconst);
+						 segmChild->window_number_, segmChild->filename_, segmChild->width_,
+						 segmChild->height_, zconst);
 		}
 	}
-
 	activeChild->SetTitle(title);
 	return;
 }
 
 //updates toolbar when maximum zoom occurs
 void BgMdiFrame::UpdateZoomControl(wxMDIChildFrame* activeChild, int maxZoom,
-                                   int minZoom)
+								   int minZoom)
 {
 	if (activeChild->GetId() == BG_EDGE_WINDOW)
 	{
@@ -509,7 +499,6 @@ void BgMdiFrame::UpdateZoomControl(wxMDIChildFrame* activeChild, int maxZoom,
 		{
 			((BgMdiEdgeChild*) activeChild)->maxZoom_    = false;
 		}
-
 		if (minZoom)
 		{
 			((BgMdiEdgeChild*) activeChild)->minZoom_    = true;
@@ -518,7 +507,6 @@ void BgMdiFrame::UpdateZoomControl(wxMDIChildFrame* activeChild, int maxZoom,
 		{
 			((BgMdiEdgeChild*) activeChild)->minZoom_    = false;
 		}
-
 		((BgMdiEdgeChild*) activeChild)->UpdateZoomControl();
 	}
 	else if (activeChild->GetId() == BG_SEGM_WINDOW)
@@ -531,7 +519,6 @@ void BgMdiFrame::UpdateZoomControl(wxMDIChildFrame* activeChild, int maxZoom,
 		{
 			((BgMdiSegmentChild*) activeChild)->maxZoom_ = false;
 		}
-
 		if (minZoom)
 		{
 			((BgMdiSegmentChild*) activeChild)->minZoom_ = true;
@@ -540,7 +527,6 @@ void BgMdiFrame::UpdateZoomControl(wxMDIChildFrame* activeChild, int maxZoom,
 		{
 			((BgMdiSegmentChild*) activeChild)->minZoom_ = false;
 		}
-
 		((BgMdiSegmentChild*) activeChild)->UpdateZoomControl();
 	}
 }
@@ -554,11 +540,11 @@ void BgMdiFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
 	const int BG_DIALOG_INDENT = 30, BG_DIALOG_TOP_MARGIN = 15;
 	BgDialog aboutDialog(this, -1, "About EDISON", wxPoint(-1, -1), wxSize(450,
-	                     300), wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL | wxBORDER | wxSYSTEM_MENU,
-	                     "aboutDialog");
+						 300), wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL | wxBORDER | wxSYSTEM_MENU,
+						 "aboutDialog");
 	wxFont  myFont(9, wxSWISS, wxNORMAL, wxBOLD, false);
 	BgText  bgText(0, "Edge Detection and Image SegmentatiON System (EDISON) v1.1",
-	               myFont, BG_DIALOG_INDENT, BG_DIALOG_TOP_MARGIN);
+				   myFont, BG_DIALOG_INDENT, BG_DIALOG_TOP_MARGIN);
 	aboutDialog.AddText(&bgText);
 	myFont.SetWeight(wxNORMAL);
 	myFont.SetUnderlined(true);
@@ -578,9 +564,9 @@ void BgMdiFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 	bgText.SetPlotLocation(BG_DIALOG_INDENT, BG_DIALOG_TOP_MARGIN + 30);
 	aboutDialog.AddText(&bgText);
 	wxBitmap riul_logo("riul_logo", wxBITMAP_TYPE_RESOURCE), caip_logo("caip_logo",
-	        wxBITMAP_TYPE_RESOURCE), rutgers_logo("rutgers_logo", wxBITMAP_TYPE_RESOURCE);
+			wxBITMAP_TYPE_RESOURCE), rutgers_logo("rutgers_logo", wxBITMAP_TYPE_RESOURCE);
 	BgBitmap myBitmap(&riul_logo, 0, BG_DIALOG_INDENT + 20,
-	                  BG_DIALOG_TOP_MARGIN + 60);
+					  BG_DIALOG_TOP_MARGIN + 60);
 	aboutDialog.AddBitmap(&myBitmap);
 	myBitmap.SetId(1);
 	myBitmap.SetMap(&caip_logo);
@@ -597,7 +583,7 @@ void BgMdiFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 void BgMdiFrame::OnHelp(wxCommandEvent& WXUNUSED(event))
 {
 	wxDialog helpDialog(this, -1, "Help Window", wxPoint(10, 10), wxSize(800, 600),
-	                    wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL | wxBORDER | wxSYSTEM_MENU);
+						wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL | wxBORDER | wxSYSTEM_MENU);
 	wxHtmlWindow helpWind(&helpDialog, -1, wxPoint(10, 10), wxSize(770, 550));
 	helpWind.LoadPage(helpDir_);
 	helpDialog.ShowModal();
@@ -608,7 +594,6 @@ void BgMdiFrame::OnLoadImage(wxCommandEvent& WXUNUSED(event))
 {
 	wxMDIChildFrame* activeChild = GetActiveChild();
 	wxCommandEvent zcev;
-
 	if (activeChild)
 	{
 		if (activeChild->GetId() == BG_EDGE_WINDOW)
@@ -625,7 +610,6 @@ void BgMdiFrame::OnLoadImage(wxCommandEvent& WXUNUSED(event))
 		//read an image
 		char* pathname, *filename;
 		GetImageFileInfo(&pathname, &filename);
-
 		if (pathname)
 		{
 			//get current width and height of this window
@@ -661,7 +645,6 @@ void BgMdiFrame::OnLoadImageEdge(wxCommandEvent& WXUNUSED(event))
 	activeChild = 0;
 	activeChild = (BgMdiEdgeChild*) GetActiveChild();
 	wxCommandEvent zcev;
-
 	if (activeChild != 0)
 	{
 		activeChild->OnLoadImage(zcev);
@@ -680,7 +663,6 @@ void BgMdiFrame::OnLoadImageSegm(wxCommandEvent& WXUNUSED(event))
 	activeChild = 0;
 	activeChild = (BgMdiSegmentChild*) GetActiveChild();
 	wxCommandEvent zcev;
-
 	if (activeChild != 0)
 	{
 		activeChild->OnLoadImage(zcev);
@@ -696,11 +678,9 @@ void BgMdiFrame::OnLoadImageSegm(wxCommandEvent& WXUNUSED(event))
 void BgMdiFrame::OnSaveResult(wxCommandEvent& WXUNUSED(event))
 {
 	wxMDIChildFrame* activeChild = GetActiveChild();
-
 	if (activeChild)
 	{
 		wxCommandEvent zcev;
-
 		if (activeChild->GetId() == BG_EDGE_WINDOW)
 		{
 			((BgMdiEdgeChild*) activeChild)->OnSaveEdgeMap(zcev);
@@ -718,8 +698,8 @@ void BgMdiFrame::OnNewEdgeWindow(wxCommandEvent& WXUNUSED(event))
 	gs_nFrames++;
 	// Make another frame, containing a edge processing window
 	BgMdiEdgeChild* subframe = new BgMdiEdgeChild(g_frame, "Edge Detection Frame",
-	        wxPoint(-1, -1), wxSize(-1, -1),
-	        wxDEFAULT_FRAME_STYLE);
+			wxPoint(-1, -1), wxSize(-1, -1),
+			wxDEFAULT_FRAME_STYLE);
 	wxString title;
 	title.Printf(_T("Edge Detection Frame %d"), gs_nFrames);
 	subframe->SetTitle(title);
@@ -732,23 +712,23 @@ void BgMdiFrame::OnNewEdgeWindow(wxCommandEvent& WXUNUSED(event))
 	// Make a menubar
 	wxMenu* file_menu = new wxMenu;
 	file_menu->Append(BG_NEW_EDGE_WINDOW, "New &edge window\tAlt-E",
-	                  "Create a new edge detection window");
+					  "Create a new edge detection window");
 	file_menu->Append(BG_NEW_SEGM_WINDOW, "New &segment window\tAlt-S",
-	                  "Create a new segmentation window");
+					  "Create a new segmentation window");
 	file_menu->Append(BG_LOAD_IMAGE_EDGE, "&Load image\tCtrl-L",
-	                  "Load image to perform edge detection");
+					  "Load image to perform edge detection");
 	file_menu->Append(BG_EDGE_SAVE_MAP, "&Save edge map\tCtrl-S");
 	file_menu->Append(BG_CHILD_EDGE_QUIT, "&Close edge window\tAlt-C",
-	                  "Close this window");
+					  "Close this window");
 	file_menu->Append(BG_QUIT, "E&xit\tAlt-X");
 	wxMenu* edge_menu = new wxMenu;
 	edge_menu->Append(BG_EDGE_DETECT, "Edge Detect\tCtrl-R");
 	edge_menu->Append(BG_CHANGE_PARAM_EDGE, "Change Parameters...");
 	wxMenu* view_menu = new wxMenu;
 	subframe->miViewOrig_ = new wxMenuItem(view_menu, BG_EDGE_VIEW_ORIG, "Original",
-	                                       "View original", TRUE);
+										   "View original", TRUE);
 	subframe->miViewEdge_ = new wxMenuItem(view_menu, BG_EDGE_VIEW_EDGE, "Edge map",
-	                                       "View edge map", TRUE);
+										   "View edge map", TRUE);
 	view_menu->Append(subframe->miViewOrig_);
 	view_menu->Append(subframe->miViewEdge_);
 	wxMenu* help_menu = new wxMenu;
@@ -779,9 +759,9 @@ void BgMdiFrame::OnNewSegmWindow(wxCommandEvent& WXUNUSED(event))
 	gs_nFrames++;
 	// Make another frame, containing a edge processing window
 	BgMdiSegmentChild* subframe = new BgMdiSegmentChild(g_frame,
-	        "Segmentation Frame",
-	        wxPoint(-1, -1), wxSize(-1, -1),
-	        wxDEFAULT_FRAME_STYLE);
+			"Segmentation Frame",
+			wxPoint(-1, -1), wxSize(-1, -1),
+			wxDEFAULT_FRAME_STYLE);
 	wxString title;
 	title.Printf(_T("Segmentation Frame %d"), gs_nFrames);
 	subframe->SetTitle(title);
@@ -794,14 +774,14 @@ void BgMdiFrame::OnNewSegmWindow(wxCommandEvent& WXUNUSED(event))
 	// Make a menubar
 	wxMenu* file_menu = new wxMenu;
 	file_menu->Append(BG_NEW_EDGE_WINDOW, "New &edge window\tAlt-E",
-	                  "Create a new edge detection window");
+					  "Create a new edge detection window");
 	file_menu->Append(BG_NEW_SEGM_WINDOW, "New &segment window\tAlt-S",
-	                  "Create a new segmentation window");
+					  "Create a new segmentation window");
 	file_menu->Append(BG_SEGM_LOAD_IMAGE, "&Load image\tShift-L",
-	                  "Load image to perform segmentation");
+					  "Load image to perform segmentation");
 	file_menu->Append(BG_SEGM_SAVE_SEGMENTED, "&Save result\tShift-S");
 	file_menu->Append(BG_CHILD_SEGM_QUIT, "&Close window\tShift-C",
-	                  "Close this window");
+					  "Close this window");
 	file_menu->Append(BG_QUIT, "E&xit\tAlt-X");
 	wxMenu* segm_menu = new wxMenu;
 	segm_menu->Append(BG_SEGM_SEGMENT, "Segment Image\tShift-R");
@@ -811,11 +791,11 @@ void BgMdiFrame::OnNewSegmWindow(wxCommandEvent& WXUNUSED(event))
 	speedup_menu->Append(BG_SEGM_SPEEDUP_MEDM, "&Medium", "", true);
 	speedup_menu->Append(BG_SEGM_SPEEDUP_HIGH, "&High", "", true);
 	wxMenuItem* segm_menu_item   = new wxMenuItem(segm_menu, BG_SEGM_SPEEDUP,
-	        "Speedup", "", false, speedup_menu);
+			"Speedup", "", false, speedup_menu);
 	segm_menu->Append(segm_menu_item);
 	wxMenu* weightmap_menu = new wxMenu;
 	weightmap_menu->Append(BG_SEGM_LOAD_MAP,  "Load custom weight &map\tShift-M",
-	                       "Load map images to perform segmentation");
+						   "Load map images to perform segmentation");
 	weightmap_menu->AppendSeparator();
 	weightmap_menu->Append(BG_SEGM_USE_MAP, "&Use custom weight map", "", true);
 	wxMenu* help_menu = new wxMenu;
@@ -846,17 +826,16 @@ void BgMdiFrame::GetImageFileInfo(char** pathname, char** filename)
 // get the file name
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 	wxFileDialog filedialog(this, "Choose an image file", "", "",
-	                        "*", wxOPEN);
+							"*", wxOPEN);
 #else
 	wxFileDialog filedialog(this, "Choose an image file", "", "",
-	                        "Common image files|*.png;*.bmp;*.gif;*.tif;*.tiff;*.jpg;*.pnm;*.pgm;*.ppm|PNG files (*.png)|*.png|BMP files (*.bmp)|*.bmp|GIF files (*.gif)|*.gif|TIFF files (*.tif)|*.tif|JPEG files (*.jpg)|*.jpg|PNM files (*.pnm)|*.pnm|PGM/PPM files (*.pgm,*.ppm)|*.pgm;*.ppm",
-	                        wxOPEN);
+							"Common image files|*.png;*.bmp;*.gif;*.tif;*.tiff;*.jpg;*.pnm;*.pgm;*.ppm|PNG files (*.png)|*.png|BMP files (*.bmp)|*.bmp|GIF files (*.gif)|*.gif|TIFF files (*.tif)|*.tif|JPEG files (*.jpg)|*.jpg|PNM files (*.pnm)|*.pnm|PGM/PPM files (*.pgm,*.ppm)|*.pgm;*.ppm",
+							wxOPEN);
 #endif
 	//retrieve and check filename
 	*filename = (char*) NULL;
 	*pathname = (char*) NULL;
 	BgImCanvas* temp = new BgImCanvas(this, this, wxDefaultPosition, wxDefaultSize);
-
 	if (filedialog.ShowModal() == wxID_OK)
 	{
 		char* temp_str  = (char*) filedialog.GetPath().c_str();
@@ -865,7 +844,6 @@ void BgMdiFrame::GetImageFileInfo(char** pathname, char** filename)
 		temp_str    = (char*) filedialog.GetFilename().c_str();
 		*filename   = new char [strlen(temp_str) + 1];
 		strcpy(*filename, temp_str);
-
 		if (temp->SetImage(*pathname) == 0)
 		{
 			delete [] *pathname;
@@ -878,7 +856,6 @@ void BgMdiFrame::GetImageFileInfo(char** pathname, char** filename)
 			bgLog("Image %s loaded\n", filedialog.GetPath().c_str());
 		}
 	}
-
 	//de-allocate memory
 	delete temp;
 	//done.
@@ -890,7 +867,6 @@ void BgMdiFrame::ZoomControl(wxCommandEvent& event)
 {
 	//set display
 	wxToolBar*   toolbar = GetToolBar();
-
 	switch (event.GetId())
 	{
 	case BG_CROSS:
@@ -899,22 +875,19 @@ void BgMdiFrame::ZoomControl(wxCommandEvent& event)
 		toolbar->ToggleTool(BG_ZOOM_OUT, false);
 		toolbar->ToggleTool(BG_POINTER, false);
 		break;
-
 	case BG_ZOOM_IN:
 		toolbar->ToggleTool(BG_CROSS, false);
 		toolbar->ToggleTool(BG_ZOOM_IN, true);
 		toolbar->ToggleTool(BG_ZOOM_OUT, false);
 		toolbar->ToggleTool(BG_POINTER, false);
 		break;
-
 	case BG_ZOOM_OUT:
 		toolbar->ToggleTool(BG_CROSS, false);
 		toolbar->ToggleTool(BG_ZOOM_IN, false);
 		toolbar->ToggleTool(BG_ZOOM_OUT, true);
 		toolbar->ToggleTool(BG_POINTER, false);
 		break;
-
-		//BG_POINTER:
+	//BG_POINTER:
 	default:
 		toolbar->ToggleTool(BG_CROSS, false);
 		toolbar->ToggleTool(BG_ZOOM_IN, false);
@@ -922,10 +895,8 @@ void BgMdiFrame::ZoomControl(wxCommandEvent& event)
 		toolbar->ToggleTool(BG_POINTER, true);
 		break;
 	}
-
 	//set zoom functionality
 	wxMDIChildFrame* activeChild    = GetActiveChild();
-
 	if (activeChild->GetId() == BG_EDGE_WINDOW)
 	{
 		switch (event.GetId())
@@ -933,16 +904,13 @@ void BgMdiFrame::ZoomControl(wxCommandEvent& event)
 		case BG_CROSS:
 			((BgMdiEdgeChild*) activeChild)->ZoomWindow();
 			break;
-
 		case BG_ZOOM_IN:
 			((BgMdiEdgeChild*) activeChild)->ZoomIn();
 			break;
-
 		case BG_ZOOM_OUT:
 			((BgMdiEdgeChild*) activeChild)->ZoomOut();
 			break;
-
-			//BG_POINTER:
+		//BG_POINTER:
 		default:
 			((BgMdiEdgeChild*) activeChild)->NoZoom();
 			break;
@@ -955,22 +923,18 @@ void BgMdiFrame::ZoomControl(wxCommandEvent& event)
 		case BG_CROSS:
 			((BgMdiSegmentChild*) activeChild)->ZoomWindow();
 			break;
-
 		case BG_ZOOM_IN:
 			((BgMdiSegmentChild*) activeChild)->ZoomIn();
 			break;
-
 		case BG_ZOOM_OUT:
 			((BgMdiSegmentChild*) activeChild)->ZoomOut();
 			break;
-
-			//BG_POINTER:
+		//BG_POINTER:
 		default:
 			((BgMdiSegmentChild*) activeChild)->NoZoom();
 			break;
 		}
 	}
-
 	return;
 }
 
@@ -1017,33 +981,33 @@ void BgMdiFrame::InitToolBar(wxToolBar* toolBar)
 	int currentX = 5;
 	//add tools to tool bar
 	toolBar->AddTool(BG_NEW_EDGE_WINDOW, *(bitmaps[0]), wxNullBitmap, FALSE,
-	                 currentX, -1, (wxObject*) NULL, "New edge window");
+					 currentX, -1, (wxObject*) NULL, "New edge window");
 	currentX += width + 5;
 	toolBar->AddTool(BG_NEW_SEGM_WINDOW, *(bitmaps[1]), wxNullBitmap, FALSE,
-	                 currentX, -1, (wxObject*) NULL, "New segment window");
+					 currentX, -1, (wxObject*) NULL, "New segment window");
 	currentX += width + 5;
 	toolBar->AddTool(BG_LOAD_IMAGE, *(bitmaps[3]), wxNullBitmap, FALSE, currentX,
-	                 -1, (wxObject*) NULL, "Load image for processing");
+					 -1, (wxObject*) NULL, "Load image for processing");
 	currentX += width + 5;
 	toolBar->AddTool(BG_SAVE_RESULT, *(bitmaps[4]), wxNullBitmap, FALSE, currentX,
-	                 -1, (wxObject*) NULL, "Save result");
+					 -1, (wxObject*) NULL, "Save result");
 	currentX += width + 5;
 	toolBar->AddSeparator();
 	toolBar->AddTool(BG_CROSS, *(bitmaps[5]), wxNullBitmap, TRUE, currentX, -1,
-	                 (wxObject*) NULL, "Zoom Window");
+					 (wxObject*) NULL, "Zoom Window");
 	currentX += width + 5;
 	toolBar->AddTool(BG_ZOOM_IN, *(bitmaps[6]), wxNullBitmap, TRUE, currentX, -1,
-	                 (wxObject*) NULL, "Zoom In");
+					 (wxObject*) NULL, "Zoom In");
 	currentX += width + 5;
 	toolBar->AddTool(BG_ZOOM_OUT, *(bitmaps[7]), wxNullBitmap, TRUE, currentX, -1,
-	                 (wxObject*) NULL, "Zoom Out");
+					 (wxObject*) NULL, "Zoom Out");
 	currentX += width + 5;
 	toolBar->AddTool(BG_POINTER, *(bitmaps[8]), wxNullBitmap, TRUE, currentX, -1,
-	                 (wxObject*) NULL, "Select");
+					 (wxObject*) NULL, "Select");
 	currentX += width + 5;
 	toolBar->AddSeparator();
 	toolBar->AddTool(BG_HELP, *bitmaps[2], wxNullBitmap, FALSE, currentX, -1,
-	                 (wxObject*) NULL, "Help");
+					 (wxObject*) NULL, "Help");
 	//set bitmap size of controls buttons to 20x20
 	wxSize tool_size(20, 20);
 	toolBar->SetToolBitmapSize(tool_size);
@@ -1055,7 +1019,6 @@ void BgMdiFrame::InitToolBar(wxToolBar* toolBar)
 	toolBar->EnableTool(BG_ZOOM_OUT, false);
 	toolBar->EnableTool(BG_POINTER, false);
 	int i;
-
 	for (i = 0; i < BITMAP_COUNT; i++)
 	{
 		delete bitmaps[i];
@@ -1099,7 +1062,6 @@ void BgPointSet::SetPoints(int* x, int* y, int n)
 	n_ = n;
 	x_ = new int[n_];
 	y_ = new int[n_];
-
 	for (int i = 0; i < n; i++)
 	{
 		x_[i] = x[i];
@@ -1137,7 +1099,6 @@ void BgCurveSet::CleanData()
 		x_ = y_ = 0;
 		n_ = 0;
 	}
-
 	type_ = -1;
 	xs_ = ys_ = 0;
 }
@@ -1151,7 +1112,6 @@ void BgCurveSet::SetCurve(BgCurveSet* bgc)
 	y_ = new int[n_];
 	xs_ = bgc->xs_;
 	ys_ = bgc->ys_;
-
 	for (int i = 0; i < n_; i++)
 	{
 		x_[i] = bgc->x_[i];
@@ -1160,7 +1120,7 @@ void BgCurveSet::SetCurve(BgCurveSet* bgc)
 }
 
 void BgCurveSet::SetParamCurve(int type, double* x, double* y, int n, int xs,
-                               int ys)
+							   int ys)
 {
 	CleanData();
 	type_ = type;
@@ -1169,7 +1129,6 @@ void BgCurveSet::SetParamCurve(int type, double* x, double* y, int n, int xs,
 	y_ = new int[n_];
 	xs_ = xs;
 	ys_ = ys;
-
 	for (int i = 0; i < n; i++)
 	{
 		x_[i] = (int)(x[i] * xs);
@@ -1184,7 +1143,6 @@ void BgCurveSet::GetParamCurve(double* x, double* y, int& type, int& n)
 		x[i] = ((double)x_[i]) / xs_;
 		y[i] = ((double)(ys_ - y_[i])) / ys_;
 	}
-
 	type = type_;
 	n = n_;
 }
@@ -1192,47 +1150,37 @@ void BgCurveSet::GetParamCurve(double* x, double* y, int& type, int& n)
 void BgCurveSet::DrawYourself(unsigned char* buf, int val)
 {
 	int j;
-
 	switch (type_)
 	{
 	case -1:
 		break;
-
 	case FC_ELLIPSE:
 		DrawEllipticArc(buf, val, -x_[0], y_[0], 2 * x_[0], 2 * (ys_ - y_[0]), 0, 90);
 		break;
-
 	case FC_VERT_LINE:
 		DrawLine(buf, val, x_[0], 0, x_[0], ys_);
 		break;
-
 	case FC_HORIZ_LINE:
 		DrawLine(buf, val, 0, y_[0], xs_, y_[0]);
 		break;
-
 	case FC_LINE:
 		DrawLine(buf, val, 0, y_[0], x_[0], ys_);
 		break;
-
 	case FC_SQUARE_BOX:
 		DrawLine(buf, val, 0, y_[0], x_[0], y_[0]);
 		DrawLine(buf, val, x_[0], y_[0], x_[0], ys_);
 		break;
-
 	case FC_CUSTOM:
-
 		// lines
 		for (j = 0; j < (n_ - 1); j++)
 		{
 			DrawLine(buf, val, x_[j], y_[j], x_[j + 1], y_[j + 1]);
 		}
-
 		// control points
 		for (j = 0; j < n_; j++)
 		{
 			DrawPoint(buf, val , x_[j], y_[j]);
 		}
-
 		break;
 	}
 }
@@ -1241,14 +1189,12 @@ void BgCurveSet::DrawPoint(unsigned char* buf, int val, int x, int y)
 {
 	int r, c;
 	int dx, dy;
-
 	for (dx = -2; dx <= 2; dx++)
 	{
 		for (dy = -2; dy <= 2; dy++)
 		{
 			c = x + dx;
 			r = y + dy;
-
 			if ((c >= 0) && (c < xs_) && (r >= 0) && (r < ys_) && ((abs(dx) + abs(dy)) < 4))
 			{
 				buf[c + r * ys_] = val;
@@ -1258,11 +1204,10 @@ void BgCurveSet::DrawPoint(unsigned char* buf, int val, int x, int y)
 }
 
 void BgCurveSet::DrawLine(unsigned char* buf, int val, int xs, int ys, int xe,
-                          int ye)
+						  int ye)
 {
 	int r, c;
 	double dsx, dsy, dex, dey;
-
 	if (abs(xs - xe) > abs(ys - ye))
 	{
 		// x scan
@@ -1280,26 +1225,32 @@ void BgCurveSet::DrawLine(unsigned char* buf, int val, int xs, int ys, int xe,
 			dsx = xs;
 			dsy = ys;
 		}
-
 		for (c = (int) dsx; c <= (int)dex; c++)
 		{
 			if (c >= 0 && c < xs_)
 			{
 				r = bgRound(dey - (dey - dsy) * (dex - c) / (dex - dsx));
-
 				if (r >= 0 && r < ys_)
 				{
 					buf[c + r * xs_] = val;
-
 					// +/- 1
-					if ((r + 1) < ys_) { buf[c + (r + 1)*xs_] = val; }
-
-					if ((r - 1) >= 0) { buf[c + (r - 1)*xs_] = val; }
-
+					if ((r + 1) < ys_)
+					{
+						buf[c + (r + 1)*xs_] = val;
+					}
+					if ((r - 1) >= 0)
+					{
+						buf[c + (r - 1)*xs_] = val;
+					}
 					// +/- 2
-					if ((r + 2) < ys_) { buf[c + (r + 2)*xs_] = val; }
-
-					if ((r - 2) >= 0) { buf[c + (r - 2)*xs_] = val; }
+					if ((r + 2) < ys_)
+					{
+						buf[c + (r + 2)*xs_] = val;
+					}
+					if ((r - 2) >= 0)
+					{
+						buf[c + (r - 2)*xs_] = val;
+					}
 				}
 			}
 		}
@@ -1321,35 +1272,40 @@ void BgCurveSet::DrawLine(unsigned char* buf, int val, int xs, int ys, int xe,
 			dsx = xs;
 			dsy = ys;
 		}
-
 		// check bounds
-
 		for (r = (int) dsy; r <= (int) dey; r++)
 		{
 			if (r >= 0 && r < ys_)
 			{
 				c = bgRound(dex - (dex - dsx) * (dey - r) / (dey - dsy));
-
 				if (c >= 0 && c < xs_)
 				{
 					buf[c + r * xs_] = val;
-
 					// +/- 1
-					if ((c + 1) < xs_) { buf[c + 1 + r * xs_] = val; }
-
-					if ((c - 1) >= 0) { buf[c - 1 + r * xs_] = val; }
-
+					if ((c + 1) < xs_)
+					{
+						buf[c + 1 + r * xs_] = val;
+					}
+					if ((c - 1) >= 0)
+					{
+						buf[c - 1 + r * xs_] = val;
+					}
 					// +/- 2
-					if ((c + 2) < xs_) { buf[c + 2 + r * xs_] = val; }
-
-					if ((c - 2) >= 0) { buf[c - 2 + r * xs_] = val; }
+					if ((c + 2) < xs_)
+					{
+						buf[c + 2 + r * xs_] = val;
+					}
+					if ((c - 2) >= 0)
+					{
+						buf[c - 2 + r * xs_] = val;
+					}
 				}
 			}
 		}
 	}
 }
 void BgCurveSet::DrawEllipticArc(unsigned char* buf, int val, int x, int y,
-                                 int w, int h, int sa, int ea)
+								 int w, int h, int sa, int ea)
 {
 	double xc, yc, rx, ry;
 	rx = w / 2;
@@ -1357,7 +1313,6 @@ void BgCurveSet::DrawEllipticArc(unsigned char* buf, int val, int x, int y,
 	xc = x + rx;
 	yc = y + ry;
 	int r, c;
-
 //   if (rx > ry)
 //   {
 	// x scan
@@ -1366,24 +1321,30 @@ void BgCurveSet::DrawEllipticArc(unsigned char* buf, int val, int x, int y,
 		if (c >= 0 && c < xs_)
 		{
 			r = bgRound(yc - ry * sqrt(1 - (c - xc) * (c - xc) / (rx * rx)));
-
 			if (r >= 0 && r < ys_)
 			{
 				buf[c + r * xs_] = val;
-
 				// +/- 1
-				if ((r + 1) < ys_) { buf[c + (r + 1)*xs_] = val; }
-
-				if ((r - 1) >= 0) { buf[c + (r - 1)*xs_] = val; }
-
+				if ((r + 1) < ys_)
+				{
+					buf[c + (r + 1)*xs_] = val;
+				}
+				if ((r - 1) >= 0)
+				{
+					buf[c + (r - 1)*xs_] = val;
+				}
 				// +/- 2
-				if ((r + 2) < ys_) { buf[c + (r + 2)*xs_] = val; }
-
-				if ((r - 2) >= 0) { buf[c + (r - 2)*xs_] = val; }
+				if ((r + 2) < ys_)
+				{
+					buf[c + (r + 2)*xs_] = val;
+				}
+				if ((r - 2) >= 0)
+				{
+					buf[c + (r - 2)*xs_] = val;
+				}
 			}
 		}
 	}
-
 //   }
 //   else
 //   {
@@ -1393,24 +1354,30 @@ void BgCurveSet::DrawEllipticArc(unsigned char* buf, int val, int x, int y,
 		if (r >= 0 && r < ys_)
 		{
 			c = bgRound(xc + rx * sqrt(1 - (r - yc) * (r - yc) / (ry * ry)));
-
 			if (c >= 0 && c < xs_)
 			{
 				buf[c + r * xs_] = val;
-
 				// +/- 1
-				if ((c + 1) < xs_) { buf[c + 1 + r * xs_] = val; }
-
-				if ((c - 1) >= 0) { buf[c - 1 + r * xs_] = val; }
-
+				if ((c + 1) < xs_)
+				{
+					buf[c + 1 + r * xs_] = val;
+				}
+				if ((c - 1) >= 0)
+				{
+					buf[c - 1 + r * xs_] = val;
+				}
 				// +/- 2
-				if ((c + 2) < xs_) { buf[c + 2 + r * xs_] = val; }
-
-				if ((c - 2) >= 0) { buf[c - 2 + r * xs_] = val; }
+				if ((c + 2) < xs_)
+				{
+					buf[c + 2 + r * xs_] = val;
+				}
+				if ((c - 2) >= 0)
+				{
+					buf[c - 2 + r * xs_] = val;
+				}
 			}
 		}
 	}
-
 //   }
 }
 
@@ -1418,12 +1385,10 @@ void BgCurveSet::StartDragging(int x, int y)
 {
 	isDragging_ = 1;
 	int j;
-
 	switch (type_)
 	{
 	case -1:
 		break;
-
 	case FC_ELLIPSE:
 		if (abs(x) < 3)
 		{
@@ -1437,17 +1402,13 @@ void BgCurveSet::StartDragging(int x, int y)
 		{
 			ltodrag_ = 0;
 		}
-
 		break;
-
 	case FC_VERT_LINE:
 		ltodrag_ = 0;
 		break;
-
 	case FC_HORIZ_LINE:
 		ltodrag_ = 0;
 		break;
-
 	case FC_LINE:
 		if (abs(x) < 3)
 		{
@@ -1461,9 +1422,7 @@ void BgCurveSet::StartDragging(int x, int y)
 		{
 			ltodrag_ = 0;
 		}
-
 		break;
-
 	case FC_SQUARE_BOX:
 		if (abs((abs(x - x_[0]) - abs(y - y_[0]))) < 3)
 		{
@@ -1480,26 +1439,21 @@ void BgCurveSet::StartDragging(int x, int y)
 			// drag vertical
 			ltodrag_ = 1;
 		}
-
 		break;
-
 	case FC_CUSTOM:
 		// find point to drag
 		int mind = abs(x - x_[0]) + abs(y - y_[0]);
 		int cmind, mj;
 		mj = 0;
-
 		for (j = 1; j < n_; j++)
 		{
 			cmind = abs(x - x_[j]) + abs(y - y_[j]);
-
 			if (cmind < mind)
 			{
 				mind = cmind;
 				mj = j;
 			}
 		}
-
 		ltodrag_ = mj;
 		break;
 	}
@@ -1511,16 +1465,12 @@ void BgCurveSet::DragTo(int x, int y)
 	{
 		return;
 	}
-
 	double k, ry;
-
 	switch (type_)
 	{
 	case -1:
 		break;
-
 	case FC_ELLIPSE:
-
 		// modify ellipse to drag
 		if (ltodrag_ == 0)
 		{
@@ -1537,19 +1487,14 @@ void BgCurveSet::DragTo(int x, int y)
 		{
 			x_[0] = x;
 		}
-
 		break;
-
 	case FC_VERT_LINE:
 		x_[0] = x;
 		break;
-
 	case FC_HORIZ_LINE:
 		y_[0] = y;
 		break;
-
 	case FC_LINE:
-
 		// modify line to drag
 		if (ltodrag_ == 0)
 		{
@@ -1565,9 +1510,7 @@ void BgCurveSet::DragTo(int x, int y)
 		{
 			x_[0] = x;
 		}
-
 		break;
-
 	case FC_SQUARE_BOX:
 		if (ltodrag_ == 0)
 		{
@@ -1582,11 +1525,8 @@ void BgCurveSet::DragTo(int x, int y)
 			x_[0] = x;
 			y_[0] = y;
 		}
-
 		break;
-
 	case FC_CUSTOM:
-
 		// modify line to drag
 		if (ltodrag_ == 0)
 		{
@@ -1601,7 +1541,6 @@ void BgCurveSet::DragTo(int x, int y)
 			x_[ltodrag_] = x;
 			y_[ltodrag_] = y;
 		}
-
 		break;
 	}
 }
@@ -1632,7 +1571,10 @@ BgParameterHistory::BgParameterHistory(void* parameters, int itemCount)
 
 BgParameterHistory::~BgParameterHistory(void)
 {
-	if (params_) { delete [] params_; }
+	if (params_)
+	{
+		delete [] params_;
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -1640,10 +1582,10 @@ BgParameterHistory::~BgParameterHistory(void)
 // ---------------------------------------------------------------------------
 
 BgParameterHistoryBox::BgParameterHistoryBox(wxWindow* parent, wxWindowID id,
-        const wxString& value, const wxPoint& pos, const wxSize& size, int n,
-        long style, const wxValidator& validator, const wxString& name)
+		const wxString& value, const wxPoint& pos, const wxSize& size, int n,
+		long style, const wxValidator& validator, const wxString& name)
 	: wxComboBox(parent, id, value, pos, size, 0, (wxString*) NULL, style,
-	             validator, name)
+				 validator, name)
 {
 	//initialize history list
 	maxCount_       = n;
@@ -1658,7 +1600,6 @@ BgParameterHistoryBox::~BgParameterHistoryBox(void)
 {
 	//delete history...
 	BgParameterHistory*  temp;
-
 	while (historyList_)
 	{
 		temp            = historyList_;
@@ -1682,11 +1623,14 @@ void BgParameterHistoryBox::AddParameterList(void* parameters, int itemCount)
 	else
 	{
 		BgParameterHistory*  newHistory = historyList_;
-
-		while (newHistory->next_->next_) { newHistory    = newHistory->next_; }
-
-		if (newHistory->next_->params_) { delete newHistory->next_->params_; }
-
+		while (newHistory->next_->next_)
+		{
+			newHistory    = newHistory->next_;
+		}
+		if (newHistory->next_->params_)
+		{
+			delete newHistory->next_->params_;
+		}
 		newHistory->next_->params_      = parameters;
 		newHistory->next_->listSize_    = itemCount;
 		newHistory->next_->next_        = historyList_;
@@ -1701,16 +1645,13 @@ void* BgParameterHistoryBox::GetParameterListData(int indexNumber)
 	{
 		BgParameterHistory*  currentHistory = historyList_;
 		int count = 0;
-
 		while (indexNumber != count)
 		{
 			currentHistory  = currentHistory->next_;
 			count++;
 		}
-
 		return currentHistory->params_;
 	}
-
 	return (void*) NULL;
 }
 
@@ -1720,16 +1661,13 @@ int BgParameterHistoryBox::GetParameterListCount(int indexNumber)
 	{
 		BgParameterHistory*  currentHistory = historyList_;
 		int count = 0;
-
 		while (indexNumber != count)
 		{
 			currentHistory  = currentHistory->next_;
 			count++;
 		}
-
 		return currentHistory->listSize_;
 	}
-
 	return -1;
 }
 
@@ -1739,19 +1677,16 @@ void BgParameterHistoryBox::UseParameterList(int indexNumber)
 	{
 		BgParameterHistory*  previousHistory    = historyList_;
 		int count = 0;
-
 		while (count != indexNumber - 1)
 		{
 			previousHistory = previousHistory->next_;
 			count++;
 		}
-
 		BgParameterHistory*  currentHistory     = previousHistory->next_;
 		previousHistory->next_                  = currentHistory->next_;
 		currentHistory->next_                   = historyList_;
 		historyList_                            = currentHistory;
 	}
-
 	return;
 }
 
@@ -1815,7 +1750,6 @@ void BgText::SetText(char* text)
 		delete [] text_;
 		text_   = new char [strlen(text) + 1];
 	}
-
 	strcpy(text_, text);
 	return;
 }
@@ -1825,8 +1759,10 @@ void BgText::SetText(char* text)
 //post: the font of the text object has been changed to font
 void BgText::SetFont(wxFont font)
 {
-	if (!font_) { font_ = new wxFont; }
-
+	if (!font_)
+	{
+		font_ = new wxFont;
+	}
 	(*font_)    = font;
 	return;
 }
@@ -1856,7 +1792,7 @@ void BgText::SetPlotLocation(int x, int y)
 BgTextObj::BgTextObj(BgText* text)
 {
 	text_   = new BgText(text->id_, text->text_, *(text->font_), text->x_,
-	                     text->y_);
+						 text->y_);
 	next_   = NULL;
 }
 
@@ -1883,7 +1819,6 @@ BgTextList::BgTextList(void)
 BgTextList::~BgTextList(void)
 {
 	cur_ = head_;
-
 	while (cur_)
 	{
 		DeleteText();
@@ -1898,12 +1833,10 @@ int BgTextList::AddText(BgText* text)
 	//search for existsing text object
 	int id  = text->id_;
 	cur_    = head_;
-
 	while ((cur_) && (cur_->text_->id_ != id))
 	{
 		cur_ = cur_->next_;
 	}
-
 	//if it exists change its contents
 	if (cur_)
 	{
@@ -1916,23 +1849,18 @@ int BgTextList::AddText(BgText* text)
 	else
 	{
 		BgTextObj*   temp;
-
 		if ((temp = new BgTextObj(text)) == NULL)
 		{
 			return 1;
 		}
-
 		temp->next_ = head_;
-
 		if (head_ == NULL)
 		{
 			cur_  = temp;
 		}
-
 		head_       = temp;
 		itemcount_++;
 	}
-
 	return 0;
 }
 
@@ -1944,12 +1872,10 @@ int BgTextList::AddText(BgText* text)
 int BgTextList::RemoveText(int textId)
 {
 	cur_ = head_;
-
 	while ((cur_) && (cur_->text_->id_ != textId))
 	{
 		cur_  = cur_->next_;
 	}
-
 	if (cur_)
 	{
 		DeleteText();
@@ -2009,9 +1935,10 @@ void BgTextList::DeleteText(void)
 	{
 		BgTextObj*   temp = cur_;
 		cur_    = cur_->next_;
-
-		if (!cur_) { cur_  = head_; }
-
+		if (!cur_)
+		{
+			cur_  = head_;
+		}
 		delete temp;
 	}
 }
@@ -2041,7 +1968,10 @@ BgBitmap::BgBitmap(wxBitmap* bitmap, int id, int location_x, int location_y)
 //destructor
 BgBitmap::~BgBitmap(void)
 {
-	if (bitmap_) { delete bitmap_; }
+	if (bitmap_)
+	{
+		delete bitmap_;
+	}
 }
 
 //set bitmap content
@@ -2049,8 +1979,10 @@ BgBitmap::~BgBitmap(void)
 //post: bitmap content has been changed to that of bitmap
 void BgBitmap::SetMap(wxBitmap* bitmap)
 {
-	if (!bitmap_) { bitmap_   = new wxBitmap; }
-
+	if (!bitmap_)
+	{
+		bitmap_   = new wxBitmap;
+	}
 	(*bitmap_)  = (*bitmap);
 }
 
@@ -2086,14 +2018,17 @@ BgBitmapObj::BgBitmapObj(void)
 BgBitmapObj::BgBitmapObj(BgBitmap* bitmap)
 {
 	bitmap_ = new BgBitmap(bitmap->bitmap_, bitmap->id_,
-	                       bitmap->location_x_, bitmap->location_y_);
+						   bitmap->location_x_, bitmap->location_y_);
 	next_   = (BgBitmapObj*) NULL;
 }
 
 //destructor
 BgBitmapObj::~BgBitmapObj(void)
 {
-	if (bitmap_) { delete bitmap_; }
+	if (bitmap_)
+	{
+		delete bitmap_;
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -2111,7 +2046,6 @@ BgBitmapList::BgBitmapList(void)
 BgBitmapList::~BgBitmapList(void)
 {
 	cur_ = head_;
-
 	while (cur_)
 	{
 		DeleteBitmap();
@@ -2124,19 +2058,15 @@ BgBitmapList::~BgBitmapList(void)
 int BgBitmapList::AddBitmap(BgBitmap* bitmap)
 {
 	BgBitmapObj* temp;
-
 	if ((temp = new BgBitmapObj(bitmap)) == NULL)
 	{
 		return 1;
 	}
-
 	temp->next_ = head_;
-
 	if (head_ == NULL)
 	{
 		cur_  = temp;
 	}
-
 	head_       = temp;
 	itemcount_++;
 	return 0;
@@ -2149,12 +2079,10 @@ void BgBitmapList::RemoveBitmap(BgBitmap* bitmap)
 {
 	int id  = bitmap->id_;
 	cur_    = head_;
-
 	while ((cur_) && (cur_->bitmap_->id_ != id))
 	{
 		cur_  = cur_->next_;
 	}
-
 	DeleteBitmap();
 }
 
@@ -2165,13 +2093,11 @@ void BgBitmapList::RemoveBitmap(BgBitmap* bitmap)
 BgBitmap* BgBitmapList::GetBitmap(void)
 {
 	BgBitmap*    temp   = (BgBitmap*)  NULL;
-
 	if (cur_)
 	{
 		temp    = cur_->bitmap_;
 		cur_    = cur_->next_;
 	}
-
 	return temp;
 }
 
@@ -2209,18 +2135,20 @@ void BgBitmapList::DeleteBitmap(void)
 //default constructor
 BgAxis::BgAxis(void)
 {
-	start_x_    = 0; start_y_   = 0;
+	start_x_    = 0;
+	start_y_   = 0;
 	length_     = 0;
 	ticknum_    = 0;
 	direction_  = 0;
-	start_val_  = 0; stop_val_  = 0;
+	start_val_  = 0;
+	stop_val_  = 0;
 	label_      = (BgText*) NULL;
 	rotation_   = 0;
 }
 
 //overloaded constructor
 BgAxis::BgAxis(int start_x, int start_y, int length, int ticknum, int direction,
-               float start_val, float stop_val)
+			   float start_val, float stop_val)
 {
 	start_x_    = start_x;
 	start_y_    = start_y;
@@ -2236,7 +2164,10 @@ BgAxis::BgAxis(int start_x, int start_y, int length, int ticknum, int direction,
 //destuctor
 BgAxis::~BgAxis(void)
 {
-	if (label_) { delete label_; }
+	if (label_)
+	{
+		delete label_;
+	}
 }
 
 //set plotting origin
@@ -2278,11 +2209,12 @@ void BgAxis::SetBounds(float start_val, float stop_val)
 //post: the axis has been labeled using label
 void BgAxis::Label(BgText* label)
 {
-	if (label_) { delete label_; }
-
+	if (label_)
+	{
+		delete label_;
+	}
 	char* text  = label->text_;
 	int label_length    = 3 * strlen(text);
-
 	//horizontal axis
 	if (direction_ == 0)
 	{
@@ -2295,7 +2227,6 @@ void BgAxis::Label(BgText* label)
 		label_x_    = start_x_ - 60;
 		label_y_    = start_y_ - length_ / 2 + label_length;
 	}
-
 	label_  = new BgText(label->id_, text, *(label->font_), label_x_, label_y_);
 }
 
@@ -2303,8 +2234,10 @@ void BgAxis::Label(BgText* label)
 //post: the axis label has been removed
 void BgAxis::RemoveLabel(void)
 {
-	if (label_) { delete label_; }
-
+	if (label_)
+	{
+		delete label_;
+	}
 	label_  = (BgText*) NULL;
 }
 
@@ -2333,8 +2266,7 @@ void BgAxis::PlotAxis(wxDC* dc)
 	int shift_y = 5;
 	//create font
 	wxFont plotFont(7, wxSWISS, wxNORMAL, wxNORMAL, false, "",
-	                wxFONTENCODING_DEFAULT);
-
+					wxFONTENCODING_DEFAULT);
 	//plot axis line
 	//horizontal axis
 	if (direction_ == 0)
@@ -2344,18 +2276,17 @@ void BgAxis::PlotAxis(wxDC* dc)
 		dc->DrawLine(start_x_, start_y_ + 1, end_x, start_y_ + 1);
 		//draw tick marks
 		int increment   = length_ / ticknum_;
-
-		if (length_ % ticknum_ != 0) { increment++; }
-
+		if (length_ % ticknum_ != 0)
+		{
+			increment++;
+		}
 		int x_location  = start_x_;
-
 		while (x_location < end_x)
 		{
 			dc->DrawLine(x_location, start_y_, x_location, start_y_ + ticklength);
 			dc->DrawLine(x_location + 1, start_y_, x_location + 1, start_y_ + ticklength);
 			x_location  = x_location + increment;
 		}
-
 		dc->DrawLine(end_x - 1, start_y_, end_x - 1, start_y_ + ticklength);
 		dc->DrawLine(end_x, start_y_, end_x, start_y_ + ticklength);
 		//draw floating point axis markers
@@ -2365,7 +2296,6 @@ void BgAxis::PlotAxis(wxDC* dc)
 		char    marker_str[8];
 		int i   = 0, fixed_y    = start_y_ + 10;
 		char    align[6];
-
 		if (stop_val_ < 10)
 		{
 			strcpy(align, "%4.2f");
@@ -2376,9 +2306,7 @@ void BgAxis::PlotAxis(wxDC* dc)
 			x_location  = x_location - shift_x;
 			shift_x     = 2 * shift_x;
 		}
-
 		dc->SetFont(plotFont);
-
 		for (i = 0; i < ticknum_; i++)
 		{
 			sprintf(marker_str, align, marker_x);
@@ -2386,10 +2314,8 @@ void BgAxis::PlotAxis(wxDC* dc)
 			marker_x    += marker_increment;
 			x_location  += increment;
 		}
-
 		sprintf(marker_str, align, marker_x);
 		dc->DrawText(marker_str, end_x - shift_x, fixed_y);
-
 		//add label
 		if (label_)
 		{
@@ -2405,18 +2331,17 @@ void BgAxis::PlotAxis(wxDC* dc)
 		dc->DrawLine(start_x_ - 1, start_y_, start_x_ - 1, end_y);
 		//draw tick marks
 		int increment   = length_ / ticknum_;
-
-		if (length_ % ticknum_ != 0) { increment++; }
-
+		if (length_ % ticknum_ != 0)
+		{
+			increment++;
+		}
 		int y_location  = end_y;
-
 		while (y_location < start_y_)
 		{
 			dc->DrawLine(start_x_, y_location, start_x_ - ticklength, y_location);
 			dc->DrawLine(start_x_, y_location + 1, start_x_ - ticklength, y_location + 1);
 			y_location  = y_location + increment;
 		}
-
 		dc->DrawLine(start_x_, start_y_, start_x_ - ticklength, start_y_);
 		dc->DrawLine(start_x_, start_y_ + 1, start_x_ - ticklength, start_y_ + 1);
 		//draw floating point axis markers
@@ -2426,7 +2351,6 @@ void BgAxis::PlotAxis(wxDC* dc)
 		char    marker_str[8];
 		int i   = 0, fixed_x = start_x_ - 30;
 		char    align[6];
-
 		if (stop_val_ < 10)
 		{
 			strcpy(align, "%4.2f");
@@ -2435,13 +2359,11 @@ void BgAxis::PlotAxis(wxDC* dc)
 		{
 			strcpy(align, "%4.0f");
 		}
-
 		dc->SetFont(plotFont);
 		sprintf(marker_str, align, marker_y);
 		dc->DrawText(marker_str, fixed_x, y_location - shift_y);
 		marker_y    += marker_increment;
 		y_location  -= increment;
-
 		for (i = 1; i < ticknum_; i++)
 		{
 			sprintf(marker_str, align, marker_y);
@@ -2449,10 +2371,8 @@ void BgAxis::PlotAxis(wxDC* dc)
 			marker_y    += marker_increment;
 			y_location  -= increment;
 		}
-
 		sprintf(marker_str, align, marker_y);
 		dc->DrawText(marker_str, fixed_x, end_y - shift_y);
-
 		//add label
 		if (label_)
 		{
@@ -2467,7 +2387,7 @@ void BgAxis::PlotAxis(wxDC* dc)
 // ---------------------------------------------------------------------------
 
 BgThread::BgThread(wxThreadKind kind, void foo(void*),
-                   void* Object) : wxThread(kind)
+				   void* Object) : wxThread(kind)
 {
 	function_   = foo;
 	Object_     = Object;
@@ -2490,11 +2410,11 @@ void* BgThread::Entry(void)
 // ---------------------------------------------------------------------------
 
 BgDialog::BgDialog(wxWindow* parent, wxWindowID id, const wxString& title,
-                   const wxPoint& pos, const wxSize& size, long style, const wxString& name)
+				   const wxPoint& pos, const wxSize& size, long style, const wxString& name)
 	: wxDialog(parent, id, title, pos, size, style, name)
 {
 	okButton_   = new wxButton(this, BG_DIALOG_OK, "OK",
-	                           wxPoint(size.GetWidth() / 2 - 40, size.GetHeight() - 60));
+							   wxPoint(size.GetWidth() / 2 - 40, size.GetHeight() - 60));
 }
 
 BgDialog::~BgDialog(void)
@@ -2528,21 +2448,18 @@ void BgDialog::OnPaint(wxPaintEvent& WXUNUSED(event))
 	//draw new text to the image from text object list
 	BgText*  bgText;
 	tlist_.ResetList();
-
 	while (bgText = tlist_.GetText())
 	{
 		dc.SetFont(*(bgText->font_));
 		dc.DrawText(bgText->text_, bgText->x_, bgText->y_);
 	}
-
 	//draw bitmaps
 	blist_.ResetList();
 	BgBitmap*    bitmap;
-
 	while (bitmap = blist_.GetBitmap())
 	{
 		dc.DrawBitmap(*(bitmap->bitmap_), bitmap->location_x_, bitmap->location_y_,
-		              true);
+					  true);
 	}
 }
 
@@ -2556,21 +2473,21 @@ void BgDialog::OnExit(wxCommandEvent& WXUNUSED(event))
 // ---------------------------------------------------------------------------
 
 BgHoverBar::BgHoverBar(wxWindow* parent, wxWindowID id, int gradViewId,
-                       int confViewId, int weitViewId, int custViewId, int gradSaveId, int confSaveId,
-                       int weitSaveId)
+					   int confViewId, int weitViewId, int custViewId, int gradSaveId, int confSaveId,
+					   int weitSaveId)
 	: wxWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxRAISED_BORDER)
 {
 	//set the size of the window
 	SetSize(120, 30);
 	//place a button using a bitmap
 	menuButton1_    = new wxBitmapButton(this, BG_CANVAS_VIEW_BUTTON,
-	                                     wxBitmap("down_arrow", wxBITMAP_TYPE_RESOURCE), wxPoint(33, 2), wxSize(18, 20));
+										 wxBitmap("down_arrow", wxBITMAP_TYPE_RESOURCE), wxPoint(33, 2), wxSize(18, 20));
 	menuButton2_    = new wxBitmapButton(this, BG_CANVAS_SAVE_BUTTON,
-	                                     wxBitmap("down_arrow", wxBITMAP_TYPE_RESOURCE), wxPoint(92, 2), wxSize(18, 20));
+										 wxBitmap("down_arrow", wxBITMAP_TYPE_RESOURCE), wxPoint(92, 2), wxSize(18, 20));
 	menuText1_      = new wxStaticText(this, -1, "View", wxPoint(5, 5), wxSize(25,
-	                                   20));
+									   20));
 	menuText2_      = new wxStaticText(this, -1, "Save", wxPoint(62, 5), wxSize(25,
-	                                   20));
+									   20));
 	//get view menu identification constants
 	gradViewId_ = gradViewId;
 	confViewId_ = confViewId;
@@ -2602,7 +2519,6 @@ BgHoverBar::~BgHoverBar(void)
 void BgHoverBar::ShowMenu(wxCommandEvent& event)
 {
 	int buttonId    = event.GetId();
-
 	if (buttonId == BG_CANVAS_VIEW_BUTTON)
 	{
 		menuText1_->SetForegroundColour(wxColour(0, 0, 100));
@@ -2619,7 +2535,6 @@ void BgHoverBar::ShowMenu(wxCommandEvent& event)
 		menuText2_->Refresh();
 		PopupMenu(save_menu, 0, 26);
 	}
-
 	Update();
 }
 
@@ -2645,8 +2560,8 @@ void BgHoverBar::Update(void)
 // ---------------------------------------------------------------------------
 
 BgMenuPanel::BgMenuPanel(wxWindow* parent, wxWindowID id, int gradViewId,
-                         int confViewId, int weitViewId, int custViewId, int gradSaveId, int confSaveId,
-                         int weitSaveId)
+						 int confViewId, int weitViewId, int custViewId, int gradSaveId, int confSaveId,
+						 int weitSaveId)
 	: wxPanel(parent, id, wxDefaultPosition, wxDefaultSize)
 {
 	//keep pointer to scroll window
@@ -2655,13 +2570,13 @@ BgMenuPanel::BgMenuPanel(wxWindow* parent, wxWindowID id, int gradViewId,
 	SetSize(0, 0, 120, 30);
 	//place a button using a bitmap
 	menuButton1_    = new wxBitmapButton(this, BG_CANVAS_VIEW_BUTTON,
-	                                     wxBitmap("down_arrow", wxBITMAP_TYPE_RESOURCE), wxPoint(33, 2), wxSize(18, 20));
+										 wxBitmap("down_arrow", wxBITMAP_TYPE_RESOURCE), wxPoint(33, 2), wxSize(18, 20));
 	menuButton2_    = new wxBitmapButton(this, BG_CANVAS_SAVE_BUTTON,
-	                                     wxBitmap("down_arrow", wxBITMAP_TYPE_RESOURCE), wxPoint(92, 2), wxSize(18, 20));
+										 wxBitmap("down_arrow", wxBITMAP_TYPE_RESOURCE), wxPoint(92, 2), wxSize(18, 20));
 	menuText1_      = new wxStaticText(this, -1, "View", wxPoint(5, 5), wxSize(25,
-	                                   20));
+									   20));
 	menuText2_      = new wxStaticText(this, -1, "Save", wxPoint(62, 5), wxSize(25,
-	                                   20));
+									   20));
 	//get view menu identification constants
 	gradViewId_ = gradViewId;
 	confViewId_ = confViewId;
@@ -2693,7 +2608,6 @@ BgMenuPanel::~BgMenuPanel(void)
 void BgMenuPanel::ShowMenu(wxCommandEvent& event)
 {
 	int buttonId    = event.GetId();
-
 	if (buttonId == BG_CANVAS_VIEW_BUTTON)
 	{
 		menuText1_->SetForegroundColour(wxColour(0, 0, 200));
@@ -2710,7 +2624,6 @@ void BgMenuPanel::ShowMenu(wxCommandEvent& event)
 		menuText2_->Refresh();
 		PopupMenu(save_menu, 0, 26);
 	}
-
 	Update();
 }
 
@@ -2791,7 +2704,7 @@ void BgLineSet::CleanData()
 }
 
 void BgLineSet::SetLines(int* xs, int* xe, int* ys, int* ye, double* lineParam,
-                         int n)
+						 int n)
 {
 	CleanData();
 	n_ = n;
@@ -2801,7 +2714,6 @@ void BgLineSet::SetLines(int* xs, int* xe, int* ys, int* ye, double* lineParam,
 	ye_ = new int[n_];
 	lineParam_ = new double[n_ * 3];
 	int i;
-
 	for (i = 0; i < n; i++)
 	{
 		xs_[i] = xs[i];
@@ -2809,7 +2721,6 @@ void BgLineSet::SetLines(int* xs, int* xe, int* ys, int* ye, double* lineParam,
 		xe_[i] = xe[i];
 		ye_[i] = ye[i];
 	}
-
 	for (i = 0; i < (3 * n); i++)
 	{
 		lineParam_[i] = lineParam[i];
@@ -2826,7 +2737,6 @@ void BgLineSet::SetLines(double* startp, double* endp, double* lineParam, int n)
 	ye_ = new int[n_];
 	lineParam_ = new double[n_ * 3];
 	int i;
-
 	for (i = 0; i < n; i++)
 	{
 		xs_[i] = (int) startp[2 * i];
@@ -2834,7 +2744,6 @@ void BgLineSet::SetLines(double* startp, double* endp, double* lineParam, int n)
 		xe_[i] = (int) endp[2 * i];
 		ye_[i] = (int) endp[2 * i + 1];
 	}
-
 	for (i = 0; i < (3 * n); i++)
 	{
 		lineParam_[i] = lineParam[i];
@@ -2847,9 +2756,9 @@ void BgLineSet::SetLines(double* startp, double* endp, double* lineParam, int n)
 
 // Define a constructor for my canvas
 BgImCanvas::BgImCanvas(wxWindow* child_frame, wxWindow* parent,
-                       const wxPoint& pos, const wxSize& size)
+					   const wxPoint& pos, const wxSize& size)
 	: wxScrolledWindow(parent, -1, pos, size,
-	                   wxSIMPLE_BORDER | wxVSCROLL | wxHSCROLL)
+					   wxSIMPLE_BORDER | wxVSCROLL | wxHSCROLL)
 {
 	SetBackgroundColour(wxColour("WHITE"));
 	pbitmap = (wxBitmap*) NULL;
@@ -2933,11 +2842,14 @@ BgImCanvas::BgImCanvas(wxWindow* child_frame, wxWindow* parent,
 BgImCanvas::~BgImCanvas()
 {
 	ClearData();
-
-	if (xAxis) { delete xAxis; }
-
-	if (yAxis) { delete yAxis; }
-
+	if (xAxis)
+	{
+		delete xAxis;
+	}
+	if (yAxis)
+	{
+		delete yAxis;
+	}
 	delete [] curveClick_;
 	delete localMenu_;
 	delete bgCURSOR_MAGNIFIER_PLUS;
@@ -2947,11 +2859,10 @@ BgImCanvas::~BgImCanvas()
 void BgImCanvas::OnCustomAddNode(wxCommandEvent& WXUNUSED(event))
 {
 	if ((lmEventCurve_ < 0) || (lmEventCurve_ >= nCurveSets_) ||
-	        (curveSet_[lmEventCurve_]->type_ != FC_CUSTOM))
+			(curveSet_[lmEventCurve_]->type_ != FC_CUSTOM))
 	{
 		return;
 	}
-
 	int n, type;
 	n = curveSet_[lmEventCurve_]->n_;
 	double* tx, *ty;
@@ -2966,23 +2877,19 @@ void BgImCanvas::OnCustomAddNode(wxCommandEvent& WXUNUSED(event))
 	double mny = 10;
 	int ci = -1;
 	int i;
-
 	for (i = 0; i < (n - 1); i++)
 	{
 		cx = tx[i + 1] - tx[i];
 		cy = ty[i + 1] - ty[i];
 		cr = sqrt(cx * cx + cy * cy);
-
 		if (cr <= 0)
 		{
 			continue;
 		}
-
 		ax = x - tx[i];
 		ay = y - ty[i];
 		dx = (cx * ax + cy * ay) / cr;
 		dy = fabs((-cy * ax + cx * ay) / cr);
-
 		if ((dx >= 0) && (dx <= cr))
 		{
 			if (dy < mny)
@@ -2992,7 +2899,6 @@ void BgImCanvas::OnCustomAddNode(wxCommandEvent& WXUNUSED(event))
 			}
 		}
 	}
-
 	if (ci >= 0)
 	{
 		// modify curve
@@ -3001,12 +2907,10 @@ void BgImCanvas::OnCustomAddNode(wxCommandEvent& WXUNUSED(event))
 			tx[i] = tx[i - 1];
 			ty[i] = ty[i - 1];
 		}
-
 		tx[ci + 1] = x;
 		ty[ci + 1] = y;
 		curveSet_[lmEventCurve_]->SetParamCurve(type, tx, ty, n + 1, ccx_, ccy_);
 	}
-
 	delete [] ty;
 	delete [] tx;
 	mouseModif_ = 1;
@@ -3017,36 +2921,31 @@ void BgImCanvas::OnCustomAddNode(wxCommandEvent& WXUNUSED(event))
 void BgImCanvas::OnCustomDeleteNode(wxCommandEvent& WXUNUSED(event))
 {
 	if ((lmEventCurve_ < 0) || (lmEventCurve_ >= nCurveSets_) ||
-	        (lmEventNode_ < 0) || (lmEventNode_ >= (curveSet_[lmEventCurve_]->n_ - 1)))
+			(lmEventNode_ < 0) || (lmEventNode_ >= (curveSet_[lmEventCurve_]->n_ - 1)))
 	{
 		return;
 	}
-
 	if (lmEventNode_ == 0)
 	{
 		bgLog("Cannot delete first node.\n");
 		return;
 	}
-
 	if (lmEventNode_ == (curveSet_[lmEventCurve_]->n_ - 1))
 	{
 		bgLog("Cannot delete last node.\n");
 		return;
 	}
-
 	// delete the node
 	int i;
 	int n = curveSet_[lmEventCurve_]->n_;
 	int* tx, *ty;
 	tx = curveSet_[lmEventCurve_]->x_;
 	ty = curveSet_[lmEventCurve_]->y_;
-
 	for (i = lmEventNode_; i < (n - 1); i++)
 	{
 		tx[i] = tx[i + 1];
 		ty[i] = ty[i + 1];
 	}
-
 	curveSet_[lmEventCurve_]->n_ = n - 1;
 	mouseModif_ = 1;
 	AddPendingEvent(wxCommandEvent(BG_EVENT_UPDATE, BG_EVENT_UPDATE_ID));
@@ -3060,10 +2959,9 @@ void BgImCanvas::OnCTypeEllipse(wxCommandEvent& WXUNUSED(event))
 		if (curveSet_[lmEventCurve_]->type_ == FC_CUSTOM)
 		{
 			curveSet_[lmEventCurve_]->x_[0] =
-			    curveSet_[lmEventCurve_]->x_[curveSet_[lmEventCurve_]->n_ - 1];
+				curveSet_[lmEventCurve_]->x_[curveSet_[lmEventCurve_]->n_ - 1];
 			curveSet_[lmEventCurve_]->n_ = 1;
 		}
-
 		curveSet_[lmEventCurve_]->type_ = FC_ELLIPSE;
 		FillCurveClick();
 		mouseModif_ = 1;
@@ -3077,10 +2975,9 @@ void BgImCanvas::OnCTypeVLine(wxCommandEvent& WXUNUSED(event))
 		if (curveSet_[lmEventCurve_]->type_ == FC_CUSTOM)
 		{
 			curveSet_[lmEventCurve_]->x_[0] =
-			    curveSet_[lmEventCurve_]->x_[curveSet_[lmEventCurve_]->n_ - 1];
+				curveSet_[lmEventCurve_]->x_[curveSet_[lmEventCurve_]->n_ - 1];
 			curveSet_[lmEventCurve_]->n_ = 1;
 		}
-
 		curveSet_[lmEventCurve_]->type_ = FC_VERT_LINE;
 		FillCurveClick();
 		mouseModif_ = 1;
@@ -3094,10 +2991,9 @@ void BgImCanvas::OnCTypeHLine(wxCommandEvent& WXUNUSED(event))
 		if (curveSet_[lmEventCurve_]->type_ == FC_CUSTOM)
 		{
 			curveSet_[lmEventCurve_]->x_[0] =
-			    curveSet_[lmEventCurve_]->x_[curveSet_[lmEventCurve_]->n_ - 1];
+				curveSet_[lmEventCurve_]->x_[curveSet_[lmEventCurve_]->n_ - 1];
 			curveSet_[lmEventCurve_]->n_ = 1;
 		}
-
 		curveSet_[lmEventCurve_]->type_ = FC_HORIZ_LINE;
 		mouseModif_ = 1;
 		AddPendingEvent(wxCommandEvent(BG_EVENT_UPDATE, BG_EVENT_UPDATE_ID));
@@ -3111,10 +3007,9 @@ void BgImCanvas::OnCTypeLine(wxCommandEvent& WXUNUSED(event))
 		if (curveSet_[lmEventCurve_]->type_ == FC_CUSTOM)
 		{
 			curveSet_[lmEventCurve_]->x_[0] =
-			    curveSet_[lmEventCurve_]->x_[curveSet_[lmEventCurve_]->n_ - 1];
+				curveSet_[lmEventCurve_]->x_[curveSet_[lmEventCurve_]->n_ - 1];
 			curveSet_[lmEventCurve_]->n_ = 1;
 		}
-
 		curveSet_[lmEventCurve_]->type_ = FC_LINE;
 		mouseModif_ = 1;
 		AddPendingEvent(wxCommandEvent(BG_EVENT_UPDATE, BG_EVENT_UPDATE_ID));
@@ -3128,10 +3023,9 @@ void BgImCanvas::OnCTypeBox(wxCommandEvent& WXUNUSED(event))
 		if (curveSet_[lmEventCurve_]->type_ == FC_CUSTOM)
 		{
 			curveSet_[lmEventCurve_]->x_[0] =
-			    curveSet_[lmEventCurve_]->x_[curveSet_[lmEventCurve_]->n_ - 1];
+				curveSet_[lmEventCurve_]->x_[curveSet_[lmEventCurve_]->n_ - 1];
 			curveSet_[lmEventCurve_]->n_ = 1;
 		}
-
 		curveSet_[lmEventCurve_]->type_ = FC_SQUARE_BOX;
 		mouseModif_ = 1;
 		AddPendingEvent(wxCommandEvent(BG_EVENT_UPDATE, BG_EVENT_UPDATE_ID));
@@ -3161,7 +3055,6 @@ void BgImCanvas::OnCTypeCustom(wxCommandEvent& WXUNUSED(event))
 			y[1] = (y[0] + y[2]) * 2.0 / 3.0;
 			curveSet_[lmEventCurve_]->SetParamCurve(type, x, y, n, ccx_, ccy_);
 		}
-
 		curveSet_[lmEventCurve_]->type_ = FC_CUSTOM;
 		mouseModif_ = 1;
 		AddPendingEvent(wxCommandEvent(BG_EVENT_UPDATE, BG_EVENT_UPDATE_ID));
@@ -3172,7 +3065,6 @@ void BgImCanvas::OnCTypeCustom(wxCommandEvent& WXUNUSED(event))
 void BgImCanvas::AddPointSet(BgPointSet* ps)
 {
 	pointSet_[nPointSets_++] = ps;
-
 	//update point map if the point set consists
 	//of data points (not circles)
 	if ((ps->type_    == 1) && (hasbitmap))
@@ -3182,48 +3074,44 @@ void BgImCanvas::AddPointSet(BgPointSet* ps)
 		tx = ps->x_;
 		ty = ps->y_;
 		int i, dp, width = pimage->GetWidth();
-
 		for (i = 0; i < nt; i++)
 		{
 			dp               = ty[i] * width + tx[i];
 			point_map[dp]    = true;
 		}
 	}
-
 	//define new pen colour is yet defined, define it
-	if (point_colour) { delete point_colour; }
-
+	if (point_colour)
+	{
+		delete point_colour;
+	}
 	point_colour = new wxColour(ps->pen_.GetColour());
-
 	//add point data to zoomed image (if it has been defined,
 	//i.e. an image has been loaded into the image canvas)
-	if (zImg) { AddPoints(zImg, ((pimage->GetWidth())*zoom_level)); }
-
+	if (zImg)
+	{
+		AddPoints(zImg, ((pimage->GetWidth())*zoom_level));
+	}
 	Refresh();
 }
 
 void BgImCanvas::RemovePointSet(BgPointSet* ps)
 {
 	int i = 0;
-
 	while (i < nPointSets_ && pointSet_[i] != ps)
 	{
 		i++;
 	}
-
 	if (i < nPointSets_)
 	{
 		i++;
-
 		while (i < nPointSets_)
 		{
 			pointSet_[i - 1] = pointSet_[i];
 			i++;
 		}
-
 		nPointSets_--;
 	}
-
 	//adjust point map accordingly
 	if ((point_map) && (ps->type_   == 1)) //point
 	{
@@ -3232,24 +3120,19 @@ void BgImCanvas::RemovePointSet(BgPointSet* ps)
 		nt   = ps->n_;
 		tx   = ps->x_;
 		ty   = ps->y_;
-
 		for (i = 0; i < nt; i++)
 		{
 			point_map[ty[i]*width + tx[i]] = false;
 		}
 	}
-
 	//delete pen colour if no more point sets exist
 	if (nPointSets_ == 0)
 	{
 		delete point_colour;
 		point_colour = (wxColour*) NULL;
 	}
-
 	//remove this point set from the zoomed image...
-
 	/*********************************************************/
-
 	if (zImg)
 	{
 		delete [] zImg;
@@ -3257,21 +3140,18 @@ void BgImCanvas::RemovePointSet(BgPointSet* ps)
 		width    = (pimage->GetWidth()) * zoom_level;
 		height   = (pimage->GetHeight()) * zoom_level;
 		zImg     = new unsigned char [3 * width * height];
-
 		if (zoom_level > 1)
 		{
 			bgZoomIn(&zImg, pimage->GetData(), pimage->GetWidth(), pimage->GetHeight(),
-			         zoom_level, false);
+					 zoom_level, false);
 		}
 		else if (zoom_level == 1)
 		{
 			memcpy(zImg, pimage->GetData(), 3 * width * height * sizeof(unsigned char));
 		}
-
 		//add any other point sets that may exist
 		AddPoints(zImg, width);
 	}
-
 	/*********************************************************/
 	Refresh(false);
 }
@@ -3302,25 +3182,20 @@ void BgImCanvas::RemoveTrackSet()
 void BgImCanvas::RemoveLineSet(BgLineSet* ls)
 {
 	int i = 0;
-
 	while (i < nLineSets_ && lineSet_[i] != ls)
 	{
 		i++;
 	}
-
 	if (i < nLineSets_)
 	{
 		i++;
-
 		while (i < nLineSets_)
 		{
 			lineSet_[i - 1] = lineSet_[i];
 			i++;
 		}
-
 		nLineSets_--;
 	}
-
 	Refresh();
 }
 
@@ -3333,25 +3208,20 @@ void BgImCanvas::AddCurveSet(BgCurveSet* cs)
 void BgImCanvas::RemoveCurveSet(BgCurveSet* cs)
 {
 	int i = 0;
-
 	while (i < nCurveSets_ && curveSet_[i] != cs)
 	{
 		i++;
 	}
-
 	if (i < nCurveSets_)
 	{
 		i++;
-
 		while (i < nCurveSets_)
 		{
 			curveSet_[i - 1] = curveSet_[i];
 			i++;
 		}
-
 		nCurveSets_--;
 	}
-
 	Refresh();
 }
 
@@ -3366,7 +3236,6 @@ void BgImCanvas::AddText(BgText* bgText)
 		bgLog("BgImCanvas::AddText Error: Out of memory.\n");
 		return;
 	}
-
 	//obtain new text object count
 	textObjectCount_    = tlist_.GetTextCount();
 }
@@ -3380,66 +3249,92 @@ void BgImCanvas::RemoveText(int text_id)
 
 //adds horizontal axis
 void BgImCanvas::AddHorizontalAxis(int start_x, int start_y, int length,
-                                   int ticknum, float start_val, float stop_val)
+								   int ticknum, float start_val, float stop_val)
 {
-	if (xAxis) { delete xAxis; }
-
+	if (xAxis)
+	{
+		delete xAxis;
+	}
 	xAxis   = new BgAxis(start_x, start_y, length, ticknum, 0, start_val, stop_val);
 }
 
 //adds horizontal axis
 void BgImCanvas::AddVerticalAxis(int start_x, int start_y, int length,
-                                 int ticknum, float start_val, float stop_val)
+								 int ticknum, float start_val, float stop_val)
 {
-	if (yAxis) { delete yAxis; }
-
+	if (yAxis)
+	{
+		delete yAxis;
+	}
 	yAxis   = new BgAxis(start_x, start_y, length, ticknum, 1, start_val, stop_val);
 }
 
 //clears axis
 void BgImCanvas::ClearAxis(void)
 {
-	if (xAxis) { delete xAxis; }
-
-	if (yAxis) { delete yAxis; }
-
+	if (xAxis)
+	{
+		delete xAxis;
+	}
+	if (yAxis)
+	{
+		delete yAxis;
+	}
 	xAxis   = yAxis = (BgAxis*) NULL;
 }
 
 //labels horizontal axis
 void BgImCanvas::LabelHorizontalAxis(BgText* bgText)
 {
-	if (xAxis) { xAxis->Label(bgText); }
+	if (xAxis)
+	{
+		xAxis->Label(bgText);
+	}
 }
 
 //labels vertical axis
 void BgImCanvas::LabelVerticalAxis(BgText* bgText)
 {
-	if (yAxis) { yAxis->Label(bgText); }
+	if (yAxis)
+	{
+		yAxis->Label(bgText);
+	}
 }
 
 //removes label on horizontal axis
 void BgImCanvas::RemoveHorizontalAxisLabel(void)
 {
-	if (xAxis) { xAxis->RemoveLabel(); }
+	if (xAxis)
+	{
+		xAxis->RemoveLabel();
+	}
 }
 
 //removes lable on vertical axis
 void BgImCanvas::RemoveVerticalAxisLabel(void)
 {
-	if (yAxis) { yAxis->RemoveLabel(); }
+	if (yAxis)
+	{
+		yAxis->RemoveLabel();
+	}
 }
 
 //rotates horizontal axis label clockwise from default position
 void BgImCanvas::RotateHorizontalAxisLabel(int rotation)
 {
-	if (xAxis) { xAxis->SetLabelRotation(rotation); }
+	if (xAxis)
+	{
+		xAxis->SetLabelRotation(rotation);
+	}
 }
 
 //rotates vertical axis label clockwise from default position
 void BgImCanvas::RotateVerticalAxisLabel(int rotation)
 {
-	if (yAxis) { yAxis->SetLabelRotation(rotation); }
+	if (yAxis)
+	{
+		yAxis->SetLabelRotation(rotation);
+	}
 }
 
 //plot bitmap at specified location
@@ -3468,17 +3363,26 @@ void BgImCanvas::ClearData(int refresh)
 		delete pbitmap;
 		delete pimage;
 	}
-
-	if (zoombox) { delete zoombox; }
-
-	if (refresh_box) { delete refresh_box; }
-
-	if (zImg) { delete zImg; }
-
-	if (point_map) { delete [] point_map; }
-
-	if (buf) { delete [] buf; }
-
+	if (zoombox)
+	{
+		delete zoombox;
+	}
+	if (refresh_box)
+	{
+		delete refresh_box;
+	}
+	if (zImg)
+	{
+		delete zImg;
+	}
+	if (point_map)
+	{
+		delete [] point_map;
+	}
+	if (buf)
+	{
+		delete [] buf;
+	}
 	hasbitmap = FALSE;
 	pbitmap = (wxBitmap*) NULL;
 	pimage = (wxImage*) NULL;
@@ -3487,7 +3391,6 @@ void BgImCanvas::ClearData(int refresh)
 	zImg = NULL;
 	point_map = NULL;
 	showtrack_ = 0;
-
 	if (refresh > 0)
 	{
 		Refresh();
@@ -3498,7 +3401,6 @@ int BgImCanvas::SetImage(wxString imname)
 {
 	ClearData();
 	pimage = new wxImage();
-
 	if (!pimage->LoadFile(imname))
 	{
 		delete pimage;
@@ -3520,7 +3422,6 @@ int BgImCanvas::SetImage(wxString imname)
 		//take account for zoom (takes care of refresh)
 		Zoom(zoom_level);
 	}
-
 	return 1;
 }
 
@@ -3564,14 +3465,12 @@ void BgImCanvas::SetImageFromGray(unsigned char* data, int w, int h)
 	int i;
 	unsigned char* itTData;
 	itTData = pimage->GetData();
-
 	for (i = 0; i < w * h; i++)
 	{
 		*(itTData++) = data[i];
 		*(itTData++) = data[i];
 		*(itTData++) = data[i];
 	}
-
 	SetScrollbars(1, 1, (pimage->GetWidth()) / 1, (pimage->GetHeight()) / 1);
 #if wxCHECK_VERSION(2, 3, 0)
 	pbitmap = new wxBitmap(*pimage);
@@ -3593,7 +3492,6 @@ void BgImCanvas::SetImage(unsigned char* data, int w, int h, bool colorim)
 	int i;
 	unsigned char* itTData;
 	itTData = pimage->GetData();
-
 	if (colorim == false)
 	{
 		for (i = 0; i < w * h; i++)
@@ -3610,7 +3508,6 @@ void BgImCanvas::SetImage(unsigned char* data, int w, int h, bool colorim)
 			*(itTData++) = data[i];
 		}
 	}
-
 	SetScrollbars(1, 1, (pimage->GetWidth()) / 1, (pimage->GetHeight()) / 1);
 #if wxCHECK_VERSION(2, 3, 0)
 	pbitmap = new wxBitmap(*pimage);
@@ -3632,30 +3529,26 @@ Still needs work!!!!!!
 void BgImCanvas::ShowBitmap(bool showbitmap)
 {
 	showbitmap_ = showbitmap;
-
 	if (hasbitmap)
 	{
 		//compute height and width of original image
 		int width   = pimage->GetWidth();
 		int height  = pimage->GetHeight();
-
 		//paint zoom image
 		if (!showbitmap_)
 		{
 			memset(zImg, 255, 3 * zoom_level * zoom_level * width * height * sizeof(
-			           unsigned char));
+					   unsigned char));
 		}
 		else
 		{
 			bgZoomIn(&zImg, pimage->GetData(), width, height, zoom_level, false);
 		}
-
 		//plot points from point set onto zoom image
 		AddPoints(zImg, width * zoom_level);
 		//re-draw image onto canvas
 		Refresh();
 	}
-
 	return;
 }
 
@@ -3670,12 +3563,13 @@ void BgImCanvas::OnDraw(wxDC& dc)
 		dc.Clear();
 		return;
 	}
-
 	//do not update the display (good for keeping
 	//a display clear in light of onSize() events
 	//for example)
-	if (noUpdate_) { return; }
-
+	if (noUpdate_)
+	{
+		return;
+	}
 	//catch leaving event
 	if ((zoom_window) && (leaving))
 	{
@@ -3690,19 +3584,16 @@ void BgImCanvas::OnDraw(wxDC& dc)
 			delete refresh_box;
 			refresh_box = (wxImage*) NULL;
 		}
-
 		//retrieve leaving event
 		leaving = false;
 		//exit
 		return;
 	}
-
 	if (hasbitmap == false)
 	{
 		dc.Clear();
 		return;
 	}
-
 	//re-plot image bitmap
 	if (hasbitmap == true && showbitmap_ == true)
 	{
@@ -3715,7 +3606,6 @@ void BgImCanvas::OnDraw(wxDC& dc)
 	{
 		dc.Clear();
 	}
-
 	if (showtrack_ == 1)
 	{
 		wxPen tPen = dc.GetPen();
@@ -3724,11 +3614,10 @@ void BgImCanvas::OnDraw(wxDC& dc)
 		//+x_offset_+y_offset_
 		dc.DrawEllipse(trackval_[0] - 2, trackval_[1] - 2, 5, 5);
 		dc.DrawEllipse(trackval_[0] - hx_, trackval_[1] - hy_, 2 * hx_ + 1,
-		               2 * hy_ + 1);
+					   2 * hy_ + 1);
 		dc.SetPen(tPen);
 		dc.SetBrush(wxNullBrush);
 	}
-
 	if ((nPointSets_ > 0) && ((!zoom_window) || (!has_focus)))
 	{
 		int i, j;
@@ -3739,19 +3628,17 @@ void BgImCanvas::OnDraw(wxDC& dc)
 		int nt;
 		wxPen tPen = dc.GetPen();
 		dc.SetBrush(*wxTRANSPARENT_BRUSH);
-
 		for (i = 0; i < nPointSets_; i++)
 		{
 			dc.SetPen(pointSet_[i]->pen_);
 			nt = pointSet_[i]->n_;
 			tx = pointSet_[i]->x_;
 			ty = pointSet_[i]->y_;
-
 			if (pointSet_[i]->type_ == 0) // circle
 			{
 				for (j = 0; j < nt; j++)
 				{
-					dc.DrawEllipse(tx[j] - 2 + x_offset_, ty[j] - 2 + y_offset_, 5, 5);
+					//dc.DrawEllipse(tx[j] - 2 + x_offset_, ty[j] - 2 + y_offset_, 5, 5);
 				}
 			}
 			else if (pointSet_[i]->type_ == 1) // point
@@ -3760,7 +3647,6 @@ void BgImCanvas::OnDraw(wxDC& dc)
 				{
 					xc  = zoom_level * (tx[j] + x_offset_);
 					yc  = zoom_level * (ty[j] + y_offset_);
-
 					for (y = 0; y < zoom_level; y++)
 					{
 						for (x = 0; x < zoom_level; x++)
@@ -3771,11 +3657,9 @@ void BgImCanvas::OnDraw(wxDC& dc)
 				}
 			}
 		}
-
 		dc.SetPen(tPen);
 		dc.SetBrush(wxNullBrush);
 	}
-
 	if (nLineSets_ > 0)
 	{
 		int i, j;
@@ -3786,7 +3670,6 @@ void BgImCanvas::OnDraw(wxDC& dc)
 		int nt;
 		wxPen tPen = dc.GetPen();
 		dc.SetBrush(*wxTRANSPARENT_BRUSH);
-
 		for (i = 0; i < nLineSets_; i++)
 		{
 			dc.SetPen(lineSet_[i]->pen_);
@@ -3795,20 +3678,16 @@ void BgImCanvas::OnDraw(wxDC& dc)
 			tsy = lineSet_[i]->ys_;
 			tex = lineSet_[i]->xe_;
 			tey = lineSet_[i]->ye_;
-
 			for (j = 0; j < nt; j++)
 			{
 				dc.DrawLine(tsx[j] + x_offset_, tsy[j] + y_offset_, tex[j] + x_offset_,
-				            tey[j] + y_offset_);
+							tey[j] + y_offset_);
 			}
 		}
-
 		dc.SetPen(tPen);
 		dc.SetBrush(wxNullBrush);
 	}
-
 	int txs, tys, txe, tye;
-
 	if (nCurveSets_ > 0)
 	{
 		int i, j;
@@ -3818,7 +3697,6 @@ void BgImCanvas::OnDraw(wxDC& dc)
 		int nt;
 		wxPen tPen = dc.GetPen();
 		dc.SetBrush(*wxTRANSPARENT_BRUSH);
-
 		for (i = 0; i < nCurveSets_; i++)
 		{
 			dc.SetPen(curveSet_[i]->pen_);
@@ -3827,32 +3705,26 @@ void BgImCanvas::OnDraw(wxDC& dc)
 			nt = curveSet_[i]->n_;
 			xs = curveSet_[i]->xs_;
 			ys = curveSet_[i]->ys_;
-
 			switch (curveSet_[i]->type_)
 			{
 			case -1:
 				break;
-
 			case FC_ELLIPSE:
 				MyDrawEllipticArc(dc, -tx[0] + x_offset_, ty[0] + y_offset_, 2 * tx[0],
-				                  2 * (ys - ty[0]), 0, 90);
+								  2 * (ys - ty[0]), 0, 90);
 				break;
-
 			case FC_VERT_LINE:
 				//            if ((tx[0]>=0) && (tx[0]<xs))
 				dc.DrawLine(tx[0] + x_offset_, 0 + y_offset_, tx[0] + x_offset_,
-				            ys + y_offset_);
+							ys + y_offset_);
 				break;
-
 			case FC_HORIZ_LINE:
 				if ((ty[0] >= 0) && (ty[0] < ys))
 				{
 					dc.DrawLine(0 + x_offset_, ty[0] + y_offset_, xs + x_offset_,
-					            ty[0] + y_offset_);
+								ty[0] + y_offset_);
 				}
-
 				break;
-
 			case FC_LINE:
 				// determine clipping
 				tye = ys;
@@ -3861,23 +3733,19 @@ void BgImCanvas::OnDraw(wxDC& dc)
 				txs = 0;
 				tys = ty[0];
 				tys = (tys > ys) ? ys : tys;
-
 				if (txe > xs)
 				{
 					tye = ccy_ - ((ccy_ - tys) * (txe - xs)) / txe;
 					txe = xs;
 				}
-
 				if (tys < 0)
 				{
 					txs = (txe * (-tys)) / (tye - tys);
 					tys = 0;
 				}
-
 				dc.DrawLine(0 + x_offset_, ty[0] + y_offset_, tx[0] + x_offset_,
-				            ys + y_offset_);
+							ys + y_offset_);
 				break;
-
 			case FC_SQUARE_BOX:
 				txs = (tx[0] < 0) ? 0 : tx[0];
 				txs = (txs >= xs) ? xs - 1 : txs;
@@ -3886,17 +3754,14 @@ void BgImCanvas::OnDraw(wxDC& dc)
 				dc.DrawLine(0 + x_offset_, tys + y_offset_, txs + x_offset_, tys + y_offset_);
 				dc.DrawLine(txs + x_offset_, tys + y_offset_, txs + x_offset_, ys + y_offset_);
 				break;
-
 			case FC_CUSTOM:
 				for (j = 0; j < (nt - 1); j++)
 				{
 					dc.DrawLine(tx[j] + x_offset_, ty[j] + y_offset_, tx[j + 1] + x_offset_,
-					            ty[j + 1] + y_offset_);
+								ty[j + 1] + y_offset_);
 				}
-
 				break;
 			}
-
 			//         wxPen pPen=dc.GetPen();
 			//         pPen.SetWidth(17);
 			//         pPen.SetColour(64,64,64);
@@ -3905,7 +3770,6 @@ void BgImCanvas::OnDraw(wxDC& dc)
 			{
 			case -1:
 				break;
-
 			case FC_ELLIPSE:
 			case FC_LINE:
 				//            dc.DrawPoint(0,ty[0]);
@@ -3913,7 +3777,6 @@ void BgImCanvas::OnDraw(wxDC& dc)
 				dc.DrawRectangle(0 - 2 + x_offset_, ty[0] - 2 + y_offset_, 5, 5);
 				dc.DrawRectangle(tx[0] - 2 + x_offset_, ys - 2 + y_offset_, 5, 5);
 				break;
-
 			case FC_SQUARE_BOX:
 				//            dc.DrawPoint(0,ty[0]);
 				//            dc.DrawPoint(tx[0],ys);
@@ -3922,22 +3785,18 @@ void BgImCanvas::OnDraw(wxDC& dc)
 				dc.DrawRectangle(tx[0] - 2 + x_offset_, ys - 2 + y_offset_, 5, 5);
 				dc.DrawRectangle(tx[0] - 2 + x_offset_, ty[0] - 2 + y_offset_, 5, 5);
 				break;
-
 			case FC_CUSTOM:
 				for (j = 0; j < nt; j++)
 				{
 					dc.DrawRectangle(tx[j] - 2 + x_offset_, ty[j] - 2 + y_offset_, 5, 5);
 				}
-
 				//               dc.DrawPoint(tx[j],ty[j]);
 				break;
 			}
 		}
-
 		dc.SetPen(tPen);
 		dc.SetBrush(wxNullBrush);
 	}
-
 	if (isDragging_ == 1)
 	{
 		int j;
@@ -3953,32 +3812,26 @@ void BgImCanvas::OnDraw(wxDC& dc)
 		nt = dragCurve_.n_;
 		xs = dragCurve_.xs_;
 		ys = dragCurve_.ys_;
-
 		switch (dragCurve_.type_)
 		{
 		case -1:
 			break;
-
 		case FC_ELLIPSE:
 			MyDrawEllipticArc(dc, -tx[0] + x_offset_, ty[0] + y_offset_, 2 * tx[0],
-			                  2 * (ys - ty[0]), 0, 90);
+							  2 * (ys - ty[0]), 0, 90);
 			break;
-
 		case FC_VERT_LINE:
 			//            if ((tx[0]>=0) && (tx[0]<xs))
 			dc.DrawLine(tx[0] + x_offset_, 0 + y_offset_, tx[0] + x_offset_,
-			            ys + y_offset_);
+						ys + y_offset_);
 			break;
-
 		case FC_HORIZ_LINE:
 			if ((ty[0] >= 0) && (ty[0] < ys))
 			{
 				dc.DrawLine(0 + x_offset_, ty[0] + y_offset_, xs + x_offset_,
-				            ty[0] + y_offset_);
+							ty[0] + y_offset_);
 			}
-
 			break;
-
 		case FC_LINE:
 			// determine clipping
 			tye = ys;
@@ -3987,23 +3840,19 @@ void BgImCanvas::OnDraw(wxDC& dc)
 			txs = 0;
 			tys = ty[0];
 			tys = (tys > ys) ? ys : tys;
-
 			if (txe > xs)
 			{
 				tye = ccy_ - ((ccy_ - tys) * (txe - xs)) / txe;
 				txe = xs;
 			}
-
 			if (tys < 0)
 			{
 				txs = (txe * (-tys)) / (tye - tys);
 				tys = 0;
 			}
-
 			dc.DrawLine(0 + x_offset_, ty[0] + y_offset_, tx[0] + x_offset_,
-			            ys + y_offset_);
+						ys + y_offset_);
 			break;
-
 		case FC_SQUARE_BOX:
 			txs = (tx[0] < 0) ? 0 : tx[0];
 			txs = (txs >= xs) ? xs - 1 : txs;
@@ -4012,57 +3861,56 @@ void BgImCanvas::OnDraw(wxDC& dc)
 			dc.DrawLine(0 + x_offset_, tys + y_offset_, txs + x_offset_, tys + y_offset_);
 			dc.DrawLine(txs + x_offset_, tys + y_offset_, txs + x_offset_, ys + y_offset_);
 			break;
-
 		case FC_CUSTOM:
 			for (j = 0; j < (nt - 1); j++)
 			{
 				dc.DrawLine(tx[j] + x_offset_, ty[j] + y_offset_, tx[j + 1] + x_offset_,
-				            ty[j + 1] + y_offset_);
+							ty[j + 1] + y_offset_);
 			}
-
 			break;
 		}
-
 		dc.SetPen(tPen);
 		dc.SetBrush(wxNullBrush);
 	}
-
 	//draw horizontal and vertical axis
-	if (xAxis) { xAxis->PlotAxis(&dc); }
-
-	if (yAxis) { yAxis->PlotAxis(&dc); }
-
+	if (xAxis)
+	{
+		xAxis->PlotAxis(&dc);
+	}
+	if (yAxis)
+	{
+		yAxis->PlotAxis(&dc);
+	}
 	//draw new text to the image from text object list
 	BgText*  bgText;
 	tlist_.ResetList();
-
 	while (bgText = tlist_.GetText())
 	{
 		dc.SetFont(*(bgText->font_));
 		dc.DrawText(bgText->text_, bgText->x_, bgText->y_);
 	}
-
 	//draw bitmaps
 	blist_.ResetList();
 	BgBitmap*    bitmap;
-
 	while (bitmap = blist_.GetBitmap())
 	{
 		dc.DrawBitmap(*(bitmap->bitmap_), bitmap->location_x_, bitmap->location_y_,
-		              true);
+					  true);
 	}
-
 	//draw zoom window box
 	if ((zoom_window) && (has_focus))
 	{
 		//draw refresh window
 #if wxCHECK_VERSION(2, 3, 0)
-		if (refresh_box) { dc.DrawBitmap(wxBitmap(*refresh_box), cx, cy); }
-
+		if (refresh_box)
+		{
+			dc.DrawBitmap(wxBitmap(*refresh_box), cx, cy);
+		}
 #else
-
-		if (refresh_box) { dc.DrawBitmap(refresh_box->ConvertToBitmap(), cx, cy); }
-
+		if (refresh_box)
+		{
+			dc.DrawBitmap(refresh_box->ConvertToBitmap(), cx, cy);
+		}
 #endif
 		//compute height and width of zoom box and window
 		int zWidth, zHeight;
@@ -4073,27 +3921,37 @@ void BgImCanvas::OnDraw(wxDC& dc)
 		//compute upper corner of window
 		cx = m_x_ - zWidth / 2;
 		cy = m_y_ - zHeight / 2;
-
 		//check bounds....
-		if (cx < 0) { cx = 0; }
-
-		if (cy < 0) { cy = 0; }
-
-		if (cx >= dWidth - zWidth) { cx    = dWidth  - zWidth - 1; }
-
-		if (cy >= dHeight - zHeight) { cy    = dHeight - zHeight - 1; }
-
+		if (cx < 0)
+		{
+			cx = 0;
+		}
+		if (cy < 0)
+		{
+			cy = 0;
+		}
+		if (cx >= dWidth - zWidth)
+		{
+			cx    = dWidth  - zWidth - 1;
+		}
+		if (cy >= dHeight - zHeight)
+		{
+			cy    = dHeight - zHeight - 1;
+		}
 		//place in image coordinate frame
 		cx  = cx + GetScrollPos(wxHORIZONTAL);
 		cy  = cy + GetScrollPos(wxVERTICAL);
 		//check bounds
 		int width   = pimage->GetWidth() * zoom_level,
-		    height = pimage->GetHeight() * zoom_level;
-
-		if (cx >= width - zWidth) { cx    = width - zWidth - 1; }
-
-		if (cy >= height - zHeight) { cy    = height - zHeight - 1; }
-
+			height = pimage->GetHeight() * zoom_level;
+		if (cx >= width - zWidth)
+		{
+			cx    = width - zWidth - 1;
+		}
+		if (cy >= height - zHeight)
+		{
+			cy    = height - zHeight - 1;
+		}
 		//draw zoom window
 #if wxCHECK_VERSION(2, 3, 0)
 		dc.DrawBitmap(wxBitmap(*zoombox), cx, cy);
@@ -4137,7 +3995,6 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 	{
 		//determine zooming action
 		int action;
-
 		if (zconst < zoom_level)
 		{
 			action    = ZOOM_OUT;
@@ -4146,15 +4003,12 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 		{
 			action    = ZOOM_IN;
 		}
-
 		//check bounds
 		int width   = pimage->GetWidth(), height    = pimage->GetHeight();
-
 		if (zconst < 0)
 		{
 			//take absolute value of zoom constant
 			int pos_zc  = -zconst;
-
 			//compute new width
 			if (width % pos_zc)
 			{
@@ -4164,7 +4018,6 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 			{
 				width /= pos_zc;
 			}
-
 			//compute new height
 			if (height % pos_zc)
 			{
@@ -4174,7 +4027,6 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 			{
 				height    /= -zconst;
 			}
-
 			//make sure width and height are above minimum
 			//before continuing
 			if ((width < MIN_WIDTH) || (height < MIN_HEIGHT))
@@ -4186,7 +4038,6 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 		{
 			width   *= zconst;
 			height  *= zconst;
-
 			if ((width > MAX_WIDTH) || (height > MAX_HEIGHT))
 			{
 				return 1;
@@ -4197,10 +4048,8 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 			//zconst equals zero (ambiguous so exit)
 			return 1;
 		}
-
 		//set zoom_level
 		zoom_level  = zconst;
-
 		if (zoom_level == 1)
 		{
 			delete  pbitmap;
@@ -4209,9 +4058,10 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 #else
 			pbitmap = new wxBitmap(pimage->ConvertToBitmap());
 #endif
-
-			if (zImg) { delete zImg; }
-
+			if (zImg)
+			{
+				delete zImg;
+			}
 			zImg    = new unsigned char [3 * height * width];
 			memcpy(zImg, pimage->GetData(), 3 * height * width);
 		}
@@ -4219,12 +4069,13 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 		{
 			//zoom into image using zoom level
 			wxImage tempIm(width, height);
-
-			if (zImg) { delete [] zImg; }
-
+			if (zImg)
+			{
+				delete [] zImg;
+			}
 			zImg    = new unsigned char [3 * width * height];
 			bgZoomIn(&zImg, pimage->GetData(), pimage->GetWidth(), pimage->GetHeight(),
-			         zoom_level, false);
+					 zoom_level, false);
 			memcpy(tempIm.GetData(), zImg, 3 * width * height * sizeof(unsigned char));
 			//reset the bitmap using zoomed image
 			delete pbitmap;
@@ -4238,12 +4089,13 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 		{
 			//zoom out of image using zoom level
 			wxImage tempIm(width, height);
-
-			if (zImg) { delete [] zImg; }
-
+			if (zImg)
+			{
+				delete [] zImg;
+			}
 			zImg    = new unsigned char [3 * width * height];
 			bgZoomOut(&zImg, pimage->GetData(), pimage->GetWidth(), pimage->GetHeight(),
-			          (-zoom_level), false);
+					  (-zoom_level), false);
 			memcpy(tempIm.GetData(), zImg, 3 * width * height * sizeof(unsigned char));
 			//reset the bitmap using zoomed image
 			delete pbitmap;
@@ -4253,36 +4105,30 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 			pbitmap = new wxBitmap(tempIm.ConvertToBitmap());
 #endif
 		}
-
 		//if a bitmap is not to be shown, clear (make white) the
 		//zoomed image
 		if (!showbitmap_)
 		{
 			memset(zImg, 255, 3 * width * height * sizeof(unsigned char));
 		}
-
 		//add point data to zoomed image
 		AddPoints(zImg, width);
 		//re-display image
 		Refresh();
 		//set scroll bars according to current mouse position and zooming action
 		AdjustScroll(m_x, m_y, action);
-
 		//return 1 when maximum or minimum image dimension has occured
 		if ((width == MAX_WIDTH) || (width == MIN_WIDTH) || (height == MAX_HEIGHT)
-		        || (height == MIN_HEIGHT))
+				|| (height == MIN_HEIGHT))
 		{
 			return 1;
 		}
-
 		//return 1 when close to maximum or minimum image dimension...
 		/*********************************************************************/
-
 		if (zconst > 0)
 		{
 			width   += pimage->GetWidth();
 			height  += pimage->GetHeight();
-
 			if ((width > MAX_WIDTH) || (height > MAX_HEIGHT))
 			{
 				return 1;
@@ -4295,7 +4141,6 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 			height  = pimage->GetHeight();
 			//take absolute value of zoom constant
 			int pos_zc  = -zconst;
-
 			//compute new width
 			if (width % pos_zc)
 			{
@@ -4305,7 +4150,6 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 			{
 				width /= pos_zc;
 			}
-
 			//compute new height
 			if (height % pos_zc)
 			{
@@ -4315,19 +4159,15 @@ int BgImCanvas::Zoom(int zconst, int m_x, int m_y)
 			{
 				height    /= -zconst;
 			}
-
 			width   = (pimage->GetWidth());
-
 			//check image bounds...
 			if ((width < MIN_WIDTH) || (height < MIN_HEIGHT))
 			{
 				return 1;
 			}
 		}
-
 		/*********************************************************************/
 	}
-
 	//done.
 	return 0;
 }
@@ -4347,29 +4187,28 @@ int BgImCanvas::ZoomIn(int m_x, int m_y)
 		{
 			wxWindow* parent    = child_frame_->GetParent();
 			((BgMdiFrame*) parent)->UpdateZoomControl((wxMDIChildFrame*) child_frame_, true,
-			        false);
+					false);
 			return 1;
 		}
-
 		//zoom image
 		int zconst = zoom_level + 1;
-
-		if (zconst == -1) { zconst = 1; }
-
+		if (zconst == -1)
+		{
+			zconst = 1;
+		}
 		int maxZoom = Zoom(zconst, m_x, m_y);
 		//take into account maximum zoom level
 		maxZoom = (maxZoom || ((max_zoom_level) && (zoom_level == max_zoom_level)));
 		//set title of child frame
 		wxWindow* parent    = child_frame_->GetParent();
 		((BgMdiFrame*) parent)->SetChildTitle((wxMDIChildFrame*) child_frame_,
-		                                      zoom_level, maxZoom, false);
+											  zoom_level, maxZoom, false);
 		//update zoom control of child frame
 		((BgMdiFrame*) parent)->UpdateZoomControl((wxMDIChildFrame*) child_frame_,
-		        maxZoom, false);
+				maxZoom, false);
 		//indicate if max zoom has occured
 		return maxZoom;
 	}
-
 	//done.
 	return 0;
 }
@@ -4389,30 +4228,29 @@ int BgImCanvas::ZoomOut(int m_x, int m_y)
 		{
 			wxWindow* parent    = child_frame_->GetParent();
 			((BgMdiFrame*) parent)->UpdateZoomControl((wxMDIChildFrame*) child_frame_,
-			        false, true);
+					false, true);
 			return 1;
 		}
-
 		//zoom image
 		int zconst = zoom_level - 1;
-
-		if (zconst == 0) { zconst = -2; }
-
+		if (zconst == 0)
+		{
+			zconst = -2;
+		}
 		int minZoom = Zoom(zconst, m_x, m_y);
 		//take into account mininimum zoom level;
 		minZoom = (int)(minZoom || ((min_zoom_level)
-		                            && (zoom_level == min_zoom_level)));
+									&& (zoom_level == min_zoom_level)));
 		//set title of child frame
 		wxWindow* parent    = child_frame_->GetParent();
 		((BgMdiFrame*) parent)->SetChildTitle((wxMDIChildFrame*) child_frame_,
-		                                      zoom_level, false, minZoom);
+											  zoom_level, false, minZoom);
 		//update zoom control of child frame
 		((BgMdiFrame*) parent)->UpdateZoomControl((wxMDIChildFrame*) child_frame_,
-		        false, minZoom);
+				false, minZoom);
 		//indicate if min zoom has occured
 		return minZoom;
 	}
-
 	//done.
 	return 0;
 }
@@ -4438,32 +4276,28 @@ void BgImCanvas::DefineZoomBox(int l_x, int h_x, int l_y, int h_y)
 	int iWidth = pimage->GetWidth(), iHeight = pimage->GetHeight();
 	//calculate box height and width
 	static int bWidth = h_x - l_x + 1, bHeight = h_y - l_y + 1;
-
 	//allocate/deallocate memory
 	if ((bWidth != h_x - l_x + 1) || (!buf))
 	{
 		bWidth  = h_x - l_x + 1;
 		bHeight = h_y - l_y + 1;
-
-		if (buf) { delete buf; }
-
+		if (buf)
+		{
+			delete buf;
+		}
 		buf = new unsigned char [3 * bWidth * bHeight];
 	}
-
 	//get point pen colour
 	unsigned char r, g, b;
-
 	if (point_colour)
 	{
 		r   = point_colour->Red();
 		g   = point_colour->Green();
 		b   = point_colour->Blue();
 	}
-
 	//crop image data and store it into buf (if the bitmap is being displayed...)
 	unsigned char*   imData     = pimage->GetData();
 	int bx, by, ix, iy, idp, bdp;
-
 	if (showbitmap_)
 	{
 		for (by = 0; by < bHeight; by++)
@@ -4477,7 +4311,6 @@ void BgImCanvas::DefineZoomBox(int l_x, int h_x, int l_y, int h_y)
 				buf[bdp  ]  = imData[idp  ];
 				buf[bdp + 1]  = imData[idp + 1];
 				buf[bdp + 2]  = imData[idp + 2];
-
 				//account for point sets using point map
 				if (point_map[idp / 3])
 				{
@@ -4493,7 +4326,6 @@ void BgImCanvas::DefineZoomBox(int l_x, int h_x, int l_y, int h_y)
 	else
 	{
 		memset(buf, 255, 3 * bWidth * bHeight * sizeof(unsigned char));
-
 		for (by = 0; by < bHeight; by++)
 		{
 			for (bx = 0; bx < bWidth; bx++)
@@ -4502,7 +4334,6 @@ void BgImCanvas::DefineZoomBox(int l_x, int h_x, int l_y, int h_y)
 				iy  = by + l_y;
 				idp = 3 * (iy * iWidth + ix);
 				bdp = 3 * (by * bWidth + bx);
-
 				//account for point sets using point map
 				if (point_map[idp / 3])
 				{
@@ -4513,22 +4344,20 @@ void BgImCanvas::DefineZoomBox(int l_x, int h_x, int l_y, int h_y)
 			}
 		}
 	}
-
 	//zoom the data in buf...
 	//set zoom window size and allocate memory
 	static int  zWidth  = bWidth * zoom_level * 2;
 	static int  zHeight = bHeight * zoom_level * 2;
-
 	if ((zWidth != bWidth * zoom_level * 2) || (!zoombox))
 	{
 		zWidth  = bWidth * zoom_level * 2;
 		zHeight = bHeight * zoom_level * 2;
-
-		if (zoombox) { delete zoombox; }
-
+		if (zoombox)
+		{
+			delete zoombox;
+		}
 		zoombox = new wxImage(zWidth, zHeight);
 	}
-
 	//create a zoom box image using buf
 	unsigned char*   zbData = zoombox->GetData();
 	bgZoomIn(&zbData, buf, bWidth, bHeight, zoom_level * 2, false);
@@ -4540,37 +4369,33 @@ void BgImCanvas::DefineRefreshBox(void)
 {
 	//obtain image height and width
 	int iWidth = pimage->GetWidth() * zoom_level,
-	    iHeight = pimage->GetHeight() * zoom_level;
+		iHeight = pimage->GetHeight() * zoom_level;
 	//calculate box height and width
 	static int bWidth = zoombox->GetWidth(), bHeight = zoombox->GetHeight();
-
 	//allocate/de-allocate memory for refresh box
 	if ((bWidth != zoombox->GetWidth()) || (!refresh_box))
 	{
 		bWidth  = zoombox->GetWidth();
 		bHeight = zoombox->GetHeight();
-
-		if (refresh_box) { delete [] refresh_box; }
-
+		if (refresh_box)
+		{
+			delete [] refresh_box;
+		}
 		refresh_box = new wxImage(bWidth, bHeight);
 	}
-
 	unsigned char* rBuf = refresh_box->GetData();
 	//get point pen colour
 	unsigned char r, g, b;
-
 	if (point_colour)
 	{
 		r   = point_colour->Red();
 		g   = point_colour->Green();
 		b   = point_colour->Blue();
 	}
-
 	//define refresh box...
 	//crop image data and store it into rBuf...
 	unsigned char* imData   = pimage->GetData();
 	int bx, by, ix, iy, bdp, idp;
-
 	for (by = 0; by < bHeight; by++)
 	{
 		for (bx = 0; bx < bWidth; bx++)
@@ -4584,7 +4409,6 @@ void BgImCanvas::DefineRefreshBox(void)
 			rBuf[bdp + 2] = zImg[idp + 2];
 		}
 	}
-
 	//done.
 	return;
 }
@@ -4593,27 +4417,28 @@ void BgImCanvas::DefineRefreshBox(void)
 void BgImCanvas::CreatePointMap(int w, int h)
 {
 	//initialze point map
-	if (point_map) { delete [] point_map; }
-
+	if (point_map)
+	{
+		delete [] point_map;
+	}
 	point_map   = new bool [w * h];
 	memset(point_map, 0, w * h * sizeof(bool));
-
 	//if point sets already exist then add the,
 	if (nPointSets_ > 0)
 	{
 		//adjust point pen colour to be that of the last
 		//point set added
-		if (point_colour) { delete point_colour; }
-
+		if (point_colour)
+		{
+			delete point_colour;
+		}
 		point_colour    = new wxColour(pointSet_[nPointSets_ - 1]->pen_.GetColour());
 		int nt, *tx, *ty, i, j;
-
 		for (i = 0; i < nPointSets_; i++)
 		{
 			nt = pointSet_[i]->n_;
 			tx = pointSet_[i]->x_;
 			ty = pointSet_[i]->y_;
-
 			if (pointSet_[i]->type_ == 1) // point
 			{
 				for (j = 0; j < nt; j++)
@@ -4634,7 +4459,6 @@ void BgImCanvas::AddPoints(unsigned char* im, int width)
 		unsigned char r, g, b;
 		wxColour    pen_colour;
 		int nt, *tx, *ty, i, j, x, y, dp, offset;
-
 		for (i = 0; i < nPointSets_; i++)
 		{
 			if (pointSet_[i]->type_ == 1) //point
@@ -4648,11 +4472,9 @@ void BgImCanvas::AddPoints(unsigned char* im, int width)
 				nt  = pointSet_[i]->n_;
 				tx  = pointSet_[i]->x_;
 				ty  = pointSet_[i]->y_;
-
 				for (j = 0; j < nt; j++)
 				{
 					dp = 3 * (ty[j] * width + tx[j]) * zoom_level;
-
 					for (y = 0; y < zoom_level; y++)
 					{
 						for (x = 0; x < zoom_level; x++)
@@ -4683,7 +4505,6 @@ void BgImCanvas::DisplayZoomWindow(int m_x, int m_y)
 	//box half-width and half-height
 	int hw, hh;
 	int wp  = WIN_PERC;
-
 	if (w % wp)
 	{
 		hw    = w / wp + 1;
@@ -4692,7 +4513,6 @@ void BgImCanvas::DisplayZoomWindow(int m_x, int m_y)
 	{
 		hw    = w / wp;
 	}
-
 	if (h % wp)
 	{
 		hh    = h / wp + 1;
@@ -4701,13 +4521,9 @@ void BgImCanvas::DisplayZoomWindow(int m_x, int m_y)
 	{
 		hh    = h / wp;
 	}
-
 	/***********************************************************/
-
 	//normalize mouse coordinates to image coordinate frame
-
 	/***********************************************************/
-
 	if (zoom_level > 0)
 	{
 		m_x = (m_x + GetScrollPos(wxHORIZONTAL)) / zoom_level;
@@ -4718,41 +4534,51 @@ void BgImCanvas::DisplayZoomWindow(int m_x, int m_y)
 		m_x = (m_x + GetScrollPos(wxHORIZONTAL)) * (-zoom_level);
 		m_y = (m_y + GetScrollPos(wxVERTICAL)) * (-zoom_level);
 	}
-
 	/***********************************************************/
-
 	//make sure x_m and y_m are with bounds before proceeding...
-
 	/***********************************************************/
-
 	if ((m_x < 0) || (m_x >= w) || (m_y < 0) || (m_y >= h))
 	{
 		return;
 	}
-
 	/***********************************************************/
 	//compute zoom window bounds...
 	/***********************************************************/
 	//define window bounds based on current mouse position
 	int low_x, hi_x, low_y, hi_y;
-
-	if ((low_x   = m_x - hw) <  0) { low_x   = 0; }
-
-	if ((hi_x    = m_x + hw) >= w) { hi_x    = w - 1; }
-
-	if ((low_y   = m_y - hh) <  0) { low_y   = 0; }
-
-	if ((hi_y    = m_y + hh) >= h) { hi_y    = h - 1; }
-
+	if ((low_x   = m_x - hw) <  0)
+	{
+		low_x   = 0;
+	}
+	if ((hi_x    = m_x + hw) >= w)
+	{
+		hi_x    = w - 1;
+	}
+	if ((low_y   = m_y - hh) <  0)
+	{
+		low_y   = 0;
+	}
+	if ((hi_y    = m_y + hh) >= h)
+	{
+		hi_y    = h - 1;
+	}
 	//make window larger according to current mouse position
-	if (m_x          <= hw) { hi_x       += hw - m_x; }
-
-	if ((w - m_x - 1)    <= hw) { low_x  -= hw - (w - m_x - 1); }
-
-	if (m_y          <= hh) { hi_y       += hh - m_y; }
-
-	if ((h - m_y - 1)    <= hh) { low_y  -= hh - (h - m_y - 1); }
-
+	if (m_x          <= hw)
+	{
+		hi_x       += hw - m_x;
+	}
+	if ((w - m_x - 1)    <= hw)
+	{
+		low_x  -= hw - (w - m_x - 1);
+	}
+	if (m_y          <= hh)
+	{
+		hi_y       += hh - m_y;
+	}
+	if ((h - m_y - 1)    <= hh)
+	{
+		low_y  -= hh - (h - m_y - 1);
+	}
 	/***********************************************************/
 	//define zoom box...
 	/***********************************************************/
@@ -4774,17 +4600,14 @@ void BgImCanvas::OnEraseBackground(wxEraseEvent& WXUNUSED(event))
 void BgImCanvas::FillCurveClick()
 {
 	int i;
-
 	for (i = 0; i < ccx_ * ccy_; i++)
 	{
 		curveClick_[i] = 0;
 	}
-
 	for (i = 0; i < nCurveSets_; i++)
 	{
 		curveSet_[i]->DrawYourself(curveClick_, i + 1);
 	}
-
 	Refresh();
 //   write_pgm_image("curveclick.pgm", curveClick_, 256, 256, "", 4);
 }
@@ -4806,7 +4629,7 @@ void BgImCanvas::OnPaint(wxPaintEvent& WXUNUSED(event))
 */
 
 void BgImCanvas::MyDrawEllipticArc(wxDC& dc, int x, int y, int w, int h, int sa,
-                                   int ea)
+								   int ea)
 {
 	double xc, yc, rx, ry;
 	rx = w / 2;
@@ -4818,7 +4641,6 @@ void BgImCanvas::MyDrawEllipticArc(wxDC& dc, int x, int y, int w, int h, int sa,
 	int hig_r = ccy_ + y_offset_;
 	int low_c = x_offset_;
 	int hig_c = ccx_ + x_offset_;
-
 //   if (rx > ry)
 //   {
 	// x scan
@@ -4827,19 +4649,21 @@ void BgImCanvas::MyDrawEllipticArc(wxDC& dc, int x, int y, int w, int h, int sa,
 		if (c >= low_c && c < hig_c)
 		{
 			r = bgRound(yc - ry * sqrt(1 - (c - xc) * (c - xc) / (rx * rx)));
-
 			if (r >= low_r && r < hig_r)
 			{
 				dc.DrawPoint(c, r);
-
 				// +/- 1
-				if ((r + 1) < hig_r) { dc.DrawPoint(c, r + 1); }
-
-				if ((r - 1) >= low_r) { dc.DrawPoint(c, r - 1); };
+				if ((r + 1) < hig_r)
+				{
+					dc.DrawPoint(c, r + 1);
+				}
+				if ((r - 1) >= low_r)
+				{
+					dc.DrawPoint(c, r - 1);
+				};
 			}
 		}
 	}
-
 //   }
 //   else
 //   {
@@ -4849,19 +4673,21 @@ void BgImCanvas::MyDrawEllipticArc(wxDC& dc, int x, int y, int w, int h, int sa,
 		if (r >= low_r && r < hig_r)
 		{
 			c = bgRound(xc + rx * sqrt(1 - (r - yc) * (r - yc) / (ry * ry)));
-
 			if (c >= low_c && c < hig_c)
 			{
 				dc.DrawPoint(c, r);
-
 				// +/- 1
-				if ((c + 1) < hig_c) { dc.DrawPoint(c + 1, r); }
-
-				if ((c - 1) >= low_c) { dc.DrawPoint(c - 1, r); };
+				if ((c + 1) < hig_c)
+				{
+					dc.DrawPoint(c + 1, r);
+				}
+				if ((c - 1) >= low_c)
+				{
+					dc.DrawPoint(c - 1, r);
+				};
 			}
 		}
 	}
-
 //   }
 }
 
@@ -4874,13 +4700,11 @@ void BgImCanvas::OnMouseRightDown(wxMouseEvent& event)
 	static int y;
 	x = pt.x - x_offset_;
 	y = pt.y - y_offset_;
-
 	if (x >= 0 && x < ccx_ && y >= 0 && y < ccy_)
 	{
 		if (curveClick_[x + y * ccx_] > 0)
 		{
 			lmEventCurve_ = curveClick_[x + y * ccx_] - 1;
-
 			if (curveSet_[lmEventCurve_]->type_ == FC_CUSTOM)
 			{
 				// determine if close to a node
@@ -4891,21 +4715,18 @@ void BgImCanvas::OnMouseRightDown(wxMouseEvent& event)
 				tempy = curveSet_[lmEventCurve_]->y_;
 				tempn = curveSet_[lmEventCurve_]->n_;
 				mindist = sqrt((x - tempx[0]) * (x - tempx[0]) + (y - tempy[0]) *
-				               (y - tempy[0]));
+							   (y - tempy[0]));
 				minnode = 0;
-
 				for (i = 1; i < tempn; i++)
 				{
 					crtdist = sqrt((x - tempx[i]) * (x - tempx[i]) + (y - tempy[i]) *
-					               (y - tempy[i]));
-
+								   (y - tempy[i]));
 					if (crtdist < mindist)
 					{
 						mindist = crtdist;
 						minnode = i;
 					}
 				}
-
 				if (mindist <= 3)
 				{
 					// delete node option
@@ -4925,7 +4746,6 @@ void BgImCanvas::OnMouseRightDown(wxMouseEvent& event)
 				localMenu_->Enable(BG_IMC_ADDNODE, FALSE);
 				localMenu_->Enable(BG_IMC_DELETENODE, FALSE);
 			}
-
 			lmEventX_ = x;//+x_offset_;
 			lmEventY_ = y;//+y_offset_;
 			PopupMenu(localMenu_, x + x_offset_, y + y_offset_);
@@ -4955,7 +4775,6 @@ void BgImCanvas::AdjustScroll(int x, int y, int action)
 		//position relative to the image
 		x   = x + GetScrollPos(wxHORIZONTAL);
 		y   = y + GetScrollPos(wxVERTICAL);
-
 		//re-location mouse position relative to new image width
 		//and height
 		if (action == ZOOM_IN)
@@ -4968,7 +4787,6 @@ void BgImCanvas::AdjustScroll(int x, int y, int action)
 			x   = zoom_level * (x / (zoom_level + 1));
 			y   = zoom_level * (y / (zoom_level + 1));
 		}
-
 		//resize scroll
 		int width   = (pimage->GetHeight()) * zoom_level;
 		int height  = (pimage->GetWidth()) * zoom_level;
@@ -5007,9 +4825,8 @@ void BgImCanvas::OnEvent(wxMouseEvent& event)
 	m_y_ = event.m_y;
 	//keep track of menu window (hide/show)...
 	static bool hideWindow = true;
-
 	if ((m_x_ >= menuXl_) && (m_y_ >= menuYl_) && (m_x_ <= menuXu_)
-	        && (m_y_ <= menuYu_))
+			&& (m_y_ <= menuYu_))
 	{
 		hideWindow = false;
 	}
@@ -5017,7 +4834,6 @@ void BgImCanvas::OnEvent(wxMouseEvent& event)
 	{
 		hideWindow = true;
 	}
-
 	wxClientDC dc(this);
 	PrepareDC(dc);
 	wxPoint pt(event.GetLogicalPosition(dc));
@@ -5028,7 +4844,6 @@ void BgImCanvas::OnEvent(wxMouseEvent& event)
 	y = pt.y - y_offset_;
 //   x = event.GetX();
 //   y = event.GetY();
-
 	if (isDragging_ == 0 && event.LeftDown())
 	{
 		// check if over any line
@@ -5078,7 +4893,6 @@ void BgImCanvas::OnEvent(wxMouseEvent& event)
 			}
 		}
 	}
-
 	//if zoom is enabled, set the cursor to the zoom icon
 	//otherwise leave it as default
 	if (event.Entering())
@@ -5088,12 +4902,10 @@ void BgImCanvas::OnEvent(wxMouseEvent& event)
 		bool current_child   = false;
 		wxMDIParentFrame* parent = (wxMDIParentFrame*)(child_frame_->GetParent());
 		wxMDIChildFrame*  activeChild    = parent->GetActiveChild();
-
 		if (activeChild == (wxMDIChildFrame*) child_frame_)
 		{
 			current_child  = true;
 		}
-
 		if ((zoom_out || zoom_in) && (current_child))
 		{
 			SetCursor(wxCURSOR_MAGNIFIER);
@@ -5106,17 +4918,14 @@ void BgImCanvas::OnEvent(wxMouseEvent& event)
 		{
 			SetCursor(wxCURSOR_ARROW);
 		}
-
 		//indiciate that the window has acquired focus
 		has_focus    = true;
-
 		//show the menu window
 		if ((menuWindow) && (popup))
 		{
 			menuWindow->Show(TRUE);
 		}
 	}
-
 	//indicate that the window has lost focus
 	if (event.Leaving())
 	{
@@ -5125,32 +4934,27 @@ void BgImCanvas::OnEvent(wxMouseEvent& event)
 		//indicate that the mouse pointer is leaving
 		//this window
 		leaving      = true;
-
 		//refresh canvas upon using a zoom window
 		if (zoom_window)
 		{
 			Refresh(false);
 		}
-
 		//hide the menu window
 		if ((hideWindow) && (popup) && (menuWindow))
 		{
 			menuWindow->Show(FALSE);
 		}
 	}
-
 	//check if the left mouse button has been clicked and zoom is activated
 	//if so zoom the image
 	if (event.LeftDown() && zoom_in)
 	{
 		ZoomIn(m_x_, m_y_);
 	}
-
 	if ((event.LeftDown()) && zoom_out)
 	{
 		ZoomOut(m_x_, m_y_);
 	}
-
 	if (zoom_window)
 	{
 		DisplayZoomWindow(m_x_, m_y_);
@@ -5161,10 +4965,14 @@ void BgImCanvas::AddHoverWindow(wxWindow* hoverWindow, int pp)
 {
 	popup       = pp;
 	menuWindow  = hoverWindow;
-
-	if (popup) { menuWindow->Show(FALSE); }
-	else { menuWindow->Show(TRUE); }
-
+	if (popup)
+	{
+		menuWindow->Show(FALSE);
+	}
+	else
+	{
+		menuWindow->Show(TRUE);
+	}
 	int width, height;
 	menuWindow->GetSize(&width, &height);
 	menuXl_ = HOVER_MENU_X - HOVER_MENU_BOUND;
@@ -5178,9 +4986,10 @@ void BgImCanvas::SetHoverWindowLocation(int x, int y)
 {
 	int width, height;
 	menuWindow->GetSize(&width, &height);
-
-	if ((x < 0) || (x >= width) || (y < 0) || (y >= height)) { return; }
-
+	if ((x < 0) || (x >= width) || (y < 0) || (y >= height))
+	{
+		return;
+	}
 	menuWindow->SetSize(x, y, width, height);
 }
 
@@ -5189,8 +4998,8 @@ void BgImCanvas::SetHoverWindowLocation(int x, int y)
 // ---------------------------------------------------------------------------
 
 BgMdiEdgeChild::BgMdiEdgeChild(wxMDIParentFrame* parent, const wxString& title,
-                               const wxPoint& pos, const wxSize& size,
-                               const long style)
+							   const wxPoint& pos, const wxSize& size,
+							   const long style)
 	: wxMDIChildFrame(parent, BG_EDGE_WINDOW, title, pos, size, style)
 {
 	//set window number
@@ -5199,17 +5008,17 @@ BgMdiEdgeChild::BgMdiEdgeChild(wxMDIParentFrame* parent, const wxString& title,
 	filename_    = NULL;
 	bpsize_ = 160;
 	imagePlotSplitter_ = new wxSplitterWindow(this, -1, wxPoint(bpsize_, 0),
-	        wxDefaultSize, wxSP_NOBORDER | wxSP_3DSASH);
+			wxDefaultSize, wxSP_NOBORDER | wxSP_3DSASH);
 	plotSplitter_ = new wxSplitterWindow(imagePlotSplitter_, -1, wxDefaultPosition,
-	                                     wxDefaultSize, wxSP_NOBORDER | wxSP_3DSASH);
+										 wxDefaultSize, wxSP_NOBORDER | wxSP_3DSASH);
 	origEdgeImage_ = new BgImCanvas(this, imagePlotSplitter_, wxDefaultPosition,
-	                                wxDefaultSize);
+									wxDefaultSize);
 	origEdgeImage_->SetScrollbars(20, 20, 50, 50);
 	plotNmxImage_ = new BgImCanvas(this, plotSplitter_, wxDefaultPosition,
-	                               wxDefaultSize);
+								   wxDefaultSize);
 	plotNmxImage_->SetScrollbars(20, 20, 50, 50);
 	plotTotImage_ = new BgImCanvas(this, plotSplitter_, wxDefaultPosition,
-	                               wxDefaultSize);
+								   wxDefaultSize);
 	plotTotImage_->SetScrollbars(20, 20, 50, 50);
 	g_children.Append(this);
 	//imagePlotSplitter_->SetClientSize(GetClientSize());
@@ -5218,80 +5027,80 @@ BgMdiEdgeChild::BgMdiEdgeChild(wxMDIParentFrame* parent, const wxString& title,
 	// panel stuff
 	buttonPanel_ = new wxPanel(this, -1, wxPoint(0, 0));
 	edButton_ = new wxButton(buttonPanel_, BG_EDGE_DETECT, "Edge Detect",
-	                         wxPoint(40, 10));
+							 wxPoint(40, 10));
 	cpButton_ = new wxButton(buttonPanel_, BG_CHANGE_PARAM_EDGE, "Change...",
-	                         wxPoint(40, 155));
+							 wxPoint(40, 155));
 	wxStaticBox* viewSB = new wxStaticBox(buttonPanel_, -1, "View", wxPoint(35, 45),
-	                                      wxSize(85, 65));
+										  wxSize(85, 65));
 	viewOrigCheck_ = new wxCheckBox(buttonPanel_, BG_EDGE_CVIEW_ORIG, "Image",
-	                                wxPoint(45, 65)); //, wxPoint(10,85));
+									wxPoint(45, 65)); //, wxPoint(10,85));
 	viewEdgeCheck_ = new wxCheckBox(buttonPanel_, BG_EDGE_CVIEW_EDGE, "Edges",
-	                                wxPoint(45, 85)); //, wxPoint(10,105));
+									wxPoint(45, 85)); //, wxPoint(10,105));
 	int deltal = 45;
 	// put the parameters
 	wxStaticText* stParam = new wxStaticText(buttonPanel_, -1, "PARAMETERS:",
-	        wxPoint(C_PARAMX - 5, 105 + C_PARAMY));
+			wxPoint(C_PARAMX - 5, 105 + C_PARAMY));
 	txtKernelSize_ = new wxStaticText(buttonPanel_, -1, "Grad Win.",
-	                                  wxPoint(C_PARAMX - 5, deltal + 125 + C_PARAMY + 0 * C_PARAMDY));
+									  wxPoint(C_PARAMX - 5, deltal + 125 + C_PARAMY + 0 * C_PARAMDY));
 	valKernelSize_ = new wxStaticText(buttonPanel_, -1, "NA     ",
-	                                  wxPoint(C_PARAMX + C_PARAMDX + 35, deltal + 125 + C_PARAMY + 0 * C_PARAMDY),
-	                                  wxSize(C_PARAMSX - 20, C_PARAMSY));
+									  wxPoint(C_PARAMX + C_PARAMDX + 35, deltal + 125 + C_PARAMY + 0 * C_PARAMDY),
+									  wxSize(C_PARAMSX - 20, C_PARAMSY));
 	txtMinPt_ = new wxStaticText(buttonPanel_, -1, "Min. length",
-	                             wxPoint(C_PARAMX - 5, deltal + 125 + C_PARAMY + 1 * C_PARAMDY));
+								 wxPoint(C_PARAMX - 5, deltal + 125 + C_PARAMY + 1 * C_PARAMDY));
 	valMinPt_ = new wxStaticText(buttonPanel_, -1, "NA     ",
-	                             wxPoint(C_PARAMX + C_PARAMDX + 35, deltal + 125 + C_PARAMY + 1 * C_PARAMDY),
-	                             wxSize(C_PARAMSX - 20, C_PARAMSY));
+								 wxPoint(C_PARAMX + C_PARAMDX + 35, deltal + 125 + C_PARAMY + 1 * C_PARAMDY),
+								 wxSize(C_PARAMSX - 20, C_PARAMSY));
 	wxStaticBox* nmxSB = new wxStaticBox(buttonPanel_, -1, "Nonmaxima supp.",
-	                                     wxPoint(5, deltal + 205 + 0), wxSize(140, 4 * C_PARAMDY - 5));
+										 wxPoint(5, deltal + 205 + 0), wxSize(140, 4 * C_PARAMDY - 5));
 	txtNmxType_ = new wxStaticText(buttonPanel_, -1, "Type", wxPoint(C_PARAMX,
-	                               deltal + 205 + C_PARAMY + 0 * C_PARAMDY));
+								   deltal + 205 + C_PARAMY + 0 * C_PARAMDY));
 	valNmxType_ = new wxStaticText(buttonPanel_, -1, "NA    ",
-	                               wxPoint(C_PARAMX + C_PARAMDX, deltal + 205 + C_PARAMY + 0 * C_PARAMDY),
-	                               wxSize(C_PARAMSX, C_PARAMSY));
+								   wxPoint(C_PARAMX + C_PARAMDX, deltal + 205 + C_PARAMY + 0 * C_PARAMDY),
+								   wxSize(C_PARAMSX, C_PARAMSY));
 	txtNmxR_ = new wxStaticText(buttonPanel_, -1, "Rank", wxPoint(C_PARAMX,
-	                            deltal + 205 + C_PARAMY + 1 * C_PARAMDY));
+								deltal + 205 + C_PARAMY + 1 * C_PARAMDY));
 	valNmxR_ = new wxStaticText(buttonPanel_, -1, "NA     ",
-	                            wxPoint(C_PARAMX + C_PARAMDX, deltal + 205 + C_PARAMY + 1 * C_PARAMDY),
-	                            wxSize(C_PARAMSX, C_PARAMSY));
+								wxPoint(C_PARAMX + C_PARAMDX, deltal + 205 + C_PARAMY + 1 * C_PARAMDY),
+								wxSize(C_PARAMSX, C_PARAMSY));
 	txtNmxC_ = new wxStaticText(buttonPanel_, -1, "Conf", wxPoint(C_PARAMX,
-	                            deltal + 205 + C_PARAMY + 2 * C_PARAMDY));
+								deltal + 205 + C_PARAMY + 2 * C_PARAMDY));
 	valNmxC_ = new wxStaticText(buttonPanel_, -1, "NA     ",
-	                            wxPoint(C_PARAMX + C_PARAMDX, deltal + 205 + C_PARAMY + 2 * C_PARAMDY),
-	                            wxSize(C_PARAMSX, C_PARAMSY));
+								wxPoint(C_PARAMX + C_PARAMDX, deltal + 205 + C_PARAMY + 2 * C_PARAMDY),
+								wxSize(C_PARAMSX, C_PARAMSY));
 	wxStaticBox* hhSB = new wxStaticBox(buttonPanel_, -1, "Hyst. High Tr.",
-	                                    wxPoint(5, deltal + 325 + 0), wxSize(140, 4 * C_PARAMDY - 5));
+										wxPoint(5, deltal + 325 + 0), wxSize(140, 4 * C_PARAMDY - 5));
 	txtHHType_ = new wxStaticText(buttonPanel_, -1, "Type", wxPoint(C_PARAMX,
-	                              deltal + 325 + C_PARAMY + 0 * C_PARAMDY));
+								  deltal + 325 + C_PARAMY + 0 * C_PARAMDY));
 	txtHHR_ = new wxStaticText(buttonPanel_, -1, "Rank", wxPoint(C_PARAMX,
-	                           deltal + 325 + C_PARAMY + 1 * C_PARAMDY));
+							   deltal + 325 + C_PARAMY + 1 * C_PARAMDY));
 	txtHHC_ = new wxStaticText(buttonPanel_, -1, "Conf", wxPoint(C_PARAMX,
-	                           deltal + 325 + C_PARAMY + 2 * C_PARAMDY));
+							   deltal + 325 + C_PARAMY + 2 * C_PARAMDY));
 	valHHType_ = new wxStaticText(buttonPanel_, -1, "NA    ",
-	                              wxPoint(C_PARAMX + C_PARAMDX, deltal + 325 + C_PARAMY + 0 * C_PARAMDY),
-	                              wxSize(C_PARAMSX, C_PARAMSY));
+								  wxPoint(C_PARAMX + C_PARAMDX, deltal + 325 + C_PARAMY + 0 * C_PARAMDY),
+								  wxSize(C_PARAMSX, C_PARAMSY));
 	valHHR_ = new wxStaticText(buttonPanel_, -1, "NA     ",
-	                           wxPoint(C_PARAMX + C_PARAMDX, deltal + 325 + C_PARAMY + 1 * C_PARAMDY),
-	                           wxSize(C_PARAMSX, C_PARAMSY));
+							   wxPoint(C_PARAMX + C_PARAMDX, deltal + 325 + C_PARAMY + 1 * C_PARAMDY),
+							   wxSize(C_PARAMSX, C_PARAMSY));
 	valHHC_ = new wxStaticText(buttonPanel_, -1, "NA     ",
-	                           wxPoint(C_PARAMX + C_PARAMDX, deltal + 325 + C_PARAMY + 2 * C_PARAMDY),
-	                           wxSize(C_PARAMSX, C_PARAMSY));
+							   wxPoint(C_PARAMX + C_PARAMDX, deltal + 325 + C_PARAMY + 2 * C_PARAMDY),
+							   wxSize(C_PARAMSX, C_PARAMSY));
 	wxStaticBox* hlSB = new wxStaticBox(buttonPanel_, -1, "Hyst. Low Tr.",
-	                                    wxPoint(5, deltal + 445 + 0), wxSize(140, 4 * C_PARAMDY - 5));
+										wxPoint(5, deltal + 445 + 0), wxSize(140, 4 * C_PARAMDY - 5));
 	txtHLType_ = new wxStaticText(buttonPanel_, -1, "Type", wxPoint(C_PARAMX,
-	                              deltal + 445 + C_PARAMY + 0 * C_PARAMDY));
+								  deltal + 445 + C_PARAMY + 0 * C_PARAMDY));
 	txtHLR_ = new wxStaticText(buttonPanel_, -1, "Rank", wxPoint(C_PARAMX,
-	                           deltal + 445 + C_PARAMY + 1 * C_PARAMDY));
+							   deltal + 445 + C_PARAMY + 1 * C_PARAMDY));
 	txtHLC_ = new wxStaticText(buttonPanel_, -1, "Conf", wxPoint(C_PARAMX,
-	                           deltal + 445 + C_PARAMY + 2 * C_PARAMDY));
+							   deltal + 445 + C_PARAMY + 2 * C_PARAMDY));
 	valHLType_ = new wxStaticText(buttonPanel_, -1, "NA    ",
-	                              wxPoint(C_PARAMX + C_PARAMDX, deltal + 445 + C_PARAMY + 0 * C_PARAMDY),
-	                              wxSize(C_PARAMSX, C_PARAMSY));
+								  wxPoint(C_PARAMX + C_PARAMDX, deltal + 445 + C_PARAMY + 0 * C_PARAMDY),
+								  wxSize(C_PARAMSX, C_PARAMSY));
 	valHLR_ = new wxStaticText(buttonPanel_, -1, "NA     ",
-	                           wxPoint(C_PARAMX + C_PARAMDX, deltal + 445 + C_PARAMY + 1 * C_PARAMDY),
-	                           wxSize(C_PARAMSX, C_PARAMSY));
+							   wxPoint(C_PARAMX + C_PARAMDX, deltal + 445 + C_PARAMY + 1 * C_PARAMDY),
+							   wxSize(C_PARAMSX, C_PARAMSY));
 	valHLC_ = new wxStaticText(buttonPanel_, -1, "NA     ",
-	                           wxPoint(C_PARAMX + C_PARAMDX, deltal + 445 + C_PARAMY + 2 * C_PARAMDY),
-	                           wxSize(C_PARAMSX, C_PARAMSY));
+							   wxPoint(C_PARAMX + C_PARAMDX, deltal + 445 + C_PARAMY + 2 * C_PARAMDY),
+							   wxSize(C_PARAMSX, C_PARAMSY));
 	//set lower bound zoom limit on display image
 	//to the size of the original image
 	origEdgeImage_->SetMinZoomLevel(1);
@@ -5350,19 +5159,19 @@ BgMdiEdgeChild::BgMdiEdgeChild(wxMDIParentFrame* parent, const wxString& title,
 	plotTotImage_->AddMargin(RANK_CONF_MARGINX, RANK_CONF_MARGINY);
 	//add title to each individual plot
 	BgText bgText(1, "      Diagram after Non-Maxima Supression", *wxSWISS_FONT,
-	              RANK_CONF_MARGINX - 10, RANK_CONF_MARGINY / 2 - 10);
+				  RANK_CONF_MARGINX - 10, RANK_CONF_MARGINY / 2 - 10);
 	plotNmxImage_->AddText(&bgText);
 	bgText.SetText("      Diagram before Non-Maxima Supression");
 	plotTotImage_->AddText(&bgText);
 	//add x and y axis
 	plotNmxImage_->AddHorizontalAxis(RANK_CONF_MARGINX - 2,
-	                                 RANK_CONF_IMSIZEY + RANK_CONF_MARGINY, RANK_CONF_IMSIZEX + 2, 10, 0.0, 1.0);
+									 RANK_CONF_IMSIZEY + RANK_CONF_MARGINY, RANK_CONF_IMSIZEX + 2, 10, 0.0, 1.0);
 	plotNmxImage_->AddVerticalAxis(RANK_CONF_MARGINX - 1,
-	                               RANK_CONF_IMSIZEY + RANK_CONF_MARGINY, RANK_CONF_IMSIZEX, 10, 0.0, 1.0);
+								   RANK_CONF_IMSIZEY + RANK_CONF_MARGINY, RANK_CONF_IMSIZEX, 10, 0.0, 1.0);
 	plotTotImage_->AddHorizontalAxis(RANK_CONF_MARGINX - 2,
-	                                 RANK_CONF_IMSIZEY + RANK_CONF_MARGINY, RANK_CONF_IMSIZEX + 2, 10, 0.0, 1.0);
+									 RANK_CONF_IMSIZEY + RANK_CONF_MARGINY, RANK_CONF_IMSIZEX + 2, 10, 0.0, 1.0);
 	plotTotImage_->AddVerticalAxis(RANK_CONF_MARGINX - 1,
-	                               RANK_CONF_IMSIZEY + RANK_CONF_MARGINY, RANK_CONF_IMSIZEX, 10, 0.0, 1.0);
+								   RANK_CONF_IMSIZEY + RANK_CONF_MARGINY, RANK_CONF_IMSIZEX, 10, 0.0, 1.0);
 	//label x and y axis
 	bgText.SetText("Rank (   )");
 	plotNmxImage_->LabelHorizontalAxis(&bgText);
@@ -5379,13 +5188,13 @@ BgMdiEdgeChild::BgMdiEdgeChild(wxMDIParentFrame* parent, const wxString& title,
 	plotTotImage_->AddBitmap(&ro_bmp);
 	plotTotImage_->AddBitmap(&eta_bmp);
 	ro_bmp.SetPlotLocation(RANK_CONF_MARGINX + 137,
-	                       RANK_CONF_IMSIZEY + RANK_CONF_MARGINY + 35);
+						   RANK_CONF_IMSIZEY + RANK_CONF_MARGINY + 35);
 	ro_bmp.SetId(3);
 	plotNmxImage_->AddBitmap(&ro_bmp);
 	plotTotImage_->AddBitmap(&ro_bmp);
 	wxBitmap rotated_eta("rotated_eta", wxBITMAP_TYPE_RESOURCE);
 	BgBitmap rotated_eta_bmp(&rotated_eta, 4, RANK_CONF_MARGINX - 55,
-	                         RANK_CONF_IMSIZEY + RANK_CONF_MARGINY - 162);
+							 RANK_CONF_IMSIZEY + RANK_CONF_MARGINY - 162);
 	plotNmxImage_->AddBitmap(&rotated_eta_bmp);
 	plotTotImage_->AddBitmap(&rotated_eta_bmp);
 	//indicate that the edge window is now open
@@ -5555,25 +5364,23 @@ BgMdiEdgeChild::BgMdiEdgeChild(wxMDIParentFrame *parent, const wxString& title,
 
 BgMdiEdgeChild::~BgMdiEdgeChild()
 {
-	if (filename_) { delete [] filename_; }
-
+	if (filename_)
+	{
+		delete [] filename_;
+	}
 	if (hasEdge_ == 1)
 	{
 		origEdgeImage_->RemovePointSet(&cbgPointSet_);
 	}
-
 	if (cbgEdgeList_ != 0)
 	{
 		delete cbgEdgeList_;
 	}
-
 	delete cbgImage_;
-
 	if (cbgEdgeDetect_ != 0)
 	{
 		delete cbgEdgeDetect_;
 	}
-
 	delete viewEdgeCheck_;
 	delete viewOrigCheck_;
 	delete cpButton_;
@@ -5593,13 +5400,11 @@ void BgMdiEdgeChild::OnUpdateNum(wxCommandEvent& WXUNUSED(event))
 	double ty[MAX_CUSTOM_NODES];
 	int ttype, i;
 	int npoints, modif = 0;
-
 	if (plotNmxImage_->mouseModif_ == 1)
 	{
 		modif = 1;
 		// get new hyst params
 		highCurve_.GetParamCurve(tx, ty, ttype, npoints);
-
 		if ((ttype != FC_CUSTOM) && (ttype != -1))
 		{
 			hystHighType_ = ttype;
@@ -5609,18 +5414,14 @@ void BgMdiEdgeChild::OnUpdateNum(wxCommandEvent& WXUNUSED(event))
 		else
 		{
 			hystHighType_ = ttype;
-
 			for (i = 0; i < npoints; i++)
 			{
 				custHx_[i] = tx[i];
 				custHy_[i] = ty[i];
 			}
-
 			nCustH_ = npoints;
 		}
-
 		lowCurve_.GetParamCurve(tx, ty, ttype, npoints);
-
 		if ((ttype != FC_CUSTOM) && (ttype != -1))
 		{
 			hystLowType_ = ttype;
@@ -5630,35 +5431,28 @@ void BgMdiEdgeChild::OnUpdateNum(wxCommandEvent& WXUNUSED(event))
 		else
 		{
 			hystLowType_ = ttype;
-
 			for (i = 0; i < npoints; i++)
 			{
 				custLx_[i] = tx[i];
 				custLy_[i] = ty[i];
 			}
-
 			nCustL_ = npoints;
 		}
-
 		plotNmxImage_->mouseModif_ = 0;
 	}
-
 	if (plotTotImage_->mouseModif_ == 1)
 	{
 		modif = 1;
 		// get new nmx params
 		nmxCurve_.GetParamCurve(tx, ty, ttype, npoints);
-
 		if ((ttype != FC_CUSTOM) && (ttype != -1))
 		{
 			nmxType_ = ttype;
 			rankNmx_ = tx[0];
 			confNmx_ = ty[0];
 		}
-
 		plotTotImage_->mouseModif_ = 0;
 	}
-
 	if (modif == 1)
 	{
 		SetParametersNum();
@@ -5689,82 +5483,64 @@ void BgMdiEdgeChild::SetParametersStr()
 	case FC_ELLIPSE:
 		valHHType_->SetLabel("arc");
 		break;
-
 	case FC_VERT_LINE:
 		valHHType_->SetLabel("vertical line");
 		break;
-
 	case FC_HORIZ_LINE:
 		valHHType_->SetLabel("horizontal line");
 		break;
-
 	case FC_SQUARE_BOX:
 		valHHType_->SetLabel("box");
 		break;
-
 	case FC_LINE:
 		valHHType_->SetLabel("line");
 		break;
-
 	case FC_CUSTOM:
 		valHHType_->SetLabel("custom");
 		break;
 	}
-
 	switch (hystLowType_)
 	{
 	case FC_ELLIPSE:
 		valHLType_->SetLabel("arc");
 		break;
-
 	case FC_VERT_LINE:
 		valHLType_->SetLabel("vertical line");
 		break;
-
 	case FC_HORIZ_LINE:
 		valHLType_->SetLabel("horizontal line");
 		break;
-
 	case FC_SQUARE_BOX:
 		valHLType_->SetLabel("box");
 		break;
-
 	case FC_LINE:
 		valHLType_->SetLabel("line");
 		break;
-
 	case FC_CUSTOM:
 		valHLType_->SetLabel("custom");
 		break;
 	}
-
 	switch (nmxType_)
 	{
 	case FC_ELLIPSE:
 		valNmxType_->SetLabel("arc");
 		break;
-
 	case FC_VERT_LINE:
 		valNmxType_->SetLabel("vertical line");
 		break;
-
 	case FC_HORIZ_LINE:
 		valNmxType_->SetLabel("horizontal line");
 		break;
-
 	case FC_SQUARE_BOX:
 		valNmxType_->SetLabel("box");
 		break;
-
 	case FC_LINE:
 		valNmxType_->SetLabel("line");
 		break;
-
 	case FC_CUSTOM:
 		valNmxType_->SetLabel("custom");
 		break;
 	}
-
 	wxString ts;
 	ts = wxString::Format("%d", nMin_);
 	valMinPt_->SetLabel(ts);
@@ -5775,12 +5551,10 @@ void BgMdiEdgeChild::SetParametersStr()
 void BgMdiEdgeChild::OnViewEdge(wxCommandEvent&  WXUNUSED(event))
 {
 	viewEdgeCheck_->SetValue(miViewEdge_->IsChecked());
-
 	if (hasEdge_ == false)
 	{
 		return;
 	}
-
 	if (miViewEdge_->IsChecked() == TRUE)
 	{
 		// show edges
@@ -5796,12 +5570,10 @@ void BgMdiEdgeChild::OnViewEdge(wxCommandEvent&  WXUNUSED(event))
 void BgMdiEdgeChild::OnViewOrig(wxCommandEvent&  WXUNUSED(event))
 {
 	viewOrigCheck_->SetValue(miViewOrig_->IsChecked());
-
 	if (hasImage_ == false)
 	{
 		return;
 	}
-
 	if (miViewOrig_->IsChecked() == TRUE)
 	{
 		// show edges
@@ -5814,19 +5586,16 @@ void BgMdiEdgeChild::OnViewOrig(wxCommandEvent&  WXUNUSED(event))
 		//canvas->RemovePointSet(edgesSeq_[crtImage_]);
 		origEdgeImage_->ShowBitmap(false);
 	}
-
 	origEdgeImage_->Refresh();
 }
 
 void BgMdiEdgeChild::OnCViewEdge(wxCommandEvent&  WXUNUSED(event))
 {
 	miViewEdge_->Check(viewEdgeCheck_->GetValue());
-
 	if (hasEdge_ == false)
 	{
 		return;
 	}
-
 	if (viewEdgeCheck_->GetValue() == TRUE)
 	{
 		// show edges
@@ -5842,12 +5611,10 @@ void BgMdiEdgeChild::OnCViewEdge(wxCommandEvent&  WXUNUSED(event))
 void BgMdiEdgeChild::OnCViewOrig(wxCommandEvent&  WXUNUSED(event))
 {
 	miViewOrig_->Check(viewOrigCheck_->GetValue());
-
 	if (hasImage_ == false)
 	{
 		return;
 	}
-
 	if (viewOrigCheck_->GetValue() == TRUE)
 	{
 		// show edges
@@ -5885,18 +5652,21 @@ void BgMdiEdgeChild::OnClose(wxCloseEvent& event)
 	gs_nFrames--;
 	//indicate that the window is closed (used by OnFocus)
 	window_open  = false;
-
 	//reset toolbar
-	if (gs_nFrames == 0) { ResetToolBar(); }
-
+	if (gs_nFrames == 0)
+	{
+		ResetToolBar();
+	}
 	event.Skip();
 }
 
 void BgMdiEdgeChild::OnFocus(wxFocusEvent& WXUNUSED(event))
 {
 	//update toolbar
-	if (!on_exit) { UpdateToolBar(); }
-
+	if (!on_exit)
+	{
+		UpdateToolBar();
+	}
 	return;
 }
 
@@ -5971,7 +5741,6 @@ void BgMdiEdgeChild::UpdateToolBar(void)
 		//determine whether to enable save based on whether segmentation
 		//has occurred
 		bool save_enable;
-
 		if (hasEdge_)
 		{
 			save_enable   = true;
@@ -5980,11 +5749,9 @@ void BgMdiEdgeChild::UpdateToolBar(void)
 		{
 			save_enable   = false;
 		}
-
 		//determine whether to enable zoom controls based on whether image
 		//has been loaded
 		bool load_enable;
-
 		if (hasImage_)
 		{
 			load_enable   = true;
@@ -5993,10 +5760,8 @@ void BgMdiEdgeChild::UpdateToolBar(void)
 		{
 			load_enable   = false;
 		}
-
 		//determine whether to enable zoom in control based on maximum zoom
 		bool max_zoom;
-
 		if (maxZoom_)
 		{
 			max_zoom  = true;
@@ -6005,10 +5770,8 @@ void BgMdiEdgeChild::UpdateToolBar(void)
 		{
 			max_zoom  = false;
 		}
-
 		//determine whether to enable zoom out control based on minimum zoom
 		bool min_zoom;
-
 		if (minZoom_)
 		{
 			min_zoom  = true;
@@ -6017,10 +5780,9 @@ void BgMdiEdgeChild::UpdateToolBar(void)
 		{
 			min_zoom  = false;
 		}
-
 		//adjust toolbar
 		toolbar->SetToolShortHelp(BG_LOAD_IMAGE,
-		                          "Load image to perform edge detection");
+								  "Load image to perform edge detection");
 		toolbar->SetToolShortHelp(BG_SAVE_RESULT, "Save edge map");
 		toolbar->EnableTool(BG_SAVE_RESULT, save_enable);
 		toolbar->EnableTool(BG_CROSS, load_enable);
@@ -6036,7 +5798,6 @@ void BgMdiEdgeChild::UpdateToolBar(void)
 		NoZoom();
 //		toolbar->Realize();
 	}
-
 	return;
 }
 
@@ -6062,37 +5823,32 @@ void BgMdiEdgeChild::ReadImage(char* pathname, char* filename)
 {
 	plotTotImage_->ClearData(1);
 	plotNmxImage_->ClearData(1);
-
 	if (origEdgeImage_->SetImage(pathname) == 0)
 	{
 		return;
 	}
-
 	bgLog("Image %s loaded\n", pathname);
-
 	//obtain and store image filename
-	if (filename_) { delete [] filename_; }
-
+	if (filename_)
+	{
+		delete [] filename_;
+	}
 	filename_   = new char [strlen(filename) + 1];
 	strcpy(filename_, filename);
 	miViewOrig_->Check(TRUE);
 	viewOrigCheck_->SetValue(TRUE);
 	origEdgeImage_->showbitmap_ = true;
-
 	if (hasEdge_ == 1)
 	{
 		origEdgeImage_->RemovePointSet(&cbgPointSet_);
 	}
-
 	// set cbgImage
 	cbgImage_->SetImageFromRGB(origEdgeImage_->pimage->GetData(),
-	                           origEdgeImage_->pimage->GetWidth(), origEdgeImage_->pimage->GetHeight());
-
+							   origEdgeImage_->pimage->GetWidth(), origEdgeImage_->pimage->GetHeight());
 	if (cbgEdgeDetect_ != 0)
 	{
 		delete cbgEdgeDetect_;
 	}
-
 	cbgEdgeDetect_ = new BgEdgeDetect(kernelSize_);
 	hasImage_ = 1;
 	hasEdge_ = 0;
@@ -6113,7 +5869,7 @@ void BgMdiEdgeChild::ReadImage(char* pathname, char* filename)
 	//set window title
 	wxString statusname;
 	statusname.Printf(_T("Edge Detection Frame %d - %s (%d x %d) [Original Image]"),
-	                  window_number_, filename_, width_, height_);
+					  window_number_, filename_, width_, height_);
 	SetTitle(statusname);
 	/***********************************************/
 }
@@ -6126,33 +5882,30 @@ void BgMdiEdgeChild::OnLoadImage(wxCommandEvent& WXUNUSED(event))
 //      wxOPEN);
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 	wxFileDialog filedialog(this, "Choose an image file", "", "",
-	                        "*", wxOPEN);
+							"*", wxOPEN);
 #else
 	wxFileDialog filedialog(this, "Choose an image file", "", "",
-	                        "Common image files|*.png;*.bmp;*.gif;*.tif;*.tiff;*.jpg;*.pnm;*.pgm;*.ppm|PNG files (*.png)|*.png|BMP files (*.bmp)|*.bmp|GIF files (*.gif)|*.gif|TIFF files (*.tif)|*.tif|JPEG files (*.jpg)|*.jpg|PNM files (*.pnm)|*.pnm|PGM/PPM files (*.pgm,*.ppm)|*.pgm;*.ppm",
-	                        wxOPEN);
+							"Common image files|*.png;*.bmp;*.gif;*.tif;*.tiff;*.jpg;*.pnm;*.pgm;*.ppm|PNG files (*.png)|*.png|BMP files (*.bmp)|*.bmp|GIF files (*.gif)|*.gif|TIFF files (*.tif)|*.tif|JPEG files (*.jpg)|*.jpg|PNM files (*.pnm)|*.pnm|PGM/PPM files (*.pgm,*.ppm)|*.pgm;*.ppm",
+							wxOPEN);
 #endif
-
 	if (filedialog.ShowModal() == wxID_OK)
 	{
 		plotTotImage_->ClearData(1);
 		plotNmxImage_->ClearData(1);
-
 		if (hasEdge_ == 1)
 		{
 			origEdgeImage_->RemovePointSet(&cbgPointSet_);
 		}
-
 		if (origEdgeImage_->SetImage(filedialog.GetPath().c_str()) == 0)
 		{
 			return;
 		}
-
 		bgLog("Image %s loaded\n", filedialog.GetPath().c_str());
-
 		//obtain and store image filename
-		if (filename_) { delete [] filename_; }
-
+		if (filename_)
+		{
+			delete [] filename_;
+		}
 		filename_ = new char [strlen(filedialog.GetFilename().c_str()) + 1];
 		strcpy(filename_, filedialog.GetFilename().c_str());
 		miViewOrig_->Check(TRUE);
@@ -6160,13 +5913,11 @@ void BgMdiEdgeChild::OnLoadImage(wxCommandEvent& WXUNUSED(event))
 		origEdgeImage_->showbitmap_ = true;
 		// set cbgImage
 		cbgImage_->SetImageFromRGB(origEdgeImage_->pimage->GetData(),
-		                           origEdgeImage_->pimage->GetWidth(), origEdgeImage_->pimage->GetHeight());
-
+								   origEdgeImage_->pimage->GetWidth(), origEdgeImage_->pimage->GetHeight());
 		if (cbgEdgeDetect_ != 0)
 		{
 			delete cbgEdgeDetect_;
 		}
-
 		cbgEdgeDetect_ = new BgEdgeDetect(kernelSize_);
 		hasImage_ = 1;
 		hasEdge_ = 0;
@@ -6187,7 +5938,7 @@ void BgMdiEdgeChild::OnLoadImage(wxCommandEvent& WXUNUSED(event))
 		//set window title
 		wxString statusname;
 		statusname.Printf(_T("Edge Detection Frame %d - %s (%d x %d) [Original Image]"),
-		                  window_number_, filename_, width_, height_);
+						  window_number_, filename_, width_, height_);
 		SetTitle(statusname);
 		/***********************************************/
 	}
@@ -6200,18 +5951,16 @@ void BgMdiEdgeChild::OnSaveEdgeMap(wxCommandEvent& WXUNUSED(event))
 		bgLog("No edge map, run edge detection first!\n");
 		return;
 	}
-
 	// get the file name
 	wxFileDialog filedialog(this, "Choose an image file", "", "",
-	                        "PGM files (*.pgm)|*.pgm",
-	                        wxSAVE);
-
+							"PGM files (*.pgm)|*.pgm",
+							wxSAVE);
 	if (filedialog.ShowModal() == wxID_OK)
 	{
 		BgImage tempImage(cbgImage_->x_, cbgImage_->y_);
 		cbgEdgeList_->SetBinImage(&tempImage);
 		write_pgm_image(filedialog.GetPath().c_str(), tempImage.im_, tempImage.y_,
-		                tempImage.x_, "", 255);
+						tempImage.x_, "", 255);
 		bgLog("Edge map saved in: %s\n", filedialog.GetPath().c_str());
 		char tch[100];
 		sprintf(tch, "%s.txt", filedialog.GetPath().c_str());
@@ -6228,44 +5977,36 @@ void BgMdiEdgeChild::OnEdgeDetect(wxCommandEvent& WXUNUSED(event))
 		bgLog("No image loaded!\n");
 		return;
 	}
-
 	if (hasEdge_ == 1)
 	{
 		origEdgeImage_->RemovePointSet(&cbgPointSet_);
 	}
-
 	if (cbgEdgeList_ != 0)
 	{
 		delete cbgEdgeList_;
 	}
-
 	cbgEdgeList_ = new BgEdgeList();
 	// test if modif params
 	double tx[MAX_CUSTOM_NODES];
 	double ty[MAX_CUSTOM_NODES];
 	int ttype, i;
 	int npoints;
-
 	if (plotTotImage_->mouseModif_ == 1)
 	{
 		// get new nmx params
 		nmxCurve_.GetParamCurve(tx, ty, ttype, npoints);
-
 		if ((ttype != FC_CUSTOM) && (ttype != -1))
 		{
 			nmxType_ = ttype;
 			rankNmx_ = tx[0];
 			confNmx_ = ty[0];
 		}
-
 		plotTotImage_->mouseModif_ = 0;
 	}
-
 	if (plotNmxImage_->mouseModif_ == 1)
 	{
 		// get new hyst params
 		highCurve_.GetParamCurve(tx, ty, ttype, npoints);
-
 		if ((ttype != FC_CUSTOM) && (ttype != -1))
 		{
 			hystHighType_ = ttype;
@@ -6275,18 +6016,14 @@ void BgMdiEdgeChild::OnEdgeDetect(wxCommandEvent& WXUNUSED(event))
 		else
 		{
 			hystHighType_ = ttype;
-
 			for (i = 0; i < npoints; i++)
 			{
 				custHx_[i] = tx[i];
 				custHy_[i] = ty[i];
 			}
-
 			nCustH_ = npoints;
 		}
-
 		lowCurve_.GetParamCurve(tx, ty, ttype, npoints);
-
 		if ((ttype != FC_CUSTOM) && (ttype != -1))
 		{
 			hystLowType_ = ttype;
@@ -6296,36 +6033,30 @@ void BgMdiEdgeChild::OnEdgeDetect(wxCommandEvent& WXUNUSED(event))
 		else
 		{
 			hystLowType_ = ttype;
-
 			for (i = 0; i < npoints; i++)
 			{
 				custLx_[i] = tx[i];
 				custLy_[i] = ty[i];
 			}
-
 			nCustL_ = npoints;
 		}
-
 		plotNmxImage_->mouseModif_ = 0;
 	}
-
 	if (hystHighType_ == FC_CUSTOM)
 	{
 		cbgEdgeDetect_->SetCustomHigh(custHx_, custHy_, nCustH_);
 	}
-
 	if (hystLowType_ == FC_CUSTOM)
 	{
 		cbgEdgeDetect_->SetCustomLow(custLx_, custLy_, nCustL_);
 	}
-
 	// determine if we have permanent data
 	if (cbgEdgeDetect_->havePerm_ == true)
 	{
 		// compute only nmx and hyst
 		cbgEdgeDetect_->DoRecompute(cbgEdgeList_, rankNmx_, confNmx_, rankH_, confH_,
-		                            rankL_, confL_,
-		                            nMin_, nmxType_, hystHighType_, hystLowType_);
+									rankL_, confL_,
+									nMin_, nmxType_, hystHighType_, hystLowType_);
 		// set only nmx image
 		SetNmxImage();
 	}
@@ -6333,13 +6064,12 @@ void BgMdiEdgeChild::OnEdgeDetect(wxCommandEvent& WXUNUSED(event))
 	{
 		// compute all steps
 		cbgEdgeDetect_->DoEdgeDetect(cbgImage_, cbgEdgeList_, rankNmx_, confNmx_,
-		                             rankH_, confH_, rankL_, confL_,
-		                             nMin_, nmxType_, hystHighType_, hystLowType_);
+									 rankH_, confH_, rankL_, confL_,
+									 nMin_, nmxType_, hystHighType_, hystLowType_);
 		// set total and nmx image
 		SetTotalImage();
 		SetNmxImage();
 	}
-
 	// get binary edge image
 	BgImage tempImage(cbgImage_->x_, cbgImage_->y_);
 	cbgEdgeList_->SetBinImage(&tempImage);
@@ -6354,13 +6084,11 @@ void BgMdiEdgeChild::OnEdgeDetect(wxCommandEvent& WXUNUSED(event))
 	hasEdge_ = 1;
 	delete [] edgey;
 	delete [] edgex;
-
 	// update image canvas
 	if (miViewEdge_->IsChecked())
 	{
 		origEdgeImage_->AddPointSet(&cbgPointSet_);
 	}
-
 	//active save tool
 	SaveEnable();
 	//update menu bar
@@ -6376,12 +6104,10 @@ void BgMdiEdgeChild::SetTotalImage(void)
 	int imsz = xsz * ysz;
 	buf = new unsigned char[imsz];
 	int i;
-
 	for (i = 0; i < imsz; i++)
 	{
 		buf[i] = 255;
 	}
-
 	int l, c;
 	int xo = cbgEdgeDetect_->x_;
 	int yo = cbgEdgeDetect_->y_;
@@ -6389,7 +6115,6 @@ void BgMdiEdgeChild::SetTotalImage(void)
 	float* conf;
 	rank = cbgEdgeDetect_->permRank_;
 	conf = cbgEdgeDetect_->permConf_;
-
 	for (i = 0; i < xo * yo; i++)
 	{
 		if (rank[i] > 0 && conf[i] > 0)
@@ -6402,7 +6127,6 @@ void BgMdiEdgeChild::SetTotalImage(void)
 			buf[c + l * xsz] = 80;
 		}
 	}
-
 	nmxCurve_.SetParamCurve(nmxType_, &rankNmx_, &confNmx_, 1, xsz, ysz);
 	plotTotImage_->SetImageFromGray(buf, xsz, ysz);
 	plotTotImage_->FillCurveClick();
@@ -6417,12 +6141,10 @@ void BgMdiEdgeChild::SetNmxImage(void)
 	int imsz = xsz * ysz;
 	buf = new unsigned char[imsz];
 	int i;
-
 	for (i = 0; i < imsz; i++)
 	{
 		buf[i] = 255;
 	}
-
 	int l, c;
 	int xo = cbgEdgeDetect_->x_;
 	int yo = cbgEdgeDetect_->y_;
@@ -6430,7 +6152,6 @@ void BgMdiEdgeChild::SetNmxImage(void)
 	float* conf;
 	rank = cbgEdgeDetect_->permNmxRank_;
 	conf = cbgEdgeDetect_->permNmxConf_;
-
 	for (i = 0; i < xo * yo; i++)
 	{
 		if (rank[i] > 0 && conf[i] > 0)
@@ -6443,7 +6164,6 @@ void BgMdiEdgeChild::SetNmxImage(void)
 			buf[c + l * xsz] = 80;
 		}
 	}
-
 	if (hystHighType_ != FC_CUSTOM)
 	{
 		highCurve_.SetParamCurve(hystHighType_, &rankH_, &confH_, 1, xsz, ysz);
@@ -6452,7 +6172,6 @@ void BgMdiEdgeChild::SetNmxImage(void)
 	{
 		highCurve_.SetParamCurve(hystHighType_, custHx_, custHy_, nCustH_, xsz, ysz);
 	}
-
 	if (hystLowType_ != FC_CUSTOM)
 	{
 		lowCurve_.SetParamCurve(hystLowType_, &rankL_, &confL_, 1, xsz, ysz);
@@ -6461,7 +6180,6 @@ void BgMdiEdgeChild::SetNmxImage(void)
 	{
 		lowCurve_.SetParamCurve(hystLowType_, custLx_, custLy_, nCustL_, xsz, ysz);
 	}
-
 	plotNmxImage_->SetImageFromGray(buf, xsz, ysz);
 	plotNmxImage_->FillCurveClick();
 	delete [] buf;
@@ -6474,27 +6192,22 @@ void BgMdiEdgeChild::OnChangeParam(wxCommandEvent& WXUNUSED(event))
 	double ty[20];
 	int ttype, i;
 	int npoints;
-
 	if (plotTotImage_->mouseModif_ == 1)
 	{
 		// get new nmx params
 		nmxCurve_.GetParamCurve(tx, ty, ttype, npoints);
-
 		if ((ttype != FC_CUSTOM) && (ttype != -1))
 		{
 			nmxType_ = ttype;
 			rankNmx_ = tx[0];
 			confNmx_ = ty[0];
 		}
-
 		plotTotImage_->mouseModif_ = 0;
 	}
-
 	if (plotNmxImage_->mouseModif_ == 1)
 	{
 		// get new hyst params
 		highCurve_.GetParamCurve(tx, ty, ttype, npoints);
-
 		if ((ttype != FC_CUSTOM) && (ttype != -1))
 		{
 			hystHighType_ = ttype;
@@ -6504,20 +6217,16 @@ void BgMdiEdgeChild::OnChangeParam(wxCommandEvent& WXUNUSED(event))
 		else
 		{
 			hystHighType_ = ttype;
-
 			for (i = 0; i < npoints; i++)
 			{
 				custHx_[i] = tx[i];
 				custHy_[i] = ty[i];
 			}
-
 			rankH_ = tx[npoints - 1];
 			confH_ = ty[0];
 			nCustH_ = npoints;
 		}
-
 		lowCurve_.GetParamCurve(tx, ty, ttype, npoints);
-
 		if ((ttype != FC_CUSTOM) && (ttype != -1))
 		{
 			hystLowType_ = ttype;
@@ -6527,50 +6236,41 @@ void BgMdiEdgeChild::OnChangeParam(wxCommandEvent& WXUNUSED(event))
 		else
 		{
 			hystLowType_ = ttype;
-
 			for (i = 0; i < npoints; i++)
 			{
 				custLx_[i] = tx[i];
 				custLy_[i] = ty[i];
 			}
-
 			rankL_ = tx[npoints - 1];
 			confL_ = ty[0];
 			nCustL_ = npoints;
 		}
-
 		plotNmxImage_->mouseModif_ = 0;
 	}
-
 	BgParamDialog paramDialog(this, -1, "Change Parameters", wxDefaultPosition,
-	                          wxSize(250, 510),
-	                          wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL);
+							  wxSize(250, 510),
+							  wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL);
 	paramDialog.SetValues(rankNmx_, confNmx_, rankH_, confH_, rankL_, confL_, nMin_,
-	                      nmxType_, hystHighType_, hystLowType_, kernelSize_);
-
+						  nmxType_, hystHighType_, hystLowType_, kernelSize_);
 	if (paramDialog.ShowModal() == wxID_OK)
 	{
 		// do change param stuff
 		int tempKernelSize;
 		tempKernelSize = kernelSize_;
 		paramDialog.GetValues(rankNmx_, confNmx_, rankH_, confH_, rankL_, confL_, nMin_,
-		                      nmxType_, hystHighType_, hystLowType_, tempKernelSize);
-
+							  nmxType_, hystHighType_, hystLowType_, tempKernelSize);
 		if (tempKernelSize != kernelSize_)
 		{
 			kernelSize_ = tempKernelSize;
-
 			if (cbgEdgeDetect_ != 0)
 			{
 				delete cbgEdgeDetect_;
 				cbgEdgeDetect_ = new BgEdgeDetect(kernelSize_);
 			}
 		}
-
 		// change image param
 		int xsz = RANK_CONF_IMSIZEX;
 		int ysz = RANK_CONF_IMSIZEY;
-
 		if (hystHighType_ != FC_CUSTOM)
 		{
 			highCurve_.SetParamCurve(hystHighType_, &rankH_, &confH_, 1, xsz, ysz);
@@ -6579,7 +6279,6 @@ void BgMdiEdgeChild::OnChangeParam(wxCommandEvent& WXUNUSED(event))
 		{
 			highCurve_.SetParamCurve(hystHighType_, custHx_, custHy_, nCustH_, xsz, ysz);
 		}
-
 		if (hystLowType_ != FC_CUSTOM)
 		{
 			lowCurve_.SetParamCurve(hystLowType_, &rankL_, &confL_, 1, xsz, ysz);
@@ -6588,7 +6287,6 @@ void BgMdiEdgeChild::OnChangeParam(wxCommandEvent& WXUNUSED(event))
 		{
 			lowCurve_.SetParamCurve(hystLowType_, custLx_, custLy_, nCustL_, xsz, ysz);
 		}
-
 		nmxCurve_.SetParamCurve(nmxType_, &rankNmx_, &confNmx_, 1, xsz, ysz);
 		plotNmxImage_->FillCurveClick();
 		plotTotImage_->FillCurveClick();
@@ -6603,15 +6301,15 @@ void BgMdiEdgeChild::OnChangeParam(wxCommandEvent& WXUNUSED(event))
 // ---------------------------------------------------------------------------
 
 BgParamDialog::BgParamDialog(wxWindow* parent, wxWindowID id,
-                             const wxString& title,
-                             const wxPoint& pos, const wxSize& size,
-                             long style, const wxString& name)
+							 const wxString& title,
+							 const wxPoint& pos, const wxSize& size,
+							 long style, const wxString& name)
 	: wxDialog(parent, id, title, pos, size, style, name)
 {
 	okButton_ = new wxButton(this, BG_PARAMD_OK, "Ok", wxPoint(20 + C_PARAMX + 10,
-	                         450));
+							 450));
 	cancelButton_ = new wxButton(this, BG_PARAMD_CANCEL, "Cancel",
-	                             wxPoint(20 + C_PARAMX + 10 + C_PARAMDX + 60, 450));
+								 wxPoint(20 + C_PARAMX + 10 + C_PARAMDX + 60, 450));
 	/*
 	txtNmxR_ = new wxStaticText(this, -1, "Nmx. rank: ", wxPoint(C_PARAMX,C_PARAMY+0*C_PARAMDY));
 	txtNmxC_ = new wxStaticText(this, -1, "Nmx. conf: ", wxPoint(C_PARAMX,C_PARAMY+1*C_PARAMDY));
@@ -6638,59 +6336,59 @@ BgParamDialog::BgParamDialog(wxWindow* parent, wxWindowID id,
 	valKernelSize_ = new wxTextCtrl(this, -1, "NA     ", wxPoint(C_PARAMX+C_PARAMDX,C_PARAMY+10*C_PARAMDY));
 	*/
 	txtKernelSize_ = new wxStaticText(this, -1, "Grad Win.",
-	                                  wxPoint(20 + C_PARAMX - 5, 0 + C_PARAMY + 0 * C_PARAMDY));
+									  wxPoint(20 + C_PARAMX - 5, 0 + C_PARAMY + 0 * C_PARAMDY));
 	valKernelSize_ = new wxTextCtrl(this, -1, "NA     ",
-	                                wxPoint(20 + C_PARAMX + C_PARAMDX + 35, 0 + C_PARAMY + 0 * C_PARAMDY),
-	                                wxSize(C_PARAMSX - 20, C_PARAMSY));
+									wxPoint(20 + C_PARAMX + C_PARAMDX + 35, 0 + C_PARAMY + 0 * C_PARAMDY),
+									wxSize(C_PARAMSX - 20, C_PARAMSY));
 	txtMinPt_ = new wxStaticText(this, -1, "Min. length", wxPoint(20 + C_PARAMX - 5,
-	                             0 + C_PARAMY + 1 * C_PARAMDY));
+								 0 + C_PARAMY + 1 * C_PARAMDY));
 	valMinPt_ = new wxTextCtrl(this, -1, "NA     ",
-	                           wxPoint(20 + C_PARAMX + C_PARAMDX + 35, 0 + C_PARAMY + 1 * C_PARAMDY),
-	                           wxSize(C_PARAMSX - 20, C_PARAMSY));
+							   wxPoint(20 + C_PARAMX + C_PARAMDX + 35, 0 + C_PARAMY + 1 * C_PARAMDY),
+							   wxSize(C_PARAMSX - 20, C_PARAMSY));
 	wxStaticBox* nmxSB = new wxStaticBox(this, -1, "Nonmaxima supp.",
-	                                     wxPoint(20 + 5, 80 + 0), wxSize(140, 4 * C_PARAMDY - 5));
+										 wxPoint(20 + 5, 80 + 0), wxSize(140, 4 * C_PARAMDY - 5));
 	txtNmxType_ = new wxStaticText(this, -1, "Type", wxPoint(20 + C_PARAMX,
-	                               80 + C_PARAMY + 0 * C_PARAMDY));
+								   80 + C_PARAMY + 0 * C_PARAMDY));
 	valNmxType_ = new wxChoice(this, -1, wxPoint(20 + C_PARAMX + C_PARAMDX,
-	                           80 + C_PARAMY + 0 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
+							   80 + C_PARAMY + 0 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
 	txtNmxR_ = new wxStaticText(this, -1, "Rank", wxPoint(20 + C_PARAMX,
-	                            80 + C_PARAMY + 1 * C_PARAMDY));
+								80 + C_PARAMY + 1 * C_PARAMDY));
 	valNmxR_ = new wxTextCtrl(this, -1, "NA     ",
-	                          wxPoint(20 + C_PARAMX + C_PARAMDX, 80 + C_PARAMY + 1 * C_PARAMDY),
-	                          wxSize(C_PARAMSX, C_PARAMSY));
+							  wxPoint(20 + C_PARAMX + C_PARAMDX, 80 + C_PARAMY + 1 * C_PARAMDY),
+							  wxSize(C_PARAMSX, C_PARAMSY));
 	txtNmxC_ = new wxStaticText(this, -1, "Conf", wxPoint(20 + C_PARAMX,
-	                            80 + C_PARAMY + 2 * C_PARAMDY));
+								80 + C_PARAMY + 2 * C_PARAMDY));
 	valNmxC_ = new wxTextCtrl(this, -1, "NA     ",
-	                          wxPoint(20 + C_PARAMX + C_PARAMDX, 80 + C_PARAMY + 2 * C_PARAMDY),
-	                          wxSize(C_PARAMSX, C_PARAMSY));
+							  wxPoint(20 + C_PARAMX + C_PARAMDX, 80 + C_PARAMY + 2 * C_PARAMDY),
+							  wxSize(C_PARAMSX, C_PARAMSY));
 	wxStaticBox* hhSB = new wxStaticBox(this, -1, "Hyst. High Tr.", wxPoint(20 + 5,
-	                                    200 + 0), wxSize(140, 4 * C_PARAMDY - 5));
+										200 + 0), wxSize(140, 4 * C_PARAMDY - 5));
 	txtHHType_ = new wxStaticText(this, -1, "Type", wxPoint(20 + C_PARAMX,
-	                              200 + C_PARAMY + 0 * C_PARAMDY));
+								  200 + C_PARAMY + 0 * C_PARAMDY));
 	txtHHR_ = new wxStaticText(this, -1, "Rank", wxPoint(20 + C_PARAMX,
-	                           200 + C_PARAMY + 1 * C_PARAMDY));
+							   200 + C_PARAMY + 1 * C_PARAMDY));
 	txtHHC_ = new wxStaticText(this, -1, "Conf", wxPoint(20 + C_PARAMX,
-	                           200 + C_PARAMY + 2 * C_PARAMDY));
+							   200 + C_PARAMY + 2 * C_PARAMDY));
 	valHHType_ = new wxChoice(this, -1, wxPoint(20 + C_PARAMX + C_PARAMDX,
-	                          200 + C_PARAMY + 0 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
+							  200 + C_PARAMY + 0 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
 	valHHR_ = new wxTextCtrl(this, -1, "NA     ", wxPoint(20 + C_PARAMX + C_PARAMDX,
-	                         200 + C_PARAMY + 1 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
+							 200 + C_PARAMY + 1 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
 	valHHC_ = new wxTextCtrl(this, -1, "NA     ", wxPoint(20 + C_PARAMX + C_PARAMDX,
-	                         200 + C_PARAMY + 2 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
+							 200 + C_PARAMY + 2 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
 	wxStaticBox* hlSB = new wxStaticBox(this, -1, "Hyst. Low Tr.", wxPoint(20 + 5,
-	                                    320 + 0), wxSize(140, 4 * C_PARAMDY - 5));
+										320 + 0), wxSize(140, 4 * C_PARAMDY - 5));
 	txtHLType_ = new wxStaticText(this, -1, "Type", wxPoint(20 + C_PARAMX,
-	                              320 + C_PARAMY + 0 * C_PARAMDY));
+								  320 + C_PARAMY + 0 * C_PARAMDY));
 	txtHLR_ = new wxStaticText(this, -1, "Rank", wxPoint(20 + C_PARAMX,
-	                           320 + C_PARAMY + 1 * C_PARAMDY));
+							   320 + C_PARAMY + 1 * C_PARAMDY));
 	txtHLC_ = new wxStaticText(this, -1, "Conf", wxPoint(20 + C_PARAMX,
-	                           320 + C_PARAMY + 2 * C_PARAMDY));
+							   320 + C_PARAMY + 2 * C_PARAMDY));
 	valHLType_ = new wxChoice(this, -1, wxPoint(20 + C_PARAMX + C_PARAMDX,
-	                          320 + C_PARAMY + 0 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
+							  320 + C_PARAMY + 0 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
 	valHLR_ = new wxTextCtrl(this, -1, "NA     ", wxPoint(20 + C_PARAMX + C_PARAMDX,
-	                         320 + C_PARAMY + 1 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
+							 320 + C_PARAMY + 1 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
 	valHLC_ = new wxTextCtrl(this, -1, "NA     ", wxPoint(20 + C_PARAMX + C_PARAMDX,
-	                         320 + C_PARAMY + 2 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
+							 320 + C_PARAMY + 2 * C_PARAMDY), wxSize(C_PARAMSX, C_PARAMSY));
 	// put choices
 	valNmxType_->Append("Arc");
 	valNmxType_->Append("Vertical Line");
@@ -6750,8 +6448,8 @@ void BgParamDialog::OnCancel(wxCommandEvent& WXUNUSED(event))
 }
 
 void BgParamDialog::SetValues(double nmxR, double nmxC, double hhR, double hhC,
-                              double hlR, double hlC,
-                              int nMin, int nmxT, int hhT, int hlT, int ks)
+							  double hlR, double hlC,
+							  int nMin, int nmxT, int hhT, int hlT, int ks)
 {
 	wxString ts;
 	ts = wxString::Format("%.3g", nmxR);
@@ -6776,8 +6474,8 @@ void BgParamDialog::SetValues(double nmxR, double nmxC, double hhR, double hhC,
 }
 
 void BgParamDialog::GetValues(double& nmxR, double& nmxC, double& hhR,
-                              double& hhC, double& hlR, double& hlC,
-                              int& nMin, int& nmxT, int& hhT, int& hlT, int& ks)
+							  double& hhC, double& hlR, double& hlC,
+							  int& nMin, int& nmxT, int& hhT, int& hlT, int& ks)
 {
 	double td;
 	long tl;
@@ -6785,7 +6483,6 @@ void BgParamDialog::GetValues(double& nmxR, double& nmxC, double& hhR,
 	td = -1;
 	tl = -1;
 	ti = -1;
-
 	if ((valNmxR_->GetValue().ToDouble(&td) == TRUE) && (td >= 0))
 	{
 		nmxR = td;
@@ -6794,7 +6491,6 @@ void BgParamDialog::GetValues(double& nmxR, double& nmxC, double& hhR,
 	{
 		bgLog("nmx. rank value out of range.\n");
 	}
-
 	if ((valNmxC_->GetValue().ToDouble(&td) == TRUE) && (td >= 0))
 	{
 		nmxC = td;
@@ -6803,7 +6499,6 @@ void BgParamDialog::GetValues(double& nmxR, double& nmxC, double& hhR,
 	{
 		bgLog("nmx. conf. value out of range.\n");
 	}
-
 	if ((valHHR_->GetValue().ToDouble(&td) == TRUE) && (td >= 0))
 	{
 		hhR = td;
@@ -6812,7 +6507,6 @@ void BgParamDialog::GetValues(double& nmxR, double& nmxC, double& hhR,
 	{
 		bgLog("hyst. high rank value out of range.\n");
 	}
-
 	if ((valHHC_->GetValue().ToDouble(&td) == TRUE) && (td >= 0))
 	{
 		hhC = td;
@@ -6821,7 +6515,6 @@ void BgParamDialog::GetValues(double& nmxR, double& nmxC, double& hhR,
 	{
 		bgLog("hyst. high conf. value out of range.\n");
 	}
-
 	if ((valHLR_->GetValue().ToDouble(&td) == TRUE) && (td >= 0))
 	{
 		hlR = td;
@@ -6830,7 +6523,6 @@ void BgParamDialog::GetValues(double& nmxR, double& nmxC, double& hhR,
 	{
 		bgLog("hyst. low rank value out of range.\n");
 	}
-
 	if ((valHLC_->GetValue().ToDouble(&td) == TRUE) && (td >= 0))
 	{
 		hlC = td;
@@ -6839,7 +6531,6 @@ void BgParamDialog::GetValues(double& nmxR, double& nmxC, double& hhR,
 	{
 		bgLog("hyst. low conf. value out of range.\n");
 	}
-
 	if ((valMinPt_->GetValue().ToLong(&tl) == TRUE) && (tl >= 0))
 	{
 		nMin = (int) tl;
@@ -6848,24 +6539,20 @@ void BgParamDialog::GetValues(double& nmxR, double& nmxC, double& hhR,
 	{
 		bgLog("min. edge points value out of range.\n");
 	}
-
 	if ((ti = valNmxType_->GetSelection()) != -1)
 	{
 		nmxT = ti;
 	}
-
 	if ((ti = valHHType_->GetSelection()) != -1)
 	{
 		hhT = ti;
 	}
-
 	if ((ti = valHLType_->GetSelection()) != -1)
 	{
 		hlT = ti;
 	}
-
 	if ((valKernelSize_->GetValue().ToLong(&tl) == TRUE) && (tl > 0)
-	        && ((2 * tl + 1) <= MAX_FILTS))
+			&& ((2 * tl + 1) <= MAX_FILTS))
 	{
 		ks = (int) tl;
 	}
@@ -6880,19 +6567,19 @@ void BgParamDialog::GetValues(double& nmxR, double& nmxC, double& hhR,
 // ---------------------------------------------------------------------------
 
 BgSpeedSelect::BgSpeedSelect(wxWindow* parent, wxWindowID id,
-                             const wxString& title,
-                             const wxPoint& pos, const wxSize& size,
-                             long style, const wxString& name)
+							 const wxString& title,
+							 const wxPoint& pos, const wxSize& size,
+							 long style, const wxString& name)
 	: wxDialog(parent, id, title, pos, size, style, name)
 {
 	okButton_ = new wxButton(this, BG_SPEEDSEL_OK, "Ok", wxPoint(30, 80));
 	cancelButton_ = new wxButton(this, BG_SPEEDSEL_CANCEL, "Cancel", wxPoint(120,
-	                             80));
+								 80));
 	txtQuality_ = new wxStaticText(this, -1, "Speed", wxPoint(160, 10));
 	txtSpeed_ = new wxStaticText(this, -1, "Quality", wxPoint(40, 10));
 	sldSpeed_ = new wxSlider(this, BG_SPEEDSEL_SLD, 0, 0, 100, wxPoint(18, 40),
-	                         wxSize(155, -1),
-	                         wxSL_AUTOTICKS | wxSL_LABELS);
+							 wxSize(155, -1),
+							 wxSL_AUTOTICKS | wxSL_LABELS);
 	sldSpeed_->SetTickFreq(20, 0);
 }
 
@@ -6928,9 +6615,9 @@ void BgSpeedSelect::GetSliderValue(float& sliderV)
 // ---------------------------------------------------------------------------
 
 BgMdiSegmentChild::BgMdiSegmentChild(wxMDIParentFrame* parent,
-                                     const wxString& title,
-                                     const wxPoint& pos, const wxSize& size,
-                                     const long style)
+									 const wxString& title,
+									 const wxPoint& pos, const wxSize& size,
+									 const long style)
 	: wxMDIChildFrame(parent, BG_SEGM_WINDOW, title, pos, size, style)
 {
 	//set window number
@@ -6940,18 +6627,18 @@ BgMdiSegmentChild::BgMdiSegmentChild(wxMDIParentFrame* parent,
 	//split window to display the segmented image on the left hand side,
 	//and the ph diagram on the right hand side
 	imagePlotSplitter_   = new wxSplitterWindow(this, -1, wxDefaultPosition,
-	        wxDefaultSize, wxSP_NOBORDER | wxSP_3DSASH);
+			wxDefaultSize, wxSP_NOBORDER | wxSP_3DSASH);
 	plotMapSplitter_     = new wxSplitterWindow(imagePlotSplitter_, -1,
-	        wxDefaultPosition, wxDefaultSize, wxSP_NOBORDER | wxSP_3DSASH);
+			wxDefaultPosition, wxDefaultSize, wxSP_NOBORDER | wxSP_3DSASH);
 	mapSplitter_         = new wxSplitterWindow(plotMapSplitter_, -1,
-	        wxDefaultPosition, wxDefaultSize, wxSP_NOBORDER | wxSP_3DSASH);
+			wxDefaultPosition, wxDefaultSize, wxSP_NOBORDER | wxSP_3DSASH);
 	//create option panels
 	winPanel1_ = new BgMenuPanel(mapSplitter_, -1, BG_CANVAS_VIEW1_GRADMAP,
-	                             BG_CANVAS_VIEW1_CONFMAP, BG_CANVAS_VIEW1_WEITMAP, BG_CANVAS_VIEW1_CUSTMAP,
-	                             BG_CANVAS_SAVE_GRADMAP, BG_CANVAS_SAVE_CONFMAP, BG_CANVAS_SAVE_WEITMAP);
+								 BG_CANVAS_VIEW1_CONFMAP, BG_CANVAS_VIEW1_WEITMAP, BG_CANVAS_VIEW1_CUSTMAP,
+								 BG_CANVAS_SAVE_GRADMAP, BG_CANVAS_SAVE_CONFMAP, BG_CANVAS_SAVE_WEITMAP);
 	winPanel2_ = new BgMenuPanel(mapSplitter_, -1, BG_CANVAS_VIEW2_GRADMAP,
-	                             BG_CANVAS_VIEW2_CONFMAP, BG_CANVAS_VIEW2_WEITMAP, BG_CANVAS_VIEW2_CUSTMAP,
-	                             BG_CANVAS_SAVE_GRADMAP, BG_CANVAS_SAVE_CONFMAP, BG_CANVAS_SAVE_WEITMAP);
+								 BG_CANVAS_VIEW2_CONFMAP, BG_CANVAS_VIEW2_WEITMAP, BG_CANVAS_VIEW2_CUSTMAP,
+								 BG_CANVAS_SAVE_GRADMAP, BG_CANVAS_SAVE_CONFMAP, BG_CANVAS_SAVE_WEITMAP);
 	winPanel1_->view_menu->Enable(BG_CANVAS_VIEW1_CUSTMAP, false);
 	winPanel2_->view_menu->Enable(BG_CANVAS_VIEW2_CUSTMAP, false);
 	winPanel1_->CheckViewItem(BG_CANVAS_VIEW1_CONFMAP);
@@ -6960,16 +6647,16 @@ BgMdiSegmentChild::BgMdiSegmentChild(wxMDIParentFrame* parent,
 	winPanel2_->EnableMenu(false);
 	//define ph diagram and segmented display image
 	phDiagram_ = new BgImCanvas(this, plotMapSplitter_, wxDefaultPosition,
-	                            wxDefaultSize);
+								wxDefaultSize);
 	phDiagram_->SetScrollbars(20, 20, 50, 50);
 	plotWindow1_ = new BgImCanvas(this, winPanel1_, wxPoint(0, PLOT_MENU_HEIGHT),
-	                              wxDefaultSize);
+								  wxDefaultSize);
 	plotWindow1_->SetScrollbars(20, 20, 50, 50);
 	plotWindow2_ = new BgImCanvas(this, winPanel2_, wxPoint(0, PLOT_MENU_HEIGHT),
-	                              wxDefaultSize);
+								  wxDefaultSize);
 	plotWindow2_->SetScrollbars(20, 20, 50, 50);
 	displayImage_ = new BgImCanvas(this, imagePlotSplitter_, wxDefaultPosition,
-	                               wxDefaultSize);
+								   wxDefaultSize);
 	displayImage_->SetScrollbars(20, 20, 50, 50);
 	//set the scroll window of each panel
 	winPanel1_->SetScrollWindow((wxWindow*) plotWindow1_);
@@ -7005,77 +6692,77 @@ BgMdiSegmentChild::BgMdiSegmentChild(wxMDIParentFrame* parent,
 	//shut off text box monitoring
 	checkTextBoxes_  = false;
 	optionsPanel_    = new wxPanel(this, -1, wxPoint(0, 0), wxSize(BG_SEGM_OP_SIZEX,
-	                               BG_SEGM_OP_SIZEY));
+								   BG_SEGM_OP_SIZEY));
 	wxBoxSizer*   toplayout = new wxBoxSizer(wxVERTICAL);
 	loadButton_ = new wxButton(optionsPanel_, BG_SEGM_LOAD_IMAGE, "Load Image");
 	toplayout->Add(loadButton_, 0, wxCENTER | wxBOTTOM | wxTOP, 5);
 	wxString operations[] = {"Segment", "Filter Only", "Fusion Only"};
 	operationRadio_ = new wxRadioBox(optionsPanel_, BG_SEGM_OPERATION, "Operation",
-	                                 wxDefaultPosition, wxSize(BG_SP_WIDTH, -1), 3, operations, 3 ,
-	                                 wxRA_SPECIFY_ROWS);
+									 wxDefaultPosition, wxSize(BG_SP_WIDTH, -1), 3, operations, 3 ,
+									 wxRA_SPECIFY_ROWS);
 	toplayout->Add(operationRadio_, 0, wxCENTER | wxBOTTOM, 5);
 	runButton_ = new wxButton(optionsPanel_, BG_SEGM_SEGMENT, "Run");
 	toplayout->Add(runButton_, 0, wxCENTER | wxBOTTOM, 5);
 	wxString choices[] = {"Original", "Filtered", "Segmented", "No Image"};
 	viewImSegRadio_ = new wxRadioBox(optionsPanel_, BG_SEGM_VIEW_IMSEG,
-	                                 "View Image", wxDefaultPosition, wxSize(BG_SP_WIDTH, -1), 4, choices, 4,
-	                                 wxRA_SPECIFY_ROWS);
+									 "View Image", wxDefaultPosition, wxSize(BG_SP_WIDTH, -1), 4, choices, 4,
+									 wxRA_SPECIFY_ROWS);
 	toplayout->Add(viewImSegRadio_, 0, wxCENTER | wxBOTTOM, 5);
 	viewBoundariesCheck_ = new wxCheckBox(optionsPanel_, BG_SEGM_VIEW_EDGES,
-	                                      "Overlay Boundaries");
+										  "Overlay Boundaries");
 	toplayout->Add(viewBoundariesCheck_, 0, wxALIGN_LEFT | wxLEFT | wxBOTTOM, 10);
 	//add bandwidth parameters...
 	subPanel1_       = new wxPanel(optionsPanel_, -1, wxDefaultPosition,
-	                               wxSize(BG_SP_WIDTH, BG_SP_HEIGHT));
+								   wxSize(BG_SP_WIDTH, BG_SP_HEIGHT));
 	subPanelBox1_    = new wxStaticBox(subPanel1_, -1, "Bandwidth", wxPoint(0, 0),
-	                                   wxSize(BG_SP_WIDTH, BG_SP_TOP_HEIGHT), wxSIMPLE_BORDER, "staticBox");
+									   wxSize(BG_SP_WIDTH, BG_SP_TOP_HEIGHT), wxSIMPLE_BORDER, "staticBox");
 	subPanelBox2_    = new wxStaticBox(subPanel1_, -1, "", wxPoint(0,
-	                                   BG_SP_TOP_HEIGHT - 8), wxSize(BG_SP_WIDTH, BG_SP_HEIGHT - BG_SP_TOP_HEIGHT),
-	                                   wxSIMPLE_BORDER, "staticBox");
+									   BG_SP_TOP_HEIGHT - 8), wxSize(BG_SP_WIDTH, BG_SP_HEIGHT - BG_SP_TOP_HEIGHT),
+									   wxSIMPLE_BORDER, "staticBox");
 	textSigmaS_      = new wxStaticText(subPanel1_, -1, "Spatial [2h+1]",
-	                                    wxPoint(BG_LEFT_CELL, 18));
+										wxPoint(BG_LEFT_CELL, 18));
 	txtSigmaS_       = new wxTextCtrl(subPanel1_, BG_SEGM_TEXT_SIGMAS, "7",
-	                                  wxPoint(BG_RIGHT_CELL, 15), txtSize);
+									  wxPoint(BG_RIGHT_CELL, 15), txtSize);
 	textSigmaR_      = new wxStaticText(subPanel1_, -1, "Color [2h]",
-	                                    wxPoint(BG_LEFT_CELL, 43));
+										wxPoint(BG_LEFT_CELL, 43));
 	txtSigmaR_       = new wxTextCtrl(subPanel1_, BG_SEGM_TEXT_SIGMAR, "6.5",
-	                                  wxPoint(BG_RIGHT_CELL, 40), txtSize);
+									  wxPoint(BG_RIGHT_CELL, 40), txtSize);
 	textMinRegion_   = new wxStaticText(subPanel1_, -1, "Minimum Region",
-	                                    wxPoint(BG_LEFT_CELL, 78));
+										wxPoint(BG_LEFT_CELL, 78));
 	txtMinRegion_    = new wxTextCtrl(subPanel1_, BG_SEGM_TEXT_MINREG, "20",
-	                                  wxPoint(BG_RIGHT_CELL, 75), txtSize);
+									  wxPoint(BG_RIGHT_CELL, 75), txtSize);
 	toplayout->Add(subPanel1_, 0, wxCENTER | wxBOTTOM | wxTOP, 5);
 	useWeightMap_ = new wxCheckBox(optionsPanel_, BG_SEGM_USE_EDGE_MAP,
-	                               "Use Weight Map");
+								   "Use Weight Map");
 	toplayout->Add(useWeightMap_, 0, wxALIGN_LEFT | wxLEFT | wxBOTTOM, 10);
 	//add weight map parameters...
 	subPanel2_       = new wxPanel(optionsPanel_, -1, wxDefaultPosition,
-	                               wxSize(BG_SP_WIDTH, BG_SP_HEIGHT_2));
+								   wxSize(BG_SP_WIDTH, BG_SP_HEIGHT_2));
 	subPanelBox3_    = new wxStaticBox(subPanel2_, -1, "", wxPoint(0, 0),
-	                                   wxSize(BG_SP_WIDTH, BG_SP_HEIGHT_2), wxSIMPLE_BORDER, "staticBox");
+									   wxSize(BG_SP_WIDTH, BG_SP_HEIGHT_2), wxSIMPLE_BORDER, "staticBox");
 	textKernelSize_  = new wxStaticText(subPanel2_, -1, "Grad. Window (2n+1)",
-	                                    wxPoint(BG_LEFT_CELL, 18));
+										wxPoint(BG_LEFT_CELL, 18));
 	txtKernelSize_   = new wxTextCtrl(subPanel2_, BG_SEGM_TEXT_GRADWIN, "2",
-	                                  wxPoint(BG_RIGHT_CELL, 15), txtSize);
+									  wxPoint(BG_RIGHT_CELL, 15), txtSize);
 	textA_           = new wxStaticText(subPanel2_, -1, "Mixture Parameter",
-	                                    wxPoint(BG_LEFT_CELL, 43));
+										wxPoint(BG_LEFT_CELL, 43));
 	txtA_            = new wxTextCtrl(subPanel2_, BG_SEGM_TEXT_AIJ, "0.3",
-	                                  wxPoint(BG_RIGHT_CELL, 40), txtSize);
+									  wxPoint(BG_RIGHT_CELL, 40), txtSize);
 	textEpsilon_     = new wxStaticText(subPanel2_, -1, "Threshold",
-	                                    wxPoint(BG_LEFT_CELL, 68));
+										wxPoint(BG_LEFT_CELL, 68));
 	txtEpsilon_      = new wxTextCtrl(subPanel2_, BG_SEGM_TEXT_EPSILON, "0.3",
-	                                  wxPoint(BG_RIGHT_CELL, 65), txtSize);
+									  wxPoint(BG_RIGHT_CELL, 65), txtSize);
 	toplayout->Add(subPanel2_, 0, wxALIGN_CENTER_HORIZONTAL | wxALIGN_TOP, 5);
 	//add parameter history control
 	subPanel3_       = new wxPanel(optionsPanel_, -1, wxDefaultPosition,
-	                               wxSize(BG_SP_WIDTH, 43));
+								   wxSize(BG_SP_WIDTH, 43));
 	subPanelBox4_    = new wxStaticBox(subPanel3_, -1, "", wxPoint(0, 0),
-	                                   wxSize(BG_SP_WIDTH, 43), wxSIMPLE_BORDER, "staticBox");
+									   wxSize(BG_SP_WIDTH, 43), wxSIMPLE_BORDER, "staticBox");
 	textParamBox_    = new wxStaticText(subPanel3_, -1, "History",
-	                                    wxPoint(BG_LEFT_CELL, 18));
+										wxPoint(BG_LEFT_CELL, 18));
 	paramComboBox_   = new BgParameterHistoryBox(subPanel3_, BG_SEGM_CHANGE_PARAMS,
-	        "", wxPoint(BG_RIGHT_CELL - 50, 15), wxSize(100, 20), 5, 0, wxDefaultValidator,
-	        "comboBox");
+			"", wxPoint(BG_RIGHT_CELL - 50, 15), wxSize(100, 20), 5, 0, wxDefaultValidator,
+			"comboBox");
 	toplayout->Add(subPanel3_, 0, wxALIGN_CENTER | wxCENTER | wxBOTTOM, 10);
 	optionsPanel_->SetAutoLayout(TRUE);
 	toplayout->Fit(optionsPanel_);
@@ -7101,7 +6788,7 @@ BgMdiSegmentChild::BgMdiSegmentChild(wxMDIParentFrame* parent,
 	plotWindow2_->AddMargin(RANK_CONF_MARGINX, RANK_CONF_MARGINY);
 	//add title to each individual plot
 	BgText bgText(1, "      Diagram of Region Boundary Data Points", *wxSWISS_FONT,
-	              RANK_CONF_MARGINX - 10, RANK_CONF_MARGINY / 2 - 10);
+				  RANK_CONF_MARGINX - 10, RANK_CONF_MARGINY / 2 - 10);
 	phDiagram_->AddText(&bgText);
 	bgText.SetText("Confidence Map");
 	plotWindow1_->AddText(&bgText);
@@ -7109,9 +6796,9 @@ BgMdiSegmentChild::BgMdiSegmentChild(wxMDIParentFrame* parent,
 	plotWindow2_->AddText(&bgText);
 	//add x and y axis
 	phDiagram_->AddHorizontalAxis(RANK_CONF_MARGINX - 2,
-	                              RANK_CONF_IMSIZEY + RANK_CONF_MARGINY, RANK_CONF_IMSIZEX + 2, 10, 0.0, 1.0);
+								  RANK_CONF_IMSIZEY + RANK_CONF_MARGINY, RANK_CONF_IMSIZEX + 2, 10, 0.0, 1.0);
 	phDiagram_->AddVerticalAxis(RANK_CONF_MARGINX - 1,
-	                            RANK_CONF_IMSIZEY + RANK_CONF_MARGINY, RANK_CONF_IMSIZEX, 10, 0.0, 1.0);
+								RANK_CONF_IMSIZEY + RANK_CONF_MARGINY, RANK_CONF_IMSIZEX, 10, 0.0, 1.0);
 	//label x and y axis
 	bgText.SetText("Rank (   )");
 	phDiagram_->LabelHorizontalAxis(&bgText);
@@ -7124,12 +6811,12 @@ BgMdiSegmentChild::BgMdiSegmentChild(wxMDIParentFrame* parent,
 	phDiagram_->AddBitmap(&ro_bmp);
 	phDiagram_->AddBitmap(&eta_bmp);
 	ro_bmp.SetPlotLocation(RANK_CONF_MARGINX + 137,
-	                       RANK_CONF_IMSIZEY + RANK_CONF_MARGINY + 35);
+						   RANK_CONF_IMSIZEY + RANK_CONF_MARGINY + 35);
 	ro_bmp.SetId(3);
 	phDiagram_->AddBitmap(&ro_bmp);
 	wxBitmap rotated_eta("rotated_eta", wxBITMAP_TYPE_RESOURCE);
 	BgBitmap rotated_eta_bmp(&rotated_eta, 4, RANK_CONF_MARGINX - 55,
-	                         RANK_CONF_IMSIZEY + RANK_CONF_MARGINY - 162);
+							 RANK_CONF_IMSIZEY + RANK_CONF_MARGINY - 162);
 	phDiagram_->AddBitmap(&rotated_eta_bmp);
 	//declare that segmentation window is open
 	window_open  = true;
@@ -7177,9 +6864,10 @@ BgMdiSegmentChild::~BgMdiSegmentChild()
 	{
 		displayImage_->RemovePointSet(boundaries_);
 	}
-
-	if (filename_) { delete [] filename_; }
-
+	if (filename_)
+	{
+		delete [] filename_;
+	}
 	delete optionsPanel_;
 	delete displayImage_;
 	delete boundaries_;
@@ -7187,15 +6875,22 @@ BgMdiSegmentChild::~BgMdiSegmentChild()
 	delete segmImage_;
 	delete filtImage_;
 	delete cbgImage_;
-
-	if (customMap_) { delete [] customMap_; }
-
-	if (confMap_) { delete [] confMap_; }
-
-	if (gradMap_) { delete [] gradMap_; }
-
-	if (weightMap_) { delete [] weightMap_; }
-
+	if (customMap_)
+	{
+		delete [] customMap_;
+	}
+	if (confMap_)
+	{
+		delete [] confMap_;
+	}
+	if (gradMap_)
+	{
+		delete [] gradMap_;
+	}
+	if (weightMap_)
+	{
+		delete [] weightMap_;
+	}
 	g_children.DeleteObject(this);
 }
 
@@ -7206,17 +6901,15 @@ void BgMdiSegmentChild::OnViewImSeg(wxCommandEvent&  WXUNUSED(event))
 	{
 		return;
 	}
-
 	switch (viewImSegRadio_->GetSelection())
 	{
-		//view original image
+	//view original image
 	case 0:
 		boundaries_->pen_.SetColour(*wxWHITE);
 		displayImage_->SetImage(cbgImage_->im_, cbgImage_->x_, cbgImage_->y_,
-		                        cbgImage_->colorIm_);
+								cbgImage_->colorIm_);
 		break;
-
-		//view filtered image
+	//view filtered image
 	case 1:
 		if (hasFilter_ == 0)
 		{
@@ -7228,12 +6921,10 @@ void BgMdiSegmentChild::OnViewImSeg(wxCommandEvent&  WXUNUSED(event))
 		{
 			boundaries_->pen_.SetColour(*wxWHITE);
 			displayImage_->SetImage(filtImage_->im_, filtImage_->x_, filtImage_->y_,
-			                        filtImage_->colorIm_);
+									filtImage_->colorIm_);
 		}
-
 		break;
-
-		//view segmented image
+	//view segmented image
 	case 2:
 		if (hasSegment_ == 0)
 		{
@@ -7245,12 +6936,10 @@ void BgMdiSegmentChild::OnViewImSeg(wxCommandEvent&  WXUNUSED(event))
 		{
 			boundaries_->pen_.SetColour(*wxWHITE);
 			displayImage_->SetImage(segmImage_->im_, segmImage_->x_, segmImage_->y_,
-			                        segmImage_->colorIm_);
+									segmImage_->colorIm_);
 		}
-
 		break;
-
-		//view boundaries
+	//view boundaries
 	default:
 		if (hasBoundaries_ == 0)
 		{
@@ -7262,7 +6951,7 @@ void BgMdiSegmentChild::OnViewImSeg(wxCommandEvent&  WXUNUSED(event))
 		{
 			boundaries_->pen_.SetColour(*wxBLACK);
 			displayImage_->SetImage(whiteImage_->im_, whiteImage_->x_, whiteImage_->y_,
-			                        whiteImage_->colorIm_);
+									whiteImage_->colorIm_);
 		}
 	}
 }
@@ -7271,25 +6960,21 @@ void BgMdiSegmentChild::OnViewImSeg(wxCommandEvent&  WXUNUSED(event))
 void BgMdiSegmentChild::OnChangeOperation(wxCommandEvent& WXUNUSED(event))
 {
 	wxMenuBar*   menubar    = GetMenuBar();
-
 	switch (operationRadio_->GetSelection())
 	{
-		//segment the image
+	//segment the image
 	case 0:
 		menubar->SetLabel(BG_SEGM_SEGMENT, "Segment Image\tShift-R");
 		break;
-
-		//filter the image
+	//filter the image
 	case 1:
 		menubar->SetLabel(BG_SEGM_SEGMENT, "Filter Image\tShift-R");
 		break;
-
-		//fuse regions
+	//fuse regions
 	default:
 		menubar->SetLabel(BG_SEGM_SEGMENT, "Fuse Regions\tShift-R");
 		break;
 	}
-
 	//done.
 	return;
 }
@@ -7300,7 +6985,6 @@ void BgMdiSegmentChild::OnChangeParameters(wxCommandEvent& WXUNUSED(event))
 	float*   myParameters;
 	//get current selection index...
 	int selIndex    = paramComboBox_->GetSelection();
-
 	//aquire current parameters and store them in "current parameter" slot...
 	if (isCurrentHistory_)
 	{
@@ -7315,7 +6999,6 @@ void BgMdiSegmentChild::OnChangeParameters(wxCommandEvent& WXUNUSED(event))
 		myParameters[4] = cminRegion;
 		myParameters[5] = ckernelSize;
 	}
-
 	//check to see if the "current parameter" slot has been selected,
 	//if so set the current history flag and use the parameters from
 	//current history slot
@@ -7330,9 +7013,8 @@ void BgMdiSegmentChild::OnChangeParameters(wxCommandEvent& WXUNUSED(event))
 	{
 		isCurrentHistory_       = false;
 		myParameters            = (float*) paramComboBox_->GetParameterListData(
-		                              selIndex - 1);
+									  selIndex - 1);
 	}
-
 	//set the text boxes...
 	char str[10];
 	checkTextBoxes_ = false;
@@ -7359,12 +7041,10 @@ void BgMdiSegmentChild::OnUpdateTextBoxes(wxCommandEvent& event)
 		paramComboBox_->SetSelection(0);
 		isCurrentHistory_   = true;
 	}
-
 	//check if a edge parameter has been changed
 	int id  = event.GetId();
-
 	if ((id == BG_SEGM_TEXT_GRADWIN) || (id == BG_SEGM_TEXT_AIJ)
-	        || (id == BG_SEGM_TEXT_EPSILON))
+			|| (id == BG_SEGM_TEXT_EPSILON))
 	{
 		edgeParamsHaveChanged_    = true;
 	}
@@ -7374,7 +7054,6 @@ void BgMdiSegmentChild::OnUpdateSpeedUpLevel(wxCommandEvent& event)
 {
 	long menuItemId         = event.GetId();
 	wxMenuBar*  myMenuBar   = GetMenuBar();
-
 	switch (menuItemId)
 	{
 	case BG_SEGM_SPEEDUP_MEDM:
@@ -7382,24 +7061,21 @@ void BgMdiSegmentChild::OnUpdateSpeedUpLevel(wxCommandEvent& event)
 		myMenuBar->Check(BG_SEGM_SPEEDUP_NONE, false);
 		myMenuBar->Check(BG_SEGM_SPEEDUP_HIGH, false);
 		break;
-
 	case BG_SEGM_SPEEDUP_HIGH:
 		speedUpLevel_   = HIGH_SPEEDUP;
 		myMenuBar->Check(BG_SEGM_SPEEDUP_NONE, false);
 		myMenuBar->Check(BG_SEGM_SPEEDUP_MEDM, false);
 		{
 			BgSpeedSelect speedSelect(this, -1, "Select speed/quality", wxDefaultPosition,
-			                          wxSize(220, 150),
-			                          wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL);
+									  wxSize(220, 150),
+									  wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL);
 			speedSelect.SetSliderValue(speedUpThreshold_);
-
 			if (speedSelect.ShowModal() == wxID_OK)
 			{
 				speedSelect.GetSliderValue(speedUpThreshold_);
 			}
 		}
 		break;
-
 	default:
 		speedUpLevel_   = NO_SPEEDUP;
 		myMenuBar->Check(BG_SEGM_SPEEDUP_MEDM, false);
@@ -7413,10 +7089,8 @@ void BgMdiSegmentChild::OnViewBoundaries(wxCommandEvent&  WXUNUSED(event))
 	{
 		return;
 	}
-
 	bool    isChecked;
 	isChecked = viewBoundariesCheck_->GetValue();
-
 	if (isChecked)
 	{
 		// show edges
@@ -7457,7 +7131,6 @@ void BgMdiSegmentChild::OnUseWeightMap(wxCommandEvent& WXUNUSED(event))
 		textEpsilon_->Enable(false);
 		textKernelSize_->Enable(false);
 	}
-
 	//done.
 	return;
 }
@@ -7472,66 +7145,53 @@ void BgMdiSegmentChild::OnUpdatePlotWindow1(wxCommandEvent& event)
 	int data_length = width_ * height_;
 	unsigned char* buffer = new unsigned char[data_length];
 	BgText bgText(1, "ConfidenceMap", *wxSWISS_FONT, 0, 0);
-
 	switch (menuItemId)
 	{
 	case BG_CANVAS_VIEW1_GRADMAP:
 		bgText.SetText("Gradient Map");
 		bgText.SetPlotLocation(RANK_CONF_MARGINX + width_ / 2 - 40,
-		                       RANK_CONF_MARGINY / 2 - 10);
+							   RANK_CONF_MARGINY / 2 - 10);
 		plotWindow1_->AddText(&bgText);
-
 		for (i = 0; i < data_length; i++)
 		{
 			buffer[i] = (unsigned char)(255 * gradMap_[i] + 0.5);
 		}
-
 		plotWindow1_->SetImageFromGray(buffer, width_, height_);
 		break;
-
 	case BG_CANVAS_VIEW1_CONFMAP:
 		bgText.SetText("Confidence Map");
 		bgText.SetPlotLocation(RANK_CONF_MARGINX + width_ / 2 - 45,
-		                       RANK_CONF_MARGINY / 2 - 10);
+							   RANK_CONF_MARGINY / 2 - 10);
 		plotWindow1_->AddText(&bgText);
-
 		for (i = 0; i < data_length; i++)
 		{
 			buffer[i] = (unsigned char)(255 * confMap_[i] + 0.5);
 		}
-
 		plotWindow1_->SetImageFromGray(buffer, width_, height_);
 		break;
-
 	case BG_CANVAS_VIEW1_WEITMAP:
 		bgText.SetText("Weight Map");
 		bgText.SetPlotLocation(RANK_CONF_MARGINX + width_ / 2 - 35,
-		                       RANK_CONF_MARGINY / 2 - 10);
+							   RANK_CONF_MARGINY / 2 - 10);
 		plotWindow1_->AddText(&bgText);
-
 		for (i = 0; i < data_length; i++)
 		{
 			buffer[i] = (unsigned char)(255 * weightMap_[i] + 0.5);
 		}
-
 		plotWindow1_->SetImageFromGray(buffer, width_, height_);
 		break;
-
 	case BG_CANVAS_VIEW1_CUSTMAP:
 		bgText.SetText("Custom Weight Map");
 		bgText.SetPlotLocation(RANK_CONF_MARGINX + width_ / 2 - 60,
-		                       RANK_CONF_MARGINY / 2 - 10);
+							   RANK_CONF_MARGINY / 2 - 10);
 		plotWindow1_->AddText(&bgText);
-
 		for (i = 0; i < data_length; i++)
 		{
 			buffer[i] = (unsigned char)(255 * customMap_[i] + 0.5);
 		}
-
 		plotWindow1_->SetImageFromGray(buffer, width_, height_);
 		break;
 	}
-
 	//de-allocate memory used by conf/gradient map buffer
 	delete [] buffer;
 }
@@ -7546,66 +7206,53 @@ void BgMdiSegmentChild::OnUpdatePlotWindow2(wxCommandEvent& event)
 	int data_length = width_ * height_;
 	unsigned char* buffer = new unsigned char[data_length];
 	BgText bgText(1, "ConfidenceMap", *wxSWISS_FONT, 0, 0);
-
 	switch (menuItemId)
 	{
 	case BG_CANVAS_VIEW2_GRADMAP:
 		bgText.SetText("Gradient Map");
 		bgText.SetPlotLocation(RANK_CONF_MARGINX + width_ / 2 - 40,
-		                       RANK_CONF_MARGINY / 2 - 10);
+							   RANK_CONF_MARGINY / 2 - 10);
 		plotWindow2_->AddText(&bgText);
-
 		for (i = 0; i < data_length; i++)
 		{
 			buffer[i] = (unsigned char)(255 * gradMap_[i] + 0.5);
 		}
-
 		plotWindow2_->SetImageFromGray(buffer, width_, height_);
 		break;
-
 	case BG_CANVAS_VIEW2_CONFMAP:
 		bgText.SetText("Confidence Map");
 		bgText.SetPlotLocation(RANK_CONF_MARGINX + width_ / 2 - 45,
-		                       RANK_CONF_MARGINY / 2 - 10);
+							   RANK_CONF_MARGINY / 2 - 10);
 		plotWindow2_->AddText(&bgText);
-
 		for (i = 0; i < data_length; i++)
 		{
 			buffer[i] = (unsigned char)(255 * confMap_[i] + 0.5);
 		}
-
 		plotWindow2_->SetImageFromGray(buffer, width_, height_);
 		break;
-
 	case BG_CANVAS_VIEW2_WEITMAP:
 		bgText.SetText("Weight Map");
 		bgText.SetPlotLocation(RANK_CONF_MARGINX + width_ / 2 - 35,
-		                       RANK_CONF_MARGINY / 2 - 10);
+							   RANK_CONF_MARGINY / 2 - 10);
 		plotWindow2_->AddText(&bgText);
-
 		for (i = 0; i < data_length; i++)
 		{
 			buffer[i] = (unsigned char)(255 * weightMap_[i] + 0.5);
 		}
-
 		plotWindow2_->SetImageFromGray(buffer, width_, height_);
 		break;
-
 	case BG_CANVAS_VIEW2_CUSTMAP:
 		bgText.SetText("Custom Weight Map");
 		bgText.SetPlotLocation(RANK_CONF_MARGINX + width_ / 2 - 60,
-		                       RANK_CONF_MARGINY / 2 - 10);
+							   RANK_CONF_MARGINY / 2 - 10);
 		plotWindow2_->AddText(&bgText);
-
 		for (i = 0; i < data_length; i++)
 		{
 			buffer[i] = (unsigned char)(255 * customMap_[i] + 0.5);
 		}
-
 		plotWindow2_->SetImageFromGray(buffer, width_, height_);
 		break;
 	}
-
 	//de-allocate memory used by conf/gradient map buffer
 	delete [] buffer;
 }
@@ -7615,50 +7262,42 @@ void BgMdiSegmentChild::OnSaveEdgeInformation(wxCommandEvent& event)
 {
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 	wxFileDialog filedialog(this, "Save Edge Information", "", "",
-	                        "*", wxSAVE);
+							"*", wxSAVE);
 #else
 	wxFileDialog filedialog(this, "Save Edge Information", "", "",
-	                        "Matlab ASCII data files (*.dat)|*.dat|PGM Files (*.pgm)|*.pgm",
-	                        wxSAVE);
+							"Matlab ASCII data files (*.dat)|*.dat|PGM Files (*.pgm)|*.pgm",
+							wxSAVE);
 #endif
-
 	if (filedialog.ShowModal() == wxID_OK)
 	{
 		//get the image type
 		int dtype = filedialog.GetFilterIndex();
 		//obtain pointer to data
 		float*    myData;
-
 		switch (event.GetId())
 		{
 		case BG_CANVAS_SAVE_GRADMAP:
 			myData   = gradMap_;
 			break;
-
 		case BG_CANVAS_SAVE_CONFMAP:
 			myData   = confMap_;
 			break;
-
 		case BG_CANVAS_SAVE_WEITMAP:
 			myData   = weightMap_;
 			break;
 		}
-
 		//get the filename and path
 		char* path       = (char*) filedialog.GetPath().c_str();
 		char* filename   = (char*) filedialog.GetFilename().c_str();
-
 		//PGM Image
 		if (dtype)
 		{
 			unsigned char* buf   = new unsigned char [height_ * width_];
 			int i;
-
 			for (i = 0; i < height_ * width_; i++)
 			{
 				buf[i] = myData[i] * 255 + 0.5;
 			}
-
 			write_pgm_image(path, buf, height_, width_, "", 255);
 			delete [] buf;
 		}
@@ -7717,18 +7356,21 @@ void BgMdiSegmentChild::OnClose(wxCloseEvent& event)
 	gs_nFrames--;
 	//indicate that the window is now close (used by OnFocus)
 	window_open = false;
-
 	//reset the toolbar
-	if (gs_nFrames == 0) { ResetToolBar(); }
-
+	if (gs_nFrames == 0)
+	{
+		ResetToolBar();
+	}
 	event.Skip();
 }
 
 void BgMdiSegmentChild::OnFocus(wxFocusEvent& WXUNUSED(event))
 {
 	//update toolbar
-	if (!on_exit) { UpdateToolBar(); }
-
+	if (!on_exit)
+	{
+		UpdateToolBar();
+	}
 	return;
 }
 
@@ -7807,7 +7449,6 @@ void BgMdiSegmentChild::UpdateToolBar(void)
 		//determine whether to enable save based on whether segmentation
 		//has occurred
 		bool save_enable;
-
 		if (hasSegment_)
 		{
 			save_enable   = true;
@@ -7816,11 +7457,9 @@ void BgMdiSegmentChild::UpdateToolBar(void)
 		{
 			save_enable   = false;
 		}
-
 		//determine whether to enable zoom controls based on whether image
 		//has been loaded
 		bool load_enable;
-
 		if (hasImage_)
 		{
 			load_enable   = true;
@@ -7829,10 +7468,8 @@ void BgMdiSegmentChild::UpdateToolBar(void)
 		{
 			load_enable   = false;
 		}
-
 		//determine whether to enable zoom in control based on maximum zoom
 		bool max_zoom;
-
 		if (maxZoom_)
 		{
 			max_zoom  = true;
@@ -7841,10 +7478,8 @@ void BgMdiSegmentChild::UpdateToolBar(void)
 		{
 			max_zoom  = false;
 		}
-
 		//determine whether to enable zoom out control based on minimum zoom
 		bool min_zoom;
-
 		if (minZoom_)
 		{
 			min_zoom  = true;
@@ -7853,10 +7488,9 @@ void BgMdiSegmentChild::UpdateToolBar(void)
 		{
 			min_zoom  = false;
 		}
-
 		//adjust toolbar
 		toolbar->SetToolShortHelp(BG_LOAD_IMAGE,
-		                          "Load image to perform image segmentation");
+								  "Load image to perform image segmentation");
 		toolbar->SetToolShortHelp(BG_SAVE_RESULT, "Save segmented image");
 		toolbar->EnableTool(BG_SAVE_RESULT, save_enable);
 		toolbar->EnableTool(BG_CROSS, load_enable);
@@ -7871,7 +7505,6 @@ void BgMdiSegmentChild::UpdateToolBar(void)
 		displayImage_->SetCursor(wxCURSOR_ARROW);
 		NoZoom();
 	}
-
 	return;
 }
 
@@ -7901,15 +7534,15 @@ void BgMdiSegmentChild::ReadImage(char* pathname, char* filename)
 		displayImage_->RemovePointSet(boundaries_);
 		boundaries_->CleanData();
 	}
-
 	if (displayImage_->SetImage(pathname) == 0)
 	{
 		return;
 	}
-
 	//obtain and store image filename
-	if (filename_) { delete [] filename_; }
-
+	if (filename_)
+	{
+		delete [] filename_;
+	}
 	filename_   = new char [strlen(filename) + 1];
 	strcpy(filename_, filename);
 	displayImage_->showbitmap_ = true;
@@ -7927,29 +7560,29 @@ void BgMdiSegmentChild::ReadImage(char* pathname, char* filename)
 	minZoom_    = 1;
 	//set cbgImage
 	cbgImage_->SetImageFromRGB(displayImage_->pimage->GetData(), width_, height_,
-	                           true);
+							   true);
 	hasImage_       = 1;
 	hasSegment_     = 0;
 	hasBoundaries_  = 0;
 	//adjust titles
 	BgText title(1, "Confidence Map", *wxSWISS_FONT,
-	             RANK_CONF_MARGINX + width_ / 2 - 45, RANK_CONF_MARGINY / 2 - 10);
+				 RANK_CONF_MARGINX + width_ / 2 - 45, RANK_CONF_MARGINY / 2 - 10);
 	plotWindow1_->AddText(&title);
 	title.SetText("Gradient Map");
 	title.SetPlotLocation(RANK_CONF_MARGINX + width_ / 2 - 40,
-	                      RANK_CONF_MARGINY / 2 - 10);
+						  RANK_CONF_MARGINY / 2 - 10);
 	plotWindow2_->AddText(&title);
 	//add axis
 	plotWindow1_->ClearAxis();
 	plotWindow2_->ClearAxis();
 	plotWindow1_->AddHorizontalAxis(RANK_CONF_MARGINX, RANK_CONF_MARGINY + height_,
-	                                width_, 5, 0, width_ - 1);
+									width_, 5, 0, width_ - 1);
 	plotWindow1_->AddVerticalAxis(RANK_CONF_MARGINX, RANK_CONF_MARGINY + height_,
-	                              height_, 5, 0, height_ - 1);
+								  height_, 5, 0, height_ - 1);
 	plotWindow2_->AddHorizontalAxis(RANK_CONF_MARGINX, RANK_CONF_MARGINY + height_,
-	                                width_, 5, 0, width_ - 1);
+									width_, 5, 0, width_ - 1);
 	plotWindow2_->AddVerticalAxis(RANK_CONF_MARGINX, RANK_CONF_MARGINY + height_,
-	                              height_, 5, 0, height_ - 1);
+								  height_, 5, 0, height_ - 1);
 	//label axis
 	BgText label(1, "x", *wxSWISS_FONT, 0, 0);
 	plotWindow1_->LabelHorizontalAxis(&label);
@@ -7968,16 +7601,23 @@ void BgMdiSegmentChild::ReadImage(char* pathname, char* filename)
 	ClearDisplay();
 	//do no update the plot windows
 	UpdateDisplay(false);
-
 	//delete edge maps if they exists...
-	if (customMap_) { delete [] customMap_; }
-
-	if (gradMap_) { delete [] gradMap_; }
-
-	if (confMap_) { delete [] confMap_; }
-
-	if (weightMap_) { delete [] weightMap_; }
-
+	if (customMap_)
+	{
+		delete [] customMap_;
+	}
+	if (gradMap_)
+	{
+		delete [] gradMap_;
+	}
+	if (confMap_)
+	{
+		delete [] confMap_;
+	}
+	if (weightMap_)
+	{
+		delete [] weightMap_;
+	}
 	//set edge maps to NULL...
 	customMap_  = (float*) NULL;
 	gradMap_    = (float*) NULL;
@@ -7994,7 +7634,7 @@ void BgMdiSegmentChild::ReadImage(char* pathname, char* filename)
 	//set window title
 	wxString statusname;
 	statusname.Printf(_T("Segmentation Frame %d - %s (%d x %d) [Original Image]"),
-	                  window_number_, filename_, width_, height_);
+					  window_number_, filename_, width_, height_);
 	SetTitle(statusname);
 	//update the menubar
 	wxMenuBar*   menubar    = GetMenuBar();
@@ -8016,13 +7656,12 @@ void BgMdiSegmentChild::OnLoadImage(wxCommandEvent& WXUNUSED(event))
 //      wxOPEN);
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 	wxFileDialog filedialog(this, "Choose an image file", "", "",
-	                        "*", wxOPEN);
+							"*", wxOPEN);
 #else
 	wxFileDialog filedialog(this, "Choose an image file", "", "",
-	                        "Common image files|*.png;*.bmp;*.gif;*.tif;*.tiff;*.jpg;*.pnm;*.pgm;*.ppm|PNG files (*.png)|*.png|BMP files (*.bmp)|*.bmp|GIF files (*.gif)|*.gif|TIFF files (*.tif)|*.tif|JPEG files (*.jpg)|*.jpg|PNM files (*.pnm)|*.pnm|PGM/PPM files (*.pgm,*.ppm)|*.pgm;*.ppm",
-	                        wxOPEN);
+							"Common image files|*.png;*.bmp;*.gif;*.tif;*.tiff;*.jpg;*.pnm;*.pgm;*.ppm|PNG files (*.png)|*.png|BMP files (*.bmp)|*.bmp|GIF files (*.gif)|*.gif|TIFF files (*.tif)|*.tif|JPEG files (*.jpg)|*.jpg|PNM files (*.pnm)|*.pnm|PGM/PPM files (*.pgm,*.ppm)|*.pgm;*.ppm",
+							wxOPEN);
 #endif
-
 	if (filedialog.ShowModal() == wxID_OK)
 	{
 		//take away point set if boundaries have been calculated
@@ -8032,17 +7671,16 @@ void BgMdiSegmentChild::OnLoadImage(wxCommandEvent& WXUNUSED(event))
 			displayImage_->RemovePointSet(boundaries_);
 			boundaries_->CleanData();
 		}
-
 		if (displayImage_->SetImage(filedialog.GetPath().c_str()) == 0)
 		{
 			return;
 		}
-
 		bgLog("Image %s loaded\n", filedialog.GetPath().c_str());
-
 		//obtain and store image filename
-		if (filename_) { delete [] filename_; }
-
+		if (filename_)
+		{
+			delete [] filename_;
+		}
 		filename_ = new char [strlen(filedialog.GetFilename().c_str()) + 1];
 		strcpy(filename_, filedialog.GetFilename().c_str());
 		displayImage_->showbitmap_ = true;
@@ -8062,30 +7700,30 @@ void BgMdiSegmentChild::OnLoadImage(wxCommandEvent& WXUNUSED(event))
 		minZoom_  = 1;
 		//set cbgImage
 		cbgImage_->SetImageFromRGB(displayImage_->pimage->GetData(), width_, height_,
-		                           true);
+								   true);
 		hasImage_         = 1;
 		hasFilter_        = 0;
 		hasSegment_       = 0;
 		hasBoundaries_    = 0;
 		//adjust titles
 		BgText title(1, "Confidence Map", *wxSWISS_FONT,
-		             RANK_CONF_MARGINX + width_ / 2 - 45, RANK_CONF_MARGINY / 2 - 10);
+					 RANK_CONF_MARGINX + width_ / 2 - 45, RANK_CONF_MARGINY / 2 - 10);
 		plotWindow1_->AddText(&title);
 		title.SetText("Gradient Map");
 		title.SetPlotLocation(RANK_CONF_MARGINX + width_ / 2 - 40,
-		                      RANK_CONF_MARGINY / 2 - 10);
+							  RANK_CONF_MARGINY / 2 - 10);
 		plotWindow2_->AddText(&title);
 		//add axis
 		plotWindow1_->ClearAxis();
 		plotWindow2_->ClearAxis();
 		plotWindow1_->AddHorizontalAxis(RANK_CONF_MARGINX, RANK_CONF_MARGINY + height_,
-		                                width_, 5, 0, width_ - 1);
+										width_, 5, 0, width_ - 1);
 		plotWindow1_->AddVerticalAxis(RANK_CONF_MARGINX, RANK_CONF_MARGINY + height_,
-		                              height_, 5, 0, height_ - 1);
+									  height_, 5, 0, height_ - 1);
 		plotWindow2_->AddHorizontalAxis(RANK_CONF_MARGINX, RANK_CONF_MARGINY + height_,
-		                                width_, 5, 0, width_ - 1);
+										width_, 5, 0, width_ - 1);
 		plotWindow2_->AddVerticalAxis(RANK_CONF_MARGINX, RANK_CONF_MARGINY + height_,
-		                              height_, 5, 0, height_ - 1);
+									  height_, 5, 0, height_ - 1);
 		//label axis
 		BgText label(1, "x", *wxSWISS_FONT, 0, 0);
 		plotWindow1_->LabelHorizontalAxis(&label);
@@ -8104,16 +7742,23 @@ void BgMdiSegmentChild::OnLoadImage(wxCommandEvent& WXUNUSED(event))
 		ClearDisplay();
 		//do not update plot windows
 		UpdateDisplay(false);
-
 		//delete edge maps if they exists...
-		if (customMap_) { delete [] customMap_; }
-
-		if (gradMap_) { delete [] gradMap_; }
-
-		if (confMap_) { delete [] confMap_; }
-
-		if (weightMap_) { delete [] weightMap_; }
-
+		if (customMap_)
+		{
+			delete [] customMap_;
+		}
+		if (gradMap_)
+		{
+			delete [] gradMap_;
+		}
+		if (confMap_)
+		{
+			delete [] confMap_;
+		}
+		if (weightMap_)
+		{
+			delete [] weightMap_;
+		}
 		//set edge maps to NULL...
 		customMap_    = (float*) NULL;
 		gradMap_      = (float*) NULL;
@@ -8130,7 +7775,7 @@ void BgMdiSegmentChild::OnLoadImage(wxCommandEvent& WXUNUSED(event))
 		//set window title
 		wxString statusname;
 		statusname.Printf(_T("Segmentation Frame %d - %s (%d x %d) [Original Image]"),
-		                  window_number_, filename_, width_, height_);
+						  window_number_, filename_, width_, height_);
 		SetTitle(statusname);
 		//update the menubar
 		wxMenuBar* menubar    = GetMenuBar();
@@ -8154,25 +7799,25 @@ void BgMdiSegmentChild::LoadCustomWeightMap(wxCommandEvent& WXUNUSED(event))
 		bgLog("image has not been loaded, load image.\n");
 		return;
 	}
-
 	//compute data length
 	int xsz         = cbgImage_->x_, ysz = cbgImage_->y_;
 	int data_length = (xsz) * (ysz);
 // get the file name
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 	wxFileDialog filedialog(this, "Upload Custom Weight Map", "", "",
-	                        "*", wxOPEN);
+							"*", wxOPEN);
 #else
 	wxFileDialog filedialog(this, "Upload Custom Weight Map", "", "",
-	                        "Matlab ASCII data files (*.dat)|*.dat|All Files (*.*)|*.*",
-	                        wxOPEN);
+							"Matlab ASCII data files (*.dat)|*.dat|All Files (*.*)|*.*",
+							wxOPEN);
 #endif
-
 	if (filedialog.ShowModal() == wxID_OK)
 	{
 		//de-allocate memory for customMap (if it exists)
-		if (customMap_) { delete [] customMap_; }
-
+		if (customMap_)
+		{
+			delete [] customMap_;
+		}
 		//allocate memory for customMap
 		customMap_               = new float [data_length];
 		//get data file name
@@ -8180,7 +7825,6 @@ void BgMdiSegmentChild::LoadCustomWeightMap(wxCommandEvent& WXUNUSED(event))
 		//attempt to read in data
 		FILE* fp = fopen(filename, "rb");
 		int i;
-
 		for (i = 0; i < data_length; i++)
 		{
 			if (!fscanf(fp, "%f", &customMap_[i]))
@@ -8191,7 +7835,6 @@ void BgMdiSegmentChild::LoadCustomWeightMap(wxCommandEvent& WXUNUSED(event))
 				return;
 			}
 		}
-
 		fclose(fp);
 		//inform user of successful upload
 		bgLog("Weight map '%s' successfully uploaded.\n", filename);
@@ -8210,47 +7853,38 @@ void BgMdiSegmentChild::OnSaveSegmentedImage(wxCommandEvent& WXUNUSED(event))
 		bgLog("No result to save. Run segmenter.\n");
 		return;
 	}
-
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 	wxFileDialog filedialog(this, "Choose an image file", "", "",
-	                        "*", wxSAVE);
+							"*", wxSAVE);
 #else
 	wxFileDialog filedialog(this, "Choose an image file", "", "",
-	                        "PNM files (*.pnm)|*.pnm|PNG files (*.png)|*.png|PCX files (*.pcx)|*.pcx|PGM files (*.pgm)|*.pgm|JPEG files (*.jpg) (not recommended)|*.jpg",
-	                        wxSAVE);
+							"PNM files (*.pnm)|*.pnm|PNG files (*.png)|*.png|PCX files (*.pcx)|*.pcx|PGM files (*.pgm)|*.pgm|JPEG files (*.jpg) (not recommended)|*.jpg",
+							wxSAVE);
 #endif
-
 	if (filedialog.ShowModal() == wxID_OK)
 	{
 		//get the image type
 		int imtype;
-
 		switch (filedialog.GetFilterIndex())
 		{
 		case 0:
 			imtype = wxBITMAP_TYPE_PNM;
 			break;
-
 		case 1:
 			imtype = wxBITMAP_TYPE_PNG;
 			break;
-
 		case 2:
 			imtype = wxBITMAP_TYPE_PCX;
 			break;
-
 		case 3:
 			imtype = wxBITMAP_TYPE_ANY;
 			break;
-
 		case 4:
 			imtype = wxBITMAP_TYPE_JPEG;
 			break;
-
 		default:
 			return;
 		}
-
 		//if the filtered image is available then save it...
 		if (hasFilter_ == 1)
 		{
@@ -8269,7 +7903,6 @@ void BgMdiSegmentChild::OnSaveSegmentedImage(wxCommandEvent& WXUNUSED(event))
 			//de-allocate memory
 			delete path;
 		}
-
 		//if the segmented image is available then save it...
 		if (hasSegment_ == 1)
 		{
@@ -8288,7 +7921,6 @@ void BgMdiSegmentChild::OnSaveSegmentedImage(wxCommandEvent& WXUNUSED(event))
 			//de-allocate memory
 			delete [] path;
 		}
-
 		//save boundaries
 		OnSaveBoundaries((char*)filedialog.GetPath().c_str(), imtype);
 	}
@@ -8302,7 +7934,6 @@ void BgMdiSegmentChild::OnSaveBoundaries(char* filename, int imtype)
 	{
 		return;
 	}
-
 	//create edge map
 	int width = cbgImage_->x_, height = cbgImage_->y_;
 	wxImage tmpImg(width, height);
@@ -8310,7 +7941,6 @@ void BgMdiSegmentChild::OnSaveBoundaries(char* filename, int imtype)
 	memset(buf, 255, width * height * 3 * sizeof(unsigned char));
 	int n = boundaries_->n_;
 	int i, dp, x, y;
-
 	for (i = 0; i < n; i++)
 	{
 		x           = boundaries_->x_[i];
@@ -8318,7 +7948,6 @@ void BgMdiSegmentChild::OnSaveBoundaries(char* filename, int imtype)
 		dp          = y * width + x;
 		buf[3 * dp]   = buf[3 * dp + 1]   = buf[3 * dp + 2]   = 0;
 	}
-
 	//create new filename (add _em extension)
 	char* new_filename  = new char [strlen(filename) + 1];
 	strcpy(new_filename, filename);
@@ -8343,20 +7972,16 @@ void BgMdiSegmentChild::SetphDiagram(int width, float* confMap, float* rankMap)
 	int imsz = xsz * ysz;
 	buf = new unsigned char[imsz];
 	int i;
-
 	for (i = 0; i < imsz; i++)
 	{
 		buf[i] = 255;
 	}
-
 	int l, c, dpoint;
 	int n = boundaries_->n_;
 	int* xpos = boundaries_->x_, *ypos = boundaries_->y_;
-
 	for (i = 0; i < n; i++)
 	{
 		dpoint = (ypos[i]) * width + xpos[i];
-
 		if ((rankMap[dpoint] > 0) && (confMap[dpoint] > 0))
 		{
 			c = (int)(rankMap[dpoint] * ((double) xsz));
@@ -8367,11 +7992,10 @@ void BgMdiSegmentChild::SetphDiagram(int width, float* confMap, float* rankMap)
 			buf[c + l * xsz] = 80;
 		}
 	}
-
 	phDiagram_->SetImageFromGray(buf, xsz, ysz);
 	//adjust scroll bar...
 	phDiagram_->SetScrollbars(1, 1, xsz + 2 * RANK_CONF_MARGINX,
-	                          ysz + 2 * RANK_CONF_MARGINY + 40);
+							  ysz + 2 * RANK_CONF_MARGINY + 40);
 	delete [] buf;
 }
 
@@ -8385,13 +8009,11 @@ void BgMdiSegmentChild::OnSegment(wxCommandEvent& WXUNUSED(event))
 {
 	//get parameters from GUI
 	int error = GetParameters(sigmaS, sigmaR, aij, epsilon, minRegion, kernelSize,
-	                          1);
-
+							  1);
 	if (error)
 	{
 		return;
 	}
-
 	//create the working thread
 	BgThread* workingThread = new BgThread(wxTHREAD_DETACHED, mySegment, this);
 	stop_flag   = false;
@@ -8400,45 +8022,42 @@ void BgMdiSegmentChild::OnSegment(wxCommandEvent& WXUNUSED(event))
 	//determine progress bar title and message
 	int operation   = operationRadio_->GetSelection();
 	char myMessage[80], myTitle[80];
-
 	switch (operation)
 	{
-		//filter
+	//filter
 	case 1:
 		strcpy(myTitle,     "Image Filtering Progress");
 		strcpy(myMessage,   "Filtering Image...");
 		break;
-
-		//fuse regions
+	//fuse regions
 	case 2:
 		strcpy(myTitle,     "Region Fusing Progress");
 		strcpy(myMessage,   "Fusing Image Regions...");
 		break;
-
-		//segment
+	//segment
 	default:
 		strcpy(myTitle,     "Image Segmentation Progress");
 		strcpy(myMessage,   "Segmenting Image...");
 		break;
 	}
-
 	//call progress dialog
 	bool    done;
 	percentDone = 0;
 	wxProgressDialog progressDialog(myTitle, myMessage, 100, this,
-	                                wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_CAN_ABORT);
-
-	while ((done = progressDialog.Update(percentDone)) && (percentDone != 100)) { wxYield(); }
-
-	if (!done) { stop_flag = true; } //if the algorithm is not done but the user aborted the operation
-
+									wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_CAN_ABORT);
+	while ((done = progressDialog.Update(percentDone)) && (percentDone != 100))
+	{
+		wxYield();
+	}
+	if (!done)
+	{
+		stop_flag = true;    //if the algorithm is not done but the user aborted the operation
+	}
 	//then tell the thread to stop running
-
 	//if its succesfully completed update the parameter history box
 	if (done)
 	{
 		int selIndex    = paramComboBox_->GetSelection();
-
 		if (selIndex)
 		{
 			paramComboBox_->UseParameterList(selIndex - 1);
@@ -8454,12 +8073,10 @@ void BgMdiSegmentChild::OnSegment(wxCommandEvent& WXUNUSED(event))
 			myParameters[5] = kernelSize;
 			paramComboBox_->AddParameterList((void*) myParameters, 6);
 		}
-
 		//set the selection to the current parameter slot
 		paramComboBox_->SetSelection(0);
 		isCurrentHistory_   = true;
 	}
-
 	return;
 }
 
@@ -8479,7 +8096,6 @@ void BgMdiSegmentChild::Segment(void)
 		bgLog("No image loaded!\n");
 		return;
 	}
-
 	//if image segmentaiton is not synergistic clear
 	//display and disable it, otherwise enable it
 	if (!useWeightMap_->GetValue())
@@ -8491,13 +8107,12 @@ void BgMdiSegmentChild::Segment(void)
 	{
 		UpdateDisplay(true);
 	}
-
 	//display parameters to the user
 	if (useWeightMap_->GetValue())
 	{
 		bgLog("Input parameters:\n");
 		bgLog("\tSpatial Bandwidth\t\t= %4d\n\tColor Bandwidth\t\t= %4.1f\n", sigmaS,
-		      sigmaR);
+			  sigmaR);
 		bgLog("\tMinimum Region\t\t= %4d\n", minRegion);
 		bgLog("\tGradient Window Radius\t= %4d\n", kernelSize);
 		bgLog("\tMixing Parameter\t\t= %4.1f\n", aij);
@@ -8507,17 +8122,15 @@ void BgMdiSegmentChild::Segment(void)
 	{
 		bgLog("Input parameters:\n");
 		bgLog("\tSpatial Bandwidth\t= %4d\n\tColor Bandwidth\t= %4.1f\n", sigmaS,
-		      sigmaR);
+			  sigmaR);
 		bgLog("\tMinimum Region\t= %4d\n", minRegion);
 	}
-
 	//obtain image dimensions
 	int width, height;
 	width = cbgImage_->x_;
 	height = cbgImage_->y_;
 	//obtain image type (color or grayscale)
 	imageType   gtype;
-
 	if (cbgImage_->colorIm_)
 	{
 		gtype = COLOR;
@@ -8526,7 +8139,6 @@ void BgMdiSegmentChild::Segment(void)
 	{
 		gtype = GRAYSCALE;
 	}
-
 	//if gradient and confidence maps are not defined,
 	//and synergistic segmentation is requested, then compute them;
 	//also compute them if the parameters have changed
@@ -8543,7 +8155,6 @@ void BgMdiSegmentChild::Segment(void)
 			//indicate that the change has been recognized...
 			edgeParamsHaveChanged_  = false;
 		}
-
 		//if the weight map has not been computed or discarded
 		//then recompute it...
 		if (!weightMap_)
@@ -8560,7 +8171,6 @@ void BgMdiSegmentChild::Segment(void)
 			weightMap_ = new float[width * height];
 			//compute weight map using gradient and confidence maps
 			int i;
-
 			for (i = 0; i < width * height; i++)
 			{
 				if (gradMap_[i] > 0.02)
@@ -8572,16 +8182,13 @@ void BgMdiSegmentChild::Segment(void)
 					weightMap_[i] = 0;
 				}
 			}
-
 			/******************************************************************/
 		}
 	}
-
 	//determine operation (filtering or segmentation)
 	int operation   = operationRadio_->GetSelection();
 	//create instance of image processor class
 	msImageProcessor* iProc = new msImageProcessor();
-
 	//define an input image using the image under consideration
 	//(if filtering or segmentation has taken place, then use this
 	// result upon performing fusing...)
@@ -8593,17 +8200,19 @@ void BgMdiSegmentChild::Segment(void)
 	{
 		iProc->DefineImage(cbgImage_->im_, gtype, height, width);
 	}
-
 	//determine if a custom weight map is to be used
 	wxMenuBar* menubar = GetMenuBar();
 	bool useCustomMap   = menubar->IsChecked(BG_SEGM_USE_MAP);
-
 	//set the weight map (if one was specified and a custom map is not being utilized)
-	if ((useWeightMap_->GetValue()) && (weightMap_) && (!useCustomMap)) { iProc->SetWeightMap(weightMap_, epsilon); }
-
+	if ((useWeightMap_->GetValue()) && (weightMap_) && (!useCustomMap))
+	{
+		iProc->SetWeightMap(weightMap_, epsilon);
+	}
 	//set the custom map (if one was provided)
-	if ((useWeightMap_->GetValue()) && (customMap_) && (useCustomMap)) { iProc->SetWeightMap(customMap_, epsilon); }
-
+	if ((useWeightMap_->GetValue()) && (customMap_) && (useCustomMap))
+	{
+		iProc->SetWeightMap(customMap_, epsilon);
+	}
 	//check for errors in image definition or in the setting
 	//of the confidence map...
 	if (iProc->ErrorStatus)
@@ -8611,17 +8220,14 @@ void BgMdiSegmentChild::Segment(void)
 		bgLog("%s\n", iProc->ErrorMessage);
 		return;
 	}
-
 	//perform image segmentation or filtering....
 	timer_start(); //start the timer
 	iProc->SetSpeedThreshold(speedUpThreshold_);
-
 	switch (operation)
 	{
-		//filter
+	//filter
 	case 1:
 		iProc->Filter(sigmaS, sigmaR, speedUpLevel_);
-
 		if (iProc->ErrorStatus == EL_ERROR)
 		{
 			bgLog("%s\n", iProc->ErrorMessage);
@@ -8631,26 +8237,21 @@ void BgMdiSegmentChild::Segment(void)
 		{
 			break;
 		}
-
 		//obtain the filtered image....
 		filtImage_->Resize(width, height, cbgImage_->colorIm_);
 		iProc->GetResults(filtImage_->im_);
-
 		if (iProc->ErrorStatus == EL_ERROR)
 		{
 			bgLog("%s\n", iProc->ErrorMessage);
 			return;
 		}
-
 		//indicate that only the filtered image has been computed...
 		hasFilter_  = 1;
 		hasSegment_ = 0;
 		break;
-
-		//fuse
+	//fuse
 	case 2:
 		iProc->FuseRegions(sigmaR, minRegion);
-
 		if (iProc->ErrorStatus == EL_ERROR)
 		{
 			bgLog("%s\n", iProc->ErrorMessage);
@@ -8660,26 +8261,21 @@ void BgMdiSegmentChild::Segment(void)
 		{
 			break;
 		}
-
 		//obtain the segmented image...
 		segmImage_->Resize(width, height, cbgImage_->colorIm_);
 		iProc->GetResults(segmImage_->im_);
-
 		if (iProc->ErrorStatus == EL_ERROR)
 		{
 			bgLog("%s\n", iProc->ErrorMessage);
 			return;
 		}
-
 		//indicate that the segmented image has been computed...
 		hasSegment_ = 1;
 		break;
-
-		//segment
+	//segment
 	default:
 		//filter the image...
 		iProc->Filter(sigmaS, sigmaR, speedUpLevel_);
-
 		if (iProc->ErrorStatus == EL_ERROR)
 		{
 			bgLog("%s\n", iProc->ErrorMessage);
@@ -8689,10 +8285,8 @@ void BgMdiSegmentChild::Segment(void)
 		{
 			break;
 		}
-
 		//filter the image....
 		int dim;
-
 		if (cbgImage_->colorIm_)
 		{
 			dim = 3;
@@ -8701,20 +8295,16 @@ void BgMdiSegmentChild::Segment(void)
 		{
 			dim = 1;
 		}
-
 		unsigned char* tempImage = new unsigned char [dim * height * width];
 		iProc->GetResults(tempImage);
-
 		if (iProc->ErrorStatus == EL_ERROR)
 		{
 			bgLog("%s\n", iProc->ErrorMessage);
 			delete [] tempImage;
 			return;
 		}
-
 		//fuse regions...
 		iProc->FuseRegions(sigmaR, minRegion);
-
 		if (iProc->ErrorStatus == EL_ERROR)
 		{
 			bgLog("%s\n", iProc->ErrorMessage);
@@ -8726,26 +8316,22 @@ void BgMdiSegmentChild::Segment(void)
 			delete [] tempImage;
 			break;
 		}
-
 		//obtain the segmented and filtered image...
 		filtImage_->Resize(width, height, cbgImage_->colorIm_);
 		memcpy(filtImage_->im_, tempImage,
-		       dim * height * width * sizeof(unsigned char));
+			   dim * height * width * sizeof(unsigned char));
 		delete [] tempImage;
 		segmImage_->Resize(width, height, cbgImage_->colorIm_);
 		iProc->GetResults(segmImage_->im_);
-
 		if (iProc->ErrorStatus)
 		{
 			bgLog("%s\n", iProc->ErrorMessage);
 			return;
 		}
-
 		//indicate that both the filtered and segmented image have been computed...
 		hasFilter_  = 1;
 		hasSegment_ = 1;
 	}
-
 	//check and see if the algorithm has been halted, if so
 	//then de-allocate the image processing object and
 	//indicate to the working thread that it is safe
@@ -8757,7 +8343,6 @@ void BgMdiSegmentChild::Segment(void)
 		bgLog("Operation Canceled.\n");
 		return;
 	}
-
 	//set has boundaries to true
 	hasBoundaries_  = true;
 	//clean boundary data if any exists
@@ -8771,32 +8356,29 @@ void BgMdiSegmentChild::Segment(void)
 	//calculate the number of boundary points stored by region list
 	//class
 	int i;
-
 	for (i = 0; i < numRegions; i++)
 	{
 		boundaryPointCount += regionList->GetRegionCount(i);
 	}
-
 	//create a point set using calculated boundary point count...
 	boundaries_->x_ = new int [boundaryPointCount];
 	boundaries_->y_ = new int [boundaryPointCount];
 	boundaries_->n_ = boundaryPointCount;
-
 	for (i = 0; i < boundaryPointCount; i++)
 	{
 		boundaries_->x_[i]  = regionIndeces[i] % width;
 		boundaries_->y_[i]  = regionIndeces[i] / width;
 	}
-
 	//set pen width, and style
 	boundaries_->pen_.SetWidth(1);
 	boundaries_->pen_.SetStyle(wxSOLID);
 	//set point type to point (= 1)
 	boundaries_->type_  = 1;
-
 	//construct the phDiagram
-	if (useWeightMap_->GetValue()) { SetphDiagram(width, confMap_, gradMap_); }
-
+	if (useWeightMap_->GetValue())
+	{
+		SetphDiagram(width, confMap_, gradMap_);
+	}
 	//display the confidence and gradient maps respectively
 	if (useWeightMap_->GetValue())
 	{
@@ -8806,7 +8388,6 @@ void BgMdiSegmentChild::Segment(void)
 		myevent.SetId(BG_CANVAS_VIEW2_GRADMAP);
 		OnUpdatePlotWindow2(myevent);
 	}
-
 	//delete the image processing object
 	delete iProc;
 	//done.
@@ -8818,31 +8399,27 @@ void BgMdiSegmentChild::Segment(void)
 	menubar->Enable(BG_SEGM_SAVE_SEGMENTED, true);
 	//update tool bar
 	SaveEnable();
-
 	//update segmentation window....
 	switch (operation)
 	{
-		//the image has been filtered only....
+	//the image has been filtered only....
 	case 1:
 		viewImSegRadio_->Enable(1, true);
 		viewImSegRadio_->Enable(2, false);
 		viewImSegRadio_->SetSelection(1);
 		break;
-
-		//the image has been segmented only...
+	//the image has been segmented only...
 	case 2:
 		viewImSegRadio_->Enable(2, true);
 		viewImSegRadio_->SetSelection(2);
 		break;
-
-		//image has been filtered and segmented...
+	//image has been filtered and segmented...
 	default:
 		viewImSegRadio_->Enable(1, true);
 		viewImSegRadio_->Enable(2, true);
 		viewImSegRadio_->SetSelection(2);
 		break;
 	}
-
 	viewImSegRadio_->Enable(3, true);
 	viewBoundariesCheck_->Enable(true);
 	wxCommandEvent zcev;
@@ -8860,11 +8437,10 @@ void BgMdiSegmentChild::Segment(void)
 }
 
 int BgMdiSegmentChild::GetParameters(int& sigmaS, float& sigmaR, float& aij,
-                                     float& epsilon, int& minRegion, int& kernelSize, int dataEntryCheck)
+									 float& epsilon, int& minRegion, int& kernelSize, int dataEntryCheck)
 {
 	double   tempd;
 	char     str[10];
-
 	//do not perform data entry check
 	if (!dataEntryCheck)
 	{
@@ -8889,7 +8465,6 @@ int BgMdiSegmentChild::GetParameters(int& sigmaS, float& sigmaR, float& aij,
 		//done.
 		return 0;
 	}
-
 	//perform data entry check
 	if ((txtSigmaS_->GetValue().ToDouble(&tempd) == TRUE) && (tempd > 0))
 	{
@@ -8902,7 +8477,6 @@ int BgMdiSegmentChild::GetParameters(int& sigmaS, float& sigmaR, float& aij,
 		bgLog("The value of the spatial bandwidth cannot be zero or negative.\n");
 		return 1;
 	}
-
 	if ((txtSigmaR_->GetValue().ToDouble(&tempd) == TRUE) && (tempd > 0))
 	{
 		sigmaR = tempd;
@@ -8912,7 +8486,6 @@ int BgMdiSegmentChild::GetParameters(int& sigmaS, float& sigmaR, float& aij,
 		bgLog("The value of the range bandwidth cannot be zero or negative.\n");
 		return 1;
 	}
-
 	if ((txtMinRegion_->GetValue().ToDouble(&tempd) == TRUE) && (tempd >= 0))
 	{
 		minRegion = (int)(tempd + 0.5);
@@ -8924,7 +8497,6 @@ int BgMdiSegmentChild::GetParameters(int& sigmaS, float& sigmaR, float& aij,
 		bgLog("The value of minimum region cannot be negative.\n");
 		return 1;
 	}
-
 	if ((txtKernelSize_->GetValue().ToDouble(&tempd) == TRUE) && (tempd > 0))
 	{
 		kernelSize = (int)(tempd + 0.5);
@@ -8936,32 +8508,33 @@ int BgMdiSegmentChild::GetParameters(int& sigmaS, float& sigmaR, float& aij,
 		bgLog("The gradient window radius cannot be zero or negative.\n");
 		return 1;
 	}
-
 	if ((txtA_->GetValue().ToDouble(&tempd) == TRUE) && (tempd >= 0)
-	        && (tempd <= 1))
+			&& (tempd <= 1))
 	{
 		aij = tempd;
-
-		if (aij < 0.01) { txtA_->SetValue("0.0"); }
+		if (aij < 0.01)
+		{
+			txtA_->SetValue("0.0");
+		}
 	}
 	else
 	{
 		bgLog("The value of the mixture parameter cannot be negative or greater than one.\n");
 		return 1;
 	}
-
 	if ((txtEpsilon_->GetValue().ToDouble(&tempd) == TRUE) && (tempd >= 0)
-	        && (tempd <= 1))
+			&& (tempd <= 1))
 	{
 		epsilon = tempd;
-
-		if (epsilon < 0.01) { txtEpsilon_->SetValue("0.0"); }
+		if (epsilon < 0.01)
+		{
+			txtEpsilon_->SetValue("0.0");
+		}
 	}
 	else
 	{
 		bgLog("The threshold value cannot be negative or greater than one.\n");
 		return 1;
 	}
-
 	return 0;
 }

@@ -57,9 +57,22 @@ cv::Vec3b ColorConstraintMedian::GetColorCvPoint()
 		ComputeMedian();
 	}
 	cv::Vec3b res;
-	res[0] = m_Median[2];
+	res[0] = m_Median[0];
 	res[1] = m_Median[1];
-	res[2] = m_Median[0];
+	res[2] = m_Median[2];
+	return res;
+}
+
+cv::Vec3b ColorConstraintMedian::GetColorCvPoint(double x, double y)
+{
+	if (m_NeedComputeMedian)
+	{
+		ComputeMedian();
+	}
+	cv::Vec3b res;
+	res[0] = m_Median[0];
+	res[1] = m_Median[1];
+	res[2] = m_Median[2];
 	return res;
 }
 
@@ -76,4 +89,12 @@ void ColorConstraintMedian::ComputeMedian()
 		std::sort(m_Colors.begin(), m_Colors.end(), LightCompareVector3);
 		m_Median = m_Colors[m_Colors.size() / 2];
 	}
+	double tmp = m_Median[0];
+	m_Median[0] = m_Median[2];
+	m_Median[2] = tmp;
+}
+
+int ColorConstraintMedian::Size()
+{
+	return m_Colors.size();
 }

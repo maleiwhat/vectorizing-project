@@ -32,8 +32,11 @@ Lines   SmoothingLen3(const Lines& cvp, double centroidRadio = 1.0, int repeat =
 Vector3s    SmoothingLen5(const Vector3s& cvp, double centroidRadio = 1.0, int repeat = 1);
 Vector3s2d   SmoothingLen5(const Vector3s2d& cvp, double centroidRadio = 1.0, int repeat = 1);
 
+ints2d    MedianLenN(const ints2d& cvp, int n, int repeat = 1);
 ints2d    MedianLen5(const ints2d& cvp, int repeat = 1);
+ints    MedianLenN(const ints& cvp, int n, int repeat = 1);
 ints    MedianLen5(const ints& cvp, int repeat = 1);
+
 
 Vector3s    MedianLen5(const Vector3s& cvp, int repeat = 1);
 Vector3s2d    MedianLen5(const Vector3s2d& cvp, int repeat = 1);
@@ -65,6 +68,9 @@ ints2d  FixIndexs(const ints2d& aLine, int range);
 
 Line    CleanOrphanedLineWidths(const Line& aLine, int num);
 Lines   CleanOrphanedLineWidths(const Lines& aLine, int num);
+
+Line    FixedLineWidth(const Line& cvp, int nouse);
+Lines   FixedLineWidth(const Lines& cvp, int nouse);
 
 Line    SmoothingHas0Len5(const Line& cvp, double centroidRadio = 1.0,
 						  int repeat = 1);

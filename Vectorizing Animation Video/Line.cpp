@@ -2134,7 +2134,7 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 					if (dis1 < dis2 && orgin_id1 < ELONGATION_LEN)
 					{
 						elongation.erase(elongation.end() - 1);
-						elongationw.erase(elongationw.end() -1);
+						elongationw.erase(elongationw.end() - 1);
 						if (ndis1 < ndis2)
 						{
 							for (int i = minendp; i >= 0; --i)
@@ -2156,7 +2156,7 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 					else if (dis1 > dis2 && (orgin.size() - orgin_id1) < ELONGATION_LEN)
 					{
 						elongation.erase(elongation.end() - 1);
-						elongationw.erase(elongationw.end() -1);
+						elongationw.erase(elongationw.end() - 1);
 						int div = orgin.size() - minendp;
 						if (ndis1 < ndis2)
 						{
@@ -2516,7 +2516,7 @@ ints MedianLen5(const ints& cvp, int repeat /*= 1*/)
 			}
 			if (e_idx >= cvp.size())
 			{
-				e_idx = cvp.size() - 1;
+				e_idx = cvp.size();
 				s_idx = e_idx - 5;
 			}
 			if (s_idx < 0)
@@ -2563,7 +2563,7 @@ Vector3s MedianLen5(const Vector3s& cvp, int repeat /*= 1*/)
 			}
 			if (e_idx >= cvp.size())
 			{
-				e_idx = cvp.size() - 1;
+				e_idx = cvp.size();
 				s_idx = e_idx - 5;
 			}
 			Vector3s tmp;
@@ -2612,7 +2612,7 @@ Vector3s MedianLen(const Vector3s& cvp, int len, int repeat /*= 1*/)
 			}
 			if (e_idx >= cvp.size())
 			{
-				e_idx = cvp.size() - 1;
+				e_idx = cvp.size();
 				s_idx = e_idx - len;
 			}
 			if (s_idx < 0)
@@ -2961,4 +2961,90 @@ bool intersect(const Vector2& a1, const Vector2& a2, const Vector2& b1, const Ve
 		return true;
 	}
 	return false;
+}
+
+Line FixedLineWidth(const Line& cvp, int nouse)
+{
+	if (cvp.size() <= nouse * 2 + 1)
+	{
+		return cvp;
+	}
+	Line cps = cvp;
+	Line newcps;
+	newcps.insert(newcps.end(), cps.begin(), cps.begin() + nouse);
+	Vector2 sum;
+	int cc = 0;
+	for (int j = nouse; j < (int)cps.size() - nouse; j++)
+	{
+		cc++;
+		sum += cps[j];
+	}
+	sum /= cc;
+	for (int j = nouse; j < (int)cps.size() - nouse; j++)
+	{
+		newcps.push_back(sum);
+	}
+	newcps.insert(newcps.end(), cps.begin() + cps.size() - nouse, cps.end());
+	cps = newcps;
+	return cps;
+}
+
+Lines FixedLineWidth(const Lines& cvp, int nouse)
+{
+	Lines ans(cvp.size());
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const Line& aa = cvp.at(i);
+		ans[i] = FixedLineWidth(aa, nouse);
+	}
+	return ans;
+}
+
+ints2d MedianLenN(const ints2d& cvp, int n, int repeat /*= 1*/)
+{
+	ints2d cps(cvp.size());
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		const ints& nowLine = cvp[i];
+		cps[i] = MedianLenN(nowLine, n, repeat);
+	}
+	return cps;
+}
+ints MedianLenN(const ints& cvp, int n, int repeat /*= 1*/)
+{
+	ints cps = cvp;
+	ints newcps;
+	int halfn = n / 2;
+	for (int repeatCount = 0; repeatCount < repeat; repeatCount++)
+	{
+		newcps.clear();
+		for (int i = 0; i < cps.size(); ++i)
+		{
+			int s_idx = i - halfn+1;
+			int e_idx = i + halfn;
+			if (s_idx < 0)
+			{
+				s_idx = 0;
+			}
+			if (e_idx - s_idx < n)
+			{
+				e_idx = s_idx + n;
+			}
+			if (e_idx >= cvp.size())
+			{
+				e_idx = cvp.size();
+				s_idx = e_idx - n;
+			}
+			if (s_idx < 0)
+			{
+				s_idx = 0;
+			}
+			ints tmp;
+			tmp.insert(tmp.end(), cps.begin() + s_idx, cps.begin() + e_idx);
+			std::sort(tmp.begin(), tmp.end());
+			newcps.push_back(tmp[tmp.size() / 2]);
+		}
+		cps = newcps;
+	}
+	return cps;
 }

@@ -395,7 +395,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			d3dApp.ClearSkeletonLines();
 			stmp = simg.clone();
 			stmp = TrapBallMaskAll(stmp);
-			ColorConstraintMathModels ccms;
+			ColorConstraints ccms;
 			stmp = ConvertToIndex(stmp, m_vavImage.Clone(), ccms);
 			Index2Side i2s = GetLinesIndex2Side(stmp, m_BlackLine2, 2);
 			i2s.left = FixIndexs(i2s.left, 10);

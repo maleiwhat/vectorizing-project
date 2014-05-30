@@ -49,7 +49,16 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(bb, 0, 255);
 		return Vector3(bb, gg, rr);
 	}
-	return Vector3(0, 0, 0);
+	if (!m_Colors.empty())
+	{
+		return m_Colors[0];
+	}
+	return Vector3(255, 0, 0);
+}
+
+Vector3 ColorConstraintMathModel::GetColorVector3()
+{
+	return m_Colors[0];
 }
 
 cv::Vec3b ColorConstraintMathModel::GetColorCvPoint(double x, double y)
@@ -104,4 +113,22 @@ void ColorConstraintMathModel::BuildModel()
 		x2 = Atalu.solve(Atb2);
 		x3 = Atalu.solve(Atb3);
 	}
+}
+
+bool ColorConstraintMathModel::CheckColor(double x, double y, const cv::Vec3b& p, double threshold)
+{
+	Vector3 test = GetColorVector3(x, y);
+	test.x -= p[0];
+	test.y -= p[1];
+	test.z -= p[2];
+	if (test.squaredLength() < threshold * threshold)
+	{
+		return true;
+	}
+	return false;
+}
+
+int ColorConstraintMathModel::Size()
+{
+	return m_Colors.size();
 }

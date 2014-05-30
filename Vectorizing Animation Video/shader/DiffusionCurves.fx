@@ -236,6 +236,7 @@ void CurveGS3( line VS_CURVE_INPUT input[2], inout TriangleStream<PS_CURVE_INPUT
 				nLN = -nLN;
 				lH1 = normalize(nL+lP);
 				lH2 = normalize(nLN+lP);
+				return;
 			}
 			else
 			{
@@ -279,6 +280,7 @@ void CurveGS3( line VS_CURVE_INPUT input[2], inout TriangleStream<PS_CURVE_INPUT
 			float4 oCol = input[1].col1;
 			if ( dot(input[1].nb.xy-input[1].pos.xy,nL) >= 0 )
 			{
+				return;
 				col = input[1].col1;
 				oCol = input[1].col0;
 				nL = - nL;
@@ -307,6 +309,7 @@ void CurveGS3( line VS_CURVE_INPUT input[2], inout TriangleStream<PS_CURVE_INPUT
 			float4 oCol = input[1].col1;
 			if ( dot(input[1].nb.xy-input[1].pos.xy,nL) >= 0 )
 			{
+				return;
 				col = input[1].col1;
 				oCol = input[1].col0;
 				nL = - nL;
@@ -503,6 +506,7 @@ PS_OUTPUT DiffusePS(PS_INPUT In)
 // 	if (g_blurOn)
 // 		Out.oColor /= 6;
 // 	else
+
 		Out.oColor /= 4;
 	return Out;
 }
@@ -517,10 +521,10 @@ PS_OUTPUT LineAntiAliasPS(PS_INPUT In)
 	dd.z = -dd.z;
 	float4 thisColor = g_inTex[0].SampleLevel(PointSampler, In.Tex.xy, 0).xyzw;
 	if (dd.x*g_diffX > 0.7)
-		Out.oColor = thisColor;
+		Out.oColor = thisColor; 
 	else if (ncolor.w < 0.0001)
 	{
-		float4 otherColor = g_inTex[1].SampleLevel(PointSampler, In.Tex.xy, 0).xyzw;
+		float4 otherColor = g_inTex[0].SampleLevel(PointSampler, In.Tex.xy, 0).xyzw;
 		Out.oColor = (1.0-(dd.x*g_diffX/0.7))*0.5*(otherColor+thisColor) + (dd.x*g_diffX/0.7)*thisColor;
 	}
 	return Out;

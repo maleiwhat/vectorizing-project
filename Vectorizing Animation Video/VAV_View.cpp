@@ -24,6 +24,7 @@
 #include "VAV_MainFrm.h"
 #include "IFExtenstion.h"
 #include "Line.h"
+#include "DX11\d3dApp.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -55,6 +56,8 @@ BEGIN_MESSAGE_MAP(VAV_View, CView)
 	ON_WM_NCMBUTTONUP()
 	ON_WM_LBUTTONUP()
 	ON_WM_TIMER()
+	ON_WM_KEYDOWN()
+	ON_WM_KEYUP()
 END_MESSAGE_MAP()
 
 // VAV_View 建構/解構
@@ -197,7 +200,6 @@ void VAV_View::OnInitialUpdate()
 void VAV_View::SetTexture(ID3D11ShaderResourceView* tex)
 {
 	m_D3DApp.SetScale(m_Scale);
-	
 	m_D3DApp.SetTexture(tex);
 	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
@@ -275,6 +277,31 @@ void VAV_View::OnLButtonDown(UINT nFlags, CPoint point)
 	m_MouseMove = point;
 	CView::OnLButtonDown(nFlags, point);
 	ShowLineNormal();
+	double realX = (m_MouseMove.x - m_LookCenter.x) / m_Scale - m_LookCenter.x * 0.5;
+	double realY = (m_PicH * m_Scale - m_D3DApp.GetHeight() + m_MouseMove.y
+					- m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
+	if (realX > 0 && realY > 0 && realX < m_indexImg.cols && realY < m_indexImg.rows)
+	{
+		cv::Vec3b p = m_indexImg.at<cv::Vec3b>(realY*2, realX*2);
+		int idx = p[0] + p[1] * 256 + p[2] * 256 * 256;
+		printf("%d |", idx);
+	}
+	for (int i = 0; i < m_patchs.size(); ++i)
+	{
+		if (m_patchs[i].Inside(realX, realY))
+		{
+			if (m_HoldCtrl)
+			{
+				D3DApp& d3dApp = GetD3DApp();
+				d3dApp.ClearTriangles();
+				d3dApp.AddDiffusionLine(m_patchlines, m_patchcolor, i);
+				d3dApp.BuildPoint();
+				d3dApp.DrawScene();
+			}
+			printf("%d ", i);
+		}
+	}
+	printf("\n");
 }
 vavImage* VAV_View::GetImage()
 {
@@ -343,7 +370,7 @@ void VAV_View::ShowLineNormal()
 				   0.5;
 	double realY = (m_PicH * m_Scale - m_D3DApp.GetHeight() + m_MouseMove.y
 					- m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
-	printf("%3.2f %3.2f\n", realX, realY);
+	//printf("%3.2f %3.2f\n", realX, realY);
 	m_D3DApp.SetLookCenter(m_LookCenter.x, m_LookCenter.y);
 	Vector2 click(realX, realY);
 	int idx1 = -1;
@@ -499,4 +526,26 @@ void VAV_View::OnTimer(UINT_PTR nIDEvent)
 	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
 	i++;
+}
+
+
+void VAV_View::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
+	if (nChar == 17)
+	{
+		m_HoldCtrl = true;
+	}
+	CView::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+
+void VAV_View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
+	if (nChar == 17)
+	{
+		m_HoldCtrl = false;
+	}
+	CView::OnKeyUp(nChar, nRepCnt, nFlags);
 }

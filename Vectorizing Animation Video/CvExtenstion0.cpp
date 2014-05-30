@@ -955,7 +955,7 @@ Lines ComputeTrappedBallEdge(cv::Mat& image, const Lines& old_line,
 		{
 			continue;
 		}
-		for (int i = 1; i < 6; ++i)
+		for (int i = 0; i < 9; ++i)
 		{
 			Vector2 up = Quaternion::GetRotation(ahead, i * 10);
 			if (LinkTrapBallBack(li, up, timage, ball_radius))
@@ -988,7 +988,7 @@ Lines ComputeTrappedBallEdge(cv::Mat& image, const Lines& old_line,
 		{
 			continue;
 		}
-		for (int i = 1; i < 6; ++i)
+		for (int i = 0; i < 9; ++i)
 		{
 			Vector2 up = Quaternion::GetRotation(ahead, i * 10);
 			if (LinkTrapBallBack(li, up, timage, ball_radius))
@@ -1577,7 +1577,7 @@ cv::Mat ConvertToMedian(cv::Mat TestImg, cv::Mat src)
 	return res;
 }
 
-cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, ColorConstraintMathModels& output)
+cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, ColorConstraints& output)
 {
 	output.clear();
 	int markid = 1;
@@ -1635,13 +1635,14 @@ cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, ColorConstraintMathModels& o
 				}
 			}
 			cv::Vec3b medcolor = cv::Vec3b(markid, markid / 256, markid / 256 / 256);
-			ColorConstraintMathModel ccm;
+			ColorConstraint ccm;
 			for (int k = 0; k < saves.size(); ++k)
 			{
 				cv::Vec3b& dst = res.at<cv::Vec3b>(saves[k].y, saves[k].x);
 				ccm.AddPoint(saves[k].x, saves[k].y, oriimg.at<cv::Vec3b>(saves[k].y, saves[k].x));
 				dst = medcolor;
 			}
+			printf("ccms size %d\n", saves.size());
 			markid++;
 			output.push_back(ccm);
 		}
@@ -1681,11 +1682,59 @@ cv::Mat TrapBallMaskAll(cv::Mat image)
 	stmp = TrapBallMask1(stmp, 4);
 	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
 	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask4(stmp);
 	//      //3
-	stmp = TrapBallMask1(stmp, 3);
-	stmp = TrapBallMask3(stmp, 2);
+//  stmp = TrapBallMask1(stmp, 3);
+//  stmp = TrapBallMask3(stmp, 2);
 	//      //2
 	stmp = TrapBallMask4(stmp);
 	return stmp;
+}
+
+bool compareVec3b(const cv::Vec3b& a, const cv::Vec3b& b)
+{
+	if (a[0] < b[0])
+	{
+		return true;
+	}
+	if (a[1] < b[1])
+	{
+		return true;
+	}
+	if (a[2] < b[2])
+	{
+		return true;
+	}
+	return false;
+}
+
+void S6ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms)
+{
+	cv::Mat mask;
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	int cc = 1;
+	for (int i = 0; i < image.rows; i++)
+	{
+		for (int j = 0; j < image.cols - 1; j++)
+		{
+			int lastcc = cc;
+			S6FloodFill(image, mask, cc, j, i);
+			if (lastcc != cc)
+			{
+				ColorConstraint ccm;
+				for (int ii = 0; ii < image.rows; ii++)
+				{
+					bool has_diff = false;
+					for (int jj = 0; jj < image.cols; jj++)
+					{
+						if (mask.at<uchar>(ii + 1, jj + 1) > 130)
+						{
+							ccm.AddPoint(jj/2, ii/2, oimg.at<cv::Vec3b>(ii/2, jj/2));
+						}
+					}
+				}
+				ccms.push_back(ccm);
+			}
+		}
+	}
 }

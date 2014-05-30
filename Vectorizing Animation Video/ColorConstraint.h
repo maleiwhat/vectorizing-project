@@ -5,7 +5,9 @@
 #include "ColorConstraintMathModel.h"
 SHARE_PTR(ColorConstraintMedian);
 SHARE_PTR(ColorConstraintAverage);
+SHARE_PTR(ColorConstraintMathModel);
 
-typedef ColorConstraintMedian ColorConstraint;
-typedef ColorConstraintMedian_sptr ColorConstraint_sptr;
+typedef ColorConstraintMathModel ColorConstraint;
+typedef ColorConstraintMathModels ColorConstraints;
+typedef ColorConstraintMathModel_sptr ColorConstraint_sptr;
 typedef std::vector<ColorConstraint_sptr> ColorConstraint_sptrs;

@@ -6,6 +6,7 @@
 #include "LineFragment.h"
 #include "PatchSpline.h"
 #include "ImageSpline.h"
+#include "ColorConstraintMathModel.h"
 
 struct WeightData
 {
@@ -31,20 +32,30 @@ void    S2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 					int range, int x, int y, CvPatchs& out_array, int dilation = 0);
 void    S2FloodFill(cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range,
 					int x, int y, int dilation = 0, int erosion = 0);
-void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
-					int range, int x, int y, CvPatchs& out_array, int dilation = 0,
-					int erosion = 0);
-void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
-					int range, int x, int y, int dilation = 0, int erosion = 0);
+void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y, CvPatchs& out_array);
+void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y);
+void    S3_1FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y, 
+					  CvPatchs& out_array, cv::Mat& ori_image, ColorConstraints& ccms,
+					  cv::Mat& out);
 void    S4FloodFill(cv::Mat& image, cv::Mat& mask01, int range,
 					int x, int y);
 void    S5FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
-					int range, int x, int y, CvPatchs& out_array, int dilation, 
+					int range, int x, int y, CvPatchs& out_array, int dilation,
 					cv::Mat image_orig, cv::Mat out);
 void    LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y);
 
+void    S6FloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y);
+void    S7FloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y, int minArea);
+void    S8FloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y);
+void    S9FloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y, int chipsize,
+					cv::Mat& out_chips_mask);
+
 CvPatchs S2GetPatchs(const cv::Mat& image, int dilation = 0, int erosion = 0);
+CvPatchs S2_1GetPatchs(const cv::Mat& image);
+CvPatchs S2_2GetPatchs(const cv::Mat& image, cv::Mat& ori_image, ColorConstraints& ccms,
+					   cv::Mat& out);
 ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold, cv::Mat& image1);
+ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion);
 ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
 						   cv::Mat lineImage);
 ImageSpline GetImageSpline(CvPatchs& patchs);
@@ -63,7 +74,6 @@ inline bool CorrectPosition(cv::Mat& image, int x, int y)
 	{
 		return true;
 	}
-
 	return false;
 }
 
@@ -126,6 +136,7 @@ ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold);
 void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2);
 ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion);
 ImageSpline S5GetPatchs(const cv::Mat& image0, const cv::Mat& orig);
-Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion);
+Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion, cv::Mat& outimg = cv::Mat());
+Lines S7GetPatchs(const cv::Mat& image0, const cv::Mat& noline, int dilation, int erosion);
 cv::Mat S6GetEngrgy(const cv::Mat& image0, int dilation, int erosion);
 cv::Mat MarkDiffence(cv::Mat src, int rectw, int recth);

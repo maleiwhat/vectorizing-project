@@ -420,8 +420,6 @@ CvPatchs S2GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	CmCurveEx dEdge(srcImg1f);
 	dEdge.CalSecDer(3, 0.01f, 0.2f);
 	cv::Mat Der2 = dEdge.GetDer2();
-	imshow("Image2", Der2);
-	//cv::waitKey();
 	Dilation(Der2, 1, 1);
 	cv::Mat mask, image;
 	image0.copyTo(image);
@@ -474,7 +472,6 @@ CvPatchs S2GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			}
 		}
 	}
-	imshow("Image2", image);
 	//cv::waitKey();
 	//FixHole(image);
 	mask = cv::Scalar::all(0);
@@ -489,6 +486,63 @@ CvPatchs S2GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	//imshow("mask", mask);
 	return cvps;
 }
+
+
+CvPatchs S2_1GetPatchs(const cv::Mat& image0)
+{
+	assert(image0.type() == CV_8UC3);
+	cv::Mat img1u, cImg2;
+	cImg2 = image0.clone();
+	cvtColor(image0, img1u, CV_BGR2GRAY);
+	cv::Mat srcImg1f, show3u = cv::Mat::zeros(img1u.size(), CV_8UC3);
+	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
+	CmCurveEx dEdge(srcImg1f);
+	dEdge.CalSecDer(3, 0.01f, 0.2f);
+	cv::Mat Der2 = dEdge.GetDer2();
+	//cv::waitKey();
+	Dilation(Der2, 1, 1);
+	cv::Mat mask, image;
+	image0.copyTo(image);
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	CvPatchs cvps;
+	int cc = 1;
+	for (int i = 1; i < image.rows - 1; i++)
+	{
+		for (int j = 1; j < image.cols - 1; j++)
+		{
+			S3FloodFill(cc, image, mask, j, i, cvps);
+		}
+	}
+	return cvps;
+}
+
+CvPatchs S2_2GetPatchs(const cv::Mat& image0, cv::Mat& ori_image, ColorConstraints& ccms,
+					   cv::Mat& out)
+{
+	assert(image0.type() == CV_8UC3);
+	cv::Mat img1u, cImg2;
+	cImg2 = image0.clone();
+	cvtColor(image0, img1u, CV_BGR2GRAY);
+	cv::Mat srcImg1f, show3u = cv::Mat::zeros(img1u.size(), CV_8UC3);
+	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
+	cv::Mat mask, image;
+	image0.copyTo(image);
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	CvPatchs cvps;
+	int cc = 1;
+	for (int i = 0; i < image.rows - 1; i++)
+	{
+		for (int j = 0; j < image.cols - 1; j++)
+		{
+			S3_1FloodFill(cc, image, mask, j, i, cvps, ori_image, ccms, out);
+		}
+	}
+	cv::imshow("S2_2GetPatchs", image);
+	return cvps;
+}
+
 
 void visualize_patch_lines(ImageSpline imageSpline, int idx, cv::Mat& image)
 {
@@ -1509,19 +1563,18 @@ void S2FloodFill(cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range,
 					 cv::Scalar(up, up, up), flags);
 }
 
-void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
-				 int range, int x, int y, CvPatchs& out_array, int dilation, int erosion)
+void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01,
+				 int x, int y, CvPatchs& out_array)
 {
-	if (mask01.at<uchar>(y + 1, x + 1) > 0
-			|| mask02.at<uchar>(y , x) > 0)
+	if (mask01.at<uchar>(y + 1, x + 1) > 0)
 	{
 		return;
 	}
 	cv::Vec3b v = image.at<cv::Vec3b>(y, x);
-	int b = cc % 255;
-	int g = (cc / 255) % 255 ;
-	int r = cc / (255 * 255);
-	if (v[0] == 0 && v[1] == 0 && v[2] == 0)
+	int b = cc % 256;
+	int g = (cc / 256) % 256 ;
+	int r = cc / (256 * 256);
+	if (v[0] == 255 && v[1] == 255 && v[2] == 255)
 	{
 		return;
 		b = 0;
@@ -1534,12 +1587,16 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 	cc++;
 	cv::Scalar newVal(b, g, r);
 	int area;
-	int lo = range;
-	int up = range;
+	int lo = 0;
+	int up = 0;
 	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
 	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
 	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
 					 cv::Scalar(up, up, up), flags);
+	if (area < 3)
+	{
+		return;
+	}
 	// get Contour line
 	cv::Mat mask2 = mask01.clone();
 	ClearEdge(mask2);
@@ -1561,6 +1618,7 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 	CvLines points;
 	cv::findContours(mask2, points, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
 	double tarea = cv::contourArea(points.front());
+	int dilation = 1, erosion = 0;
 	if (dilation > 0)
 	{
 		Dilation(mask2, 1, dilation);
@@ -1595,36 +1653,142 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
 	out_array.push_back(cvp);
 }
 
-void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
-				 int range, int x, int y, int dilation /*= 0*/, int erosion /*= 0*/)
+
+void S3_1FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y,
+				   CvPatchs& out_array, cv::Mat& ori_image, ColorConstraints& ccms,
+				   cv::Mat& out)
 {
-	if (mask01.at<uchar>(y + 1, x + 1) > 0
-			|| mask02.at<uchar>(y , x) > 0)
+	if (mask01.at<uchar>(y + 1, x + 1) > 0)
 	{
 		return;
 	}
 	cv::Vec3b v = image.at<cv::Vec3b>(y, x);
-//  int b = cc % 255;
-//  int g = (cc / 255) % 255 ;
-//  int r = cc / (255 * 255);
-	int b = rand() % 255;
-	int g = rand() % 255;
-	int r = rand() % 255;
-	if (v[0] == 0 && v[1] == 0 && v[2] == 0)
+	int b = cc % 256;
+	int g = (cc / 256) % 256;
+	int r = cc / (256 * 256);
+	if (v[0] == 255 && v[1] == 255 && v[2] == 255)
 	{
 		return;
-		b = 0;
-		g = 0;
-		r = 0;
-		cc--;
 	}
+	cc++;
+	cv::Point seed(x, y);
+	cv::Rect ccomp;
+	cv::Scalar newVal(b, g, r);
+	int area;
+	int lo = 0;
+	int up = 0;
+	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
+	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
+	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
+					 cv::Scalar(up, up, up), flags);
+	// get Contour line
+	cv::Mat mask2 = mask01.clone();
+	ClearEdge(mask2);
+	for (int i = 1; i < mask2.rows - 1; i++)
+	{
+		for (int j = 1; j < mask2.cols - 1; j++)
+		{
+			uchar& v = mask2.at<uchar>(i, j);
+			if (v > 128)
+			{
+				v = 255;
+			}
+			else
+			{
+				v = 0;
+			}
+		}
+	}
+	CvLines points;
+	cv::findContours(mask2.clone(), points, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+	double tarea = cv::contourArea(points.front());
+	int dilation = 1, erosion = 0;
+	if (dilation > 0)
+	{
+		Dilation(mask2, 1, dilation);
+	}
+	cv::Mat mask22 = mask2.clone();
+	if (erosion > 0)
+	{
+		Erosion(mask2, 1, erosion);
+	}
+	CvLines points2;
+	cv::findContours(mask22, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+	ccms.push_back(ColorConstraint());
+	ColorConstraint& ccm = ccms.back();
+	for (int i = 1; i < mask2.rows - 2; i++)
+	{
+		for (int j = 1; j < mask2.cols - 2; j++)
+		{
+			uchar& v = mask2.at<uchar>(i, j);
+			if (v > 0)
+			{
+				ccm.AddPoint(j - 1, i - 1, ori_image.at<cv::Vec3b>(i/2, j/2));
+			}
+		}
+	}
+	for (int i = 1; i < mask22.rows - 2; i++)
+	{
+		for (int j = 1; j < mask22.cols - 2; j++)
+		{
+			uchar& v = mask22.at<uchar>(i, j);
+			if (v > 0)
+			{
+				out.at<cv::Vec3b>(i/2, j/2) = ccm.GetColorCvPoint(j - 1, i - 1);
+			}
+		}
+	}
+//  cv::imshow("out", out);
+//  cv::waitKey();
+	for (int i = erosion - 1; i >= 0 && points2.empty(); --i)
+	{
+		mask2 = mask22.clone();
+		if (i > 0)
+		{
+			Erosion(mask2, 2, i);
+		}
+		cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+	}
+	CvPatch cvp;
+	cvp.Outer() = points.front();
+	if (points.size() > 1)
+	{
+		std::copy(points.begin() + 1, points.end(), std::back_inserter(cvp.Inter()));
+	}
+	cvp.Outer2() = points2.front();
+	if (points2.size() > 1)
+	{
+		std::copy(points2.begin() + 1, points2.end(), std::back_inserter(cvp.Inter2()));
+	}
+	out_array.push_back(cvp);
+}
+
+
+void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y)
+{
+	if (mask01.at<uchar>(y + 1, x + 1) > 0)
+	{
+		return;
+	}
+	cv::Vec3b v = image.at<cv::Vec3b>(y, x);
+	int b = rand() % 256;
+	int g = rand() % 256;
+	int r = rand() % 256;
+//  if (v[0] == 0 && v[1] == 0 && v[2] == 0)
+//  {
+//      return;
+//      b = 0;
+//      g = 0;
+//      r = 0;
+//      cc--;
+//  }
 	cv::Point seed(x, y);
 	cv::Rect ccomp;
 	cc++;
 	cv::Scalar newVal(b, g, r);
 	int area;
-	int lo = range;
-	int up = range;
+	int lo = 0;
+	int up = 0;
 	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
 	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
 	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
@@ -1636,13 +1800,11 @@ void LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y)
 	if (image.at<cv::Vec3b>(y, x)[0] != 60
 			|| image.at<cv::Vec3b>(y, x)[1] != 60
 			|| image.at<cv::Vec3b>(y, x)[2] != 60
+			|| mask01.at<uchar>(y + 1, x + 1) > 0
 	   )
 	{
 		return;
 	}
-//  int b = cc % 255;
-//  int g = cc / 255 ;
-//  int r = cc / (255 * 255);
 	cc++;
 	int b = rand() % 250 + 1;
 	int g = rand() % 250 + 1;
@@ -1659,7 +1821,132 @@ void LineFloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y)
 					 cv::Scalar(up, up, up), flags);
 }
 
+void S6FloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y)
+{
+	if (image.at<cv::Vec3b>(y, x) == cv::Vec3b(255, 255, 255)
+			|| mask01.at<uchar>(y + 1, x + 1) > 0)
+	{
+		return;
+	}
+	int b = cc % 256;
+	int g = (cc / 256) % 256;
+	int r = cc / 256 / 256;
+	cv::Point seed(x, y);
+	cv::Rect ccomp;
+	cv::Scalar newVal(b, g, r);
+	int area;
+	int lo = 0;
+	int up = 0;
+	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
+	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
+	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
+					 cv::Scalar(up, up, up), flags);
+	cc++;
+}
 
+void S7FloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y, int minArea)
+{
+	if (image.at<cv::Vec3b>(y, x)[0] > 0
+			|| mask01.at<uchar>(y + 1, x + 1) > 0)
+	{
+		return;
+	}
+	cc++;
+	int b = rand() % 250 + 1;
+	int g = rand() % 250 + 1;
+	int r = rand() % 250 + 1;
+	cv::Point seed(x, y);
+	cv::Rect ccomp;
+	cv::Scalar newVal(b, g, r);
+	int area;
+	int lo = 0;
+	int up = 0;
+	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
+	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
+	area = floodFill(image.clone(), mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
+					 cv::Scalar(up, up, up), flags);
+	if (area <= 12)
+	{
+		for (int i = y; i < image.rows ; ++i)
+		{
+			bool has = false;
+			for (int j = 1; j < image.cols; ++j)
+			{
+				if (mask01.at<uchar>(i, j) > 130)
+				{
+					image.at<cv::Vec3b>(i - 1, j - 1) = cv::Vec3b(128, 128, 255);
+					has = true;
+				}
+			}
+			if (!has)
+			{
+				break;
+			}
+		}
+	}
+}
+
+void S8FloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y)
+{
+	if (image.at<cv::Vec3b>(y, x) == cv::Vec3b(255, 255, 255)
+			|| mask01.at<uchar>(y + 1, x + 1) > 0)
+	{
+		return;
+	}
+	int b = rand() % 250 + 1;
+	int g = rand() % 250 + 1;
+	int r = rand() % 250 + 1;
+	cv::Point seed(x, y);
+	cv::Rect ccomp;
+	cv::Scalar newVal(b, g, r);
+	int area;
+	int lo = 0;
+	int up = 0;
+	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
+	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
+	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
+					 cv::Scalar(up, up, up), flags);
+	cc++;
+}
+
+void S9FloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y, int chipsize,
+				 cv::Mat& out_chips_mask)
+{
+	if (image.at<cv::Vec3b>(y, x) == cv::Vec3b(255, 255, 255)
+			|| mask01.at<uchar>(y + 1, x + 1) > 0)
+	{
+		return;
+	}
+	int b = rand() % 250 + 1;
+	int g = rand() % 250 + 1;
+	int r = rand() % 250 + 1;
+	cv::Point seed(x, y);
+	cv::Rect ccomp;
+	cv::Scalar newVal(b, g, r);
+	int area;
+	int lo = 0;
+	int up = 0;
+	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
+	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
+	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
+					 cv::Scalar(up, up, up), flags);
+	if (area <= chipsize)
+	{
+		for (int i = y; i < mask01.rows ; ++i)
+		{
+			bool has = false;
+			for (int j = 1; j < mask01.cols; ++j)
+			{
+				if (mask01.at<uchar>(i, j) > 130)
+				{
+					out_chips_mask.at<uchar>(i, j) = 255;
+					has = true;
+				}
+			}
+		}
+	}
+	cc++;
+}
 
 void GetMatrixb(int w, int h, Vec3bptrs& ary, int x, int y, cv::Mat& img)
 {
@@ -1815,7 +2102,7 @@ PatchLines GetPatchSplines(CvPatchs& patchs, cv::Mat& patchImage)
 Lines GetAllLineFromLineImage(cv::Mat& image)
 {
 	Lines res;
-	cv::Mat tImage = image;
+	cv::Mat tImage = image.clone();
 	//cv::namedWindow("tmp_image", 0);
 	for (int i = 0; i < tImage.rows; ++i)
 	{
@@ -1823,7 +2110,7 @@ Lines GetAllLineFromLineImage(cv::Mat& image)
 		{
 			cv::Vec3b& intensity = tImage.at<cv::Vec3b>(i, j);
 			if ((intensity[0] != 0 || intensity[1] != 0 || intensity[2] != 0)
-					&& (intensity[0] != 255 && intensity[1] != 255 && intensity[2] != 255))
+					&& !(intensity[0] == 255 && intensity[1] == 255 && intensity[2] == 255))
 			{
 				int cc = intensity[0] + intensity[1] * 255 + intensity[2] * 255 * 255;
 				Line line;
@@ -2084,7 +2371,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		{
 			if (image.at<cv::Vec3b>(i, j)[0] != 255)
 			{
-				S3FloodFill(cc, image, mask, joint_mask, 0, j, i, dilation, erosion);
+				S8FloodFill(image, mask, cc, j, i);
 			}
 		}
 	}
@@ -2568,7 +2855,252 @@ void S4FloodFill(cv::Mat& image, cv::Mat& mask01, int range, int x, int y)
 	}
 }
 
-Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion)
+Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion, cv::Mat& outimg)
+{
+	assert(image0.type() == CV_8UC3);
+	cv::Mat img1u, img2u, cImg2;
+	cImg2 = image0.clone();
+	cvtColor(image0, img1u, CV_BGR2GRAY);
+	cv::Mat srcImg1f, show3u = cv::Mat::zeros(img1u.size(), CV_8UC3);
+	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
+	cv::Mat mask, out_chips_mask, image, joint_mask, tmp_image, joint_image;
+	image0.copyTo(image);
+	joint_mask.create(image.rows * 2 + 1, image.cols * 2 + 1, CV_8UC1);
+	tmp_image.create(image.rows + 2, image.cols + 2, CV_8UC3);
+	joint_mask = cv::Scalar::all(0);
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	image0.copyTo(image);
+	mask = cv::Scalar::all(0);
+	out_chips_mask = mask.clone();
+	int cc = 1;
+	//imshow("image", image);
+	for (int i = 1; i < image.rows - 1; i++)
+	{
+		for (int j = 1; j < image.cols - 1; j++)
+		{
+			//S8FloodFill(image, mask, cc, j, i);
+			S9FloodFill(image, mask, cc, j, i, 20, out_chips_mask);
+		}
+	}
+	imshow("out_chips_mask", out_chips_mask);
+	// create bigger image to fix border problem
+	tmp_image = cv::Scalar::all(0);
+	for (int i = 0; i < image.rows ; i++)
+	{
+		for (int j = 0; j < image.cols ; j++)
+		{
+			if (out_chips_mask.at<uchar>(i, j) > 0)
+			{
+				tmp_image.at<cv::Vec3b>(i, j) = cv::Vec3b(254, 254, 254);
+			}
+			tmp_image.at<cv::Vec3b>(i + 1, j + 1) = image.at<cv::Vec3b>(i , j);
+		}
+	}
+	outimg = tmp_image.clone();
+	imshow("tmp_image", tmp_image);
+	cv::Mat gap_image;
+	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
+	gap_image = cv::Scalar(0);
+	// Find Boundary
+	for (int i = 0; i < joint_mask.rows ; i++)
+	{
+		for (int j = 0; j < joint_mask.cols ; j++)
+		{
+			int id2 = i % 2;
+			int jd2 = j % 2;
+			cv::Vec3b& v = tmp_image.at<cv::Vec3b>(i / 2, j / 2);
+			if ((v[0] + v[1] + v[2]) == 0)
+			{
+				if (i > 0 && j > 0)
+				{
+					gap_image.at<uchar>(i - 1 , j - 1) = 255;
+				}
+			}
+			if (id2 == 1 && jd2 == 1)
+			{
+				continue;
+			}
+			if (id2 == 0 && jd2 == 0)
+			{
+				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2, j / 2);
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2, j / 2 + 1);
+				cv::Vec3b& v3 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2);
+				cv::Vec3b& v4 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+				if (v1 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+				if (v1 != v3)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+				if (v4 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+				if (v4 != v3)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+			}
+			else if (id2 == 1)
+			{
+				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2);
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+				if (v1 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+			}
+			else if (jd2 == 1)
+			{
+				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2 , j / 2 + 1);
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+				if (v1 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+			}
+		}
+	}
+	//imshow("joint_mask", joint_mask);
+	//cv::waitKey();
+	//imshow("gap_image", gap_image);
+	mask.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	// show joint
+	for (int i = 0; i < joint_mask.rows ; i++)
+	{
+		for (int j = 0; j < joint_mask.cols ; j++)
+		{
+			if (joint_mask.at<uchar>(i, j) >= 3) // joint
+			{
+				joint_mask.at<uchar>(i, j) = 255;
+			}
+			else if (joint_mask.at<uchar>(i, j) > 0)
+			{
+				joint_mask.at<uchar>(i, j) = 60;
+			}
+		}
+	}
+	// create smaller image to fix border problem
+	joint_image.create(joint_mask.rows , joint_mask.cols , CV_8UC3);
+	joint_image = cv::Scalar::all(0);
+	tmp_image = joint_image.clone();
+	for (int i = 0; i < joint_image.rows ; i++)
+	{
+		for (int j = 0; j < joint_image.cols ; j++)
+		{
+			if (joint_mask.at<uchar>(i , j) == 255) // joint
+			{
+				cv::Vec3b& v1 = joint_image.at<cv::Vec3b>(i, j);
+				v1[0] = 255;
+				v1[1] = 255;
+				v1[2] = 255;
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i, j);
+				v2[0] = 255;
+				v2[1] = 255;
+				v2[2] = 255;
+				gap_image.at<uchar>(i, j) = 128;
+			}
+			else if (joint_mask.at<uchar>(i , j) == 60)
+			{
+				cv::Vec3b& v1 = joint_image.at<cv::Vec3b>(i, j);
+				v1[0] = 255;
+				v1[1] = 255;
+				v1[2] = 255;
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i, j);
+				v2[0] = 60;
+				v2[1] = 60;
+				v2[2] = 60;
+				gap_image.at<uchar>(i, j) = 128;
+			}
+		}
+	}
+	mask = cv::Scalar::all(0);
+	cc = 1;
+	for (int i = 0; i < tmp_image.rows; i++)
+	{
+		for (int j = 0; j < tmp_image.cols; j++)
+		{
+			LineFloodFill(tmp_image, mask, cc, j, i);
+		}
+	}
+	//cv::namedWindow("LineFloodFill", 0);
+	imshow("LineFloodFill", tmp_image);
+	Lines lines = GetAllLineFromLineImage(tmp_image);
+//  for (int i = 0; i < tmp_image.rows - 2; i++)
+//  {
+//      for (int j = 0; j < tmp_image.cols - 2; j++)
+//      {
+//          {
+//              cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i, j);
+//              cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i, j + 1);
+//              cv::Vec3b& v3 = tmp_image.at<cv::Vec3b>(i, j + 2);
+//              if (v1[0] > 0 && v2 [0] == 0 && v3[0] > 0)
+//              {
+//                  v2 = cv::Vec3b(250, 128, 128);
+//              }
+//          }
+//          {
+//              cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i, j);
+//              cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i + 1, j);
+//              cv::Vec3b& v3 = tmp_image.at<cv::Vec3b>(i + 2, j);
+//              if (v1[0] > 0 && v2 [0] == 0 && v3[0] > 0)
+//              {
+//                  v2 = cv::Vec3b(250, 128, 128);
+//              }
+//          }
+//      }
+//  }
+//  mask = cv::Scalar::all(0);
+//  cc = 1;
+//  for (int i = 1; i < tmp_image.rows; i++)
+//  {
+//      for (int j = 1; j < tmp_image.cols; j++)
+//      {
+//          S7FloodFill(tmp_image, mask, cc, j, i);
+//      }
+//  }
+//  imshow("LineFloodFill2", tmp_image);
+//  cvtColor(tmp_image, tmp_image, CV_BGR2GRAY);
+//  for (int i = 0; i < tmp_image.rows; i++)
+//  {
+//      for (int j = 0; j < tmp_image.cols; j++)
+//      {
+//          uchar& v1 = tmp_image.at<uchar>(i, j);
+//          if (v1 > 0)
+//          {
+//              v1 = 1;
+//          }
+//          else
+//          {
+//              v1 = 0;
+//          }
+//      }
+//  }
+//  cvThin(tmp_image.clone(), tmp_image, 50);
+//  normalize(tmp_image, tmp_image, 0, 255, cv::NORM_MINMAX);
+//  imshow("LineFloodFill3", tmp_image);
+	// 還原圖的大小
+	for (int i = 0; i < lines.size(); ++i)
+	{
+		Line& cps = lines[i];
+		Line newcps;
+		for (int j = 0; j < cps.size(); j ++)
+		{
+			if (int(cps[j].x) % 2 == 0 && int(cps[j].y) % 2 == 0)
+			{
+				newcps.push_back(cps[j] * 0.5);
+			}
+		}
+		cps = newcps;
+	}
+	return lines;
+}
+
+
+Lines S7GetPatchs(const cv::Mat& image0, const cv::Mat& noline, int dilation, int erosion)
 {
 	assert(image0.type() == CV_8UC3);
 	cv::Mat img1u, img2u, cImg2;
@@ -2590,7 +3122,7 @@ Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 	{
 		for (int j = 1; j < image.cols - 1; j++)
 		{
-			S3FloodFill(cc, image, mask, joint_mask, 0, j, i, dilation, erosion);
+			S8FloodFill(image, mask, cc, j, i);
 		}
 	}
 	// create bigger image to fix border problem
@@ -2731,6 +3263,20 @@ Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			LineFloodFill(tmp_image, mask, cc, j, i);
 		}
 	}
+	for (int i = 0; i < noline.rows; i++)
+	{
+		for (int j = 0; j < noline.cols; j++)
+		{
+			uchar vv = noline.at<uchar>(i, j);
+			if (vv > 40)
+			{
+//              tmp_image.at<cv::Vec3b>(i * 2, j * 2) = cv::Vec3b(0, 0);
+//              tmp_image.at<cv::Vec3b>(i * 2 + 1, j * 2) = cv::Vec3b(0, 0);
+//              tmp_image.at<cv::Vec3b>(i * 2, j * 2 + 1) = cv::Vec3b(0, 0);
+//              tmp_image.at<cv::Vec3b>(i * 2 + 1, j * 2 + 1) = cv::Vec3b(0, 0);
+			}
+		}
+	}
 	//cv::namedWindow("LineFloodFill", 0);
 	imshow("LineFloodFill", tmp_image);
 	//cv::waitKey();
@@ -2749,15 +3295,15 @@ Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		}
 		cps = newcps;
 	}
-//  for (int i = 0; i < lines.size(); ++i)
-//  {
-//      Line& cps = lines[i];
-//      if (/*cps.front() == cps.back() && */cps.size() <= 11)
-//      {
-//          lines.erase(lines.begin() + i);
-//          i--;
-//      }
-//  }
+	//  for (int i = 0; i < lines.size(); ++i)
+	//  {
+	//      Line& cps = lines[i];
+	//      if (/*cps.front() == cps.back() && */cps.size() <= 11)
+	//      {
+	//          lines.erase(lines.begin() + i);
+	//          i--;
+	//      }
+	//  }
 	return lines;
 }
 
@@ -2786,7 +3332,7 @@ cv::Mat S6GetEngrgy(const cv::Mat& image0, int dilation, int erosion)
 	{
 		for (int j = 1; j < image.cols - 1; j++)
 		{
-			S3FloodFill(cc, image, mask, joint_mask, 0, j, i, dilation, erosion);
+			S8FloodFill(image, mask, cc, j, i);
 		}
 	}
 	// create bigger image to fix border problem
@@ -3033,4 +3579,3 @@ cv::Mat S6GetEngrgy(const cv::Mat& image0, int dilation, int erosion)
 	//cv::waitKey();
 	return res;
 }
-

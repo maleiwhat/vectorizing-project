@@ -18,6 +18,7 @@
 #include "math/Vector2.h"
 #include "LineDef.h"
 #include "vtkShowHistogramTimerCallback.h"
+#include "Patch.h"
 
 class VAV_Doc;
 class VAV_MainFrame;
@@ -54,6 +55,12 @@ public:
 	
 	bool        m_MButtonDown;
 	bool        m_LButtonDown;
+
+	CvPatchs	m_patchs;
+	Color2Side	m_patchcolor;
+	Lines		m_patchlines;
+	cv::Mat		m_indexImg;
+	bool		m_HoldCtrl;
 
 	HANDLE	m_thread;
 	vtkShowHistogramTimerCallback_Sptr m_TimerCallback;
@@ -110,6 +117,8 @@ public:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
 
 #ifndef _DEBUG  // VAV_View.cpp ¤¤ªº°»¿ùª©¥»

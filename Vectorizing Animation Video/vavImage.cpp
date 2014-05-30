@@ -941,10 +941,10 @@ int vavImage::GetIndex_no255(double x, double y)
 			y = m_Image.rows - 2;
 		}
 	}
-	if (m_Image.at<cv::Vec3b>((int)y, (int)x)[0] != 255)
+	if (m_Image.at<cv::Vec3b>((int)y, (int)x)[2] != 255)
 	{
 		cv::Vec3b color = m_Image.at<cv::Vec3b>((int)y, (int)x);
-		int v = color[0] + color[1] * 255 + color[2] * 255 * 255;
+		int v = color[0] + color[1] * 256 + color[2] * 256 * 256;
 		return v;
 	}
 	Vector2 left_up, left_down;
@@ -973,6 +973,92 @@ int vavImage::GetIndex_no255(double x, double y)
 		{
 			return v[i];
 		}
+	}
+	return -1;
+}
+
+int vavImage::GetIndex_hasno255(double x, double y)
+{
+	if (y < 1 || (y + 1 >= m_Image.rows) || x < 1 || (x + 1 >= m_Image.cols))
+	{
+		if (y < 0)
+		{
+			y = 0;
+		}
+		if (x < 0)
+		{
+			x = 0;
+		}
+		if (x + 1 >= m_Image.cols)
+		{
+			x = m_Image.cols - 2;
+		}
+		if (y + 1 >= m_Image.rows)
+		{
+			y = m_Image.rows - 2;
+		}
+	}
+	if (m_Image.at<cv::Vec3b>((int)y, (int)x)[2] != 255)
+	{
+		cv::Vec3b color = m_Image.at<cv::Vec3b>((int)y, (int)x);
+		int v = color[0] + color[1] * 256 + color[2] * 256 * 256;
+		return v;
+	}
+	return -1;
+}
+int vavImage::GetIndex_if255(double x, double y)
+{
+	if (y < 1 || (y + 1 >= m_Image.rows) || x < 1 || (x + 1 >= m_Image.cols))
+	{
+		if (y < 0)
+		{
+			y = 0;
+		}
+		if (x < 0)
+		{
+			x = 0;
+		}
+		if (x + 1 >= m_Image.cols)
+		{
+			x = m_Image.cols - 2;
+		}
+		if (y + 1 >= m_Image.rows)
+		{
+			y = m_Image.rows - 2;
+		}
+	}
+	Vector2 left_up, left_down;
+	Vector2 right_up, right_down;
+	left_up.x = floor(x);
+	left_up.y = floor(y);
+	left_down.x = left_up.x;
+	left_down.y = left_up.y + 1;
+	right_up.x = left_up.x + 1;
+	right_up.y = left_up.y;
+	right_down.x = left_up.x + 1;
+	right_down.y = left_up.y + 1;
+	double v[4];
+	cv::Vec3b c[4];
+	c[0] = m_Image.at<cv::Vec3b>(left_up.y, left_up.x);
+	c[1] = m_Image.at<cv::Vec3b>(left_down.y, left_down.x);
+	c[2] = m_Image.at<cv::Vec3b>(right_up.y, right_up.x);
+	c[3] = m_Image.at<cv::Vec3b>(right_down.y, right_down.x);
+	for (int i = 0; i < 4; ++i)
+	{
+		if (c[i][0] == 255)
+		{
+			return -1;
+		}
+	}
+// 	v[0] = c[0][0] + c[0][1] * 256 + c[0][2] * 256 * 256;
+// 	v[1] = c[1][0] + c[1][1] * 256 + c[1][2] * 256 * 256;
+// 	v[2] = c[2][0] + c[2][1] * 256 + c[2][2] * 256 * 256;
+// 	v[3] = c[3][0] + c[3][1] * 256 + c[3][2] * 256 * 256;
+	if (m_Image.at<cv::Vec3b>((int)y, (int)x)[2] != 255)
+	{
+		cv::Vec3b color = m_Image.at<cv::Vec3b>((int)y, (int)x);
+		int v = color[0] + color[1] * 256 + color[2] * 256 * 256;
+		return v;
 	}
 	return -1;
 }

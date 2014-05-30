@@ -1,204 +1,446 @@
-Image C:\Users\damody\Desktop\畢業相關\test_picture\[all4seiya][galaxy-TP][SAINT_SEIYA_The_Hades_Chapter_Inferno_Kosho_06][DVDRIP].avi_000002.563.png loaded
-Creating angle lookup table
-Start edge detection...
-...smooth-differentiation filtering
-...subspace estimate
-...edge strengths
-...computing ranks
-...nonmaxima supression: arc
-...hysteresis thresholding, high: box  low: arc
-Done edge detection.
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: box  low: arc
-Done edge detection.
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: box  low: arc
-Done edge detection.
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: box  low: arc
-Done edge detection.
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: box  low: arc
-Done edge detection.
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: box  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.222656 0.976563 0.996094
- hist high custom y:  0.000000 0.183594 0.968750 1.000000 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.222656 0.976563 0.996094
- hist high custom y:  0.000000 0.183594 0.968750 1.000000 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.222656 0.976563 0.996094
- hist high custom y:  0.000000 0.613281 0.968750 1.000000 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.222656 0.976563 0.996094
- hist high custom y:  0.000000 0.824219 0.968750 1.000000 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.222656 0.843750 0.996094
- hist high custom y:  0.000000 0.824219 0.968750 0.656250 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.222656 0.843750 0.996094
- hist high custom y:  0.000000 0.984375 0.968750 0.656250 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.222656 0.437500 0.996094
- hist high custom y:  0.000000 0.984375 0.968750 0.585938 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
 Image C:\Users\damody\Desktop\畢業相關\test_picture\another_data.avi_000000.426.png loaded
+Input parameters:
+	Spatial Bandwidth	=    7
+	Color Bandwidth	=  6.5
+	Minimum Region	=   20
+timer start...
+done.
+Applying mean shift (Using Lattice) ... done.(  1.78 sec)
+Connecting regions         ...done. (  0.02 seconds, numRegions =  45745)
+timer stop, elapsed 1.82 seconds.
+Input parameters:
+	Spatial Bandwidth	=    7
+	Color Bandwidth	=  6.5
+	Minimum Region	=  100
+timer start...
+done.
+Applying mean shift (Using Lattice) ... done.(  1.62 sec)
+Connecting regions         ...done. (  0.02 seconds, numRegions =  45745)
+timer stop, elapsed 1.66 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	=  6.5
+	Minimum Region	=  100
+timer start...
+done.
+Applying mean shift (Using Lattice) ... done.( 10.33 sec)
+Connecting regions         ...done. (  0.02 seconds, numRegions =  20948)
+timer stop, elapsed 10.36 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	=  6.5
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.03 seconds, numRegions =  12098)
+Pruning spurious regions   ...done. (  0.03 seconds, numRegions =    354)
+timer stop, elapsed 0.11 seconds.
+Input parameters:
+	Spatial Bandwidth		=   20
+	Color Bandwidth		=  6.5
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
 Creating angle lookup table
- hyst high custom x:  0.000000 0.000000 0.222656 0.437500 0.996094
- hist high custom y:  0.000000 0.984375 0.968750 0.585938 0.000000
-Start edge detection...
+Computing confidence map...
 ...smooth-differentiation filtering
 ...subspace estimate
 ...edge strengths
 ...computing ranks
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.222656 0.582031 0.996094
- hist high custom y:  0.000000 0.984375 0.968750 0.894531 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.222656 0.949219 0.996094
- hist high custom y:  0.000000 0.984375 0.968750 0.910156 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.222656 0.988281 0.996094
- hist high custom y:  0.000000 0.984375 0.968750 0.968750 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.222656 0.976563 0.996094
- hist high custom y:  0.000000 0.984375 0.968750 0.996094 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.218750 0.996094 0.996094
- hist high custom y:  0.000000 0.984375 1.000000 0.988281 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.218750 0.996094 0.996094
- hist high custom y:  0.000000 0.984375 1.000000 0.988281 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.218750 0.996094 0.996094
- hist high custom y:  0.000000 1.000000 1.000000 0.988281 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.218750 0.996094 0.996094
- hist high custom y:  0.000000 1.000000 1.000000 0.988281 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.218750 0.996094 0.996094
- hist high custom y:  0.000000 1.000000 1.000000 0.988281 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.218750 0.996094 0.996094
- hist high custom y:  0.000000 1.000000 1.000000 0.988281 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.218750 0.996094 0.996094
- hist high custom y:  0.000000 1.000000 1.000000 0.988281 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: arc
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.218750 0.996094 0.996094
- hist high custom y:  0.000000 1.000000 1.000000 0.988281 0.000000
- hyst low custom x:  0.000000 0.000000 0.253906 0.503906
- low custom y:  0.000000 1.000000 1.000000 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: custom
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.218750 0.675781 0.996094
- hist high custom y:  0.000000 1.000000 1.000000 0.445313 0.000000
- hyst low custom x:  0.000000 0.000000 0.253906 0.503906
- low custom y:  0.000000 1.000000 1.000000 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: custom
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.218750 0.675781 0.996094
- hist high custom y:  0.000000 0.792969 1.000000 0.445313 0.000000
- hyst low custom x:  0.000000 0.000000 0.253906 0.503906
- low custom y:  0.000000 0.828125 1.000000 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: custom
-Done edge detection.
-Image C:\Users\damody\Desktop\畢業相關\test_picture\[AirotaxLKSUB][Oda_Nobuna_no_Yabou][02][1280x720][x264_aac][4BC43B3D].mkv_20130322_062633.641.png loaded
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.06 seconds, numRegions =  16744)
+Pruning spurious regions   ...done. (  0.04 seconds, numRegions =    406)
+timer stop, elapsed 0.15 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	=  6.5
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.03 seconds, numRegions =  12098)
+Pruning spurious regions   ...done. (  0.03 seconds, numRegions =    354)
+timer stop, elapsed 0.10 seconds.
+Input parameters:
+	Spatial Bandwidth	=   10
+	Color Bandwidth	= 10.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.03 seconds, numRegions =  10605)
+Pruning spurious regions   ...done. (  0.03 seconds, numRegions =    313)
+timer stop, elapsed 0.11 seconds.
+Input parameters:
+	Spatial Bandwidth	=   10
+	Color Bandwidth	= 10.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.04 seconds, numRegions =  10605)
+Pruning spurious regions   ...done. (  0.03 seconds, numRegions =    313)
+timer stop, elapsed 0.11 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	= 10.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.03 seconds, numRegions =  10605)
+Pruning spurious regions   ...done. (  0.03 seconds, numRegions =    313)
+timer stop, elapsed 0.10 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	= 10.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.03 seconds, numRegions =  10605)
+Pruning spurious regions   ...done. (  0.03 seconds, numRegions =    313)
+timer stop, elapsed 0.10 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	= 10.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.03 seconds, numRegions =  10605)
+Pruning spurious regions   ...done. (  0.03 seconds, numRegions =    313)
+timer stop, elapsed 0.10 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	= 10.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.03 seconds, numRegions =  10605)
+Pruning spurious regions   ...done. (  0.03 seconds, numRegions =    313)
+timer stop, elapsed 0.10 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	= 10.0
+	Minimum Region	=   50
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.03 seconds, numRegions =  10605)
+Pruning spurious regions   ...done. (  0.03 seconds, numRegions =    431)
+timer stop, elapsed 0.10 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	= 10.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.03 seconds, numRegions =  10605)
+Pruning spurious regions   ...done. (  0.03 seconds, numRegions =    313)
+timer stop, elapsed 0.11 seconds.
+Input parameters:
+	Spatial Bandwidth		=   20
+	Color Bandwidth		= 10.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
 Creating angle lookup table
- hyst high custom x:  0.000000 0.000000 0.218750 0.675781 0.996094
- hist high custom y:  0.000000 0.792969 1.000000 0.445313 0.000000
- hyst low custom x:  0.000000 0.000000 0.253906 0.503906
- low custom y:  0.000000 0.828125 1.000000 0.000000
-Start edge detection...
+Computing confidence map...
 ...smooth-differentiation filtering
 ...subspace estimate
 ...edge strengths
 ...computing ranks
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: custom
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.218750 0.675781 0.996094
- hist high custom y:  0.000000 0.968750 1.000000 0.445313 0.000000
- hyst low custom x:  0.000000 0.000000 0.253906 0.503906
- low custom y:  0.000000 0.976563 1.000000 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: custom
-Done edge detection.
- hyst high custom x:  0.000000 0.000000 0.179688 0.675781 0.996094
- hist high custom y:  0.000000 0.968750 0.957031 0.445313 0.000000
- hyst low custom x:  0.000000 0.000000 0.199219 0.503906
- low custom y:  0.000000 0.976563 0.910156 0.000000
-Start edge detection...
-...nonmaxima supression: arc
-...hysteresis thresholding, high: custom  low: custom
-Done edge detection.
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.06 seconds, numRegions =  16327)
+Pruning spurious regions   ...done. (  0.04 seconds, numRegions =    384)
+timer stop, elapsed 0.15 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	= 10.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.03 seconds, numRegions =  10605)
+Pruning spurious regions   ...done. (  0.03 seconds, numRegions =    313)
+timer stop, elapsed 0.10 seconds.
+Input parameters:
+	Spatial Bandwidth		=   20
+	Color Bandwidth		= 10.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.06 seconds, numRegions =  16327)
+Pruning spurious regions   ...done. (  0.04 seconds, numRegions =    384)
+timer stop, elapsed 0.15 seconds.
+Input parameters:
+	Spatial Bandwidth		=   20
+	Color Bandwidth		= 10.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.5
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.06 seconds, numRegions =  14496)
+Pruning spurious regions   ...done. (  0.04 seconds, numRegions =    337)
+timer stop, elapsed 0.14 seconds.
+Input parameters:
+	Spatial Bandwidth		=   20
+	Color Bandwidth		= 10.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.8
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.01 seconds, numRegions =  19341)
+Applying transitive closure...done. (  0.06 seconds, numRegions =  11931)
+Pruning spurious regions   ...done. (  0.03 seconds, numRegions =    312)
+timer stop, elapsed 0.14 seconds.
+Image C:\Users\damody\Desktop\畢業相關\test_picture\[AirotaxLKSUB][Oda_Nobuna_no_Yabou][02][1280x720][x264_aac][4BC43B3D].mkv_20130322_062850.376.png loaded
+Input parameters:
+	Spatial Bandwidth		=   20
+	Color Bandwidth		= 10.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.8
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.06 seconds, numRegions = 303388)
+Applying transitive closure...done. (  3.69 seconds, numRegions =  34803)
+Pruning spurious regions   ...done. (  3.25 seconds, numRegions =    153)
+timer stop, elapsed 7.9 seconds.
+Input parameters:
+	Spatial Bandwidth		=   20
+	Color Bandwidth		= 10.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.5
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.06 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.82 seconds, numRegions = 101423)
+Pruning spurious regions   ...done. (  0.71 seconds, numRegions =    513)
+timer stop, elapsed 1.68 seconds.
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		= 10.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.5
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.05 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.82 seconds, numRegions = 101423)
+Pruning spurious regions   ...done. (  0.74 seconds, numRegions =    513)
+timer stop, elapsed 1.71 seconds.
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		= 10.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.05 seconds, numRegions = 303388)
+Applying transitive closure...done. (  0.73 seconds, numRegions = 142241)
+Pruning spurious regions   ...done. (  0.57 seconds, numRegions =    652)
+timer stop, elapsed 1.45 seconds.
+Image C:\Users\damody\Desktop\畢業相關\test_picture\45.png loaded
+Image C:\Users\damody\Desktop\畢業相關\test_picture\45.png loaded
+Image C:\Users\damody\Desktop\畢業相關\test_picture\another_data.avi_000000.426.png loaded
+Input parameters:
+	Spatial Bandwidth	=    7
+	Color Bandwidth	=  6.5
+	Minimum Region	=   20
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions = 190938)
+Applying transitive closure...done. (  0.30 seconds, numRegions =  35749)
+Pruning spurious regions   ...done. (  0.11 seconds, numRegions =   1159)
+timer stop, elapsed 0.47 seconds.
+Input parameters:
+	Spatial Bandwidth	=   10
+	Color Bandwidth	= 10.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions = 190938)
+Applying transitive closure...done. (  0.31 seconds, numRegions =  21343)
+Pruning spurious regions   ...done. (  0.11 seconds, numRegions =    209)
+timer stop, elapsed 0.48 seconds.
+Input parameters:
+	Spatial Bandwidth		=   10
+	Color Bandwidth		= 10.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions = 190938)
+Applying transitive closure...done. (  0.44 seconds, numRegions =  87693)
+Pruning spurious regions   ...done. (  0.13 seconds, numRegions =    541)
+timer stop, elapsed 0.64 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	= 10.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions = 190938)
+Applying transitive closure...done. (  0.31 seconds, numRegions =  21343)
+Pruning spurious regions   ...done. (  0.11 seconds, numRegions =    209)
+timer stop, elapsed 0.48 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	=  6.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions = 190938)
+Applying transitive closure...done. (  0.29 seconds, numRegions =  38625)
+Pruning spurious regions   ...done. (  0.11 seconds, numRegions =    314)
+timer stop, elapsed 0.46 seconds.
+Input parameters:
+	Spatial Bandwidth		=   20
+	Color Bandwidth		=  6.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.3
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions = 190938)
+Applying transitive closure...done. (  0.42 seconds, numRegions =  94699)
+Pruning spurious regions   ...done. (  0.11 seconds, numRegions =    598)
+timer stop, elapsed 0.59 seconds.
+Input parameters:
+	Spatial Bandwidth		=   20
+	Color Bandwidth		=  6.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    2
+	Mixing Parameter		=  0.3
+	Threshold			=  0.5
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.03 seconds, numRegions = 190938)
+Applying transitive closure...done. (  0.48 seconds, numRegions =  72642)
+Pruning spurious regions   ...done. (  0.18 seconds, numRegions =    439)
+timer stop, elapsed 0.74 seconds.
+Input parameters:
+	Spatial Bandwidth		=   20
+	Color Bandwidth		=  6.0
+	Minimum Region		=  100
+	Gradient Window Radius	=    5
+	Mixing Parameter		=  0.3
+	Threshold			=  0.5
+Creating angle lookup table
+Computing confidence map...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions = 190938)
+Applying transitive closure...done. (  0.63 seconds, numRegions = 103703)
+Pruning spurious regions   ...done. (  0.30 seconds, numRegions =    652)
+timer stop, elapsed 1.1 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	=  6.0
+	Minimum Region	=  100
+timer start...
+Connecting regions         ...done. (  0.03 seconds, numRegions = 190938)
+Applying transitive closure...done. (  0.29 seconds, numRegions =  38625)
+Pruning spurious regions   ...done. (  0.11 seconds, numRegions =    314)
+timer stop, elapsed 0.46 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	=  6.0
+	Minimum Region	=   50
+timer start...
+Connecting regions         ...done. (  0.02 seconds, numRegions = 190938)
+Applying transitive closure...done. (  0.30 seconds, numRegions =  38625)
+Pruning spurious regions   ...done. (  0.10 seconds, numRegions =    526)
+timer stop, elapsed 0.45 seconds.
+Input parameters:
+	Spatial Bandwidth	=   20
+	Color Bandwidth	=  6.0
+	Minimum Region	=   50
+timer start...
+done.
+Applying mean shift (Using Lattice) ... done.( 10.51 sec)
+Connecting regions         ...done. (  0.01 seconds, numRegions =  23673)
+timer stop, elapsed 10.54 seconds.
+Input parameters:
+	Spatial Bandwidth	=   10
+	Color Bandwidth	=  6.0
+	Minimum Region	=   50
+timer start...
+done.
+Applying mean shift (Using Lattice) ... done.(  3.51 sec)
+Connecting regions         ...done. (  0.02 seconds, numRegions =  30712)
+timer stop, elapsed 3.55 seconds.
+Input parameters:
+	Spatial Bandwidth	=   10
+	Color Bandwidth	=  6.0
+	Minimum Region	=  100
+timer start...
+done.
+Applying mean shift (Using Lattice) ... done.(  3.39 sec)
+Connecting regions         ...done. (  0.02 seconds, numRegions =  30712)
+timer stop, elapsed 3.43 seconds.

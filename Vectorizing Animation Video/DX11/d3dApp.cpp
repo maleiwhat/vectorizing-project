@@ -138,8 +138,7 @@ D3DApp::D3DApp()
 	m_pDepthStencil = NULL;
 	m_polySize = 0.5;
 	m_diffTex = 0;
-	m_diff2Tex = 0;
-	m_diffSteps = 16;
+	m_diffSteps = 12;
 	m_diffdistDirTexture = NULL;
 	m_diffuseTexture[0] = NULL;
 	m_diffuseTexture[1] = NULL;
@@ -1778,18 +1777,20 @@ void D3DApp::InterDraw(bool drawDiffusion)
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 		//construct the curve triangles in the geometry shader and render them directly
 		ID3D11RenderTargetView* destTexTV[3];
-		destTexTV[0] = m_diffuseTextureTV[1 - m_diffTex];
+		destTexTV[0] = m_diffuseTextureTV[m_diffTex];
 		destTexTV[1] = m_diffdistDirTextureTV;
 		destTexTV[2] = m_otherTextureTV;
 		m_DeviceContext->OMSetRenderTargets(3, destTexTV, m_pDepthStencilView);
 		m_pDrawVectorsTechnique->GetDesc(&techDesc);
-		for (UINT p = 0; p < 5 && p < techDesc.Passes; ++p)
+		for (UINT p = 0; p < 4 && p < techDesc.Passes; ++p)
 		{
+			if (p == 1)
+			{
+				continue;
+			}
 			m_pDrawVectorsTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
 			m_DeviceContext->Draw(m_CurveVertexes.size(), 0);
 		}
-		m_diffTex = 1 - m_diffTex;
-		m_diff2Tex = 1 - m_diff2Tex;
 		// setup the pipeline for the following image-space algorithms
 		m_DeviceContext->IASetInputLayout(m_pCurveVertex2Layout);
 		stride = sizeof(VSO_Vertex);
@@ -2253,14 +2254,14 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 		vtx2.rcolor.w = 0.0;
 		for (int j = 0; j < now_line.size() - 1; ++j)
 		{
-// 			if (now_color[j].x == 0 && now_color[j].y == 0 && now_color[j].z == 0)
-// 			{
-// 				continue;
-// 			}
-// 			if (now_color[j + 1].x == 0 && now_color[j + 1].y == 0 && now_color[j + 1].z == 0)
-// 			{
-// 				continue;
-// 			}
+//          if (now_color[j].x == 0 && now_color[j].y == 0 && now_color[j].z == 0)
+//          {
+//              continue;
+//          }
+//          if (now_color[j + 1].x == 0 && now_color[j + 1].y == 0 && now_color[j + 1].z == 0)
+//          {
+//              continue;
+//          }
 			vtx1.lcolor.x = now_color[j].x * scale;
 			vtx1.lcolor.y = now_color[j].y * scale;
 			vtx1.lcolor.z = now_color[j].z * scale;
@@ -2310,21 +2311,22 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 		vtx2.lcolor.w = 0;
 		vtx2.rcolor.w = 0;
 		//for (int j = 0; j < now_line.size() - 1; ++j)
-		for (int j = 2; j < now_line.size() - 3; ++j)
+		for (int j = 1; j < now_line.size() - 2; ++j)
 		{
-// 			if (now_lcolor[j].x == 0 && now_lcolor[j].y == 0 && now_lcolor[j].z == 0)
+// 			const int nodraw = 1;
+// 			if (now_lcolor[j].x < nodraw && now_lcolor[j].y < nodraw && now_lcolor[j].z < nodraw)
 // 			{
 // 				continue;
 // 			}
-// 			if (now_rcolor[j].x == 0 && now_rcolor[j].y == 0 && now_rcolor[j].z == 0)
+// 			if (now_rcolor[j].x == nodraw && now_rcolor[j].y == nodraw && now_rcolor[j].z == nodraw)
 // 			{
 // 				continue;
 // 			}
-// 			if (now_lcolor[j + 1].x == 0 && now_lcolor[j + 1].y == 0 && now_lcolor[j + 1].z == 0)
+// 			if (now_lcolor[j + 1].x < nodraw && now_lcolor[j + 1].y < nodraw && now_lcolor[j + 1].z < nodraw)
 // 			{
 // 				continue;
 // 			}
-// 			if (now_rcolor[j + 1].x == 0 && now_rcolor[j + 1].y == 0 && now_rcolor[j + 1].z == 0)
+// 			if (now_rcolor[j + 1].x == nodraw && now_rcolor[j + 1].y == nodraw && now_rcolor[j + 1].z == nodraw)
 // 			{
 // 				continue;
 // 			}
@@ -2386,4 +2388,52 @@ ID3D11Device* D3DApp::GetDevice()
 ID3D11DeviceContext* D3DApp::GetDeviceContext()
 {
 	return m_DeviceContext;
+}
+
+void D3DApp::AddDiffusionLine(const Lines& lines, const Color2Side& colors, int idx)
+{
+	float scale = 1 / 255.0f;
+	int i = idx;
+	{
+		CURVE_Vertexes curveline;
+		const Line& now_line = lines[i];
+		const Vector3s& now_lcolor = colors.left[i];
+		const Vector3s& now_rcolor = colors.right[i];
+		CURVE_Vertex vtx1, vtx2;
+		vtx1.lcolor.w = 0;
+		vtx1.rcolor.w = 0;
+		vtx2.lcolor.w = 0;
+		vtx2.rcolor.w = 0;
+		//for (int j = 0; j < now_line.size() - 1; ++j)
+		for (int j = 2; j < now_line.size() - 3; ++j)
+		{
+			vtx1.lcolor.x = now_lcolor[j].x * scale;
+			vtx1.lcolor.y = now_lcolor[j].y * scale;
+			vtx1.lcolor.z = now_lcolor[j].z * scale;
+			vtx1.rcolor.x = now_rcolor[j].x * scale;
+			vtx1.rcolor.y = now_rcolor[j].y * scale;
+			vtx1.rcolor.z = now_rcolor[j].z * scale;
+			vtx2.lcolor.x = now_lcolor[j + 1].x * scale;
+			vtx2.lcolor.y = now_lcolor[j + 1].y * scale;
+			vtx2.lcolor.z = now_lcolor[j + 1].z * scale;
+			vtx2.rcolor.x = now_rcolor[j + 1].x * scale;
+			vtx2.rcolor.y = now_rcolor[j + 1].y * scale;
+			vtx2.rcolor.z = now_rcolor[j + 1].z * scale;
+			vtx1.pos.x = now_line[j].x;
+			vtx1.pos.y = m_PicH - now_line[j].y;
+			vtx2.pos.x = now_line[j + 1].x;
+			vtx2.pos.y = m_PicH - now_line[j + 1].y;
+			curveline.push_back(vtx1);
+			curveline.push_back(vtx2);
+		}
+		curveline.front().nb = D3DXVECTOR2(10000.0f, 10000.0f);
+		for (int j = 2; j < curveline.size(); j += 2)
+		{
+			curveline[j].nb = curveline[j - 2].pos;
+			curveline[j - 1].nb = curveline[j + 1].pos;
+		}
+		(curveline.end() - 2)->nb = (curveline.end() - 4)->pos;
+		curveline.back().nb = D3DXVECTOR2(10000.0f, 10000.0f);
+		m_CurveVertexes.insert(m_CurveVertexes.end(), curveline.begin(), curveline.end());
+	}
 }
