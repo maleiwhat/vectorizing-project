@@ -176,6 +176,14 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		lineColors = SmoothingLen5(lineColors, 0, 10);
 		m_BLineWidth = SmoothingLen5(m_BLineWidth, 0, 10);
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0, 15);
+     for (int i = 0; i < m_BlackLine.size(); ++i)
+     {
+         for (int j = 0; j < m_BlackLine[i].size(); ++j)
+         {
+             m_BlackLine[i][j] *= 2;
+             m_BLineWidth[i][j] *= 2;
+         }
+     }
 		d3dApp.AddLinesWidth(m_BlackLine, m_BLineWidth, lineColors);
 		d3dApp.SetScaleTemporary(1);
 		d3dApp.BuildPoint();
@@ -334,17 +342,29 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	if (m_BOUNDARY_CURVES &&
 			m_REGION_GROWING)
 	{
-		d3dApp.ClearTriangles();
-		d3dApp.AddLines(m_BlackLine2);
 		d3dApp.SetScaleTemporary(2);
 		d3dApp.BuildPoint();
 		d3dApp.InterSetRenderTransparencyOutput2();
 		cv::Mat simg = d3dApp.DrawSceneToCvMat();
 		d3dApp.SetScaleRecovery();
 		cmmsIndexImg = simg.clone();
+		
 		cmmsIndexImg = TrapBallMaskAll(cmmsIndexImg);
 		cv::Mat vecout = m_vavImage.Clone();
 		vecout = cv::Scalar(0);
+		cv::Mat ShowRegion = m_vavImage.Clone();
+//		Dilation(simg, 1, 2);
+		for (int i = 0; i < simg.rows; ++i)
+		{
+			for (int j = 0; j < simg.cols; ++j)
+			{
+				if (simg.at<cv::Vec3b>(i, j)[2] > 0)
+				{
+					ShowRegion.at<cv::Vec3b>(i/2, j/2) = cv::Vec3b(255, 255, 255);
+				}
+			}
+		}
+		cv::imshow("ShowRegion", ShowRegion);
 		CvPatchs cps = S2_2GetPatchs(cmmsIndexImg, m_vavImage, ccms2, vecout);
 		cv::imshow("vecout", vecout);
 		//cv::Mat isoimg = MakeIsoSurfaceImg(vecout, 32);
@@ -375,6 +395,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 //          //drawContours(tmp, cltmp, 0, cv::Scalar(255, 255, 255), 0, 8);
 //      }
 		cv::imshow("drawContours", tmp);
+		
 		S6ReColor(cmmsIndexImg, m_vavImage.Clone(), ccms);
 		GetVavView()->m_indexImg = cmmsIndexImg.clone();
 		cv::imshow("Trap-Ball Region ReColor", cmmsIndexImg);
@@ -384,11 +405,11 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		Index2Side i2s = GetLinesIndex2SideSmart(cmmsIndexImg, m_BlackLine2, ccms);
 		i2s.left = FixIndexs(i2s.left, 100);
 		i2s.right = FixIndexs(i2s.right, 100);
-//      i2s.left = MedianLenN(i2s.left, 10, 3);
-//      i2s.right = MedianLenN(i2s.right, 10, 3);
-		Color2Side color2s2 = LinesIndex2Color(m_BlackLine2, i2s, ccms);
-//      color2s2.left = FixLineColors(color2s2.left, 600, 10);
-//      color2s2.right = FixLineColors(color2s2.right, 600, 10);
+// 		i2s.left = MedianLenN(i2s.left, 10, 3);
+// 		i2s.right = MedianLenN(i2s.right, 10, 3);
+		Color2Side color2s2 = LinesIndex2Color(m_BlackLine2, i2s, ccms2);
+		color2s2.left = FixLineColors(color2s2.left, 600, 10);
+		color2s2.right = FixLineColors(color2s2.right, 600, 10);
 		//d3dApp.AddDiffusionLines(m_BlackLine2, color2s2);
 		d3dApp.AddLines(m_BlackLine2);
 	}

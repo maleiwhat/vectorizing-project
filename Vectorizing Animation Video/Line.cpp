@@ -3048,3 +3048,35 @@ ints MedianLenN(const ints& cvp, int n, int repeat /*= 1*/)
 	}
 	return cps;
 }
+
+void AddNewLineEndPoint( Acutes& res, const LineEndPoint& lep, double sdistance )
+{
+	Vector2 p;
+	if (lep.dir == LineEndPoint::BEGIN)
+	{
+		p = lep.le.beg;
+	}
+	else
+	{
+		p = lep.le.end;
+	}
+	bool isfind = false;
+	for (int i = 0; i < res.size(); ++i)
+	{
+		if (res[i].pos.squaredDistance(p) < sdistance)
+		{
+			isfind = true;
+			res[i].leps.push_back(lep);
+			double denominator = res[i].leps.size();
+			res[i].pos = res[i].pos * ((denominator - 1) / denominator) + (p / denominator);
+			break;
+		}
+	}
+	if (!isfind)
+	{
+		Acute ac;
+		ac.leps.push_back(lep);
+		ac.pos = p;
+		res.push_back(ac);
+	}
+}

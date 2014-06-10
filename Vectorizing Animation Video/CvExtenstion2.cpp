@@ -540,7 +540,7 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 	ints2d& ans_right = ans.right;
 	ans_left.resize(lines.size());
 	ans_right.resize(lines.size());
-	const int NO_COLOR = 5;
+	const int NO_COLOR = 0;
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		Lines::const_iterator it = lines.cbegin() + i;
@@ -552,14 +552,14 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 			li[j] = -1;
 			if (j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
-				double normal_len = 1.5;
+				double normal_len = 2;
 				do
 				{
 					Vector2 pos = *it2 * 2 - normals[i][j] * normal_len;
 					li[j] = vimg.GetIndex_no255(pos.x, pos.y);
 					normal_len += 0.5;
 				}
-				while (li[j] == -1 && normal_len < 2);
+				while (li[j] == -1 && normal_len < 3);
 			}
 			if (ccms[li[j] - 1].Size() < 7)
 			{
@@ -574,14 +574,14 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 			ri[j] = -1;
 			if (j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
-				double normal_len = 1.5;
+				double normal_len = 2;
 				do
 				{
 					Vector2 pos = *it2 * 2 + normals[i][j] * normal_len;
 					ri[j] = vimg.GetIndex_no255(pos.x, pos.y);
 					normal_len += 0.5;
 				}
-				while (ri[j] == -1 && normal_len < 2);
+				while (ri[j] == -1 && normal_len < 3);
 			}
 			if (ccms[ri[j] - 1].Size() < 7)
 			{

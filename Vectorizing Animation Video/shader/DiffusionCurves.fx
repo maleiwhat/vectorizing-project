@@ -506,7 +506,12 @@ PS_OUTPUT DiffusePS(PS_INPUT In)
 // 	if (g_blurOn)
 // 		Out.oColor /= 6;
 // 	else
-
+	if (Out.oColor.x < 0)
+		Out.oColor.x = 0;
+	if (Out.oColor.y < 0)
+		Out.oColor.y = 0;
+	if (Out.oColor.z < 0)
+		Out.oColor.z = 0;
 		Out.oColor /= 4;
 	return Out;
 }

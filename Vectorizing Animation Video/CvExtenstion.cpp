@@ -1712,6 +1712,8 @@ void S3_1FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y,
 	{
 		Erosion(mask2, 1, erosion);
 	}
+	//Dilation(mask2, 1, 5);
+	Erosion(mask2, 1, 2);
 	CvLines points2;
 	cv::findContours(mask22, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
 	ccms.push_back(ColorConstraint());
@@ -1723,7 +1725,7 @@ void S3_1FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y,
 			uchar& v = mask2.at<uchar>(i, j);
 			if (v > 0)
 			{
-				ccm.AddPoint(j - 1, i - 1, ori_image.at<cv::Vec3b>(i/2, j/2));
+				ccm.AddPoint(j - 1, i - 1, ori_image.at<cv::Vec3b>(i / 2, j / 2));
 			}
 		}
 	}
@@ -1734,7 +1736,7 @@ void S3_1FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y,
 			uchar& v = mask22.at<uchar>(i, j);
 			if (v > 0)
 			{
-				out.at<cv::Vec3b>(i/2, j/2) = ccm.GetColorCvPoint(j - 1, i - 1);
+				out.at<cv::Vec3b>(i / 2, j / 2) = ccm.GetColorCvPoint(j - 1, i - 1);
 			}
 		}
 	}

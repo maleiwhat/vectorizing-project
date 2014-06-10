@@ -140,3 +140,4 @@ void FixEndWidth(Vector3s& width, int len);
 bool intersect(const Vector2& a1, const Vector2& a2, const Vector2& b1, const Vector2& b2);
 bool CheckAngle(double a1, double a2, double limitA);
 
+void AddNewLineEndPoint(Acutes& res, const LineEndPoint& lep, double sdistance);
