@@ -321,6 +321,9 @@
     <ClInclude Include="ColorConstraintMathModel.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="SLIC.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="algSpline.cpp">
@@ -570,6 +573,9 @@
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="ColorConstraintMathModel.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="SLIC.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>

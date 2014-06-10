@@ -272,6 +272,7 @@
     <ClInclude Include="ReadVideo.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="shared_ptr.h" />
+    <ClInclude Include="SLIC.h" />
     <ClInclude Include="SplineFragment.h" />
     <ClInclude Include="SplineShape.h" />
     <ClInclude Include="stdafx.h" />
@@ -379,6 +380,7 @@
     <ClCompile Include="PositionGraph_Node.cpp" />
     <ClCompile Include="PropertiesWnd.cpp" />
     <ClCompile Include="ReadVideo.cpp" />
+    <ClCompile Include="SLIC.cpp" />
     <ClCompile Include="SplineFragment.cpp" />
     <ClCompile Include="SplineShape.cpp" />
     <ClCompile Include="stdafx.cpp">
