@@ -136,7 +136,7 @@ D3DApp::D3DApp()
 	m_pCurveVertex2Layout = NULL;
 	m_pCurveVertex2Buffer = NULL;
 	m_pDepthStencil = NULL;
-	m_polySize = 0.5;
+	m_polySize = 2;
 	m_diffTex = 0;
 	m_diffSteps = 12;
 	m_diffdistDirTexture = NULL;
@@ -1782,11 +1782,11 @@ void D3DApp::InterDraw(bool drawDiffusion)
 		destTexTV[2] = m_otherTextureTV;
 		m_DeviceContext->OMSetRenderTargets(3, destTexTV, m_pDepthStencilView);
 		m_pDrawVectorsTechnique->GetDesc(&techDesc);
-		for (UINT p = 0; p < 4 && p < techDesc.Passes; ++p)
+		for (UINT p = 0; p < 5 && p < techDesc.Passes; ++p)
 		{
 			if (p == 1)
 			{
-				continue;
+				//continue;
 			}
 			m_pDrawVectorsTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
 			m_DeviceContext->Draw(m_CurveVertexes.size(), 0);
@@ -2310,8 +2310,8 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 		vtx1.rcolor.w = 0;
 		vtx2.lcolor.w = 0;
 		vtx2.rcolor.w = 0;
-		//for (int j = 0; j < now_line.size() - 1; ++j)
-		for (int j = 1; j < now_line.size() - 2; ++j)
+		for (int j = 0; j < now_line.size() - 1; ++j)
+		//for (int j = 1; j < now_line.size() - 2; ++j)
 		{
 // 			const int nodraw = 1;
 // 			if (now_lcolor[j].x < nodraw && now_lcolor[j].y < nodraw && now_lcolor[j].z < nodraw)
@@ -2336,12 +2336,12 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 			vtx1.rcolor.x = now_rcolor[j].x * scale;
 			vtx1.rcolor.y = now_rcolor[j].y * scale;
 			vtx1.rcolor.z = now_rcolor[j].z * scale;
-			vtx2.lcolor.x = now_lcolor[j + 1].x * scale;
-			vtx2.lcolor.y = now_lcolor[j + 1].y * scale;
-			vtx2.lcolor.z = now_lcolor[j + 1].z * scale;
-			vtx2.rcolor.x = now_rcolor[j + 1].x * scale;
-			vtx2.rcolor.y = now_rcolor[j + 1].y * scale;
-			vtx2.rcolor.z = now_rcolor[j + 1].z * scale;
+			vtx2.lcolor.x = now_lcolor[j].x * scale;
+			vtx2.lcolor.y = now_lcolor[j].y * scale;
+			vtx2.lcolor.z = now_lcolor[j].z * scale;
+			vtx2.rcolor.x = now_rcolor[j].x * scale;
+			vtx2.rcolor.y = now_rcolor[j].y * scale;
+			vtx2.rcolor.z = now_rcolor[j].z * scale;
 			vtx1.pos.x = now_line[j].x;
 			vtx1.pos.y = m_PicH - now_line[j].y;
 			vtx2.pos.x = now_line[j + 1].x;
@@ -2354,12 +2354,12 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 			continue;
 		}
 		curveline.front().nb = D3DXVECTOR2(10000.0f, 10000.0f);
-		for (int j = 2; j < curveline.size(); j += 2)
+		for (int j = 2; j < curveline.size()-2; j += 2)
 		{
 			curveline[j].nb = curveline[j - 2].pos;
 			curveline[j - 1].nb = curveline[j + 1].pos;
 		}
-		(curveline.end() - 2)->nb = (curveline.end() - 4)->pos;
+		//(curveline.end() - 2)->nb = (curveline.end() - 4)->pos;
 		curveline.back().nb = D3DXVECTOR2(10000.0f, 10000.0f);
 		m_CurveVertexes.insert(m_CurveVertexes.end(), curveline.begin(), curveline.end());
 	}

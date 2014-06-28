@@ -44,7 +44,7 @@ public:
 		int&						numlabels,
                 const int&					K,//required number of superpixels
                 const double&                                   compactness);//10-20 is a good value for CIELAB space
-	//============================================================================
+	//================================== ==========================================
 	// Supervoxel segmentation for a given step size (supervoxel size ~= step*step*step)
 	//============================================================================
 	void DoSupervoxelSegmentation(
@@ -87,7 +87,7 @@ public:
 		const unsigned int&			color, 
 		int tag_num);
 
-private:
+protected:
 	//============================================================================
 	// The main SLIC algorithm for generating superpixels
 	//============================================================================
@@ -203,7 +203,7 @@ private:
 		const int					height,
 		int*&						nlabels,//input labels that need to be corrected to remove stray labels
 		int&						numlabels,//the number of labels changes in the end if segments are removed
-		const int&					K); //the number of superpixels desired by the user
+		const int&					K); //the number of super pixels desired by the user
 	//============================================================================
 	// Post-processing of SLIC supervoxel segmentation, to avoid stray labels.
 	//============================================================================
@@ -215,7 +215,7 @@ private:
 		int&						numlabels,
 		const int&					STEP);
 
-private:
+protected:
 	int										m_width;
 	int										m_height;
 	int										m_depth;

@@ -644,6 +644,207 @@ ints2d FixIndexs(const ints2d& widths, int range)
 	return ans;
 }
 
+
+ints Maxmums(const ints& cvp)
+{
+	ints cps = cvp;
+	std::map<int, int> score;
+	for (int i = 0; i < cvp.size(); ++i)
+	{
+		if (score.find(cvp[i]) == score.end())
+		{
+			score[cvp[i]] = 1;
+		}
+		else
+		{
+			score[cvp[i]] += 1;
+		}
+	}
+	int maxmum = 0;
+	int maxid = 0;
+	for (std::map<int, int>::iterator it = score.begin(); it != score.end(); ++it)
+	{
+		if (it->second > maxmum)
+		{
+			maxid = it->first;
+			maxmum = it->second;
+		}
+	}
+	for (int i = 0; i < cps.size(); ++i)
+	{
+		cps[i] = maxid;
+	}
+	return cps;
+}
+
+ints2d Maxmums(const ints2d& widths)
+{
+	ints2d ans(widths.size());
+	for (int i = 0; i < widths.size(); ++i)
+	{
+		const ints& aa = widths.at(i);
+		ans[i] = Maxmums(aa);
+	}
+	return ans;
+}
+
+
+ints Maxmums2(const ints& cvp, Line& line)
+{
+	ints cps = cvp;
+	std::map<int, int> score;
+	ints isect_idx;
+	isect_idx.clear();
+	double_vector angles = ComputeAngle(line);
+	double threshold = angles[1];
+	for (int p1 = 1; p1 < line.size() - 2; ++p1)
+	{
+		double ra1 = fmod(angles[p1] + 360, 360);
+		double ra2 = fmod(threshold + 360, 360);
+		if (ra1 > ra2)
+		{
+			std::swap(ra1, ra2);
+		}
+		if (!(abs(ra1 - ra2) < 90 || abs(ra1 + 360 - ra2) < 90))
+		{
+			isect_idx.push_back(p1);
+			p1 += 5;
+		}
+		threshold = angles[p1];
+	}
+	std::sort(isect_idx.begin(), isect_idx.end());
+	if (!isect_idx.empty())
+	{
+		// begin
+		{
+			for (int i = 0; i < isect_idx[0]; ++i)
+			{
+				if (score.find(cvp[i]) == score.end())
+				{
+					score[cvp[i]] = 1;
+				}
+				else
+				{
+					score[cvp[i]] += 1;
+				}
+			}
+			int maxmum = 0;
+			int maxid = 0;
+			for (std::map<int, int>::iterator it = score.begin(); it != score.end(); ++it)
+			{
+				if (it->second > maxmum)
+				{
+					maxid = it->first;
+					maxmum = it->second;
+				}
+			}
+			for (int i = 0; i < isect_idx[0]; ++i)
+			{
+				cps[i] = maxid;
+			}
+		}
+		// between
+		for (int n = 1; n < isect_idx.size(); ++n)
+		{
+			int ibeg = isect_idx[n - 1];
+			int iend = isect_idx[n];
+			for (int i = ibeg; i < iend; ++i)
+			{
+				if (score.find(cvp[i]) == score.end())
+				{
+					score[cvp[i]] = 1;
+				}
+				else
+				{
+					score[cvp[i]] += 1;
+				}
+			}
+			int maxmum = 0;
+			int maxid = 0;
+			for (std::map<int, int>::iterator it = score.begin(); it != score.end(); ++it)
+			{
+				if (it->second > maxmum)
+				{
+					maxid = it->first;
+					maxmum = it->second;
+				}
+			}
+			for (int i = ibeg; i < iend; ++i)
+			{
+				cps[i] = maxid;
+			}
+		}
+		// end
+		{
+			for (int i = isect_idx.back(); i < cvp.size(); ++i)
+			{
+				if (score.find(cvp[i]) == score.end())
+				{
+					score[cvp[i]] = 1;
+				}
+				else
+				{
+					score[cvp[i]] += 1;
+				}
+			}
+			int maxmum = 0;
+			int maxid = 0;
+			for (std::map<int, int>::iterator it = score.begin(); it != score.end(); ++it)
+			{
+				if (it->second > maxmum)
+				{
+					maxid = it->first;
+					maxmum = it->second;
+				}
+			}
+			for (int i = isect_idx.back(); i < cvp.size(); ++i)
+			{
+				cps[i] = maxid;
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < cvp.size(); ++i)
+		{
+			if (score.find(cvp[i]) == score.end())
+			{
+				score[cvp[i]] = 1;
+			}
+			else
+			{
+				score[cvp[i]] += 1;
+			}
+		}
+		int maxmum = 0;
+		int maxid = 0;
+		for (std::map<int, int>::iterator it = score.begin(); it != score.end(); ++it)
+		{
+			if (it->second > maxmum)
+			{
+				maxid = it->first;
+				maxmum = it->second;
+			}
+		}
+		for (int i = 0; i < cps.size(); ++i)
+		{
+			cps[i] = maxid;
+		}
+	}
+	return cps;
+}
+
+ints2d Maxmums2(const ints2d& widths, Lines& line)
+{
+	ints2d ans(widths.size());
+	for (int i = 0; i < widths.size(); ++i)
+	{
+		const ints& aa = widths.at(i);
+		ans[i] = Maxmums2(aa, line[i]);
+	}
+	return ans;
+}
+
 Line CleanOrphanedLineWidths(const Line& cvp, int num)
 {
 	Line cps = cvp;
@@ -1416,7 +1617,7 @@ void LinkLineEnds(LineEnds& les, double distance, double angle)
 	for (int i = 0; i < (int)les.size(); ++i)
 	{
 		LineEnd& le1 = les[i];
-		for (int j = 0; j < (int)les.size(); ++j)
+		for (int j = i + 1; j < (int)les.size(); ++j)
 		{
 			if (i != j)
 			{
@@ -1934,6 +2135,189 @@ void ConnectLineEnds3(const LineEnds& les, Lines& pos, Lines& width)
 	width = newwidth;
 }
 
+
+void ConnectLineEnds4(const LineEnds& les, Lines& pos, Lines& width)
+{
+	std::vector<bool> marked(pos.size(), false);
+	Lines newpos;
+	Lines newwidth;
+	int cc = 0;
+	for (LineEnds::const_iterator it1 = les.begin(); it1 != les.end(); ++it1)
+	{
+		const LineEnd& le1 = *it1;
+		if (le1.beglinks.size() > 1)
+		{
+			int nowid = le1.idx;
+			if (marked[nowid])
+			{
+				continue;
+			}
+			const Line& loopline = pos[nowid];
+			Vector2 beg = loopline.front();
+			std::vector<Vector2*> endpts;
+			Vector2 sum;
+			for (int i = 0; i < le1.beglinks.size(); ++i)
+			{
+				nowid = le1.beglinks[i];
+				double dis1 = pos[nowid].front().distance(beg);
+				double dis2 = pos[nowid].back().distance(beg);
+				if (dis1 < dis2)
+				{
+					endpts.push_back(&(pos[nowid][0]));
+					sum += pos[nowid][0];
+				}
+				else
+				{
+					endpts.push_back(&(pos[nowid][pos[nowid].size() - 1]));
+					sum += pos[nowid][pos[nowid].size() - 1];
+				}
+			}
+			sum /= le1.beglinks.size();
+			for (int i = 0; i < endpts.size(); ++i)
+			{
+				*(endpts[i]) = sum;
+			}
+		}
+		if (le1.endlinks.size() > 1)
+		{
+			int nowid = le1.idx;
+			if (marked[nowid])
+			{
+				continue;
+			}
+			const Line& loopline = pos[nowid];
+			Vector2 end = loopline.back();
+			std::vector<Vector2*> endpts;
+			Vector2 sum;
+			for (int i = 0; i < le1.endlinks.size(); ++i)
+			{
+				nowid = le1.endlinks[i];
+				double dis1 = pos[nowid].front().distance(end);
+				double dis2 = pos[nowid].back().distance(end);
+				if (dis1 < dis2)
+				{
+					endpts.push_back(&(pos[nowid][0]));
+					sum += pos[nowid][0];
+				}
+				else
+				{
+					endpts.push_back(&(pos[nowid][pos[nowid].size() - 1]));
+					sum += pos[nowid][pos[nowid].size() - 1];
+				}
+			}
+			sum /= le1.endlinks.size();
+			for (int i = 0; i < endpts.size(); ++i)
+			{
+				*(endpts[i]) = sum;
+			}
+		}
+		if (le1.beglinks.size() == 1)
+		{
+			int nowid = le1.idx;
+			if (marked[nowid])
+			{
+				continue;
+			}
+			Line addline;
+			Line addwidth;
+			addline.insert(addline.end(), pos[nowid].rbegin(), pos[nowid].rend());
+			addwidth.insert(addwidth.end(), width[nowid].rbegin(), width[nowid].rend());
+			marked[nowid] = true;
+			nowid = le1.beglinks.front();
+			while (nowid != -1 && !marked[nowid])
+			{
+				marked[nowid] = true;
+				int next = nowid;
+				const Line& loopline = pos[nowid];
+				const Line& loopwidth = width[nowid];
+				double dis1 = loopline.front().distance(addline.back());
+				double dis2 = loopline.back().distance(addline.back());
+				if (dis1 < dis2)
+				{
+					addline.insert(addline.end(), loopline.begin(), loopline.end());
+					addwidth.insert(addwidth.end(), loopwidth.begin(), loopwidth.end());
+					if (!les[nowid].endlinks.empty())
+					{
+						next = les[nowid].endlinks.back();
+					}
+				}
+				else
+				{
+					addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+					addwidth.insert(addwidth.end(), loopwidth.rbegin(), loopwidth.rend());
+					if (!les[nowid].beglinks.empty())
+					{
+						next = les[nowid].beglinks.front();
+					}
+				}
+				if (next == nowid)
+				{
+					nowid = -1;
+				}
+			}
+			newpos.push_back(addline);
+			newwidth.push_back(addwidth);
+		}
+		if (le1.endlinks.size() == 1)
+		{
+			int nowid = le1.idx;
+			if (marked[nowid])
+			{
+				continue;
+			}
+			Line addline;
+			Line addwidth;
+			addline.insert(addline.end(), pos[nowid].begin(), pos[nowid].end());
+			addwidth.insert(addwidth.end(), width[nowid].begin(), width[nowid].end());
+			marked[nowid] = true;
+			nowid = le1.endlinks.front();
+			while (nowid != -1 && !marked[nowid])
+			{
+				marked[nowid] = true;
+				int next = nowid;
+				const Line& loopline = pos[nowid];
+				const Line& loopwidth = width[nowid];
+				double dis1 = loopline.front().distance(addline.back());
+				double dis2 = loopline.back().distance(addline.back());
+				if (dis1 < dis2)
+				{
+					addline.insert(addline.end(), loopline.begin(), loopline.end());
+					addwidth.insert(addwidth.end(), loopwidth.begin(), loopwidth.end());
+					if (!les[nowid].endlinks.empty())
+					{
+						next = les[nowid].endlinks.back();
+					}
+				}
+				else
+				{
+					addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+					addwidth.insert(addwidth.end(), loopwidth.rbegin(), loopwidth.rend());
+					if (!les[nowid].beglinks.empty())
+					{
+						next = les[nowid].beglinks.front();
+					}
+				}
+				if (next == nowid)
+				{
+					nowid = -1;
+				}
+			}
+			newpos.push_back(addline);
+			newwidth.push_back(addwidth);
+		}
+	}
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		if (!marked[i])
+		{
+			newpos.push_back(pos[i]);
+			newwidth.push_back(width[i]);
+		}
+	}
+	pos = newpos;
+	width = newwidth;
+}
+
 void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d2,
 						 double angle)
 {
@@ -2034,7 +2418,7 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 							nlen = tlen;
 						}
 					}
-					nlen *= 0.3;
+					nlen *= 0.6;
 					if (dis1 < dis2 && orgin_id1 < ELONGATION_LEN)
 					{
 						elongation.erase(elongation.begin());
@@ -2055,7 +2439,8 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 								elongation.insert(elongation.begin(), orgin[i] - normals[i] *nlen * (i / (double)minbegp));
 							}
 						}
-						//elongation.insert(elongation.begin(), orgin.front());
+						elongation.insert(elongation.begin(), orgin.front());
+						elongationw.insert(elongationw.begin(), elongationw.front());
 					}
 					else if (dis1 < dis2 && (orgin.size() - orgin_id1) < ELONGATION_LEN)
 					{
@@ -2080,7 +2465,8 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 												  orgin[i] - normals[i] *nlen * ((orgin.size() - i) / (double)div));
 							}
 						}
-						//elongation.insert(elongation.begin(), orgin.back());
+						elongation.insert(elongation.begin(), orgin.back());
+						elongationw.insert(elongationw.begin(), elongationw.front());
 					}
 				}
 			}
@@ -2130,7 +2516,7 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 							nlen = tlen;
 						}
 					}
-					nlen *= 0.4;
+					nlen *= 0.6;
 					if (dis1 < dis2 && orgin_id1 < ELONGATION_LEN)
 					{
 						elongation.erase(elongation.end() - 1);
@@ -2151,7 +2537,8 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 								elongation.insert(elongation.end(), orgin[i] - normals[i] *nlen * (i / (double)minendp));
 							}
 						}
-						//elongation.insert(elongation.end(), orgin.front());
+						elongation.insert(elongation.end(), orgin.front());
+						elongationw.insert(elongationw.end(), elongationw.back());
 					}
 					else if (dis1 > dis2 && (orgin.size() - orgin_id1) < ELONGATION_LEN)
 					{
@@ -2176,13 +2563,15 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 												  orgin[i] - normals[i]*nlen * ((orgin.size() - i) / (double)div));
 							}
 						}
-						//elongation.insert(elongation.end(), orgin.back());
+						elongation.insert(elongation.end(), orgin.back());
+						elongationw.insert(elongationw.end(), elongationw.back());
 					}
 				}
 			}
 		}
 	}
 }
+
 void ConnectNearestLines(const LineEnds& les, Lines& pos, Color2Side& width, double d2,
 						 double angle)
 {
@@ -2256,6 +2645,7 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Color2Side& width, dou
 		}
 	}
 }
+
 void IncreaseDensity(Line& pos, Line& pos2)
 {
 	{
@@ -2923,10 +3313,12 @@ void MarkHasLink_LineEnds(LineEnds& les, const Lines& cvp)
 		}
 	}
 }
+
 double cross(const Vector2& o, const Vector2& a, const Vector2& b)
 {
 	return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
 }
+
 bool intersect(const Vector2& p1, const Vector2& p2, const Vector2& p)
 {
 	return p[0] >= std::min(p1[0], p2[0])
@@ -2934,6 +3326,7 @@ bool intersect(const Vector2& p1, const Vector2& p2, const Vector2& p)
 		   && p[1] >= std::min(p1[1], p2[1])
 		   && p[1] <= std::max(p1[1], p2[1]);
 }
+
 bool intersect(const Vector2& a1, const Vector2& a2, const Vector2& b1, const Vector2& b2)
 {
 	double c1 = cross(a1, a2, b1);
@@ -2944,23 +3337,57 @@ bool intersect(const Vector2& a1, const Vector2& a2, const Vector2& b1, const Ve
 	{
 		return true;
 	}
-	if (abs(c1) < 0.001 && intersect(a1, a2, b1))
+	if (abs(c1) < 0.0001 && intersect(a1, a2, b1))
 	{
 		return true;
 	}
-	if (abs(c2) < 0.001 && intersect(a1, a2, b2))
+	if (abs(c2) < 0.0001 && intersect(a1, a2, b2))
 	{
 		return true;
 	}
-	if (abs(c3) < 0.001 && intersect(b1, b2, a1))
+	if (abs(c3) < 0.0001 && intersect(b1, b2, a1))
 	{
 		return true;
 	}
-	if (abs(c4) < 0.001 && intersect(b1, b2, a2))
+	if (abs(c4) < 0.0001 && intersect(b1, b2, a2))
 	{
 		return true;
 	}
 	return false;
+}
+
+bool intersect1D(double a1, double a2, double b1, double b2)
+{
+	if (a1 > a2)
+	{
+		std::swap(a1, a2);
+	}
+	if (b1 > b2)
+	{
+		std::swap(b1, b2);
+	}
+	return std::max(a1, b1) <= std::min(a2, b2);
+}
+
+// bool intersect(const Vector2& a1, const Vector2& a2, const Vector2& b1, const Vector2& b2)
+// {
+//  return intersect1D(a1.x, a2.x, b1.x, b2.x)
+//         && intersect1D(a1.y, a2.y, b1.y, b2.y)
+//         && cross(a1, a2, b1) * cross(a1, a2, b2) <= 0
+//         && cross(b1, b2, a1) * cross(b1, b2, a2) <= 0;
+// }
+
+Vector2 intersection(Vector2& a1, Vector2& a2, Vector2& b1, Vector2& b2)
+{
+	Vector2 a = a2 - a1, b = b2 - b1, s = b1 - a1;
+	// 兩線平行，交點不存在。
+	// 兩線重疊，交點無限多。
+	if (a.crossProduct(b) == 0)
+	{
+		return a1;
+	}
+	// 計算交點
+	return a1 + a * (s.crossProduct(b)) / (a.crossProduct(b));
 }
 
 Line FixedLineWidth(const Line& cvp, int nouse)
@@ -3020,7 +3447,7 @@ ints MedianLenN(const ints& cvp, int n, int repeat /*= 1*/)
 		newcps.clear();
 		for (int i = 0; i < cps.size(); ++i)
 		{
-			int s_idx = i - halfn+1;
+			int s_idx = i - halfn + 1;
 			int e_idx = i + halfn;
 			if (s_idx < 0)
 			{
@@ -3049,7 +3476,7 @@ ints MedianLenN(const ints& cvp, int n, int repeat /*= 1*/)
 	return cps;
 }
 
-void AddNewLineEndPoint( Acutes& res, const LineEndPoint& lep, double sdistance )
+void AddNewLineEndPoint(Acutes& res, const LineEndPoint& lep, double sdistance)
 {
 	Vector2 p;
 	if (lep.dir == LineEndPoint::BEGIN)
@@ -3080,3 +3507,164 @@ void AddNewLineEndPoint( Acutes& res, const LineEndPoint& lep, double sdistance 
 		res.push_back(ac);
 	}
 }
+
+Lines LineSplitAtIntersection(Lines& lines, int nochecklen)
+{
+	Lines res;
+	// isect = intersection
+	ints isect_idx;
+	Vector2s isect_pts;
+	for (int l1 = 0; l1 < lines.size(); ++l1)
+	{
+		isect_idx.clear();
+		isect_pts.clear();
+		Line& line1 = lines[l1];
+		for (int l2 = 0; l2 < lines.size(); ++l2)
+		{
+			if (l1 != l2)
+			{
+				Line& line2 = lines[l2];
+				for (int p1 = nochecklen; p1 < line1.size() - 1 - nochecklen; ++p1)
+				{
+					for (int p2 = 0; p2 < line2.size() - 1; ++p2)
+					{
+						if (p2 == 0)
+						{
+							Vector2 p21 = line2[0] - line2[1];
+							p21.normalise();
+							p21 *= 3;
+							if (intersect(line1[p1], line1[p1 + 1], line2[p2] + p21, line2[p2 + 1]))
+							{
+								isect_idx.push_back(p1);
+								isect_pts.push_back(intersection(line1[p1], line1[p1 + 1], line2[p2] + p21, line2[p2 + 1]));
+							}
+						}
+						else if (p2 == line2.size() - 2)
+						{
+							Vector2 p21 = line2[p2 + 1] - line2[p2];
+							p21.normalise();
+							p21 *= 3;
+							if (intersect(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1] + p21))
+							{
+								isect_idx.push_back(p1);
+								isect_pts.push_back(intersection(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1] + p21));
+							}
+						}
+						else if (intersect(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1]))
+						{
+							isect_idx.push_back(p1);
+							isect_pts.push_back(intersection(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1]));
+						}
+					}
+				}
+			}
+			else
+			{
+				Line& line2 = lines[l2];
+				for (int p1 = nochecklen; p1 < line1.size() - 1 - nochecklen; ++p1)
+				{
+					for (int p2 = 0; p2 < line2.size() - 1; ++p2)
+					{
+						if (abs(p1 - p2) > 3)
+						{
+							if (p2 == 0)
+							{
+								Vector2 p21 = line2[0] - line2[1];
+								p21.normalise();
+								p21 *= 3;
+								if (intersect(line1[p1], line1[p1 + 1], line2[p2] + p21, line2[p2 + 1]))
+								{
+									isect_idx.push_back(p1);
+									isect_pts.push_back(intersection(line1[p1], line1[p1 + 1], line2[p2] + p21, line2[p2 + 1]));
+								}
+							}
+							else if (p2 == line2.size() - 2)
+							{
+								Vector2 p21 = line2[p2 + 1] - line2[p2];
+								p21.normalise();
+								p21 *= 3;
+								if (intersect(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1] + p21))
+								{
+									isect_idx.push_back(p1);
+									isect_pts.push_back(intersection(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1] + p21));
+								}
+							}
+							else if (intersect(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1]))
+							{
+								isect_idx.push_back(p1);
+								isect_pts.push_back(intersection(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1]));
+							}
+						}
+					}
+				}
+			}
+		}
+		Line nline;
+		for (int i = 0; i < line1.size(); ++i)
+		{
+			nline.push_back(line1[i]);
+			ints::iterator it = std::find(isect_idx.begin(), isect_idx.end(), i);
+			if (it != isect_idx.end())
+			{
+				int idx = it - isect_idx.begin();
+				if (idx < isect_pts.size())
+				{
+					Vector2& isect = isect_pts.at(idx);
+					nline.push_back(isect);
+					res.push_back(nline);
+					nline.clear();
+					nline.push_back(isect);
+				}
+			}
+		}
+		res.push_back(nline);
+	}
+	return res;
+}
+
+Lines LineSplitAtTurning(Lines& lines, int nochecklen)
+{
+	Lines res;
+	// isect = intersection
+	ints isect_idx;
+	for (int l1 = 0; l1 < lines.size(); ++l1)
+	{
+		isect_idx.clear();
+		Line& line1 = lines[l1];
+		double_vector angles = ComputeAngle(line1);
+		double threshold = angles[nochecklen];
+		for (int p1 = nochecklen; p1 < line1.size() - 1 - nochecklen; ++p1)
+		{
+			double ra1 = fmod(angles[p1] + 360, 360);
+			double ra2 = fmod(threshold + 360, 360);
+			if (ra1 > ra2)
+			{
+				std::swap(ra1, ra2);
+			}
+			if (!(abs(ra1 - ra2) < 90 || abs(ra1 + 360 - ra2) < 90))
+			{
+				isect_idx.push_back(p1);
+				p1 += 5;
+			}
+			threshold = angles[p1];
+		}
+		Line nline;
+		for (int i = 0; i < line1.size(); ++i)
+		{
+			nline.push_back(line1[i]);
+			ints::iterator it = std::find(isect_idx.begin(), isect_idx.end(), i);
+			if (it != isect_idx.end())
+			{
+				int idx = it - isect_idx.begin();
+				if (idx < isect_idx.size())
+				{
+					res.push_back(nline);
+					nline.clear();
+				}
+			}
+		}
+		res.push_back(nline);
+	}
+	return res;
+}
+

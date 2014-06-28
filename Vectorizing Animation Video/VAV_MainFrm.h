@@ -21,6 +21,7 @@
 #include "Patch.h"
 #include "ReadVideo.h"
 #include "DiffusionFrame.h"
+#include "MySLIC.h"
 
 class VAV_View;
 class VAV_MainFrame : public CFrameWndEx
@@ -39,6 +40,15 @@ public:
 	DiffusionFrames	m_DiffusionFrames;
 	// use for block
 	Lines		m_BlackLine2;
+	// slic
+	MySLIC*		m_SLIC;
+	cv::Mat		m_SLIC_Img;
+	uints		m_SLIC_Contour;
+	uints		m_Buff;
+	MySLIC::SLICLabels	m_Labels;
+	ints	m_LabelsMap;
+	int		m_NumLabels;
+	// slic end
 	int     m_PatchTransparency;
 	int     m_SelectPatchTransparency;
 	int     m_BlackRegionThreshold;
@@ -75,6 +85,7 @@ public:
 	void AddFrame(cv::Mat img);
 	void OnFileOpenVideo();
 	void OnFileOpenPicture();
+	void Do_SLIC(double m_compatcness , double m_spcount);
 	VAV_View* GetVavView();
 // ÂÐ¼g
 public:
@@ -182,6 +193,7 @@ public:
 	afx_msg void OnUpdateCheck_BoundaryCurvesVectorization(CCmdUI *pCmdUI);
 	afx_msg void OnCheck_IsosurfaceRegion();
 	afx_msg void OnUpdateCheck_IsosurfaceRegion(CCmdUI *pCmdUI);
+	
 };
 
 

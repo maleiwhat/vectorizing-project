@@ -9,12 +9,69 @@
 #include "IFExtenstion.h"
 #include "CmCurveEx.h"
 
+
+void VAV_MainFrame::Do_SLIC(double m_compatcness , double m_spcount)
+{
+	using namespace cv;
+	m_SLIC_Img = m_vavImage.Clone();
+	m_SLIC = new MySLIC(m_SLIC_Img);
+	double compactness = m_compatcness; //40.0; /// 1~40
+	const int Width = m_SLIC_Img.cols;
+	const int Height = m_SLIC_Img.rows;
+	int size = Width * Height;
+	int spcount = (int)log((double)size) * m_spcount ;/*100*/ //150;//
+	m_LabelsMap.resize(size);
+	m_Labels.clear();
+	m_NumLabels = 0;
+	///RGB轉UINT  因SLIC中所使用的顏色為ARGB，故先將原圖形做轉換後存至img以利計算
+	m_Buff.resize(size);
+	for (int j = 0; j < Height; j++)
+	{
+		for (int i = 0; i < Width; i++)
+		{
+			cv::Vec3b salColor = m_SLIC_Img.at<cv::Vec3b>(j, i);   //CV_IMAGE_ELEM(image,element type,row,col)
+			m_Buff[j * Width + i] = salColor[0] + salColor[1] * 256 + salColor[2] * 256 * 256;
+		}
+	}
+	int* lm = &m_LabelsMap[0];
+	///--------SLIC -> previous version--------
+	m_SLIC->DoSuperpixelSegmentation_ForGivenSuperpixelSize(lm, m_Labels, m_NumLabels,
+			spcount, compactness);
+	#pragma omp parallel sections
+	{
+		#pragma omp section
+		{
+			m_SLIC->FindNeighbors(m_Labels, lm);
+		}
+		#pragma omp section
+		{
+			m_SLIC->FindBoxBoundary(m_Labels);
+		}
+	}
+	cv::imshow("slic img0", m_SLIC_Img);
+	m_SLIC_Contour.resize(size, 0);
+	unsigned int* slicC = &m_SLIC_Contour[0];
+	m_SLIC->DrawContoursAroundSegments(slicC, lm, Width, Height, 0, 0);
+	for (int i = 1; i < Height - 1; i++)
+	{
+		for (int j = 1; j < Width - 1; j++)
+		{
+			if (m_SLIC_Contour[i * Width + j] != 0)
+			{
+				m_SLIC_Img.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
+			}
+		}
+	}
+	cv::imshow("slic img", m_SLIC_Img);
+	cv::waitKey();
+}
+
+
 void VAV_MainFrame::OnButton_BuildVectorization()
 {
 	D3DApp& d3dApp = GetVavView()->GetD3DApp();
 	Lines decorativeLine;
 	vavImage expImg = m_vavImage.Clone();
-	expImg.ToExpImage();
 	expImg.ToExpImage();
 	const int MASK1_SIZE = 5;
 	const int MASK2_SIZE = 5;
@@ -22,6 +79,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	cv::imshow("Origin Image", m_vavImage.GetCvMat());
 	cv::imshow("Exponential Image", expImg.GetCvMat());
 	cv::Mat ccp1 = expImg.Clone(), ccp2 = expImg.Clone();
+	//Do_SLIC(10, 3);
 	CmCurveEx* ccp1_curve = NULL;
 	CmCurveEx* ccp2_curve = NULL;
 	cv::Mat Bblack_Fred1;
@@ -176,14 +234,6 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		lineColors = SmoothingLen5(lineColors, 0, 10);
 		m_BLineWidth = SmoothingLen5(m_BLineWidth, 0, 10);
 		m_BlackLine = SmoothingLen5(m_BlackLine, 0, 15);
-     for (int i = 0; i < m_BlackLine.size(); ++i)
-     {
-         for (int j = 0; j < m_BlackLine[i].size(); ++j)
-         {
-             m_BlackLine[i][j] *= 2;
-             m_BLineWidth[i][j] *= 2;
-         }
-     }
 		d3dApp.AddLinesWidth(m_BlackLine, m_BLineWidth, lineColors);
 		d3dApp.SetScaleTemporary(1);
 		d3dApp.BuildPoint();
@@ -229,39 +279,56 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		m_BlackLine2 = GetLines(tpnts2d, 0.5, 0.5);
 		Lines tmp_width = m_BlackLine2;
 		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.5, 5);
-		//m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0, 5);
 		LineEnds les = GetLineEnds(m_BlackLine2);
 		LinkLineEnds180(les, 5, 60);
 		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
 		les = GetLineEnds(m_BlackLine2);
-		LinkLineEnds180(les, 5, 60);
+		LinkLineEnds180(les, 8, 60);
 		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
-		les = GetLineEnds(m_BlackLine2);
-		LinkLineEnds180(les, 10, 40);
-		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
-		les = GetLineEnds(m_BlackLine2);
-		LinkLineEnds180(les, 10, 40);
-		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
-		les = GetLineEnds(m_BlackLine2);
-		LinkLineEnds180(les, 15, 20);
-		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
-		les = GetLineEnds(m_BlackLine2);
-		LinkLineEnds180(les, 15, 30);
-		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
-		les = GetLineEnds(m_BlackLine2);
-		LinkLineEnds(les, 5, 30);
-		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+// 		les = GetLineEnds(m_BlackLine2);
+// 		LinkLineEnds180(les, 10, 40);
+// 		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+// 		les = GetLineEnds(m_BlackLine2);
+// 		LinkLineEnds180(les, 10, 40);
+// 		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+// 		les = GetLineEnds(m_BlackLine2);
+// 		LinkLineEnds180(les, 15, 20);
+// 		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+// 		les = GetLineEnds(m_BlackLine2);
+// 		LinkLineEnds180(les, 15, 30);
+// 		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+// 		les = GetLineEnds(m_BlackLine2);
+// 		LinkLineEnds(les, 5, 30);
+// 		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+		//無條件黏接
 //      les = GetLineEnds(m_BlackLine2);
-//      LinkLineEnds(les, 5, 180);
+//      LinkLineEnds(les, 4, 180);
 //      ConnectLineEnds3(les, m_BlackLine2, tmp_width);
-//      les = GetLineEnds(m_BlackLine2);
-//      LinkLineEnds(les, 5, 180);
 		IncreaseDensity(m_BlackLine2, tmp_width);
 		les = GetLineEnds(m_BlackLine2);
-		ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 20);
+		ConnectNearestLines(les, m_BlackLine2, tmp_width, 8, 20);
+		
+		les = GetLineEnds(m_BlackLine2);
+		LinkLineEnds(les, 3, 360);
+		ConnectLineEnds4(les, m_BlackLine2, tmp_width);
+		les = GetLineEnds(m_BlackLine2);
+		LinkLineEnds(les, 3, 360);
+		ConnectLineEnds4(les, m_BlackLine2, tmp_width);
+
+// 		cv::Mat LineSplit = MakeColorLineImage(m_vavImage, m_BlackLine2);
+// 		cv::imshow("before LineSplit", LineSplit);
+// 		m_BlackLine2 = LineSplitAtTurning(m_BlackLine2, 5);
+// 		LineSplit = MakeColorLineImage(m_vavImage, m_BlackLine2);
+// 		cv::imshow("after LineSplit", LineSplit);
+// 		tmp_width = m_BlackLine2;
+		//
+//      les = GetLineEnds(m_BlackLine2);
+//      LinkLineEnds(les, 3, 180);
+//      ConnectLineEnds3(les, m_BlackLine2, tmp_width);
 //      les = GetLineEnds(m_BlackLine2);
 //      ConnectLineEnds3(les, m_BlackLine2, tmp_width);
-		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.4, 5);
+
+		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.5, 8);
 		d3dApp.AddLines(m_BlackLine2);
 		d3dApp.SetScaleTemporary(1);
 		d3dApp.BuildPoint();
@@ -280,65 +347,18 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	}
 	cv::waitKey(10);
 	Lines isosurfaceLines;
-	cv::Mat isoimg, reginimg;
+	cv::Mat isoimg, reginimg, isolineimg;
 	if (m_ISOSURFACE_REGION)
 	{
 		isoimg = m_vavImage.Clone();
 		//cv::GaussianBlur(isoimg, isoimg, cv::Size(5, 5), 0, 0);
-		isoimg = MakeIsoSurfaceImg(isoimg, 32);
+		isoimg = MakeIsoSurfaceImg(isoimg, 64);
 		cv::imshow("IsoSurface", isoimg);
-	}
-	if (m_ISOSURFACE_REGION &&
-			m_ISOSURFACE_CONSTRAINT)
-	{
-		d3dApp.ClearSkeletonLines();
-		cv::Mat curveExtration = ccp2_simg.clone();
-		if (m_BOUNDARY_CURVES)
-		{
-			cvtColor(curveExtration, curveExtration, CV_BGR2GRAY);
-			Dilation(curveExtration, 2, 1);
-			//          isosurfaceLines = S7GetPatchs(isoimg, curveExtration, 0, 0);
-			isosurfaceLines = S6GetPatchs(isoimg, 0, 0, reginimg);
-		}
-		else
-		{
-			isosurfaceLines = S6GetPatchs(isoimg, 0, 0, reginimg);
-		}
-		isosurfaceLines = SmoothingLen5(isosurfaceLines, 0, 2);
-		d3dApp.AddLines(isosurfaceLines);
-		d3dApp.SetScaleTemporary(1);
-		d3dApp.BuildPoint();
-		d3dApp.InterSetRenderTransparencyOutput2();
-		cv::Mat isoline = d3dApp.DrawSceneToCvMat();
-		d3dApp.SetScaleRecovery();
-		cvtColor(isoline, isoline, CV_BGR2GRAY);
-		if (m_BOUNDARY_CURVES)
-		{
-			for (int i = 0; i < curveExtration.rows ; i++)
-			{
-				for (int j = 0; j < curveExtration.cols ; j++)
-				{
-					uchar& v1 = curveExtration.at<uchar>(i, j);
-					uchar& v2 = isoline.at<uchar>(i, j);
-					if (v1 > 0 || v2 > 0)
-					{
-						v2 = 1;
-					}
-					else
-					{
-						v2 = 0;
-					}
-				}
-			}
-		}
-		cvThin(isoline, isoline, 10);
-		normalize(isoline, isoline, 0, 255, cv::NORM_MINMAX);
-		cv::imshow("Isosurface Constraint", isoline);
-		d3dApp.SetScaleRecovery();
 	}
 	ColorConstraints ccms;
 	ColorConstraints ccms2;
 	cv::Mat cmmsIndexImg;
+	Lines colorline;
 	if (m_BOUNDARY_CURVES &&
 			m_REGION_GROWING)
 	{
@@ -348,7 +368,6 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		cv::Mat simg = d3dApp.DrawSceneToCvMat();
 		d3dApp.SetScaleRecovery();
 		cmmsIndexImg = simg.clone();
-		
 		cmmsIndexImg = TrapBallMaskAll(cmmsIndexImg);
 		cv::Mat vecout = m_vavImage.Clone();
 		vecout = cv::Scalar(0);
@@ -360,11 +379,12 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 			{
 				if (simg.at<cv::Vec3b>(i, j)[2] > 0)
 				{
-					ShowRegion.at<cv::Vec3b>(i/2, j/2) = cv::Vec3b(255, 255, 255);
+					ShowRegion.at<cv::Vec3b>(i / 2, j / 2) = cv::Vec3b(255, 255, 255);
 				}
 			}
 		}
 		cv::imshow("ShowRegion", ShowRegion);
+		//cmmsIndexImg = MakeIsoSurfaceImg(m_vavImage, 32);
 		CvPatchs cps = S2_2GetPatchs(cmmsIndexImg, m_vavImage, ccms2, vecout);
 		cv::imshow("vecout", vecout);
 		//cv::Mat isoimg = MakeIsoSurfaceImg(vecout, 32);
@@ -373,11 +393,11 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		Lines patchlines = GetLinesFromCvPatch(cps);
 		Color2Side patchColor = GetLinesColor(patchlines, ccms2);
 		patchlines = SmoothingLen5(patchlines, 0.5, 5);
-		d3dApp.AddDiffusionLines(patchlines, patchColor);
+		//d3dApp.AddDiffusionLines(patchlines, patchColor);
 		// set click patch
-		GetVavView()->m_patchs = cps;
-		GetVavView()->m_patchcolor = patchColor;
-		GetVavView()->m_patchlines = patchlines;
+// 		GetVavView()->m_patchs = cps;
+// 		GetVavView()->m_patchcolor = patchColor;
+// 		GetVavView()->m_patchlines = patchlines;
 		// show patch img
 		cv::Mat tmp = cmmsIndexImg.clone(), tmp2;
 		cv::RNG rng(12345);
@@ -394,24 +414,80 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 //          drawContours(tmp2, cltmp, 0, color2, -1, 8);
 //          //drawContours(tmp, cltmp, 0, cv::Scalar(255, 255, 255), 0, 8);
 //      }
-		cv::imshow("drawContours", tmp);
+		//cv::imshow("drawContours", tmp);
 		
-		S6ReColor(cmmsIndexImg, m_vavImage.Clone(), ccms);
-		GetVavView()->m_indexImg = cmmsIndexImg.clone();
-		cv::imshow("Trap-Ball Region ReColor", cmmsIndexImg);
-		GetVavView()->SetTexture(vavImage(cmmsIndexImg).GetDx11Texture());
+		//GetVavView()->m_indexImg = cmmsIndexImg.clone();
+		//cv::imshow("Trap-Ball Region ReColor", cmmsIndexImg);
+		//GetVavView()->SetTexture(vavImage(cmmsIndexImg).GetDx11Texture());
 		//cmmsIndexImg = ConvertToIndex(cmmsIndexImg, m_vavImage.Clone(), ccms);
 		//Index2Side i2s = GetLinesIndex2Side(cmmsIndexImg, m_BlackLine2, 2);
-		Index2Side i2s = GetLinesIndex2SideSmart(cmmsIndexImg, m_BlackLine2, ccms);
+		cv::Mat colorline1 = MakeColorLineImage(m_vavImage, m_BlackLine2);
+		colorline = LineSplitAtIntersection(m_BlackLine2, 1);
+		cv::Mat colorline2 = MakeColorLineImage(m_vavImage, colorline);
+		cv::imshow("color line 1", colorline1);
+		cv::imshow("color line 2", colorline2);
+		
+		d3dApp.AddLines(m_BlackLine2);
+	}
+	if (m_ISOSURFACE_REGION &&
+			m_ISOSURFACE_CONSTRAINT)
+	{
+		d3dApp.ClearSkeletonLines();
+		cv::Mat curveExtration = ccp2_simg.clone();
+		if (m_BOUNDARY_CURVES)
+		{
+// 			cvtColor(curveExtration, curveExtration, CV_BGR2GRAY);
+// 			Dilation(curveExtration, 2, 2);
+//          isosurfaceLines = S7GetPatchs(isoimg, curveExtration, 0, 0);
+			isosurfaceLines = S6GetPatchs(isoimg, 0, 0, reginimg);
+		}
+		else
+		{
+			isosurfaceLines = S6GetPatchs(isoimg, 0, 0, reginimg);
+		}
+		isosurfaceLines = SmoothingLen5(isosurfaceLines, 0, 2);
+		d3dApp.AddLines(isosurfaceLines);
+		d3dApp.SetScaleTemporary(1);
+		d3dApp.BuildPoint();
+		d3dApp.InterSetRenderTransparencyOutput2();
+		isolineimg = d3dApp.DrawSceneToCvMat();
+		d3dApp.SetScaleRecovery();
+		cv::imshow("Isosurface Constraint0", isolineimg);
+		S6ReColor(isolineimg, m_vavImage.Clone(), ccms);
+		Index2Side i2s = GetLinesIndex2SideSmart(isolineimg, colorline, ccms);
 		i2s.left = FixIndexs(i2s.left, 100);
 		i2s.right = FixIndexs(i2s.right, 100);
-// 		i2s.left = MedianLenN(i2s.left, 10, 3);
-// 		i2s.right = MedianLenN(i2s.right, 10, 3);
-		Color2Side color2s2 = LinesIndex2Color(m_BlackLine2, i2s, ccms2);
-		color2s2.left = FixLineColors(color2s2.left, 600, 10);
-		color2s2.right = FixLineColors(color2s2.right, 600, 10);
-		//d3dApp.AddDiffusionLines(m_BlackLine2, color2s2);
-		d3dApp.AddLines(m_BlackLine2);
+		i2s.left = Maxmums2(i2s.left, colorline);
+		i2s.right = Maxmums2(i2s.right, colorline);
+		Color2Side color2s2 = LinesIndex2Color(colorline, i2s, ccms);
+//      color2s2.left = FixLineColors(color2s2.left, 600, 10);
+//      color2s2.right = FixLineColors(color2s2.right, 600, 10);
+		d3dApp.AddDiffusionLines(colorline, color2s2);
+// 		cvtColor(isolineimg, isolineimg, CV_BGR2GRAY);
+// 		if (m_BOUNDARY_CURVES)
+// 		{
+// 			for (int i = 0; i < curveExtration.rows ; i++)
+// 			{
+// 				for (int j = 0; j < curveExtration.cols ; j++)
+// 				{
+// 					uchar& v1 = curveExtration.at<uchar>(i, j);
+// 					uchar& v2 = isolineimg.at<uchar>(i, j);
+// 					if (v1 == 0 && v2 > 0)
+// 					{
+// 						//v2 = 250;
+// 					}
+// 					else
+// 					{
+// 						v2 = 0;
+// 					}
+// 				}
+// 			}
+// 		}
+// 		//      cvThin(isolineimg, isolineimg, 10);
+// 		//      normalize(isolineimg, isolineimg, 0, 255, cv::NORM_MINMAX);
+// 		cv::imshow("Isosurface Constraint", isolineimg);
+// 		cvtColor(isolineimg, isolineimg, CV_GRAY2BGR);
+// 		d3dApp.SetScaleRecovery();
 	}
 	if (m_CONSTRAINT_CURVES_PARAMETER_2 &&
 			m_BOUNDARY_CURVES &&
@@ -439,7 +515,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		//color2s = GetLinesColor2Side(m_vavImage, m_BlackLine2, 3);
 		color2s.left = FixLineColors(color2s.left, 600, 10);
 		color2s.right = FixLineColors(color2s.right, 600, 10);
-		d3dApp.AddDiffusionLines(m_BlackLine2, color2s);
+		//d3dApp.AddDiffusionLines(m_BlackLine2, color2s);
 		d3dApp.ClearSkeletonLines();
 		d3dApp.SetScaleTemporary(1);
 		d3dApp.BuildPoint();
@@ -455,17 +531,20 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 			m_BOUNDARY_CURVES &&
 			m_REGION_GROWING)
 	{
-//      Vector3s2d colors;
-//      colors = GetLinesColor(m_vavImage, isosurfaceLines);
-//      colors = FixLineColors(colors, 400, 10);
-//      colors = MedianLen(colors, 20, 3);
-//      colors = SmoothingLen5(colors, 0, 10);
-//      d3dApp.AddDiffusionLines(isosurfaceLines, colors);
-		ints2d id2d = GetLinesIndex(cmmsIndexImg, isosurfaceLines);
-		id2d = FixIndexs(id2d, 30);
-		id2d = MedianLen5(id2d, 3);
-		Vector3s2d color2s = LinesIndex2Color(isosurfaceLines, id2d, ccms);
-		color2s = FixLineColors(color2s, 600, 10);
+		isosurfaceLines = GetAllLineFromLineImage(isolineimg);
+		d3dApp.ClearSkeletonLines();
+		d3dApp.AddLines(isosurfaceLines);
+		Vector3s2d colors;
+		colors = GetLinesColor(m_vavImage, isosurfaceLines);
+		colors = FixLineColors(colors, 400, 10);
+		colors = MedianLen(colors, 20, 3);
+		colors = SmoothingLen5(colors, 0, 10);
+		//d3dApp.AddDiffusionLines(isosurfaceLines, colors);
+//      ints2d id2d = GetLinesIndex(cmmsIndexImg, isosurfaceLines);
+//      id2d = FixIndexs(id2d, 30);
+//      id2d = MedianLen5(id2d, 3);
+//      Vector3s2d color2s = LinesIndex2Color(isosurfaceLines, id2d, ccms);
+//      color2s = FixLineColors(color2s, 600, 10);
 //      for (int i = 0; i < colors.size(); ++i)
 //      {
 //          for (int j = 0; j < colors[i].size(); ++j)
@@ -473,7 +552,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 //              color2s[i][j] = (colors[i][j] + color2s[i][j]) * 0.5;
 //          }
 //      }
-		d3dApp.AddDiffusionLines(isosurfaceLines, color2s);
+//		d3dApp.AddDiffusionLines(isosurfaceLines, color2s);
 		cv::waitKey(10);
 	}
 	GetVavView()->OnDraw(0);

@@ -66,6 +66,12 @@ Lines   FixLineWidths(const Lines& aLine, int range);
 ints    FixIndexs(const ints& aLine, int range);
 ints2d  FixIndexs(const ints2d& aLine, int range);
 
+ints    Maxmums(const ints& aLine);
+ints2d  Maxmums(const ints2d& aLine);
+
+ints    Maxmums2(const ints& aLine, Line& line);
+ints2d  Maxmums2(const ints2d& aLine, Lines& line);
+
 Line    CleanOrphanedLineWidths(const Line& aLine, int num);
 Lines   CleanOrphanedLineWidths(const Lines& aLine, int num);
 
@@ -123,6 +129,7 @@ bool CheckLinkEnd_Similarity(const LineEnd& lhs, const LineEnd& rhs,
 void ConnectLineEnds(LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds2(const LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds3(const LineEnds& les, Lines& pos, Lines& width);
+void ConnectLineEnds4(const LineEnds& les, Lines& pos, Lines& width);
 void ConnectSimilarColor2Side(const LineEnds& les, Lines& pos, Color2Side& width);
 
 void ClearJointArea(const LineEnds& les, Lines& pos, Color2Side& color2s, double len);
@@ -137,7 +144,17 @@ void FixEndWidth(Line& width, int len);
 void FixBeginWidth(Vector3s& width, int len);
 void FixEndWidth(Vector3s& width, int len);
 
+// 回傳兩線有沒有交錯
 bool intersect(const Vector2& a1, const Vector2& a2, const Vector2& b1, const Vector2& b2);
+// 回傳兩線交點
+Vector2 intersection(Vector2& a1, Vector2& a2, Vector2& b1, Vector2& b2);
+
 bool CheckAngle(double a1, double a2, double limitA);
 
 void AddNewLineEndPoint(Acutes& res, const LineEndPoint& lep, double sdistance);
+
+// nochecklen是端點不檢查的點數
+Lines LineSplitAtIntersection(Lines& lines, int nochecklen);
+Lines LineSplitAtTurning(Lines& lines, int nochecklen);
+
+

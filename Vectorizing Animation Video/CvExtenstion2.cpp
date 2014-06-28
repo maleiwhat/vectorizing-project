@@ -555,7 +555,7 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 				double normal_len = 2;
 				do
 				{
-					Vector2 pos = *it2 * 2 - normals[i][j] * normal_len;
+					Vector2 pos = *it2  - normals[i][j] * normal_len;
 					li[j] = vimg.GetIndex_no255(pos.x, pos.y);
 					normal_len += 0.5;
 				}
@@ -577,7 +577,7 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 				double normal_len = 2;
 				do
 				{
-					Vector2 pos = *it2 * 2 + normals[i][j] * normal_len;
+					Vector2 pos = *it2  + normals[i][j] * normal_len;
 					ri[j] = vimg.GetIndex_no255(pos.x, pos.y);
 					normal_len += 0.5;
 				}

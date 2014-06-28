@@ -272,8 +272,7 @@ void SLIC::DrawContoursAroundSegments(
 	{
 		for (int k = 0; k < width; k++)
 		{
-			int np(1);
-			dd.clear();
+			int np(0);
 			for (int i = 0; i < 8; i++)
 			{
 				int x = k + dx8[i];
@@ -281,28 +280,16 @@ void SLIC::DrawContoursAroundSegments(
 				if ((x >= 0 && x < width) && (y >= 0 && y < height))
 				{
 					int index = y * width + x;
-					if (false == istaken[index]) //comment this to obtain internal contours
+					//if( false == istaken[index] )//comment this to obtain internal contours
 					{
 						if (labels[mainindex] != labels[index])
 						{
-							int check = 1;
-							for (int count = 0; count < dd.size(); count++)
-							{
-								if (dd[count] == labels[index])
-								{
-									check = 0;
-								}
-							}
-							if (check == 1)
-							{
-								dd.push_back(labels[index]);
-								np++;
-							}
+							np++;
 						}
 					}
 				}
 			}
-			if (np >= tag_num)
+			if (np > 1)
 			{
 				contourx[cind] = k;
 				contoury[cind] = j;
@@ -317,36 +304,21 @@ void SLIC::DrawContoursAroundSegments(
 	for (int j = 0; j < numboundpix; j++)
 	{
 		int ii = contoury[j] * width + contourx[j];
-		ubuff[ii] = 255;//0xffffff;
-//      for( int n = 0; n < 8; n++ )
-//      {
-//          int x = contourx[j] + dx8[n];
-//          int y = contoury[j] + dy8[n];
-//          if( (x >= 0 && x < width) && (y >= 0 && y < height) )
-//          {
-//              int ind = y*width + x;
-//              if(!istaken[ind]) ubuff[ind] = 0;
-//          }
-//      }
+		ubuff[ii] = 0x0000ff;
+		//----------------------------------
+		// Uncomment this for thicker lines
+		//----------------------------------
+		//      for( int n = 0; n < 8; n++ )
+		//      {
+		//          int x = contourx[j] + dx8[n];
+		//          int y = contoury[j] + dy8[n];
+		//          if( (x >= 0 && x < width) && (y >= 0 && y < height) )
+		//          {
+		//              int ind = y*width + x;
+		//              if(!istaken[ind]) ubuff[ind] = 0;
+		//          }
+		//      }
 	}
-//  for( int j = 0; j < numboundpix; j++ )
-//  {
-//      int ii = contoury[j]*width + contourx[j];
-//      int np(0);
-//      for( int n = 0; n < 8; n++ )
-//      {
-//          int x = contourx[j] + dx8[n];
-//          int y = contoury[j] + dy8[n];
-//          if( (x >= 0 && x < width) && (y >= 0 && y < height) )
-//          {
-//              int ind = y*width + x;
-//              if(ubuff[ind]==200)
-//                  np++;
-//          }
-//      }
-//      if(np>3)
-//          ubuff[ii] = 0xffffff;
-//  }
 }
 
 
@@ -865,7 +837,7 @@ void SLIC::SaveSuperpixelLabels(
 		nameandextension = filename.substr(pos + 1);
 	}
 	std::string newname = nameandextension.replace(nameandextension.rfind(".") + 1, 3,
-					 "dat"); //find the position of the dot and replace the 3 characters following it.
+						  "dat"); //find the position of the dot and replace the 3 characters following it.
 	std::string finalpath = path + newname;
 #endif
 	int sz = width * height;
@@ -906,7 +878,7 @@ void SLIC::SaveSupervoxelLabels(
 		nameandextension = filename.substr(pos + 1);
 	}
 	std::string newname = nameandextension.replace(nameandextension.rfind(".") + 1, 3,
-					 "dat"); //find the position of the dot and replace the 3 characters following it.
+						  "dat"); //find the position of the dot and replace the 3 characters following it.
 	std::string finalpath = path + newname;
 #endif
 	int sz = width * height;

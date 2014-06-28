@@ -1729,7 +1729,7 @@ void S6ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms)
 					{
 						if (mask.at<uchar>(ii + 1, jj + 1) > 130)
 						{
-							ccm.AddPoint(jj/2, ii/2, oimg.at<cv::Vec3b>(ii/2, jj/2));
+							ccm.AddPoint(jj, ii, oimg.at<cv::Vec3b>(ii, jj));
 						}
 					}
 				}

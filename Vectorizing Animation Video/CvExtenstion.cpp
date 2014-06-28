@@ -371,6 +371,25 @@ void Erosion(cv::Mat& image, int erosion_elem, int erosion_size)
 	cv::erode(image, image, element);
 }
 
+cv::Mat MakeColorLineImage(const cv::Mat& image0, const Lines& lines)
+{
+	cv::RNG rng(12345);
+	cv::Mat image(image0.size()*2, CV_8UC3, cv::Scalar(0));
+	for (Lines::const_iterator it = lines.begin(); it != lines.end(); ++it)
+	{
+		cv::Vec3b cc;
+		cc[0] = rng.uniform(0, 200) + 55;
+		cc[1] = rng.uniform(0, 200) + 55;
+		cc[2] = rng.uniform(0, 200) + 55;
+		for (int j = 0;j<it->size()-1;++j)
+		{
+			cv::Point p1((*it)[j].x*2, (*it)[j].y*2);
+			cv::Point p2((*it)[j+1].x*2, (*it)[j+1].y*2);
+			cv::line(image, p1, p2, cv::Scalar(cc));
+		}
+	}
+	return image;
+}
 
 cv::Mat MakeLineImage(const cv::Mat& image0, const Lines& lines)
 {
