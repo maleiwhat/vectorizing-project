@@ -2014,7 +2014,7 @@ void D3DApp::InterSetSize(float w, float h)
 	m_pDiffY->SetFloat(h);
 }
 
-cv::Mat D3DApp::DrawSceneToCvMat(D3DXCOLOR backcolor)
+cv::Mat D3DApp::DrawSceneToCvMat(D3DXCOLOR backcolor, bool drawDiffusion)
 {
 	const int TexWidth = m_PicW * m_Scale;
 	const int TexHeight = m_PicH * m_Scale;
@@ -2041,7 +2041,7 @@ cv::Mat D3DApp::DrawSceneToCvMat(D3DXCOLOR backcolor)
 		InterSetScale(m_Scale);
 		InterSetLookCenter(0, 0);
 		InterSetSize(TexWidth, TexHeight);
-		InterDraw();
+		InterDraw(drawDiffusion);
 		ID3D11Texture2D* pTextureRead;
 		D3D11_TEXTURE2D_DESC texDescCV;
 		ZeroMemory(&texDescCV, sizeof(texDescCV));

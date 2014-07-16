@@ -155,6 +155,7 @@ void AddNewLineEndPoint(Acutes& res, const LineEndPoint& lep, double sdistance);
 
 // nochecklen是端點不檢查的點數
 Lines LineSplitAtIntersection(Lines& lines, int nochecklen);
+Lines LineSplitAtEndIntersection(Lines& lines, int nochecklen);
 Lines LineSplitAtTurning(Lines& lines, int nochecklen);
 
 

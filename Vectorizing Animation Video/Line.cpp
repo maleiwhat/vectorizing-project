@@ -692,7 +692,7 @@ ints2d Maxmums(const ints2d& widths)
 ints Maxmums2(const ints& cvp, Line& line)
 {
 	ints cps = cvp;
-	std::map<int, int> score;
+	
 	ints isect_idx;
 	isect_idx.clear();
 	double_vector angles = ComputeAngle(line);
@@ -705,7 +705,7 @@ ints Maxmums2(const ints& cvp, Line& line)
 		{
 			std::swap(ra1, ra2);
 		}
-		if (!(abs(ra1 - ra2) < 90 || abs(ra1 + 360 - ra2) < 90))
+		if (!(abs(ra1 - ra2) < 25 || abs(ra1 + 360 - ra2) < 25))
 		{
 			isect_idx.push_back(p1);
 			p1 += 5;
@@ -717,6 +717,7 @@ ints Maxmums2(const ints& cvp, Line& line)
 	{
 		// begin
 		{
+			std::map<int, int> score;
 			for (int i = 0; i < isect_idx[0]; ++i)
 			{
 				if (score.find(cvp[i]) == score.end())
@@ -729,7 +730,7 @@ ints Maxmums2(const ints& cvp, Line& line)
 				}
 			}
 			int maxmum = 0;
-			int maxid = 0;
+			int maxid = cvp[0];
 			for (std::map<int, int>::iterator it = score.begin(); it != score.end(); ++it)
 			{
 				if (it->second > maxmum)
@@ -746,6 +747,7 @@ ints Maxmums2(const ints& cvp, Line& line)
 		// between
 		for (int n = 1; n < isect_idx.size(); ++n)
 		{
+			std::map<int, int> score;
 			int ibeg = isect_idx[n - 1];
 			int iend = isect_idx[n];
 			for (int i = ibeg; i < iend; ++i)
@@ -760,7 +762,7 @@ ints Maxmums2(const ints& cvp, Line& line)
 				}
 			}
 			int maxmum = 0;
-			int maxid = 0;
+			int maxid = cvp[ibeg];
 			for (std::map<int, int>::iterator it = score.begin(); it != score.end(); ++it)
 			{
 				if (it->second > maxmum)
@@ -776,6 +778,7 @@ ints Maxmums2(const ints& cvp, Line& line)
 		}
 		// end
 		{
+			std::map<int, int> score;
 			for (int i = isect_idx.back(); i < cvp.size(); ++i)
 			{
 				if (score.find(cvp[i]) == score.end())
@@ -788,7 +791,7 @@ ints Maxmums2(const ints& cvp, Line& line)
 				}
 			}
 			int maxmum = 0;
-			int maxid = 0;
+			int maxid = cvp[isect_idx.back()];
 			for (std::map<int, int>::iterator it = score.begin(); it != score.end(); ++it)
 			{
 				if (it->second > maxmum)
@@ -805,6 +808,7 @@ ints Maxmums2(const ints& cvp, Line& line)
 	}
 	else
 	{
+		std::map<int, int> score;
 		for (int i = 0; i < cvp.size(); ++i)
 		{
 			if (score.find(cvp[i]) == score.end())
@@ -3593,6 +3597,111 @@ Lines LineSplitAtIntersection(Lines& lines, int nochecklen)
 							{
 								isect_idx.push_back(p1);
 								isect_pts.push_back(intersection(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1]));
+							}
+						}
+					}
+				}
+			}
+		}
+		Line nline;
+		for (int i = 0; i < line1.size(); ++i)
+		{
+			nline.push_back(line1[i]);
+			ints::iterator it = std::find(isect_idx.begin(), isect_idx.end(), i);
+			if (it != isect_idx.end())
+			{
+				int idx = it - isect_idx.begin();
+				if (idx < isect_pts.size())
+				{
+					Vector2& isect = isect_pts.at(idx);
+					nline.push_back(isect);
+					res.push_back(nline);
+					nline.clear();
+					nline.push_back(isect);
+				}
+			}
+		}
+		res.push_back(nline);
+	}
+	return res;
+}
+
+
+Lines LineSplitAtEndIntersection(Lines& lines, int nochecklen)
+{
+	Lines res;
+	// isect = intersection
+	ints isect_idx;
+	Vector2s isect_pts;
+	for (int l1 = 0; l1 < lines.size(); ++l1)
+	{
+		isect_idx.clear();
+		isect_pts.clear();
+		Line& line1 = lines[l1];
+		for (int l2 = 0; l2 < lines.size(); ++l2)
+		{
+			if (l1 != l2)
+			{
+				Line& line2 = lines[l2];
+				for (int p1 = nochecklen; p1 < line1.size() - 1 - nochecklen; ++p1)
+				{
+					for (int p2 = 0; p2 < line2.size() - 1; ++p2)
+					{
+						if (p2 == 0)
+						{
+							Vector2 p21 = line2[0] - line2[1];
+							p21.normalise();
+							p21 *= 3;
+							if (intersect(line1[p1], line1[p1 + 1], line2[p2] + p21, line2[p2 + 1]))
+							{
+								isect_idx.push_back(p1);
+								isect_pts.push_back(intersection(line1[p1], line1[p1 + 1], line2[p2] + p21, line2[p2 + 1]));
+							}
+						}
+						else if (p2 == line2.size() - 2)
+						{
+							Vector2 p21 = line2[p2 + 1] - line2[p2];
+							p21.normalise();
+							p21 *= 3;
+							if (intersect(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1] + p21))
+							{
+								isect_idx.push_back(p1);
+								isect_pts.push_back(intersection(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1] + p21));
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				Line& line2 = lines[l2];
+				for (int p1 = nochecklen; p1 < line1.size() - 1 - nochecklen; ++p1)
+				{
+					for (int p2 = 0; p2 < line2.size() - 1; ++p2)
+					{
+						if (abs(p1 - p2) > 3)
+						{
+							if (p2 == 0)
+							{
+								Vector2 p21 = line2[0] - line2[1];
+								p21.normalise();
+								p21 *= 3;
+								if (intersect(line1[p1], line1[p1 + 1], line2[p2] + p21, line2[p2 + 1]))
+								{
+									isect_idx.push_back(p1);
+									isect_pts.push_back(intersection(line1[p1], line1[p1 + 1], line2[p2] + p21, line2[p2 + 1]));
+								}
+							}
+							else if (p2 == line2.size() - 2)
+							{
+								Vector2 p21 = line2[p2 + 1] - line2[p2];
+								p21.normalise();
+								p21 *= 3;
+								if (intersect(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1] + p21))
+								{
+									isect_idx.push_back(p1);
+									isect_pts.push_back(intersection(line1[p1], line1[p1 + 1], line2[p2], line2[p2 + 1] + p21));
+								}
 							}
 						}
 					}

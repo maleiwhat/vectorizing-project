@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <windows.h>
+#include <cmath>
 #undef min
 #undef max
 
@@ -21,7 +22,8 @@ MySLIC::MySLIC(const cv::Mat& img)
 			// B => salColor[0] ; G => salColor[1] ; R => salColor[2]
 		}
 	}
-	DoRGBtoLABConversion((const unsigned int*&)m_Buff, m_lvec, m_avec, m_bvec);
+	unsigned int* ptr = &m_Buff[0];
+	DoRGBtoLABConversion((const unsigned int*&)ptr, m_lvec, m_avec, m_bvec);
 }
 
 
@@ -315,8 +317,8 @@ void MySLIC::GetSeeds_ForGivenStepSize(
 			kseedsl[n] = m_lvec[i];
 			kseedsa[n] = m_avec[i];
 			kseedsb[n] = m_bvec[i];
-// 			kseedsgx[n] = m_Gradient->GradientX(seedx, seedy);
-// 			kseedsgy[n] = m_Gradient->GradientY(seedx, seedy);
+//          kseedsgx[n] = m_Gradient->GradientX(seedx, seedy);
+//          kseedsgy[n] = m_Gradient->GradientY(seedx, seedy);
 			kseedsx[n] = seedx;
 			kseedsy[n] = seedy;
 			n++;
@@ -527,10 +529,10 @@ void MySLIC::FindBoxBoundary(SLICLabels& labels)
 
 void MySLIC::GetRGBtoLABConversion(
 	const unsigned int* ubuff,
-	LABColor*& labbuff)
+	LabColor*& labbuff)
 {
 	int sz = m_width * m_height;
-	labbuff = new LABColor[sz];
+	labbuff = new LabColor[sz];
 	for (int j = 0; j < sz; j++)
 	{
 		int r = (ubuff[j] >> 16) & 0xFF;
@@ -620,4 +622,251 @@ double MySLIC::GetDisLab(int x1, int y1, int x2, int y2)
 				+ (m_bvec[idx1] - m_bvec[idx2]) * (m_bvec[idx1] - m_bvec[idx2]));
 }
 
+double MySLIC::ColorError(const LabColor& c1, const LabColor& c2)
+{
+	double l = c1.l - c2.l;
+	double a = c1.a - c2.a;
+	double b = c1.b - c2.b;
+	return sqrt(l * l + a * a + b * b);
+}
+
+void MySLIC::AddNeighbors(int idx, SLICLabelPatch& patch, const SLICLabels& labels, ints& marked,
+						  double threshold)
+{
+	intds stacks;
+	stacks.push_back(idx);
+	for (; !stacks.empty();)
+	{
+		const ints& nebors = labels[stacks.front()].neighbors;
+		for (int i = 0; i < nebors.size(); ++i)
+		{
+			int neid = nebors[i];
+			if (marked.at(neid))
+			{
+				continue;
+			}
+			double error = ColorError(labels[neid].seed_lab, labels[idx].seed_lab);
+			if (error < threshold)
+			{
+				patch.idxs.push_back(neid);
+				marked[neid] = 1;
+				stacks.push_back(neid);
+			}
+		}
+		stacks.pop_front();
+	}
+}
+
+void MySLIC::ComputePatchFromColor(const SLICLabels& labels, SLICLabelPatchs& patchs,
+								   double threshold)
+{
+	ints marked(labels.size(), 0);
+	for (int i = 0; i < labels.size(); ++i)
+	{
+		if (!marked[i])
+		{
+			SLICLabelPatch patch;
+			patch.pid = patchs.size();
+			patch.idxs.push_back(i);
+			AddNeighbors(i, patch, labels, marked, threshold);
+			patchs.push_back(patch);
+		}
+	}
+}
+
+ColorConstraints MySLIC::BuildColorConstraints(const SLICLabels& labels,
+		const SLICLabelPatchs& patchs, cv::Mat img)
+{
+	ColorConstraints res;
+	for (int i = 0; i < patchs.size(); ++i)
+	{
+		res.push_back(ColorConstraint());
+		ColorConstraint& ncc = res.back();
+		const ints& idxs = patchs[i].idxs;
+		for (int j = 0; j < idxs.size(); ++j)
+		{
+			const Pixels& pixels = labels[idxs[j]].pixels;
+			for (int k = 0; k < pixels.size(); ++k)
+			{
+				ncc.AddPoint(pixels[k].x, pixels[k].y, img.at<cv::Vec3b>(pixels[k].y, pixels[k].x));
+			}
+		}
+		for (int j = 0; j < idxs.size(); ++j)
+		{
+			const Pixels& pixels = labels[idxs[j]].pixels;
+			for (int k = 0; k < pixels.size(); ++k)
+			{
+				img.at<cv::Vec3b>(pixels[k].y, pixels[k].x) = ncc.GetColorCvPoint(pixels[k].x, pixels[k].y);
+			}
+		}
+	}
+	cv::imshow("nimg", img);
+	return res;
+}
+
+
+
+XYZColor LAB2XYZ(LabColor& val)
+{
+	double  var_Y = (val.l + 16) / 116;
+	double  var_X = val.a / 500 + var_Y;
+	double  var_Z = var_Y - val.b / 200;
+	double kappa   = 903.3;     //actual CIE standard
+	if (pow(var_X, 3) > 0.008856)
+	{
+		var_X = pow(var_X, 3);
+	}
+	else
+	{
+		var_X = ((var_X * 116) - 16) / kappa;
+	}
+	if (pow(var_Y, 3) > 0.008856)
+	{
+		var_Y = pow(var_Y, 3);
+	}
+	else
+	{
+		var_Y = ((var_Y * 116) - 16) / kappa;
+	}
+	if (pow(var_Z, 3) > 0.008856)
+	{
+		var_Z = pow(var_Z, 3);
+	}
+	else
+	{
+		var_Z = ((var_Z * 116) - 16) / kappa;
+	}
+	double Xr = 0.950456;   //reference white
+	double Yr = 1.0;        //reference white
+	double Zr = 1.088754;   //reference white
+	XYZColor result;
+	result.x = Xr * var_X;
+	result.y = Yr * var_Y;
+	result.z = Zr * var_Z;
+	return result;
+}
+
+RGBColor LAB2RGB(LabColor& val)
+{
+	XYZColor var = LAB2XYZ(val);
+	double  var_B = var.x *  3.2406 + var.y * -1.5372 + var.z * -0.4986;
+	double  var_G = var.x * -0.9689 + var.y *  1.8758 + var.z *  0.0415;
+	double  var_R = var.x *  0.0557 + var.y * -0.2040 + var.z *  1.0570;
+	if (var_R > 0.0031308)
+	{
+		var_R = 1.055 * pow(var_R, 1.0 / 2.4) - 0.055;
+	}
+	else
+	{
+		var_R = 12.92 * var_R;
+	}
+	if (var_G > 0.0031308)
+	{
+		var_G = 1.055 * pow(var_G, 1.0 / 2.4) - 0.055;
+	}
+	else
+	{
+		var_G = 12.92 * var_G;
+	}
+	if (var_B > 0.0031308)
+	{
+		var_B = 1.055 * pow(var_B, 1.0 / 2.4) - 0.055;
+	}
+	else
+	{
+		var_B = 12.92 * var_B;
+	}
+	RGBColor result;
+	result.r = (int)(var_R * 255);
+	result.g = (int)(var_G * 255);
+	result.b = (int)(var_B * 255);
+	return result;
+}
+
+XYZColor RGB2XYZ(RGBColor& val)
+{
+	double R = (double)val.r / 255.0;
+	double G = (double)val.g / 255.0;
+	double B = (double)val.b / 255.0;
+	double r, g, b;
+	if (R <= 0.04045)
+	{
+		r = R / 12.92;
+	}
+	else
+	{
+		r = pow((R + 0.055) / 1.055, 2.4);
+	}
+	if (G <= 0.04045)
+	{
+		g = G / 12.92;
+	}
+	else
+	{
+		g = pow((G + 0.055) / 1.055, 2.4);
+	}
+	if (B <= 0.04045)
+	{
+		b = B / 12.92;
+	}
+	else
+	{
+		b = pow((B + 0.055) / 1.055, 2.4);
+	}
+	XYZColor result;
+	result.x = r * 0.4124564 + g * 0.3575761 + b * 0.1804375;
+	result.y = r * 0.2126729 + g * 0.7151522 + b * 0.0721750;
+	result.z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
+	return result;
+}
+
+LabColor RGB2LAB(RGBColor& val)
+{
+	//------------------------
+	// sRGB to XYZ conversion
+	//------------------------
+	XYZColor var;
+	var = RGB2XYZ(val);
+	//------------------------
+	// XYZ to LAB conversion
+	//------------------------
+	double epsilon = 0.008856;  //actual CIE standard
+	double kappa   = 903.3;     //actual CIE standard
+	double Xr = 0.950456;   //reference white
+	double Yr = 1.0;        //reference white
+	double Zr = 1.088754;   //reference white
+	double xr = var.x / Xr;
+	double yr = var.y / Yr;
+	double zr = var.z / Zr;
+	double fx, fy, fz;
+	if (xr > epsilon)
+	{
+		fx = pow(xr, 1.0 / 3.0);
+	}
+	else
+	{
+		fx = (kappa * xr + 16.0) / 116.0;
+	}
+	if (yr > epsilon)
+	{
+		fy = pow(yr, 1.0 / 3.0);
+	}
+	else
+	{
+		fy = (kappa * yr + 16.0) / 116.0;
+	}
+	if (zr > epsilon)
+	{
+		fz = pow(zr, 1.0 / 3.0);
+	}
+	else
+	{
+		fz = (kappa * zr + 16.0) / 116.0;
+	}
+	LabColor result;
+	result.l = 116.0 * fy - 16.0;
+	result.a = 500.0 * (fx - fy);
+	result.b = 200.0 * (fy - fz);
+	return result;
+}
 

@@ -153,9 +153,9 @@ BEGIN_MESSAGE_MAP(VAV_MainFrame, CFrameWndEx)
 			   &VAV_MainFrame::OnCheck_BoundaryCurvesVectorization)
 	ON_UPDATE_COMMAND_UI(ID_CHECK_Boundary_Curves_Vectorization,
 						 &VAV_MainFrame::OnUpdateCheck_BoundaryCurvesVectorization)
-						 ON_COMMAND(ID_CHECK_Isosurface_Region, &VAV_MainFrame::OnCheck_IsosurfaceRegion)
-						 ON_UPDATE_COMMAND_UI(ID_CHECK_Isosurface_Region, &VAV_MainFrame::OnUpdateCheck_IsosurfaceRegion)
-						 END_MESSAGE_MAP()
+	ON_COMMAND(ID_CHECK_Isosurface_Region, &VAV_MainFrame::OnCheck_IsosurfaceRegion)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_Isosurface_Region, &VAV_MainFrame::OnUpdateCheck_IsosurfaceRegion)
+END_MESSAGE_MAP()
 
 // VAV_MainFrame 建構/解構
 #include <stdio.h>
@@ -182,7 +182,6 @@ VAV_MainFrame::VAV_MainFrame()
 	m_DRAW_ISOSURFACE = false;
 	m_DRAW_CURVE_EXTRACTION = true;
 	m_DRAW_CANNY_EXTRACTION = false;
-
 	m_CONSTRAINT_CURVES_PARAMETER_1 = true;
 	m_CONSTRAINT_CURVES_PARAMETER_2 = true;
 	m_ISOSURFACE_REGION = true;
@@ -655,19 +654,19 @@ void VAV_MainFrame::OnButtonCanny()
 	}
 	m_cannyImage = m_vavImage;
 	cv::Mat ce = CannyEdge(m_vavImage, t1, t2, a);
-// 	Lines lines1 = ComputeEdgeLine(ce);
-// 	Lines lines = m_vavImage.AnimaEdge(5, 0.01, 0.1);
-// 	lines = ComputeTrappedBallEdge(m_vavImage, lines, 5);
-// 	cv::Mat lineImage = MakeLineImage(m_vavImage, lines);
-// 	lines = GetLines(GetSidelines(lineImage));
-// 	m_cannyImage.ShowEdgeLine(lines);
+//  Lines lines1 = ComputeEdgeLine(ce);
+//  Lines lines = m_vavImage.AnimaEdge(5, 0.01, 0.1);
+//  lines = ComputeTrappedBallEdge(m_vavImage, lines, 5);
+//  cv::Mat lineImage = MakeLineImage(m_vavImage, lines);
+//  lines = GetLines(GetSidelines(lineImage));
+//  m_cannyImage.ShowEdgeLine(lines);
 	m_cannyImage = ce;
-// 	Skeleton(m_cannyImage);
-// 	cv::Mat cw, cw2;
-// 	cw2 = m_cannyImage;
-// 	cw2.convertTo(cw, CV_32FC3);
-// 	Collect_Water(cw, cw, 5, 5, m_BlackRegionThreshold * 0.01);
-// 	m_cannyImage = cw;
+//  Skeleton(m_cannyImage);
+//  cv::Mat cw, cw2;
+//  cw2 = m_cannyImage;
+//  cw2.convertTo(cw, CV_32FC3);
+//  Collect_Water(cw, cw, 5, 5, m_BlackRegionThreshold * 0.01);
+//  m_cannyImage = cw;
 	GetVavView()->SetTexture(m_cannyImage.GetDx11Texture());
 }
 
@@ -1118,210 +1117,195 @@ void VAV_MainFrame::OnUpdateCheckDrawCannyExtraction(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(m_DRAW_CANNY_EXTRACTION);
 }
 
+/*
 void VAV_MainFrame::AddFrame(cv::Mat img)
 {
-	D3DApp& d3dApp = GetVavView()->GetD3DApp();
-	d3dApp.SetPictureSize(img.cols, img.rows);
-	vavImage vImage = img;
-	vImage.ToExpImage();
-	cv::Mat imgf, curveExtration, show3u = cv::Mat::zeros(vImage.GetCvMat().size(), CV_8UC3);
-	imgf = vImage;
-	cvtColor(imgf, imgf, CV_BGR2GRAY);
-	imgf.convertTo(imgf, CV_32F, 1.0 / 255);
-	CmCurveEx dEdge(imgf);
-	dEdge.CalSecDer(7, 0.0001f);
-	dEdge.Link();
-	CvLines tpnts2d;
-	const CEdges& edges = dEdge.GetEdges();
-	for (size_t i = 0; i < edges.size(); i++)
-	{
-		cv::Vec3b color(rand() % 155 + 100, rand() % 155 + 100, rand() % 155 + 100);
-		const std::vector<cv::Point>& pnts = edges[i].pnts;
-		for (size_t j = 0; j < pnts.size(); j++)
-		{
-			show3u.at<cv::Vec3b>(pnts[j]) = color;
-		}
-		tpnts2d.push_back(edges[i].pnts);
-	}
-	m_BlackLine = GetLines(tpnts2d, 0, 0);
-	m_BlackLine = SmoothingLen5(m_BlackLine);
-	Lines showLines;
-	Lines BLineWidth(m_BlackLine.size());
-	Lines normals = GetNormalsLen2(m_BlackLine);
-	const double blackRadio = 0.5;
-	for (int idx1 = 0; idx1 < m_BlackLine.size(); ++idx1)
-	{
-		const Line& nowLine = m_BlackLine[idx1];
-		const Line& nowNormals = normals[idx1];
-		Line& lineWidths = BLineWidth[idx1];
-		lineWidths.clear();
-		for (int idx2 = 0; idx2 < nowLine.size() - 1; ++idx2)
-		{
-			const double LINE_WIDTH = 5;
-			Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
-			Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
-			Vector2 start2(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * LINE_WIDTH);
-			Vector2 end2(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * LINE_WIDTH);
-			double_vector line1 = vImage.GetLineLight(start.x, start.y, end.x, end.y,
-								  360);
-			double_vector line2 = vImage.GetLineLight(start2.x, start2.y, end2.x, end2.y,
-								  360);
-			double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
-												15, 50), LINE_WIDTH * 2);
-			double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
-												15, 50), LINE_WIDTH * 2);
-			if (width1.size() >= 2 && width2.size() >= 2 && abs(width2[0] - width2[1]) < 1)
-			{
-				Line line1;
-				line1.push_back(nowLine[idx2] - nowNormals[idx2] * width1[0] * blackRadio);
-				line1.push_back(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * width2[0] *
-								blackRadio);
-				line1 = GetLine(line1, 0.5, 0.5);
-				Line line2;
-				line2.push_back(nowLine[idx2] + nowNormals[idx2] * width1[1] * blackRadio);
-				line2.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[1] *
-								blackRadio);
-				line2 = GetLine(line2, 0.5, 0.5);
-				showLines.push_back(line1);
-				showLines.push_back(line2);
-				// save line width
-				lineWidths.push_back(Vector2(width1[0] * blackRadio, width1[1] * blackRadio));
-			}
-			else
-			{
-				lineWidths.push_back(Vector2());
-			}
-		}
-		lineWidths.push_back(Vector2());
-	}
-	m_BLineWidth = BLineWidth;
-	m_BlackLine = GetLines(tpnts2d, 0.0, 0.0);
-	m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 5);
-	LineEnds les = GetLineEnds(m_BlackLine);
-	LinkLineEnds180(les, 5, 20);
-	ConnectLineEnds(les, m_BlackLine, m_BLineWidth);
-	IncreaseDensity(m_BlackLine, m_BLineWidth);
-	les = GetLineEnds(m_BlackLine);
-	ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 8, 15);
-	m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 5);
-	m_BLineWidth = FixLineWidths(m_BLineWidth, 50);
-	//m_BLineWidth = FixLineWidths(m_BLineWidth, 100);
-	ClearLineWidthByPercent(m_BLineWidth, 0.4);
-	m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
-	m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 0, 5);
-	m_BlackLine = SmoothingLen5(m_BlackLine, 0, 5);
-	Vector3s2d lineColors;
-	lineColors = GetLinesColor(img, m_BlackLine);
-	lineColors = SmoothingLen5(lineColors, 0, 10);
-	m_BlackLine = GetLines(m_BlackLine, 1, 1);
-	d3dApp.AddLinesWidth(m_BlackLine, m_BLineWidth, lineColors);
-	// block line
-	dEdge.CalSecDer2(5, 0.001f);
-	dEdge.Link();
-	tpnts2d.clear();
-	const CEdges& edges2 = dEdge.GetEdges();
-	for (size_t i = 0; i < edges2.size(); i++)
-	{
-		cv::Vec3b color(rand() % 155 + 100, rand() % 155 + 100, rand() % 155 + 100);
-		const std::vector<cv::Point>& pnts = edges2[i].pnts;
-		for (size_t j = 0; j < pnts.size(); j++)
-		{
-			show3u.at<cv::Vec3b>(pnts[j]) = color;
-		}
-		tpnts2d.push_back(edges2[i].pnts);
-	}
-	m_BlackLine2 = GetLines(tpnts2d, 0, 0);
-	Lines tmp_width = m_BlackLine2;
-	m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.9, 5);
-	les = GetLineEnds(m_BlackLine2);
-	LinkLineEnds180(les, 5, 5);
-	ConnectLineEnds(les, m_BlackLine2, tmp_width);
-	IncreaseDensity(m_BlackLine2, tmp_width);
-	les = GetLineEnds(m_BlackLine2);
-	ConnectNearestLines(les, m_BlackLine2, tmp_width, 5, 15);
-	//      les = GetLineEnds(m_BlackLine2);
-	//      ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 6, 20);
-	m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.2, 5);
-	d3dApp.AddLines(m_BlackLine2);
-	d3dApp.SetScaleTemporary(1);
-	d3dApp.BuildPoint();
-	d3dApp.InterSetRenderTransparencyOutput2();
-	cv::Mat simg = d3dApp.DrawSceneToCvMat();
-	d3dApp.SetScaleRecovery();
-	d3dApp.ClearSkeletonLines();
-	cvtColor(simg, simg, CV_BGR2GRAY);
-	curveExtration = simg.clone();
-	Dilation(curveExtration, 2, 1);
-	cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
-	cv::Mat tmpimg = img.clone();
-	cv::Mat sampleimg = img.clone();
-	cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
-	cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
-	cv::Mat isoimg = MakeIsoSurfaceImg(tmpimg, 12);
-	for (int i = 0; i < curveExtration.rows; i++)
-	{
-		for (int j = 0; j < curveExtration.cols; j++)
-		{
-			cv::Vec3b& v = curveExtration.at<cv::Vec3b>(i, j);
-			if (v[0] > 0)
-			{
-				cv::Vec3b& sam = sampleimg.at<cv::Vec3b>(i, j);
-				sam[0] = 0;
-				sam[1] = 0;
-				sam[2] = 0;
-			}
-		}
-	}
-	cvtColor(curveExtration, curveExtration, CV_BGR2GRAY);
-	Dilation(curveExtration, 2, 2);
-	cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
-	for (int i = 0; i < curveExtration.rows; i++)
-	{
-		for (int j = 0; j < curveExtration.cols; j++)
-		{
-			cv::Vec3b& v = curveExtration.at<cv::Vec3b>(i, j);
-			if (v[0] > 0)
-			{
-				cv::Vec3b& dst = isoimg.at<cv::Vec3b>(i, j);
-				dst[0] = 1;
-				dst[1] = 1;
-				dst[2] = 1;
-			}
-		}
-	}
-	cv::imshow("sampleimg", sampleimg);
-	Lines ColorWidth;
-	//Color2Side color2s = GetLinesColor2SideSmart3(img, sampleimg, m_BlackLine2, 30);
-	Color2Side color2s = GetLinesColor2Side(img, m_BlackLine2, 2);
-	color2s.left = FixLineColors(color2s.left, 600, 10);
-	color2s.right = FixLineColors(color2s.right, 600, 10);
-	les = GetLineEnds(m_BlackLine2);
-	ClearJointArea(les, m_BlackLine2, color2s, 8);
-	color2s.left = FixLineColors(color2s.left, 600, 1);
-	color2s.right = FixLineColors(color2s.right, 600, 1);
-	color2s.left = MedianLen(color2s.left, 10, 3);
-	color2s.right = MedianLen(color2s.right, 10, 3);
-	color2s.left = SmoothingLen5(color2s.left, 0, 5);
-	color2s.right = SmoothingLen5(color2s.right, 0, 5);
-	// edge extraction
-	Lines diffusionConstrant = S6GetPatchs(isoimg, 0, 0);
-	diffusionConstrant = SmoothingLen5(diffusionConstrant, 0, 1);
-	Vector3s2d colors;
-	colors = GetLinesColor(img, diffusionConstrant);
-	diffusionConstrant = GetLines(diffusionConstrant, 0.5, 0.5);
-	//colors = FixLineColors(colors, 400, 10);
-	//colors = MedianLen(colors, 20, 3);
-	colors = SmoothingLen5(colors, 0, 2);
-	// draw red line
-	m_DiffusionFrames.push_back(DiffusionFrame());
-	m_DiffusionFrames.back().m_BlackLine = m_BlackLine;
-	m_DiffusionFrames.back().m_BLineWidth = m_BLineWidth;
-	m_DiffusionFrames.back().lineColors = lineColors;
-	m_DiffusionFrames.back().diffusionConstrant = diffusionConstrant;
-	m_DiffusionFrames.back().colors = colors;
-	m_DiffusionFrames.back().m_BlackLine2 = m_BlackLine2;
-	m_DiffusionFrames.back().color2s = color2s;
+    D3DApp& d3dApp = GetVavView()->GetD3DApp();
+    d3dApp.SetPictureSize(img.cols, img.rows);
+    Lines decorativeLine;
+    vavImage expImg(img);
+    expImg.ToExpImage();
+    const int MASK1_SIZE = 5;
+    const int MASK2_SIZE = 5;
+    const float secDer = 0.001f;
+    cv::Mat ccp1 = expImg.Clone(), ccp2 = expImg.Clone();
+    CmCurveEx* ccp1_curve = NULL;
+    CmCurveEx* ccp2_curve = NULL;
+    cvtColor(ccp1, ccp1, CV_BGR2GRAY);
+    ccp1.convertTo(ccp1, CV_32F, 1.0 / 255);
+    ccp1_curve = new CmCurveEx(ccp1);
+    ccp1_curve->CalSecDer(MASK1_SIZE, secDer);
+    ccp1_curve->Link();
+    cvtColor(ccp2, ccp2, CV_BGR2GRAY);
+    ccp2.convertTo(ccp2, CV_32F, 1.0 / 255);
+    ccp2_curve = new CmCurveEx(ccp2);
+    ccp2_curve->CalSecDer2(MASK2_SIZE, secDer);
+    ccp2_curve->Link();
+    CvLines tpnts2d;
+    const CEdges& edges = ccp1_curve->GetEdges();
+    for (size_t i = 0; i < edges.size(); i++)
+    {
+        tpnts2d.push_back(edges[i].pnts);
+    }
+    m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
+    m_BlackLine = SmoothingLen5(m_BlackLine);
+    Lines showLines;
+    Lines BLineWidth(m_BlackLine.size());
+    Lines normals = GetNormalsLen2(m_BlackLine);
+    const double blackRadio = 0.5;
+    for (int idx1 = 0; idx1 < m_BlackLine.size(); ++idx1)
+    {
+        const Line& nowLine = m_BlackLine[idx1];
+        const Line& nowNormals = normals[idx1];
+        Line& lineWidths = BLineWidth[idx1];
+        lineWidths.clear();
+        for (int idx2 = 0; idx2 < nowLine.size() - 1; ++idx2)
+        {
+            const double LINE_WIDTH = 5;
+            Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
+            Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
+            Vector2 start2(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * LINE_WIDTH);
+            Vector2 end2(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * LINE_WIDTH);
+            double_vector line1 = expImg.GetLineLight(start.x, start.y, end.x, end.y,
+                                  360);
+            double_vector line2 = expImg.GetLineLight(start2.x, start2.y, end2.x, end2.y,
+                                  360);
+            double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
+                                                15, 50), LINE_WIDTH * 2);
+            double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
+                                                15, 50), LINE_WIDTH * 2);
+            if (width1.size() >= 2 && width2.size() >= 2 && abs(width2[0] - width2[1]) < 1.5)
+            {
+                Line line1;
+                line1.push_back(nowLine[idx2] - nowNormals[idx2] * width1[0] * blackRadio);
+                line1.push_back(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * width2[0] *
+                                blackRadio);
+                line1 = GetLine(line1, 0.5, 0.5);
+                Line line2;
+                line2.push_back(nowLine[idx2] + nowNormals[idx2] * width1[1] * blackRadio);
+                line2.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[1] *
+                                blackRadio);
+                line2 = GetLine(line2, 0.5, 0.5);
+                showLines.push_back(line1);
+                showLines.push_back(line2);
+                // save line width
+                lineWidths.push_back(Vector2(width1[0] * blackRadio, width1[1] * blackRadio));
+            }
+            else
+            {
+                lineWidths.push_back(Vector2());
+            }
+        }
+        lineWidths.push_back(Vector2());
+    }
+    m_BLineWidth = BLineWidth;
+    m_BlackLine = GetLines(tpnts2d, 0.5, 0.5);
+    m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 5);
+    LineEnds les = GetLineEnds(m_BlackLine);
+    LinkLineEnds180(les, 5, 15);
+    ConnectLineEnds(les, m_BlackLine, m_BLineWidth);
+    IncreaseDensity(m_BlackLine, m_BLineWidth);
+    les = GetLineEnds(m_BlackLine);
+    // 連結角度類似的線
+    ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 5, 15);
+    m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 5);
+    m_BLineWidth = FixLineWidths(m_BLineWidth, 50);
+    //m_BLineWidth = FixLineWidths(m_BLineWidth, 100);
+    ClearLineWidthByPercent(m_BLineWidth, 0.6);
+    m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
+    m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 0, 5);
+    m_BLineWidth = FixedLineWidth(m_BLineWidth, 5);
+    Vector3s2d lineColors;
+    lineColors = GetLinesColor(img, m_BlackLine);
+    lineColors = SmoothingLen5(lineColors, 0, 10);
+    m_BLineWidth = SmoothingLen5(m_BLineWidth, 0, 10);
+    m_BlackLine = SmoothingLen5(m_BlackLine, 0, 15);
+    d3dApp.AddLinesWidth(m_BlackLine, m_BLineWidth, lineColors);
+    cv::Mat ccp2_simg;
+    tpnts2d.clear();
+    const CEdges& edges2 = ccp2_curve->GetEdges();
+    for (size_t i = 0; i < edges2.size(); i++)
+    {
+        tpnts2d.push_back(edges2[i].pnts);
+    }
+    m_BlackLine2 = GetLines(tpnts2d, 0.5, 0.5);
+    Lines tmp_width = m_BlackLine2;
+    m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.5, 5);
+    les = GetLineEnds(m_BlackLine2);
+    LinkLineEnds180(les, 5, 60);
+    ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+    les = GetLineEnds(m_BlackLine2);
+    LinkLineEnds180(les, 8, 60);
+    ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+    IncreaseDensity(m_BlackLine2, tmp_width);
+    les = GetLineEnds(m_BlackLine2);
+    ConnectNearestLines(les, m_BlackLine2, tmp_width, 8, 20);
+    m_BlackLine2 = LineSplitAtEndIntersection(m_BlackLine2, 1);
+    tmp_width = m_BlackLine2;
+    les = GetLineEnds(m_BlackLine2);
+    LinkLineEnds(les, 3, 360);
+    ConnectLineEnds4(les, m_BlackLine2, tmp_width);
+    les = GetLineEnds(m_BlackLine2);
+    LinkLineEnds(les, 3, 360);
+    ConnectLineEnds4(les, m_BlackLine2, tmp_width);
+    m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.5, 8);
+    d3dApp.AddLines(m_BlackLine2);
+    ColorConstraints ccms;
+    ColorConstraints ccms2;
+    cv::Mat cmmsIndexImg;
+    d3dApp.SetScaleTemporary(2);
+    d3dApp.BuildPoint();
+    d3dApp.InterSetRenderTransparencyOutput2();
+    cv::Mat simg = d3dApp.DrawSceneToCvMat();
+    d3dApp.SetScaleRecovery();
+    cmmsIndexImg = simg.clone();
+    cmmsIndexImg = TrapBallMaskAll(cmmsIndexImg);
+    cv::Mat vecout = img.clone();
+    vecout = cv::Scalar(0);
+    cv::Mat ShowRegion = img.clone();
+    //      Dilation(simg, 1, 2);
+    for (int i = 0; i < simg.rows; ++i)
+    {
+        for (int j = 0; j < simg.cols; ++j)
+        {
+            if (simg.at<cv::Vec3b>(i, j)[2] > 0)
+            {
+                ShowRegion.at<cv::Vec3b>(i / 2, j / 2) = cv::Vec3b(255, 255, 255);
+            }
+        }
+    }
+    CvPatchs cps = S2_2GetPatchs(cmmsIndexImg, img, ccms2, vecout);
+    cv::waitKey(10);
+    // set draw patch line to Diffusion
+    Lines patchlines = GetLinesFromCvPatch(cps);
+    Color2Side patchColor = GetLinesColor(patchlines, ccms2);
+    patchlines = SmoothingLen5(patchlines, 0.5, 5);
+    // show patch img
+    cv::Mat tmp = cmmsIndexImg.clone(), tmp2;
+    cv::RNG rng(12345);
+    tmp = cv::Scalar(0);
+    tmp2 = tmp.clone();
+    S6ReColor(cmmsIndexImg, img.clone(), ccms);
+    Lines colorline = m_BlackLine2;//LineSplitAtIntersection(m_BlackLine2, 1);
+    cv::Mat colorline2 = MakeColorLineImage(img, colorline);
+    Index2Side i2s = GetLinesIndex2SideSmart(cmmsIndexImg, colorline, ccms);
+    i2s.left = FixIndexs(i2s.left, 100);
+    i2s.right = FixIndexs(i2s.right, 100);
+    i2s.left = MedianLenN(i2s.left, 10);
+    i2s.right = MedianLenN(i2s.right, 10);
+    Color2Side color2s2 = LinesIndex2Color(colorline, i2s, ccms);
+    d3dApp.AddDiffusionLines(colorline, color2s2);
+    // draw red line
+    m_DiffusionFrames.push_back(DiffusionFrame());
+    m_DiffusionFrames.back().m_BlackLine = m_BlackLine;
+    m_DiffusionFrames.back().m_BLineWidth = m_BLineWidth;
+    m_DiffusionFrames.back().lineColors = lineColors;
+    //m_DiffusionFrames.back().diffusionConstrant = diffusionConstrant;
+    //m_DiffusionFrames.back().colors = colors;
+    m_DiffusionFrames.back().m_BlackLine2 = colorline;
+    m_DiffusionFrames.back().color2s = color2s2;
 }
+*/
 
 void VAV_MainFrame::OnFileOpenVideo()
 {
@@ -1335,17 +1319,25 @@ void VAV_MainFrame::OnFileOpenVideo()
 		if (filename.GetLength() > 1)
 		{
 			m_ReadVideo.Read(ConvStr::GetStr(filename.GetString()));
-			for (int i = 0; i < 200; ++i)
+			for (int i = 0; i <= 200; ++i)
 			{
-				cv::Mat img = m_ReadVideo.GetFrame();
-				if (img.cols > 0)
+				if (i < 0 || i % 2 == 0)
 				{
-					AddFrame(img);
+					m_ReadVideo.SkipFrame();
+				}
+				else
+				{
+					cv::Mat img = m_ReadVideo.GetFrame();
+					if (img.cols > 0)
+					{
+						AddFrame(img);
+						printf("Frame %d\n", i);
+					}
 				}
 			}
 		}
+		GetVavView()->SetTimer(100, 80, 0);
 	}
-	GetVavView()->SetTimer(100, 50, 0);
 }
 
 
@@ -1492,8 +1484,213 @@ void VAV_MainFrame::OnCheck_IsosurfaceRegion()
 }
 
 
-void VAV_MainFrame::OnUpdateCheck_IsosurfaceRegion(CCmdUI *pCmdUI)
+void VAV_MainFrame::OnUpdateCheck_IsosurfaceRegion(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetCheck(m_ISOSURFACE_REGION);
 }
 
+
+void VAV_MainFrame::AddFrame(cv::Mat img)
+{
+	D3DApp& d3dApp = GetVavView()->GetD3DApp();
+	d3dApp.SetPictureSize(img.cols, img.rows);
+	vavImage vImage = img;
+	vImage.ToExpImage();
+	cv::Mat imgf, curveExtration, show3u = cv::Mat::zeros(vImage.GetCvMat().size(), CV_8UC3);
+	imgf = vImage;
+	cvtColor(imgf, imgf, CV_BGR2GRAY);
+	imgf.convertTo(imgf, CV_32F, 1.0 / 255);
+	CmCurveEx dEdge(imgf);
+	dEdge.CalSecDer(7, 0.0001f);
+	dEdge.Link();
+	CvLines tpnts2d;
+	const CEdges& edges = dEdge.GetEdges();
+	for (size_t i = 0; i < edges.size(); i++)
+	{
+		cv::Vec3b color(rand() % 155 + 100, rand() % 155 + 100, rand() % 155 + 100);
+		const std::vector<cv::Point>& pnts = edges[i].pnts;
+		for (size_t j = 0; j < pnts.size(); j++)
+		{
+			show3u.at<cv::Vec3b>(pnts[j]) = color;
+		}
+		tpnts2d.push_back(edges[i].pnts);
+	}
+	m_BlackLine = GetLines(tpnts2d, 0, 0);
+	m_BlackLine = SmoothingLen5(m_BlackLine);
+	Lines showLines;
+	Lines BLineWidth(m_BlackLine.size());
+	Lines normals = GetNormalsLen2(m_BlackLine);
+	const double blackRadio = 0.5;
+	for (int idx1 = 0; idx1 < m_BlackLine.size(); ++idx1)
+	{
+		const Line& nowLine = m_BlackLine[idx1];
+		const Line& nowNormals = normals[idx1];
+		Line& lineWidths = BLineWidth[idx1];
+		lineWidths.clear();
+		for (int idx2 = 0; idx2 < nowLine.size() - 1; ++idx2)
+		{
+			const double LINE_WIDTH = 5;
+			Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
+			Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
+			Vector2 start2(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * LINE_WIDTH);
+			Vector2 end2(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * LINE_WIDTH);
+			double_vector line1 = vImage.GetLineLight(start.x, start.y, end.x, end.y,
+								  360);
+			double_vector line2 = vImage.GetLineLight(start2.x, start2.y, end2.x, end2.y,
+								  360);
+			double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
+												15, 50), LINE_WIDTH * 2);
+			double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
+												15, 50), LINE_WIDTH * 2);
+			if (width1.size() >= 2 && width2.size() >= 2 && abs(width2[0] - width2[1]) < 1)
+			{
+				Line line1;
+				line1.push_back(nowLine[idx2] - nowNormals[idx2] * width1[0] * blackRadio);
+				line1.push_back(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * width2[0] *
+								blackRadio);
+				line1 = GetLine(line1, 0.5, 0.5);
+				Line line2;
+				line2.push_back(nowLine[idx2] + nowNormals[idx2] * width1[1] * blackRadio);
+				line2.push_back(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * width2[1] *
+								blackRadio);
+				line2 = GetLine(line2, 0.5, 0.5);
+				showLines.push_back(line1);
+				showLines.push_back(line2);
+// save line width
+				lineWidths.push_back(Vector2(width1[0] * blackRadio, width1[1] * blackRadio));
+			}
+			else
+			{
+				lineWidths.push_back(Vector2());
+			}
+		}
+		lineWidths.push_back(Vector2());
+	}
+	m_BLineWidth = BLineWidth;
+	m_BlackLine = GetLines(tpnts2d, 0.0, 0.0);
+	m_BlackLine = SmoothingLen5(m_BlackLine, 0.9, 5);
+	LineEnds les = GetLineEnds(m_BlackLine);
+	LinkLineEnds180(les, 5, 20);
+	ConnectLineEnds(les, m_BlackLine, m_BLineWidth);
+	IncreaseDensity(m_BlackLine, m_BLineWidth);
+	les = GetLineEnds(m_BlackLine);
+	ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 8, 15);
+	m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 5);
+	m_BLineWidth = FixLineWidths(m_BLineWidth, 50);
+//m_BLineWidth = FixLineWidths(m_BLineWidth, 100);
+	ClearLineWidthByPercent(m_BLineWidth, 0.4);
+	m_BLineWidth = FixLineWidths(m_BLineWidth, 200);
+	m_BLineWidth = SmoothingHas0Len5(m_BLineWidth, 0, 5);
+	m_BlackLine = SmoothingLen5(m_BlackLine, 0, 5);
+	Vector3s2d lineColors;
+	lineColors = GetLinesColor(img, m_BlackLine);
+	lineColors = SmoothingLen5(lineColors, 0, 10);
+	m_BlackLine = GetLines(m_BlackLine, 1, 1);
+	d3dApp.AddLinesWidth(m_BlackLine, m_BLineWidth, lineColors);
+// block line
+	dEdge.CalSecDer2(5, 0.001f);
+	dEdge.Link();
+	tpnts2d.clear();
+	const CEdges& edges2 = dEdge.GetEdges();
+	for (size_t i = 0; i < edges2.size(); i++)
+	{
+		cv::Vec3b color(rand() % 155 + 100, rand() % 155 + 100, rand() % 155 + 100);
+		const std::vector<cv::Point>& pnts = edges2[i].pnts;
+		for (size_t j = 0; j < pnts.size(); j++)
+		{
+			show3u.at<cv::Vec3b>(pnts[j]) = color;
+		}
+		tpnts2d.push_back(edges2[i].pnts);
+	}
+	m_BlackLine2 = GetLines(tpnts2d, 0, 0);
+	Lines tmp_width = m_BlackLine2;
+	m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.9, 5);
+	les = GetLineEnds(m_BlackLine2);
+	LinkLineEnds180(les, 5, 5);
+	ConnectLineEnds(les, m_BlackLine2, tmp_width);
+	IncreaseDensity(m_BlackLine2, tmp_width);
+	les = GetLineEnds(m_BlackLine2);
+	ConnectNearestLines(les, m_BlackLine2, tmp_width, 5, 15);
+//      les = GetLineEnds(m_BlackLine2);
+//      ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 6, 20);
+	m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.2, 5);
+	d3dApp.AddLines(m_BlackLine2);
+	d3dApp.SetScaleTemporary(1);
+	d3dApp.BuildPoint();
+	d3dApp.InterSetRenderTransparencyOutput2();
+	cv::Mat simg = d3dApp.DrawSceneToCvMat();
+	d3dApp.SetScaleRecovery();
+	d3dApp.ClearSkeletonLines();
+	cvtColor(simg, simg, CV_BGR2GRAY);
+	curveExtration = simg.clone();
+	Dilation(curveExtration, 2, 1);
+	cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
+	cv::Mat tmpimg = img.clone();
+	cv::Mat sampleimg = img.clone();
+	cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
+	cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
+	cv::Mat isoimg = MakeIsoSurfaceImg(tmpimg, 16);
+	for (int i = 0; i < curveExtration.rows; i++)
+	{
+		for (int j = 0; j < curveExtration.cols; j++)
+		{
+			cv::Vec3b& v = curveExtration.at<cv::Vec3b>(i, j);
+			if (v[0] > 0)
+			{
+				cv::Vec3b& sam = sampleimg.at<cv::Vec3b>(i, j);
+				sam[0] = 0;
+				sam[1] = 0;
+				sam[2] = 0;
+			}
+		}
+	}
+	cvtColor(curveExtration, curveExtration, CV_BGR2GRAY);
+	Dilation(curveExtration, 2, 2);
+	cvtColor(curveExtration, curveExtration, CV_GRAY2BGR);
+	for (int i = 0; i < curveExtration.rows; i++)
+	{
+		for (int j = 0; j < curveExtration.cols; j++)
+		{
+			cv::Vec3b& v = curveExtration.at<cv::Vec3b>(i, j);
+			if (v[0] > 0)
+			{
+				cv::Vec3b& dst = isoimg.at<cv::Vec3b>(i, j);
+				dst[0] = 1;
+				dst[1] = 1;
+				dst[2] = 1;
+			}
+		}
+	}
+	cv::imshow("sampleimg", sampleimg);
+	Lines ColorWidth;
+//Color2Side color2s = GetLinesColor2SideSmart3(img, sampleimg, m_BlackLine2, 30);
+	Color2Side color2s = GetLinesColor2Side(img, m_BlackLine2, 2);
+	color2s.left = FixLineColors(color2s.left, 600, 10);
+	color2s.right = FixLineColors(color2s.right, 600, 10);
+	les = GetLineEnds(m_BlackLine2);
+	//ClearJointArea(les, m_BlackLine2, color2s, 8);
+	color2s.left = FixLineColors(color2s.left, 600, 1);
+	color2s.right = FixLineColors(color2s.right, 600, 1);
+	color2s.left = MedianLen(color2s.left, 10, 3);
+	color2s.right = MedianLen(color2s.right, 10, 3);
+	color2s.left = SmoothingLen5(color2s.left, 0, 5);
+	color2s.right = SmoothingLen5(color2s.right, 0, 5);
+// edge extraction
+	Lines diffusionConstrant = S6GetPatchs(isoimg, 0, 0);
+	diffusionConstrant = SmoothingLen5(diffusionConstrant, 0, 1);
+	Vector3s2d colors;
+	colors = GetLinesColor(img, diffusionConstrant);
+	diffusionConstrant = GetLines(diffusionConstrant, 0.5, 0.5);
+//colors = FixLineColors(colors, 400, 10);
+//colors = MedianLen(colors, 20, 3);
+	colors = SmoothingLen5(colors, 0, 2);
+// draw red line
+	m_DiffusionFrames.push_back(DiffusionFrame());
+	m_DiffusionFrames.back().m_BlackLine = m_BlackLine;
+	m_DiffusionFrames.back().m_BLineWidth = m_BLineWidth;
+	m_DiffusionFrames.back().lineColors = lineColors;
+	m_DiffusionFrames.back().diffusionConstrant = diffusionConstrant;
+	m_DiffusionFrames.back().colors = colors;
+	m_DiffusionFrames.back().m_BlackLine2 = m_BlackLine2;
+	m_DiffusionFrames.back().color2s = color2s;
+}

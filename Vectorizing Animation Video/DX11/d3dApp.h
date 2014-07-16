@@ -29,7 +29,8 @@ public:
 	void SetScaleTemporary(float s);
 	void SetScaleRecovery();
 	void DrawScene();
-	cv::Mat DrawSceneToCvMat(D3DXCOLOR backcolor = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+	cv::Mat DrawSceneToCvMat(D3DXCOLOR backcolor = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f),
+		bool drawDiffusion = false);
 	void LoadBlend();
 	void BuildShaderFX();
 	void BuildPoint();

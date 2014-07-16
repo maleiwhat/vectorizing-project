@@ -19,6 +19,7 @@ public:
 	~ReadVideo(void);
 	bool Read(std::string path);
 	cv::Mat GetFrame();
+	void SkipFrame();
 private:
 	cv::Mat _GetFrame(AVFrame *pFrame, int width, int height);
 	bool	m_HasRead;

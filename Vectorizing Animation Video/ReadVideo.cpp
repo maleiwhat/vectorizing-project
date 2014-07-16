@@ -133,3 +133,32 @@ cv::Mat ReadVideo::_GetFrame(AVFrame* pFrame, int width, int height)
 	delete t_data;
 	return res;
 }
+
+void ReadVideo::SkipFrame()
+{
+	while (av_read_frame(m_pFormatCtx, &m_packet) >= 0)
+	{
+		if (m_packet.stream_index == m_videoStream)
+		{
+			avcodec_decode_video2(m_pCodecCtx, m_pFrame, &m_frameFinished, &m_packet);
+			if (m_frameFinished)
+			{
+				struct SwsContext* img_convert_ctx = NULL;
+				img_convert_ctx =
+					sws_getCachedContext(img_convert_ctx, m_pCodecCtx->width,
+					m_pCodecCtx->height, m_pCodecCtx->pix_fmt,
+					m_pCodecCtx->width, m_pCodecCtx->height,
+					PIX_FMT_RGB24, SWS_BICUBIC,
+					NULL, NULL, NULL);
+				if (!img_convert_ctx)
+				{
+					fprintf(stderr, "Cannot initialize sws conversion context\n");
+					exit(1);
+				}
+				av_free_packet(&m_packet);
+				break;
+			}
+		}
+		av_free_packet(&m_packet);
+	}
+}

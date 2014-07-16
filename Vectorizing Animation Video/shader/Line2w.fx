@@ -98,10 +98,10 @@ void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 	out3.color.w = centerAlpha;
 	out3.pos.xy = input[0].p33;
 	triStream.Append( out3 );
-	out3.color.w = centerAlpha*1;
+	out3.color.w = centerAlpha*0;
 	out3.pos.xy = input[0].p2;
 	triStream.Append( out3 );
-	out3.color.w = centerAlpha*1;
+	out3.color.w = centerAlpha*0;
 	out3.pos.xy = input[0].p4;
 	triStream.Append( out3 );
 	triStream.RestartStrip();

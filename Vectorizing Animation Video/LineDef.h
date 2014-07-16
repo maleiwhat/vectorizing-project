@@ -53,6 +53,7 @@ typedef std::vector<Endpoint> Endpoints;
 
 struct LineEnd;
 typedef std::vector<int> ints;
+typedef std::deque<int> intds;
 typedef std::vector<unsigned int> uints;
 typedef std::vector<LineEnd*> LineEnd_ptrs;
 struct LineEnd
@@ -122,6 +123,8 @@ private:
 
 typedef std::vector<int> ints;
 typedef std::vector<ints> ints2d;
+typedef std::vector<bool> bools;
+
 struct Index2Side
 {
 	ints2d left;

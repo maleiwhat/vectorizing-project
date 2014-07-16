@@ -46,6 +46,7 @@ public:
 	uints		m_SLIC_Contour;
 	uints		m_Buff;
 	MySLIC::SLICLabels	m_Labels;
+	MySLIC::SLICLabelPatchs m_LPatchs;
 	ints	m_LabelsMap;
 	int		m_NumLabels;
 	// slic end
