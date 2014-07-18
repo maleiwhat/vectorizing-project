@@ -552,7 +552,7 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 			li[j] = -1;
 			if (j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
-				double normal_len = 2;
+				double normal_len = 1;
 				do
 				{
 					Vector2 pos = *it2 * 2 - normals[i][j] * normal_len;
@@ -560,10 +560,6 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 					normal_len += 0.5;
 				}
 				while (li[j] == -1 && normal_len < 3);
-			}
-			if (ccms[li[j] - 1].Size() < 7)
-			{
-				li[j] = -1;
 			}
 		}
 		ints& ri = ans_right[i];
@@ -574,7 +570,7 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 			ri[j] = -1;
 			if (j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
-				double normal_len = 2;
+				double normal_len = 1;
 				do
 				{
 					Vector2 pos = *it2 * 2 + normals[i][j] * normal_len;
@@ -582,10 +578,6 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 					normal_len += 0.5;
 				}
 				while (ri[j] == -1 && normal_len < 3);
-			}
-			if (ccms[ri[j] - 1].Size() < 7)
-			{
-				ri[j] = -1;
 			}
 		}
 	}

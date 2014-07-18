@@ -677,6 +677,8 @@ void MySLIC::ComputePatchFromColor(const SLICLabels& labels, SLICLabelPatchs& pa
 ColorConstraints MySLIC::BuildColorConstraints(const SLICLabels& labels,
 		const SLICLabelPatchs& patchs, cv::Mat img)
 {
+	cv::Mat nimg = img.clone();
+	cv::resize(nimg, nimg, nimg.size()*2, 0, 0, cv::INTER_CUBIC);
 	ColorConstraints res;
 	for (int i = 0; i < patchs.size(); ++i)
 	{
@@ -688,7 +690,7 @@ ColorConstraints MySLIC::BuildColorConstraints(const SLICLabels& labels,
 			const Pixels& pixels = labels[idxs[j]].pixels;
 			for (int k = 0; k < pixels.size(); ++k)
 			{
-				ncc.AddPoint(pixels[k].x, pixels[k].y, img.at<cv::Vec3b>(pixels[k].y, pixels[k].x));
+				ncc.AddPoint(pixels[k].x, pixels[k].y, img.at<cv::Vec3b>(pixels[k].y/2, pixels[k].x/2));
 			}
 		}
 		for (int j = 0; j < idxs.size(); ++j)
@@ -696,11 +698,11 @@ ColorConstraints MySLIC::BuildColorConstraints(const SLICLabels& labels,
 			const Pixels& pixels = labels[idxs[j]].pixels;
 			for (int k = 0; k < pixels.size(); ++k)
 			{
-				img.at<cv::Vec3b>(pixels[k].y, pixels[k].x) = ncc.GetColorCvPoint(pixels[k].x, pixels[k].y);
+				nimg.at<cv::Vec3b>(pixels[k].y, pixels[k].x) = ncc.GetColorCvPoint(pixels[k].x, pixels[k].y);
 			}
 		}
 	}
-	cv::imshow("nimg", img);
+	cv::imshow("nimg", nimg);
 	return res;
 }
 

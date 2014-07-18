@@ -47,6 +47,7 @@ public:
 	uints		m_Buff;
 	MySLIC::SLICLabels	m_Labels;
 	MySLIC::SLICLabelPatchs m_LPatchs;
+	ColorConstraints	m_ColorConstraints;
 	ints	m_LabelsMap;
 	int		m_NumLabels;
 	// slic end
@@ -86,7 +87,7 @@ public:
 	void AddFrame(cv::Mat img);
 	void OnFileOpenVideo();
 	void OnFileOpenPicture();
-	void Do_SLIC(double m_compatcness , double m_spcount);
+	cv::Mat Do_SLIC(double m_compatcness , double m_spcount);
 	VAV_View* GetVavView();
 // ÂÐ¼g
 public:
