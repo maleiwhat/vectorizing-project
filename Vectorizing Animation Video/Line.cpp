@@ -692,7 +692,6 @@ ints2d Maxmums(const ints2d& widths)
 ints Maxmums2(const ints& cvp, Line& line)
 {
 	ints cps = cvp;
-	
 	ints isect_idx;
 	isect_idx.clear();
 	double_vector angles = ComputeAngle(line);
@@ -1524,6 +1523,11 @@ LineEnds GetLineEnds(const Lines& cvp)
 		int last = (int)nowLine.size() - 1;
 		Vector2 p1 = nowLine[0] - nowLine[2];
 		Vector2 p2 = nowLine[last] - nowLine[last - 2];
+		if (nowLine.size() > 15)
+		{
+			p1 = nowLine[2] - nowLine[10];
+			p2 = nowLine[last - 2] - nowLine[last - 10];
+		}
 		double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
 		double angle2 = fmod(360 + atan2(p2.x, p2.y) * M_1_PI * 180, 360);
 		ans.push_back(LineEnd(nowLine.front(), nowLine.back(), i, last, angle1,

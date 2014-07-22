@@ -1707,9 +1707,26 @@ bool compareVec3b(const cv::Vec3b& a, const cv::Vec3b& b)
 	return false;
 }
 
+void S5ReColor(cv::Mat& image)
+{
+	cv::Mat mask;
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	int cc = 1;
+	for (int i = 0; i < image.rows; i++)
+	{
+		for (int j = 0; j < image.cols - 1; j++)
+		{
+			S6FloodFill(image, mask, cc, j, i);
+			cc =rand()%255+rand()*255;
+		}
+	}
+}
+
 void S6ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms)
 {
 	cv::Mat mask;
+	cv::resize(oimg.clone(), oimg, oimg.size() * 2, 0, 0, cv::INTER_CUBIC);
 	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
 	mask = cv::Scalar::all(0);
 	int cc = 1;
@@ -1724,12 +1741,11 @@ void S6ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms)
 				ColorConstraint ccm;
 				for (int ii = 0; ii < image.rows; ii++)
 				{
-					bool has_diff = false;
 					for (int jj = 0; jj < image.cols; jj++)
 					{
 						if (mask.at<uchar>(ii + 1, jj + 1) > 130)
 						{
-							ccm.AddPoint(jj/2, ii/2, oimg.at<cv::Vec3b>(ii/2, jj/2));
+							ccm.AddPoint(jj * 0.5, ii * 0.5, oimg.at<cv::Vec3b>(ii, jj));
 						}
 					}
 				}
@@ -1737,4 +1753,42 @@ void S6ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms)
 			}
 		}
 	}
+}
+
+Mats S7ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms)
+{
+	Mats res;
+	cv::Mat mask, maskimg;
+	cv::resize(oimg.clone(), oimg, oimg.size() * 2, 0, 0, cv::INTER_CUBIC);
+	maskimg = oimg.clone();
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	int cc = 1;
+	for (int i = 0; i < image.rows; i++)
+	{
+		for (int j = 0; j < image.cols - 1; j++)
+		{
+			int lastcc = cc;
+			S6FloodFill(image, mask, cc, j, i);
+			if (lastcc != cc)
+			{
+				maskimg = cv::Scalar(0);
+				ColorConstraint ccm;
+				for (int ii = 0; ii < image.rows; ii++)
+				{
+					for (int jj = 0; jj < image.cols; jj++)
+					{
+						if (mask.at<uchar>(ii + 1, jj + 1) > 130)
+						{
+							ccm.AddPoint(jj * 0.5, ii * 0.5, oimg.at<cv::Vec3b>(ii, jj));
+							maskimg.at<cv::Vec3b>(ii, jj) = oimg.at<cv::Vec3b>(ii, jj);
+						}
+					}
+				}
+				res.push_back(maskimg.clone());
+				ccms.push_back(ccm);
+			}
+		}
+	}
+	return res;
 }

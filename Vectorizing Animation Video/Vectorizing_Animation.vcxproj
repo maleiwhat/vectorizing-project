@@ -420,7 +420,10 @@
     </ClCompile>
     <ClCompile Include="ViewTree.cpp" />
     <ClCompile Include="VoronoiCgal_Patch.cpp" />
-    <ClCompile Include="vtkShowHistogramTimerCallback.cpp" />
+    <ClCompile Include="vtkShowHistogramTimerCallback.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="zip\CryptoData.cpp" />
     <ClCompile Include="zip\ZipData.cpp" />
     <ClCompile Include="zip\ZipFolder.cpp" />

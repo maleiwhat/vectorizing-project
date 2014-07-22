@@ -96,7 +96,7 @@
 #endif
 #endif
 
-
+/*
 #include <vtkSphereSource.h>
 #include <vtkMath.h>
 #include <vtkDoubleArray.h>
@@ -159,3 +159,4 @@ static struct
 	}
 }
 vtkOnlyNew;
+*/

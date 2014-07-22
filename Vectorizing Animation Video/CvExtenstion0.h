@@ -8,6 +8,7 @@
 #include "ImageSpline.h"
 #include "ColorConstraint.h"
 #include "CvExtenstion.h"
+typedef std::vector<cv::Mat> Mats;
 
 cv::Mat CannyEdge(cv::Mat& image, double threshold1 = 0, double threshold2 = 30,
 				  int apertureSize = 3, bool L2gradient = false);
@@ -42,7 +43,9 @@ cv::Mat TrapBallMask3(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE, in
 cv::Mat TrapBallMask4(cv::Mat image, int moprh = cv::MORPH_ELLIPSE);
 cv::Mat ConvertToMedian(cv::Mat image, cv::Mat src);
 cv::Mat ConvertToIndex(cv::Mat src, cv::Mat ori, ColorConstraints& output);
+void    S5ReColor(cv::Mat& image);
 void    S6ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms);
+Mats    S7ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms);
 
 bool CheckMaskImg1(cv::Mat image, cv::Mat mask, int x, int y);
 bool CheckMaskImg2(cv::Mat image, cv::Mat mask, int x, int y);

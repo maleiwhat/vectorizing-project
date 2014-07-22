@@ -17,7 +17,7 @@
 #include "DX11/d3dApp.h"
 #include "math/Vector2.h"
 #include "LineDef.h"
-#include "vtkShowHistogramTimerCallback.h"
+//#include "vtkShowHistogramTimerCallback.h"
 #include "Patch.h"
 
 class VAV_Doc;
@@ -63,10 +63,10 @@ public:
 	bool		m_HoldCtrl;
 
 	HANDLE	m_thread;
-	vtkShowHistogramTimerCallback_Sptr m_TimerCallback;
-	vtkXYPlotActor_Sptr m_plot;
-	vtkRenderWindow_Sptr m_renderWindow;
-	vtkRenderWindowInteractor_Sptr m_interactor;
+// 	vtkShowHistogramTimerCallback_Sptr m_TimerCallback;
+// 	vtkXYPlotActor_Sptr m_plot;
+// 	vtkRenderWindow_Sptr m_renderWindow;
+// 	vtkRenderWindowInteractor_Sptr m_interactor;
 	vavImage	m_ExpImage;
 // ÂÐ¼g
 public:

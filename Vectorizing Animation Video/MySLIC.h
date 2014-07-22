@@ -111,7 +111,7 @@ public:
 
 public:
 	ColorConstraints BuildColorConstraints(const SLICLabels& labels, const SLICLabelPatchs& patchs,
-										   cv::Mat img);
+										   cv::Mat& img);
 	void ComputePatchFromColor(const SLICLabels& labels, SLICLabelPatchs& patchs, double threshold);
 	//============================================================================
 	// Superpixel segmentation for a given step size (superpixel size ~= step*step)

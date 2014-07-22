@@ -78,7 +78,7 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(rr, 0, 255);
 		Bounding(gg, 0, 255);
 		Bounding(bb, 0, 255);
-		return Vector3(rr, gg, bb);
+		return Vector3(bb, gg, rr);
 	}
 	return Vector3(255, 0, 0);
 }

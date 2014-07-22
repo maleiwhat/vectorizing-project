@@ -138,7 +138,7 @@ BEGIN_MESSAGE_MAP(VAV_MainFrame, CFrameWndEx)
 	ON_UPDATE_COMMAND_UI(ID_CHECK_Black_Line_Vectorization,
 						 &VAV_MainFrame::OnUpdateCheck_BlackLineVectorization)
 	ON_COMMAND(ID_CHECK_Isosurface_Constraint_Vectorization,
-			   &VAV_MainFrame::OnCheck__IsosurfaceConstraintVectorization)
+			   &VAV_MainFrame::OnCheck_IsosurfaceConstraintVectorization)
 	ON_UPDATE_COMMAND_UI(ID_CHECK_Isosurface_Constraint_Vectorization,
 						 &VAV_MainFrame::OnUpdateCheck_IsosurfaceConstraintVectorization)
 	ON_COMMAND(ID_BUTTON_Build_Vectorization, &VAV_MainFrame::OnButton_BuildVectorization)
@@ -1425,7 +1425,7 @@ void VAV_MainFrame::OnUpdateCheck_BlackLineVectorization(CCmdUI* pCmdUI)
 }
 
 
-void VAV_MainFrame::OnCheck__IsosurfaceConstraintVectorization()
+void VAV_MainFrame::OnCheck_IsosurfaceConstraintVectorization()
 {
 	m_ISOSURFACE_CONSTRAINT_VECTORIZATION = !m_ISOSURFACE_CONSTRAINT_VECTORIZATION;
 }

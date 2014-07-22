@@ -87,7 +87,7 @@ public:
 	void AddFrame(cv::Mat img);
 	void OnFileOpenVideo();
 	void OnFileOpenPicture();
-	cv::Mat Do_SLIC(double m_compatcness , double m_spcount);
+	cv::Mat Do_SLIC(double m_compatcness , double m_spcount, cv::Mat img);
 	VAV_View* GetVavView();
 // ÂÐ¼g
 public:
@@ -184,7 +184,7 @@ public:
 	afx_msg void OnUpdateCheck_RegionGrowing(CCmdUI *pCmdUI);
 	afx_msg void OnCheck_BlackLineVectorization();
 	afx_msg void OnUpdateCheck_BlackLineVectorization(CCmdUI *pCmdUI);
-	afx_msg void OnCheck__IsosurfaceConstraintVectorization();
+	afx_msg void OnCheck_IsosurfaceConstraintVectorization();
 	afx_msg void OnUpdateCheck_IsosurfaceConstraintVectorization(CCmdUI *pCmdUI);
 	afx_msg void OnButton_BuildVectorization();
 	afx_msg void OnCheck_DecorativeCurvesConstraint();
