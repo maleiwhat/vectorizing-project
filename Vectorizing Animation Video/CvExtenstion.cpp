@@ -383,7 +383,7 @@ void DrawWhiteLineImage(cv::Mat& image0, const Lines& lines)
 		{
 			cv::Point p1((*it)[j].x * 2, (*it)[j].y * 2);
 			cv::Point p2((*it)[j + 1].x * 2, (*it)[j + 1].y * 2);
-			cv::line(image0, p1, p2, cv::Scalar(cc));
+			cv::line(image0, p1, p2, cv::Scalar(cc), 2);
 		}
 	}
 }

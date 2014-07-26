@@ -1,7 +1,7 @@
 
 #include "ColorConstraintMathModel.h"
 
-const int THRESHOLD = 100;
+const int THRESHOLD = 160000;
 
 void ColorConstraintMathModel::AddPoint(double x, double y, const cv::Vec3b& p)
 {
@@ -51,16 +51,16 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(bb, 0, 255);
 		return Vector3(bb, gg, rr);
 	}
-//  else if (m_Colors.size() > 6)
-//  {
-//      double rr = x1[0] + x1[1] * x + x1[2] * y;
-//      double gg = x2[0] + x2[1] * x + x2[2] * y;
-//      double bb = x3[0] + x3[1] * x + x3[2] * y;
-//      Bounding(rr, 0, 255);
-//      Bounding(gg, 0, 255);
-//      Bounding(bb, 0, 255);
-//      return Vector3(bb, gg, rr);
-//  }
+	else if (m_Colors.size() > 6)
+	{
+		double rr = x1[0] + x1[1] * x + x1[2] * y;
+		double gg = x2[0] + x2[1] * x + x2[2] * y;
+		double bb = x3[0] + x3[1] * x + x3[2] * y;
+		Bounding(rr, 0, 255);
+		Bounding(gg, 0, 255);
+		Bounding(bb, 0, 255);
+		return Vector3(bb, gg, rr);
+	}
 	else if (m_Colors.size() > 0)
 	{
 		double rr = 0;
@@ -104,16 +104,16 @@ cv::Vec3b ColorConstraintMathModel::GetColorCvPoint(double x, double y)
 		Bounding(bb, 0, 255);
 		return cv::Vec3b(rr, gg, bb);
 	}
-//  else if (m_Colors.size() > 6)
-//  {
-//      double rr = x1[0] + x1[1] * x + x1[2] * y;
-//      double gg = x2[0] + x2[1] * x + x2[2] * y;
-//      double bb = x3[0] + x3[1] * x + x3[2] * y;
-//      Bounding(rr, 0, 255);
-//      Bounding(gg, 0, 255);
-//      Bounding(bb, 0, 255);
-//      return cv::Vec3b(rr, gg, bb);
-//  }
+	else if (m_Colors.size() > 6)
+	{
+		double rr = x1[0] + x1[1] * x + x1[2] * y;
+		double gg = x2[0] + x2[1] * x + x2[2] * y;
+		double bb = x3[0] + x3[1] * x + x3[2] * y;
+		Bounding(rr, 0, 255);
+		Bounding(gg, 0, 255);
+		Bounding(bb, 0, 255);
+		return cv::Vec3b(rr, gg, bb);
+	}
 	else if (m_Colors.size() > 0)
 	{
 		double rr = 0;
@@ -173,33 +173,33 @@ void ColorConstraintMathModel::BuildModel()
 		x2 = Atalu.solve(Atb2);
 		x3 = Atalu.solve(Atb3);
 	}
-//  else if (m_Colors.size() > 0)
-//  {
-//      const int LEN = m_Colors.size();
-//      const int DIM = 3;
-//      MatrixXd A(LEN, DIM), At, Ata;
-//      VectorXd b1(LEN), b2(LEN), b3(LEN), Atb1, Atb2, Atb3;
-//      int c = 0;
-//      for (int i = 0; i < m_Colors.size(); ++i)
-//      {
-//          b1.coeffRef(c) = m_Colors[i][0];
-//          b2.coeffRef(c) = m_Colors[i][1];
-//          b3.coeffRef(c) = m_Colors[i][2];
-//          A.coeffRef(c, 0) = 1;
-//          A.coeffRef(c, 1) = m_Pos[i].x;
-//          A.coeffRef(c, 2) = m_Pos[i].y;
-//          c++;
-//      }
-//      At = A.transpose();
-//      Ata = At * A;
-//      Atb1 = At * b1;
-//      Atb2 = At * b2;
-//      Atb3 = At * b3;
-//      Eigen::PartialPivLU<MatrixXd> Atalu = Ata.lu();
-//      x1 = Atalu.solve(Atb1);
-//      x2 = Atalu.solve(Atb2);
-//      x3 = Atalu.solve(Atb3);
-//  }
+	else if (m_Colors.size() > 0)
+	{
+		const int LEN = m_Colors.size();
+		const int DIM = 3;
+		MatrixXd A(LEN, DIM), At, Ata;
+		VectorXd b1(LEN), b2(LEN), b3(LEN), Atb1, Atb2, Atb3;
+		int c = 0;
+		for (int i = 0; i < m_Colors.size(); ++i)
+		{
+			b1.coeffRef(c) = m_Colors[i][0];
+			b2.coeffRef(c) = m_Colors[i][1];
+			b3.coeffRef(c) = m_Colors[i][2];
+			A.coeffRef(c, 0) = 1;
+			A.coeffRef(c, 1) = m_Pos[i].x;
+			A.coeffRef(c, 2) = m_Pos[i].y;
+			c++;
+		}
+		At = A.transpose();
+		Ata = At * A;
+		Atb1 = At * b1;
+		Atb2 = At * b2;
+		Atb3 = At * b3;
+		Eigen::PartialPivLU<MatrixXd> Atalu = Ata.lu();
+		x1 = Atalu.solve(Atb1);
+		x2 = Atalu.solve(Atb2);
+		x3 = Atalu.solve(Atb3);
+	}
 }
 
 bool ColorConstraintMathModel::CheckColor(double x, double y, const cv::Vec3b& p, double threshold)

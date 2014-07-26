@@ -161,18 +161,15 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 	Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
 	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
 	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
-//  cv::imshow("dxy", dxy);
-//  cv::imshow("dx", dxMat);
-//  cv::imshow("dy", dyMat);
 	cv::Mat kx, ky;
-	getDerivKernels(kx, ky, 1, 0, 5);
-	sepFilter2D(m_img1f, dxMat, CV_32F, kx, ky, cv::Point(-1, -1), 0);
-	getDerivKernels(kx, ky, 0, 1, 5);
-	sepFilter2D(m_img1f, dyMat, CV_32F, kx, ky, cv::Point(-1, -1), 0);
-	//cv::imshow("dx2", dxMat);
-	//cv::imshow("dy2", dyMat);
+//  getDerivKernels(kx, ky, 1, 0, 5);
+//  sepFilter2D(m_img1f, dxMat, CV_32F, kx, ky, cv::Point(-1, -1), 0);
+//  getDerivKernels(kx, ky, 0, 1, 5);
+//  sepFilter2D(m_img1f, dyMat, CV_32F, kx, ky, cv::Point(-1, -1), 0);
+//  cv::imshow("dx2", dxMat);
+//  cv::imshow("dy2", dyMat);
 	cv::Mat m_pDer1f = m_pDer2f.clone();
-	double eigval[2], eigvec[2][2];
+	double eigval[2], eigvec[2][2], maxeig = -999, mineig = 999;
 	for (int y = 0; y < m_h; y++)
 	{
 		float* xx = dxx.ptr<float>(y);
@@ -185,17 +182,26 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		float* dy = dyMat.ptr<float>(y);
 		for (int x = 0; x < m_w; x++)
 		{
-			float tmp = atan2f(dx[x], -dy[x]);
-			tmp = tmp < 0 ? tmp + PI2 : tmp;
 			compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
 			pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
 			pOrnt[x] = pOrnt[x] < 0 ? pOrnt[x] + PI2 : pOrnt[x];
 			pDer2[x] = eigval[0];//計算二階導數
-			pDer1[x] = sqrt(dx[x] * dx[x] + dy[x] * dy[x]);
+			pDer1[x] = sqrt(dx[x] * dx[x] + (dy[x] * dy[x]));
+			if (pDer2[x] > maxeig)
+			{
+				maxeig = pDer2[x];
+			}
+			if (pDer2[x] < mineig)
+			{
+				mineig = pDer2[x];
+			}
 		}
 	}
+	printf("min %f max %f\n", mineig, maxeig);
 	normalize(m_pDer2f, m_pDer2f, -1, 1, cv::NORM_MINMAX);
 	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
+	cv::imshow("m_pDer1f0", m_pDer1f);
+	cv::imshow("m_pDer2f0", m_pDer2f);
 	GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0, 0);
 	double sum2 = 0, avg2;
 	double sum1 = 0, avg1;
@@ -207,9 +213,11 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		{
 			float v1 = pDer1[x] > 0 ? pDer1[x] * (1 - abs(pDer2[x])) : 0;
 			float v2 = pDer2[x] > 0 ? pDer2[x] * (1 - abs(pDer1[x])) : 0;
+			v2 = v2 > 0 ? v2 : 0;
 			pDer1[x] = v1;
-			pDer2[x] = pow(v1, 0.9) + pow(v2, 0.9);
+			pDer2[x] = v2;
 			sum2 += pDer2[x];
+			//pDer2[x] = pDer2[x] > 0 ? float(pDer2[x] > 0.0f ? pDer2[x] : 0.0f) : 0;
 		}
 	}
 	avg2 = sum2 / (m_h * m_w);
@@ -221,32 +229,32 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		{
 			//if (pDer2[x] <= avg2 * 1)
 			{
-				pDer2[x] = powf(pDer2[x], 1.5);
+				//pDer2[x] = powf(pDer2[x], 1.5);
 			}
 		}
 	}
-	normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
-//  cv::imshow("m_pDer1f", m_pDer1f);
-//  cv::imshow("m_pDer2f", m_pDer2f);
-	if (1)
-	{
-		Sobel(m_pDer2f, dxx, CV_32F, 2, 0, kSize);
-		Sobel(m_pDer2f, dxy, CV_32F, 1, 1, kSize);
-		Sobel(m_pDer2f, dyy, CV_32F, 0, 2, kSize);
-		for (int y = 0; y < m_h; y++)
-		{
-			float* xx = dxx.ptr<float>(y);
-			float* xy = dxy.ptr<float>(y);
-			float* yy = dyy.ptr<float>(y);
-			float* pOrnt = m_pOrnt1f.ptr<float>(y);
-			for (int x = 0; x < m_w; x++)
-			{
-				compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
-				pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
-				pOrnt[x] = pOrnt[x] < 0 ? pOrnt[x] + PI2 : pOrnt[x];
-			}
-		}
-	}
+	cv::imshow("m_pDer1f", m_pDer1f);
+	cv::imshow("m_pDer2f", m_pDer2f);
+	normalize(m_pDer2f, m_pDer2f, 0, maxeig, cv::NORM_MINMAX);
+// 	if (1)
+// 	{
+// 		Sobel(m_pDer2f, dxx, CV_32F, 2, 0, kSize);
+// 		Sobel(m_pDer2f, dxy, CV_32F, 1, 1, kSize);
+// 		Sobel(m_pDer2f, dyy, CV_32F, 0, 2, kSize);
+// 		for (int y = 0; y < m_h; y++)
+// 		{
+// 			float* xx = dxx.ptr<float>(y);
+// 			float* xy = dxy.ptr<float>(y);
+// 			float* yy = dyy.ptr<float>(y);
+// 			float* pOrnt = m_pOrnt1f.ptr<float>(y);
+// 			for (int x = 0; x < m_w; x++)
+// 			{
+// 				compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
+// 				pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
+// 				pOrnt[x] = pOrnt[x] < 0 ? pOrnt[x] + PI2 : pOrnt[x];
+// 			}
+// 		}
+// 	}
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
 	return m_pDer2f;
 }
@@ -274,61 +282,11 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
 			{
 				pOrnt[x] += PI2;
 			}
-			pDer[x] = float(eigval[0] > 0.0f ? pow(eigval[0], 1) : 0.0f);//計算二階導數
+			pDer[x] = float(eigval[0] > 0.0f ? eigval[0] : 0.0f);//計算二階導數
 		}
 	}
 	//GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0);
 	normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
-	NoneMaximalSuppress(linkEndBound, linkStartBound);
-	return m_pDer2f;
-}
-
-const cv::Mat& CmCurveEx::CalSecDer(cv::Mat engery, int kSize /*= 5*/,
-									float linkEndBound /*= 0.01f*/, float linkStartBound /*= 0.1f*/)
-{
-	cv::Mat dxx, dxy, dyy;
-	Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
-	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
-	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
-	double eigval[2], eigvec[2][2];
-	for (int y = 0; y < m_h; y++)
-	{
-		float* xx = dxx.ptr<float>(y);
-		float* xy = dxy.ptr<float>(y);
-		float* yy = dyy.ptr<float>(y);
-		float* pOrnt = m_pOrnt1f.ptr<float>(y);
-		float* pDer = m_pDer2f.ptr<float>(y);
-		for (int x = 0; x < m_w; x++)
-		{
-			compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
-			pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
-			if (pOrnt[x] < 0.0f)
-			{
-				pOrnt[x] += PI2;
-			}
-			//pDer[x] = float(eigval[0] > 0.0f ? pow(eigval[0], 0.45) : 0.0f);//計算二階導數
-		}
-	}
-	m_pDer2f = engery;
-	//GaussianBlur(m_pDer2f, m_pDer2f, cv::Size(3, 3), 0);
-//  normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
-//  for (int y = 0; y < m_h; y++)
-//  {
-//      float* pDer = m_pDer2f.ptr<float>(y);
-//      uchar* pDer2 = m_pDer2.ptr<uchar>(y);
-//      for (int x = 0; x < m_w; x++)
-//      {
-//          if (pDer[x] > 0.2)
-//          {
-//              pDer2[x] = 1;
-//          }
-//          else
-//          {
-//              pDer2[x] = 0;
-//          }
-//      }
-//  }
-	normalize(m_pDer2, m_pDer2, 0, 255, cv::NORM_MINMAX);
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
 	return m_pDer2f;
 }

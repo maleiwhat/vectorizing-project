@@ -130,6 +130,7 @@ void ConnectLineEnds(LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds2(const LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds3(const LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds4(const LineEnds& les, Lines& pos, Lines& width);
+void ConnectLineEnds5(const LineEnds& les, Lines& pos, Lines& width);
 void ConnectSimilarColor2Side(const LineEnds& les, Lines& pos, Color2Side& width);
 
 void ClearJointArea(const LineEnds& les, Lines& pos, Color2Side& color2s, double len);

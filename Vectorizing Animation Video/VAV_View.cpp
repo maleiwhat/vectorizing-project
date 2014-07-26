@@ -58,6 +58,7 @@ BEGIN_MESSAGE_MAP(VAV_View, CView)
 	ON_WM_TIMER()
 	ON_WM_KEYDOWN()
 	ON_WM_KEYUP()
+	ON_WM_RBUTTONDOWN()
 END_MESSAGE_MAP()
 
 // VAV_View 建構/解構
@@ -68,13 +69,13 @@ VAV_View::VAV_View()
 	m_MButtonDown = false;
 	m_Scale = 1.f;
 	// show historgram
-// 	m_TimerCallback = vtkSmartNew;
-// 	m_plot = vtkSmartNew;
-// 	m_TimerCallback->m_plot = m_plot;
-// 	m_renderWindow = vtkSmartNew;
-// 	m_TimerCallback->m_renderWindow = m_renderWindow;
-// 	m_interactor = vtkOnlyNew;
-// 	m_TimerCallback->m_interactor = m_interactor;
+//  m_TimerCallback = vtkSmartNew;
+//  m_plot = vtkSmartNew;
+//  m_TimerCallback->m_plot = m_plot;
+//  m_renderWindow = vtkSmartNew;
+//  m_TimerCallback->m_renderWindow = m_renderWindow;
+//  m_interactor = vtkOnlyNew;
+//  m_TimerCallback->m_interactor = m_interactor;
 	//m_thread = (HANDLE)_beginthreadex(NULL, 0, MyThreadFunc, this, 0, NULL);
 }
 
@@ -129,12 +130,6 @@ void VAV_View::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 void VAV_View::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
 	// TODO: 加入列印後的清除程式碼
-}
-
-void VAV_View::OnRButtonUp(UINT /* nFlags */, CPoint point)
-{
-	ClientToScreen(&point);
-	OnContextMenu(this, point);
 }
 
 void VAV_View::OnContextMenu(CWnd* /* pWnd */, CPoint point)
@@ -257,18 +252,11 @@ void VAV_View::OnMouseMove(UINT nFlags, CPoint point)
 void VAV_View::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	CView::OnMButtonDown(nFlags, point);
-	m_D3DApp.SetLookCenter(m_LookCenter.x , m_LookCenter.y);
-	m_MButtonDown = true;
-	m_MouseDown = point;
-	m_LookDown = m_LookCenter;
 }
 
 void VAV_View::OnMButtonUp(UINT nFlags, CPoint point)
 {
 	CView::OnMButtonUp(nFlags, point);
-	m_D3DApp.SetLookCenter(m_LookCenter.x, m_LookCenter.y);
-	m_MButtonDown = false;
-	m_MouseUp = point;
 }
 
 void VAV_View::OnLButtonDown(UINT nFlags, CPoint point)
@@ -282,7 +270,7 @@ void VAV_View::OnLButtonDown(UINT nFlags, CPoint point)
 					- m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
 	if (realX > 0 && realY > 0 && realX < m_indexImg.cols && realY < m_indexImg.rows)
 	{
-		cv::Vec3b p = m_indexImg.at<cv::Vec3b>(realY*2, realX*2);
+		cv::Vec3b p = m_indexImg.at<cv::Vec3b>(realY * 2, realX * 2);
 		int idx = p[0] + p[1] * 256 + p[2] * 256 * 256;
 		printf("%d |", idx);
 	}
@@ -392,121 +380,121 @@ void VAV_View::ShowLineNormal()
 			}
 		}
 	}
-// 	if (idx1 != -1)
-// 	{
-// 		Line twoPoint;
-// 		const double LINE_WIDTH = 8;
-// 		Vector2 start(m_FeatureLines[idx1][idx2] - m_FeatureNormals[idx1][idx2] *
-// 					  LINE_WIDTH);
-// 		Vector2 end(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
-// 					LINE_WIDTH);
-// 		Vector2 start2(m_FeatureLines[idx1][idx2 + 1] -
-// 					   m_FeatureNormals[idx1][idx2] * LINE_WIDTH);
-// 		Vector2 end2(m_FeatureLines[idx1][idx2] +
-// 					 m_FeatureNormals[idx1][idx2] * LINE_WIDTH);
-// 		double_vector line1 = m_ExpImage.GetLineLight(start.x, start.y, end.x, end.y,
-// 							  360);
-// 		double_vector line2 = m_ExpImage.GetLineLight(start2.x, start2.y, end2.x,
-// 							  end2.y,
-// 							  360);
-// 		m_TimerCallback->Lock();
-// 		m_TimerCallback->m_data[0] = line1;
-// 		m_TimerCallback->m_data[4] = ConvertToAngle(line1);
-// 		m_TimerCallback->m_data[5] = ConvertToSquareWave(ConvertToAngle(line1), 10, 50);
-// 		m_TimerCallback->Unlock();
-// 		Lines push;
-// 		{
-// 			// show test line
-// 			start.x += 0.5;
-// 			start.y += 0.5;
-// 			end.x += 0.5;
-// 			end.y += 0.5;
-// 			start2.x += 0.5;
-// 			start2.y += 0.5;
-// 			end2.x += 0.5;
-// 			end2.y += 0.5;
-// 			twoPoint.push_back(start);
-// 			twoPoint.push_back(end);
-// 			push.push_back(twoPoint);
-// 		}
-// 		line1 = SmoothingLen5(line1, 0.0, 3);
-// 		line2 = SmoothingLen5(line2, 0.0, 3);
-// 		double_vector width1 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line1),
-// 											 15, 50), LINE_WIDTH * 2);
-// 		double_vector width2 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line2),
-// 											 15, 50), LINE_WIDTH * 2);
-// 		const double blackRadio = 0.6;
-// 		if (width1.size() == 2 && width2.size() == 2)
-// 		{
-// 			Line line1;
-// 			line1.push_back(m_FeatureLines[idx1][idx2] - m_FeatureNormals[idx1][idx2] *
-// 							width1[0] * blackRadio);
-// 			line1.push_back(m_FeatureLines[idx1][idx2 + 1] -
-// 							m_FeatureNormals[idx1][idx2 + 1] * width2[0] * blackRadio);
-// 			line1 = GetLine(line1, 0.5, 0.5);
-// 			Line line2;
-// 			line2.push_back(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
-// 							width1[1] * blackRadio);
-// 			line2.push_back(m_FeatureLines[idx1][idx2 + 1] +
-// 							m_FeatureNormals[idx1][idx2 + 1] * width2[1] * blackRadio);
-// 			line2 = GetLine(line2, 0.5, 0.5);
-// 			push.push_back(line1);
-// 			push.push_back(line2);
-// 		}
-// 		m_D3DApp.ClearCovers();
-// 		m_D3DApp.AddLinesCover(push);
-// 		m_D3DApp.BuildPoint();
-// 		m_D3DApp.DrawScene();
-// 	}
+//  if (idx1 != -1)
+//  {
+//      Line twoPoint;
+//      const double LINE_WIDTH = 8;
+//      Vector2 start(m_FeatureLines[idx1][idx2] - m_FeatureNormals[idx1][idx2] *
+//                    LINE_WIDTH);
+//      Vector2 end(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
+//                  LINE_WIDTH);
+//      Vector2 start2(m_FeatureLines[idx1][idx2 + 1] -
+//                     m_FeatureNormals[idx1][idx2] * LINE_WIDTH);
+//      Vector2 end2(m_FeatureLines[idx1][idx2] +
+//                   m_FeatureNormals[idx1][idx2] * LINE_WIDTH);
+//      double_vector line1 = m_ExpImage.GetLineLight(start.x, start.y, end.x, end.y,
+//                            360);
+//      double_vector line2 = m_ExpImage.GetLineLight(start2.x, start2.y, end2.x,
+//                            end2.y,
+//                            360);
+//      m_TimerCallback->Lock();
+//      m_TimerCallback->m_data[0] = line1;
+//      m_TimerCallback->m_data[4] = ConvertToAngle(line1);
+//      m_TimerCallback->m_data[5] = ConvertToSquareWave(ConvertToAngle(line1), 10, 50);
+//      m_TimerCallback->Unlock();
+//      Lines push;
+//      {
+//          // show test line
+//          start.x += 0.5;
+//          start.y += 0.5;
+//          end.x += 0.5;
+//          end.y += 0.5;
+//          start2.x += 0.5;
+//          start2.y += 0.5;
+//          end2.x += 0.5;
+//          end2.y += 0.5;
+//          twoPoint.push_back(start);
+//          twoPoint.push_back(end);
+//          push.push_back(twoPoint);
+//      }
+//      line1 = SmoothingLen5(line1, 0.0, 3);
+//      line2 = SmoothingLen5(line2, 0.0, 3);
+//      double_vector width1 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line1),
+//                                           15, 50), LINE_WIDTH * 2);
+//      double_vector width2 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line2),
+//                                           15, 50), LINE_WIDTH * 2);
+//      const double blackRadio = 0.6;
+//      if (width1.size() == 2 && width2.size() == 2)
+//      {
+//          Line line1;
+//          line1.push_back(m_FeatureLines[idx1][idx2] - m_FeatureNormals[idx1][idx2] *
+//                          width1[0] * blackRadio);
+//          line1.push_back(m_FeatureLines[idx1][idx2 + 1] -
+//                          m_FeatureNormals[idx1][idx2 + 1] * width2[0] * blackRadio);
+//          line1 = GetLine(line1, 0.5, 0.5);
+//          Line line2;
+//          line2.push_back(m_FeatureLines[idx1][idx2] + m_FeatureNormals[idx1][idx2] *
+//                          width1[1] * blackRadio);
+//          line2.push_back(m_FeatureLines[idx1][idx2 + 1] +
+//                          m_FeatureNormals[idx1][idx2 + 1] * width2[1] * blackRadio);
+//          line2 = GetLine(line2, 0.5, 0.5);
+//          push.push_back(line1);
+//          push.push_back(line2);
+//      }
+//      m_D3DApp.ClearCovers();
+//      m_D3DApp.AddLinesCover(push);
+//      m_D3DApp.BuildPoint();
+//      m_D3DApp.DrawScene();
+//  }
 }
 
 unsigned __stdcall VAV_View::MyThreadFunc(LPVOID lpParam)
 {
-// 	VAV_View* me = (VAV_View*)lpParam;
-// 	me->m_plot->ExchangeAxesOff();
-// 	me->m_plot->SetLabelFormat("%g");
-// 	me->m_plot->SetXValuesToIndex();
-// 	for (unsigned int i = 0 ; i < me->m_TimerCallback->m_data.size() ; i++)
-// 	{
-// 		vtkSmartPointer<vtkDoubleArray> array_s =
-// 			vtkSmartPointer<vtkDoubleArray>::New();
-// 		vtkSmartPointer<vtkFieldData> field =
-// 			vtkSmartPointer<vtkFieldData>::New();
-// 		vtkSmartPointer<vtkDataObject> data =
-// 			vtkSmartPointer<vtkDataObject>::New();
-// 		for (int b = 0; b < me->m_TimerCallback->m_data[i].size(); b++)
-// 		{
-// 			array_s->InsertValue(b, me->m_TimerCallback->m_data[i][b]);
-// 		}
-// 		field->AddArray(array_s);
-// 		data->SetFieldData(field);
-// 		me->m_plot->AddDataObjectInput(data);
-// 	}
-// 	me->m_plot->SetPlotColor(0, 1, 1, 1);
-// 	me->m_plot->SetPlotColor(1, 1, 0, 0);
-// 	me->m_plot->SetPlotColor(2, 0, 1, 0);
-// 	me->m_plot->SetPlotColor(3, 0, 0, 1);
-// 	me->m_plot->SetPlotColor(4, 1, 1, 1);
-// 	me->m_plot->SetPlotColor(5, 1, 0, 0);
-// 	me->m_plot->SetPlotColor(6, 0, 1, 0);
-// 	me->m_plot->SetPlotColor(7, 0, 0, 1);
-// 	me->m_plot->SetWidth(1);
-// 	me->m_plot->SetHeight(1);
-// 	me->m_plot->SetPosition(0, 0);
-// 	me->m_plot->SetPlotRange(0, 0, 360, 400);
-// 	vtkSmartPointer<vtkRenderer> renderer =
-// 		vtkSmartPointer<vtkRenderer>::New();
-// 	renderer->AddActor(me->m_plot);
-// 	me->m_renderWindow->AddRenderer(renderer);
-// 	me->m_renderWindow->SetSize(500, 500);
-// 	me->m_interactor->SetRenderWindow(me->m_renderWindow);
-// 	// Initialize the event loop and then start it
-// 	me->m_interactor->Initialize();
-// 	// Sign up to receive TimerEvent
-// 	me->m_interactor->AddObserver(vtkCommand::TimerEvent, me->m_TimerCallback);
-// 	int timerId = me->m_interactor->CreateRepeatingTimer(100);
-// 	std::cout << "timerId: " << timerId << std::endl;
-// 	me->m_interactor->Start();
+//  VAV_View* me = (VAV_View*)lpParam;
+//  me->m_plot->ExchangeAxesOff();
+//  me->m_plot->SetLabelFormat("%g");
+//  me->m_plot->SetXValuesToIndex();
+//  for (unsigned int i = 0 ; i < me->m_TimerCallback->m_data.size() ; i++)
+//  {
+//      vtkSmartPointer<vtkDoubleArray> array_s =
+//          vtkSmartPointer<vtkDoubleArray>::New();
+//      vtkSmartPointer<vtkFieldData> field =
+//          vtkSmartPointer<vtkFieldData>::New();
+//      vtkSmartPointer<vtkDataObject> data =
+//          vtkSmartPointer<vtkDataObject>::New();
+//      for (int b = 0; b < me->m_TimerCallback->m_data[i].size(); b++)
+//      {
+//          array_s->InsertValue(b, me->m_TimerCallback->m_data[i][b]);
+//      }
+//      field->AddArray(array_s);
+//      data->SetFieldData(field);
+//      me->m_plot->AddDataObjectInput(data);
+//  }
+//  me->m_plot->SetPlotColor(0, 1, 1, 1);
+//  me->m_plot->SetPlotColor(1, 1, 0, 0);
+//  me->m_plot->SetPlotColor(2, 0, 1, 0);
+//  me->m_plot->SetPlotColor(3, 0, 0, 1);
+//  me->m_plot->SetPlotColor(4, 1, 1, 1);
+//  me->m_plot->SetPlotColor(5, 1, 0, 0);
+//  me->m_plot->SetPlotColor(6, 0, 1, 0);
+//  me->m_plot->SetPlotColor(7, 0, 0, 1);
+//  me->m_plot->SetWidth(1);
+//  me->m_plot->SetHeight(1);
+//  me->m_plot->SetPosition(0, 0);
+//  me->m_plot->SetPlotRange(0, 0, 360, 400);
+//  vtkSmartPointer<vtkRenderer> renderer =
+//      vtkSmartPointer<vtkRenderer>::New();
+//  renderer->AddActor(me->m_plot);
+//  me->m_renderWindow->AddRenderer(renderer);
+//  me->m_renderWindow->SetSize(500, 500);
+//  me->m_interactor->SetRenderWindow(me->m_renderWindow);
+//  // Initialize the event loop and then start it
+//  me->m_interactor->Initialize();
+//  // Sign up to receive TimerEvent
+//  me->m_interactor->AddObserver(vtkCommand::TimerEvent, me->m_TimerCallback);
+//  int timerId = me->m_interactor->CreateRepeatingTimer(100);
+//  std::cout << "timerId: " << timerId << std::endl;
+//  me->m_interactor->Start();
 	return 0;
 }
 
@@ -531,7 +519,6 @@ void VAV_View::OnTimer(UINT_PTR nIDEvent)
 
 void VAV_View::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
 	if (nChar == 17)
 	{
 		m_HoldCtrl = true;
@@ -542,10 +529,28 @@ void VAV_View::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void VAV_View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
 	if (nChar == 17)
 	{
 		m_HoldCtrl = false;
 	}
 	CView::OnKeyUp(nChar, nRepCnt, nFlags);
+}
+
+
+void VAV_View::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	CView::OnRButtonDown(nFlags, point);
+	m_D3DApp.SetLookCenter(m_LookCenter.x , m_LookCenter.y);
+	m_MButtonDown = true;
+	m_MouseDown = point;
+	m_LookDown = m_LookCenter;
+}
+
+void VAV_View::OnRButtonUp(UINT /* nFlags */, CPoint point)
+{
+//  ClientToScreen(&point);
+//	OnContextMenu(this, point);
+	m_D3DApp.SetLookCenter(m_LookCenter.x, m_LookCenter.y);
+	m_MButtonDown = false;
+	m_MouseUp = point;
 }

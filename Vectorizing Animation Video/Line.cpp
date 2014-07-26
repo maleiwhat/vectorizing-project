@@ -1525,8 +1525,8 @@ LineEnds GetLineEnds(const Lines& cvp)
 		Vector2 p2 = nowLine[last] - nowLine[last - 2];
 		if (nowLine.size() > 15)
 		{
-			p1 = nowLine[2] - nowLine[10];
-			p2 = nowLine[last - 2] - nowLine[last - 10];
+			p1 = nowLine[5] - nowLine[10];
+			p2 = nowLine[last - 5] - nowLine[last - 10];
 		}
 		double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
 		double angle2 = fmod(360 + atan2(p2.x, p2.y) * M_1_PI * 180, 360);
@@ -2326,6 +2326,155 @@ void ConnectLineEnds4(const LineEnds& les, Lines& pos, Lines& width)
 	width = newwidth;
 }
 
+void ConnectLineEnds5(const LineEnds& les, Lines& pos, Lines& width)
+{
+	std::vector<bool> marked(pos.size(), false);
+	Lines newpos;
+	Lines newwidth;
+	int cc = 0;
+	for (LineEnds::const_iterator it1 = les.begin(); it1 != les.end(); ++it1)
+	{
+		const LineEnd& le1 = *it1;
+		if (le1.beglinks.size() > 1)
+		{
+			int nowid = le1.idx;
+			if (marked[nowid])
+			{
+				continue;
+			}
+			const Line& loopline = pos[nowid];
+			Vector2 beg = loopline.front();
+			std::vector<Vector2*> endpts;
+			Vector2 sum;
+			for (int i = 0; i < le1.beglinks.size(); ++i)
+			{
+				nowid = le1.beglinks[i];
+				double dis1 = pos[nowid].front().distance(beg);
+				double dis2 = pos[nowid].back().distance(beg);
+				if (dis1 < dis2)
+				{
+					endpts.push_back(&(pos[nowid][0]));
+					sum += pos[nowid][0];
+				}
+				else
+				{
+					endpts.push_back(&(pos[nowid][pos[nowid].size() - 1]));
+					sum += pos[nowid][pos[nowid].size() - 1];
+				}
+			}
+			sum /= le1.beglinks.size();
+			for (int i = 0; i < endpts.size(); ++i)
+			{
+				*(endpts[i]) = sum;
+			}
+		}
+		if (le1.beglinks.size() == 1)
+		{
+			int nowid = le1.idx;
+			if (marked[nowid])
+			{
+				continue;
+			}
+			Line addline;
+			Line addwidth;
+			addline.insert(addline.end(), pos[nowid].rbegin(), pos[nowid].rend());
+			addwidth.insert(addwidth.end(), width[nowid].rbegin(), width[nowid].rend());
+			marked[nowid] = true;
+			nowid = le1.beglinks.front();
+			while (nowid != -1 && !marked[nowid])
+			{
+				marked[nowid] = true;
+				int next = nowid;
+				const Line& loopline = pos[nowid];
+				const Line& loopwidth = width[nowid];
+				double dis1 = loopline.front().distance(addline.back());
+				double dis2 = loopline.back().distance(addline.back());
+				if (dis1 < dis2)
+				{
+					addline.insert(addline.end(), loopline.begin(), loopline.end());
+					addwidth.insert(addwidth.end(), loopwidth.begin(), loopwidth.end());
+					if (!les[nowid].endlinks.empty())
+					{
+						next = les[nowid].endlinks.back();
+					}
+				}
+				else
+				{
+					addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+					addwidth.insert(addwidth.end(), loopwidth.rbegin(), loopwidth.rend());
+					if (!les[nowid].beglinks.empty())
+					{
+						next = les[nowid].beglinks.front();
+					}
+				}
+				if (next == nowid)
+				{
+					nowid = -1;
+				}
+			}
+			newpos.push_back(addline);
+			newwidth.push_back(addwidth);
+		}
+		if (le1.endlinks.size() == 1)
+		{
+			int nowid = le1.idx;
+			if (marked[nowid])
+			{
+				continue;
+			}
+			Line addline;
+			Line addwidth;
+			addline.insert(addline.end(), pos[nowid].begin(), pos[nowid].end());
+			addwidth.insert(addwidth.end(), width[nowid].begin(), width[nowid].end());
+			marked[nowid] = true;
+			nowid = le1.endlinks.front();
+			while (nowid != -1 && !marked[nowid])
+			{
+				marked[nowid] = true;
+				int next = nowid;
+				const Line& loopline = pos[nowid];
+				const Line& loopwidth = width[nowid];
+				double dis1 = loopline.front().distance(addline.back());
+				double dis2 = loopline.back().distance(addline.back());
+				if (dis1 < dis2)
+				{
+					addline.insert(addline.end(), loopline.begin(), loopline.end());
+					addwidth.insert(addwidth.end(), loopwidth.begin(), loopwidth.end());
+					if (!les[nowid].endlinks.empty())
+					{
+						next = les[nowid].endlinks.back();
+					}
+				}
+				else
+				{
+					addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+					addwidth.insert(addwidth.end(), loopwidth.rbegin(), loopwidth.rend());
+					if (!les[nowid].beglinks.empty())
+					{
+						next = les[nowid].beglinks.front();
+					}
+				}
+				if (next == nowid)
+				{
+					nowid = -1;
+				}
+			}
+			newpos.push_back(addline);
+			newwidth.push_back(addwidth);
+		}
+	}
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		if (!marked[i])
+		{
+			newpos.push_back(pos[i]);
+			newwidth.push_back(width[i]);
+		}
+	}
+	pos = newpos;
+	width = newwidth;
+}
+
 void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d2,
 						 double angle)
 {
@@ -2352,9 +2501,9 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 				if (dis1 < minbeg_dis && !le1.haslink1)
 				{
 					Vector2 p1 = nowLine[k] - le1.beg;
-					double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
-					angle1 = abs(le1.angleBeg - angle1);
-					if (dis1 < minbeg_dis && angle1 < angle)
+					double angle1 = atan2(p1.x, p1.y) * M_1_PI * 180;
+					angle1 = std::min(abs(le1.angleBeg - angle1), abs(le1.angleBeg - (angle1 + 360)));
+					if (angle1 < angle)
 					{
 						minbeg_angle = angle1;
 						minbeg_dis = dis1;
@@ -2367,9 +2516,9 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 				if (dis2 < minend_dis && !le1.haslink2)
 				{
 					Vector2 p1 = nowLine[k] - le1.end;
-					double angle1 = fmod(360 + atan2(p1.x, p1.y) * M_1_PI * 180, 360);
-					angle1 = abs(le1.angleEnd - angle1);
-					if (dis2 < minend_dis && angle1 < angle)
+					double angle1 = atan2(p1.x, p1.y) * M_1_PI * 180;
+					angle1 = std::min(abs(le1.angleEnd - angle1), abs(le1.angleEnd - (angle1 + 360)));
+					if (angle1 < angle)
 					{
 						minend_angle = angle1;
 						minend_dis = dis2;
@@ -2414,7 +2563,7 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 					double ndis1 = n1.squaredDistance(elongation[1]);
 					double ndis2 = n2.squaredDistance(elongation[1]);
 					double nlen = orgin[minbegp].distance(elongation[1]);
-					for (int h = minendp - 20; h < minendp + 20 && h < orgin.size(); ++h)
+					for (int h = minbegp - 20; h < minbegp + 20 && h < orgin.size(); ++h)
 					{
 						if (h < 0)
 						{
