@@ -12,7 +12,7 @@
 #include "math\Vector2.h"
 #include "CvExtenstion2.h"
 #include "CvExtenstion0.h"
-
+#include "cvshowEX.h"
 
 Weights wm_init;
 Weights wm_init_cross;
@@ -383,7 +383,7 @@ void DrawWhiteLineImage(cv::Mat& image0, const Lines& lines)
 		{
 			cv::Point p1((*it)[j].x * 2, (*it)[j].y * 2);
 			cv::Point p2((*it)[j + 1].x * 2, (*it)[j + 1].y * 2);
-			cv::line(image0, p1, p2, cv::Scalar(cc), 2);
+			cv::line(image0, p1, p2, cv::Scalar(cc), 1);
 		}
 	}
 }
@@ -593,7 +593,35 @@ CvPatchs S2_2GetPatchs(const cv::Mat& image0, cv::Mat& ori_image, ColorConstrain
 			S3_1FloodFill(cc, image, mask, j, i, cvps, ori_image, ccms, out);
 		}
 	}
-	cv::imshow("S2_2GetPatchs", image);
+	g_cvshowEX.AddShow("S2_2GetPatchs", image);
+	return cvps;
+}
+
+
+
+CvPatchs S2_3GetPatchs(const cv::Mat& image0, cv::Mat& ori_image, ColorConstraints& ccms,
+					   cv::Mat& out)
+{
+	assert(image0.type() == CV_8UC3);
+	cv::Mat img1u, cImg2;
+	cImg2 = image0.clone();
+	cvtColor(image0, img1u, CV_BGR2GRAY);
+	cv::Mat srcImg1f, show3u = cv::Mat::zeros(img1u.size(), CV_8UC3);
+	img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
+	cv::Mat mask, image;
+	image0.copyTo(image);
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	CvPatchs cvps;
+	int cc = 1;
+	for (int i = 0; i < image.rows - 1; i++)
+	{
+		for (int j = 0; j < image.cols - 1; j++)
+		{
+			S3_1FloodFill(cc, image, mask, j, i, cvps, ori_image, ccms, out);
+		}
+	}
+	g_cvshowEX.AddShow("S2_2GetPatchs", image);
 	return cvps;
 }
 
@@ -1012,9 +1040,9 @@ ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold,
 	cv::imwrite("Color Region.png", image);
 	image = image0.clone();
 	cv::imwrite("Original Picture.png", image);
-	//cv::imshow("Original Picture", image);
+	//g_cvshowEX.AddShow("Original Picture", image);
 	normalize(tmp_image, img2u, 0, 255, cv::NORM_MINMAX);
-//  cv::imshow("Color Region", img2u);
+//  g_cvshowEX.AddShow("Color Region", img2u);
 //  cv::waitKey();
 	// Find Boundary
 	for (int i = 0; i < joint_mask.rows ; i++)
@@ -1085,7 +1113,7 @@ ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold,
 	joint_image = cv::Scalar::all(0);
 	Der2 = mask.clone();
 	normalize(joint_mask, img2u, 0, 255, cv::NORM_MINMAX);
-	cv::imshow("joint_mask", img2u);
+	g_cvshowEX.AddShow("joint_mask", img2u);
 	//cv::waitKey();
 	// show joint
 	for (int i = 0; i < joint_mask.rows ; i++)
@@ -1103,7 +1131,7 @@ ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold,
 		}
 	}
 	cv::imwrite("Joint Image.png", joint_mask);
-	cv::imshow("Joint Image", joint_mask);
+	g_cvshowEX.AddShow("Joint Image", joint_mask);
 	//cv::waitKey();
 //  // delete gap
 //  gap_image = cv::Scalar::all(0);
@@ -1776,10 +1804,10 @@ void S3_1FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y,
 	{
 		for (int j = 1; j < mask2.cols - 2; j++)
 		{
-			uchar& v = mask2.at<uchar>(i, j);
+			uchar& v = mask22.at<uchar>(i, j);
 			if (v > 0)
 			{
-				ccm.AddPoint(j - 1, i - 1, ori_image.at<cv::Vec3b>(i / 2, j / 2));
+				ccm.AddPoint(j - 1, i - 1, ori_image.at<cv::Vec3b>(i , j ));
 			}
 		}
 	}
@@ -1790,11 +1818,122 @@ void S3_1FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y,
 			uchar& v = mask22.at<uchar>(i, j);
 			if (v > 0)
 			{
-				out.at<cv::Vec3b>(i / 2, j / 2) = ccm.GetColorCvPoint(j - 1, i - 1);
+				out.at<cv::Vec3b>(i , j ) = ccm.GetColorCvPoint(j - 1, i - 1);
 			}
 		}
 	}
-//  cv::imshow("out", out);
+//  g_cvshowEX.AddShow("out", out);
+//  cv::waitKey();
+	for (int i = erosion - 1; i >= 0 && points2.empty(); --i)
+	{
+		mask2 = mask22.clone();
+		if (i > 0)
+		{
+			Erosion(mask2, 2, i);
+		}
+		cv::findContours(mask2, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+	}
+	CvPatch cvp;
+	cvp.Outer() = points.front();
+	if (points.size() > 1)
+	{
+		std::copy(points.begin() + 1, points.end(), std::back_inserter(cvp.Inter()));
+	}
+	cvp.Outer2() = points2.front();
+	if (points2.size() > 1)
+	{
+		std::copy(points2.begin() + 1, points2.end(), std::back_inserter(cvp.Inter2()));
+	}
+	out_array.push_back(cvp);
+}
+
+void S3_2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y,
+				   CvPatchs& out_array, cv::Mat& ori_image, ColorConstraints& ccms,
+				   cv::Mat& out)
+{
+	if (mask01.at<uchar>(y + 1, x + 1) > 0)
+	{
+		return;
+	}
+	cv::Vec3b v = image.at<cv::Vec3b>(y, x);
+	int b = rand() % 256;
+	int g = rand() % 256;
+	int r = rand() % 256;
+	if (v[0] == 255 && v[1] == 255 && v[2] == 255)
+	{
+		return;
+	}
+	cc++;
+	cv::Point seed(x, y);
+	cv::Rect ccomp;
+	cv::Scalar newVal(b, g, r);
+	int area;
+	int lo = 0;
+	int up = 0;
+	threshold(mask01, mask01, 1, 128, CV_THRESH_BINARY);
+	int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
+	area = floodFill(image, mask01, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
+					 cv::Scalar(up, up, up), flags);
+	// get Contour line
+	cv::Mat mask2 = mask01.clone();
+	ClearEdge(mask2);
+	for (int i = 1; i < mask2.rows - 1; i++)
+	{
+		for (int j = 1; j < mask2.cols - 1; j++)
+		{
+			uchar& v = mask2.at<uchar>(i, j);
+			if (v > 128)
+			{
+				v = 255;
+			}
+			else
+			{
+				v = 0;
+			}
+		}
+	}
+	CvLines points;
+	cv::findContours(mask2.clone(), points, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+	double tarea = cv::contourArea(points.front());
+	int dilation = 1, erosion = 0;
+	if (dilation > 0)
+	{
+		Dilation(mask2, 1, dilation);
+	}
+	cv::Mat mask22 = mask2.clone();
+	if (erosion > 0)
+	{
+		Erosion(mask2, 1, erosion);
+	}
+	//Dilation(mask2, 1, 5);
+	Erosion(mask2, 1, 2);
+	CvLines points2;
+	cv::findContours(mask22, points2, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+	ccms.push_back(ColorConstraint());
+	ColorConstraint& ccm = ccms.back();
+	for (int i = 1; i < mask2.rows - 2; i++)
+	{
+		for (int j = 1; j < mask2.cols - 2; j++)
+		{
+			uchar& v = mask2.at<uchar>(i, j);
+			if (v > 0)
+			{
+				ccm.AddPoint(j - 1, i - 1, ori_image.at<cv::Vec3b>(i , j ));
+			}
+		}
+	}
+	for (int i = 1; i < mask22.rows - 2; i++)
+	{
+		for (int j = 1; j < mask22.cols - 2; j++)
+		{
+			uchar& v = mask22.at<uchar>(i, j);
+			if (v > 0)
+			{
+				out.at<cv::Vec3b>(i , j ) = ccm.GetColorCvPoint(j - 1, i - 1);
+			}
+		}
+	}
+//  g_cvshowEX.AddShow("out", out);
 //  cv::waitKey();
 	for (int i = erosion - 1; i >= 0 && points2.empty(); --i)
 	{

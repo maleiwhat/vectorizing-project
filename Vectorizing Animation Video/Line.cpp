@@ -5,6 +5,7 @@
 #include "math/Quaternion.h"
 #include "IFExtenstion.h"
 #include "ColorConstraintMedian.h"
+#include <xutility>
 
 #ifdef USE_CGAL
 Lines GetLines(const CgalLines& cvp, double xOffset, double yOffset)

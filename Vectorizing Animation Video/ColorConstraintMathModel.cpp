@@ -1,7 +1,8 @@
 
 #include "ColorConstraintMathModel.h"
 
-const int THRESHOLD = 160000;
+const int THRESHOLD = 1000000;
+const int THRESHOLD2 = 20;
 
 void ColorConstraintMathModel::AddPoint(double x, double y, const cv::Vec3b& p)
 {
@@ -51,7 +52,7 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(bb, 0, 255);
 		return Vector3(bb, gg, rr);
 	}
-	else if (m_Colors.size() > 6)
+	else if (m_Colors.size() > THRESHOLD2)
 	{
 		double rr = x1[0] + x1[1] * x + x1[2] * y;
 		double gg = x2[0] + x2[1] * x + x2[2] * y;
@@ -104,7 +105,7 @@ cv::Vec3b ColorConstraintMathModel::GetColorCvPoint(double x, double y)
 		Bounding(bb, 0, 255);
 		return cv::Vec3b(rr, gg, bb);
 	}
-	else if (m_Colors.size() > 6)
+	else if (m_Colors.size() > THRESHOLD2)
 	{
 		double rr = x1[0] + x1[1] * x + x1[2] * y;
 		double gg = x2[0] + x2[1] * x + x2[2] * y;
@@ -173,7 +174,7 @@ void ColorConstraintMathModel::BuildModel()
 		x2 = Atalu.solve(Atb2);
 		x3 = Atalu.solve(Atb3);
 	}
-	else if (m_Colors.size() > 0)
+	else if (m_Colors.size() > THRESHOLD2)
 	{
 		const int LEN = m_Colors.size();
 		const int DIM = 3;

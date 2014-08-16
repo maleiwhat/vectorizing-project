@@ -1,5 +1,6 @@
 
 #include "CmCurveEx.h"
+#include "cvshowEX.h"
 
 float const static PI_QUARTER = PI_FLOAT * 0.25f;
 float const static PI_EIGHTH = PI_FLOAT * 0.125f;
@@ -166,8 +167,8 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 //  sepFilter2D(m_img1f, dxMat, CV_32F, kx, ky, cv::Point(-1, -1), 0);
 //  getDerivKernels(kx, ky, 0, 1, 5);
 //  sepFilter2D(m_img1f, dyMat, CV_32F, kx, ky, cv::Point(-1, -1), 0);
-//  cv::imshow("dx2", dxMat);
-//  cv::imshow("dy2", dyMat);
+//  g_cvshowEX.AddShow("dx2", dxMat);
+//  g_cvshowEX.AddShow("dy2", dyMat);
 	cv::Mat m_pDer1f = m_pDer2f.clone();
 	double eigval[2], eigvec[2][2], maxeig = -999, mineig = 999;
 	for (int y = 0; y < m_h; y++)
@@ -200,8 +201,8 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 	printf("min %f max %f\n", mineig, maxeig);
 	normalize(m_pDer2f, m_pDer2f, -1, 1, cv::NORM_MINMAX);
 	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
-	cv::imshow("m_pDer1f0", m_pDer1f);
-	cv::imshow("m_pDer2f0", m_pDer2f);
+	g_cvshowEX.AddShow("m_pDer1f0", m_pDer1f);
+	g_cvshowEX.AddShow("m_pDer2f0", m_pDer2f);
 	GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0, 0);
 	double sum2 = 0, avg2;
 	double sum1 = 0, avg1;
@@ -215,7 +216,7 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 			float v2 = pDer2[x] > 0 ? pDer2[x] * (1 - abs(pDer1[x])) : 0;
 			v2 = v2 > 0 ? v2 : 0;
 			pDer1[x] = v1;
-			pDer2[x] = v2;
+			pDer2[x] = v2 + v1*0.3;
 			sum2 += pDer2[x];
 			//pDer2[x] = pDer2[x] > 0 ? float(pDer2[x] > 0.0f ? pDer2[x] : 0.0f) : 0;
 		}
@@ -229,12 +230,12 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		{
 			//if (pDer2[x] <= avg2 * 1)
 			{
-				//pDer2[x] = powf(pDer2[x], 1.5);
+				pDer2[x] = powf(pDer2[x], 1.5);
 			}
 		}
 	}
-	cv::imshow("m_pDer1f", m_pDer1f);
-	cv::imshow("m_pDer2f", m_pDer2f);
+	g_cvshowEX.AddShow("m_pDer1f", m_pDer1f);
+	g_cvshowEX.AddShow("m_pDer2f", m_pDer2f);
 	normalize(m_pDer2f, m_pDer2f, 0, maxeig, cv::NORM_MINMAX);
 // 	if (1)
 // 	{

@@ -37,6 +37,9 @@ void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y);
 void    S3_1FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y, 
 					  CvPatchs& out_array, cv::Mat& ori_image, ColorConstraints& ccms,
 					  cv::Mat& out);
+void    S3_2FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y, 
+					  CvPatchs& out_array, cv::Mat& ori_image, ColorConstraints& ccms,
+					  cv::Mat& out);
 void    S4FloodFill(cv::Mat& image, cv::Mat& mask01, int range,
 					int x, int y);
 void    S5FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02,
@@ -53,6 +56,8 @@ void    S9FloodFill(cv::Mat& image, cv::Mat& mask01, int& cc, int x, int y, int 
 CvPatchs S2GetPatchs(const cv::Mat& image, int dilation = 0, int erosion = 0);
 CvPatchs S2_1GetPatchs(const cv::Mat& image);
 CvPatchs S2_2GetPatchs(const cv::Mat& image, cv::Mat& ori_image, ColorConstraints& ccms,
+					   cv::Mat& out);
+CvPatchs S2_3GetPatchs(const cv::Mat& image, cv::Mat& ori_image, ColorConstraints& ccms,
 					   cv::Mat& out);
 ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold, cv::Mat& image1);
 ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion);

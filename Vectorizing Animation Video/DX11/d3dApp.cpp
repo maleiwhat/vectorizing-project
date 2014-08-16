@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "cvshowEX.h"
 #include "d3dApp.h"
 #include "dxut/DXUT.h"
 #include "SplineShape.h"
@@ -6,6 +7,7 @@
 #include "math/Quaternion.h"
 #include <strsafe.h>
 #include "Line.h"
+
 
 D3DApp::D3DApp()
 {
@@ -2079,7 +2081,7 @@ cv::Mat D3DApp::DrawSceneToCvMat(D3DXCOLOR backcolor, bool drawDiffusion)
 				intensity[0] = pimg[offset + 2] * 255.0f;
 			}
 		}
-		cv::imshow("live", simg);
+		g_cvshowEX.AddShow("live", simg);
 		m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
 		m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
 		InterSetRenderTransparencyDefault();
@@ -2311,25 +2313,25 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 		vtx2.lcolor.w = 0;
 		vtx2.rcolor.w = 0;
 		for (int j = 0; j < now_line.size() - 1; ++j)
-		//for (int j = 1; j < now_line.size() - 2; ++j)
+			//for (int j = 1; j < now_line.size() - 2; ++j)
 		{
-// 			const int nodraw = 1;
-// 			if (now_lcolor[j].x < nodraw && now_lcolor[j].y < nodraw && now_lcolor[j].z < nodraw)
-// 			{
-// 				continue;
-// 			}
-// 			if (now_rcolor[j].x == nodraw && now_rcolor[j].y == nodraw && now_rcolor[j].z == nodraw)
-// 			{
-// 				continue;
-// 			}
-// 			if (now_lcolor[j + 1].x < nodraw && now_lcolor[j + 1].y < nodraw && now_lcolor[j + 1].z < nodraw)
-// 			{
-// 				continue;
-// 			}
-// 			if (now_rcolor[j + 1].x == nodraw && now_rcolor[j + 1].y == nodraw && now_rcolor[j + 1].z == nodraw)
-// 			{
-// 				continue;
-// 			}
+//          const int nodraw = 1;
+//          if (now_lcolor[j].x < nodraw && now_lcolor[j].y < nodraw && now_lcolor[j].z < nodraw)
+//          {
+//              continue;
+//          }
+//          if (now_rcolor[j].x == nodraw && now_rcolor[j].y == nodraw && now_rcolor[j].z == nodraw)
+//          {
+//              continue;
+//          }
+//          if (now_lcolor[j + 1].x < nodraw && now_lcolor[j + 1].y < nodraw && now_lcolor[j + 1].z < nodraw)
+//          {
+//              continue;
+//          }
+//          if (now_rcolor[j + 1].x == nodraw && now_rcolor[j + 1].y == nodraw && now_rcolor[j + 1].z == nodraw)
+//          {
+//              continue;
+//          }
 			vtx1.lcolor.x = now_lcolor[j].x * scale;
 			vtx1.lcolor.y = now_lcolor[j].y * scale;
 			vtx1.lcolor.z = now_lcolor[j].z * scale;
@@ -2354,7 +2356,7 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 			continue;
 		}
 		curveline.front().nb = D3DXVECTOR2(10000.0f, 10000.0f);
-		for (int j = 2; j < curveline.size()-2; j += 2)
+		for (int j = 2; j < curveline.size() - 2; j += 2)
 		{
 			curveline[j].nb = curveline[j - 2].pos;
 			curveline[j - 1].nb = curveline[j + 1].pos;

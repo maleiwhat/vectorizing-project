@@ -8,6 +8,8 @@
 #include "CvExtenstion2.h"
 #include "IFExtenstion.h"
 #include "CmCurveEx.h"
+#include <windows.h>
+#include "cvshowEX.h"
 
 
 cv::Mat VAV_MainFrame::Do_SLIC(double m_compatcness, double m_spcount, cv::Mat img)
@@ -79,8 +81,59 @@ cv::Mat VAV_MainFrame::Do_SLIC(double m_compatcness, double m_spcount, cv::Mat i
 			}
 		}
 	}
-	//cv::imshow("slic img", m_SLIC_Img);
+	//g_cvshowEX.AddShow("slic img", m_SLIC_Img);
 	return res;
+}
+
+cv::Mat markerMask, img, oriimg, g_region;
+cv::Point prevPt(-1, -1);
+ColorConstraints ccms3;
+CvPatchs cps;
+
+static void onMouse(int event, int x, int y, int flags, void*)
+{
+	printf("x %d y %d\n", x, y);
+	if (x < 0 || x >= img.cols || y < 0 || y >= img.rows)
+	{
+		return;
+	}
+	img = oriimg.clone();
+	if (event == CV_EVENT_LBUTTONDOWN)
+	{
+		for (int cc = 1; cc < cps.size(); ++cc)
+		{
+			if (cv::pointPolygonTest(cps[cc].Outer2(), cv::Point2f(x, y), false) > 0)
+			{
+				markerMask = cv::Scalar(0);
+				CvLines tlines;
+				tlines.push_back(cps[cc].Outer2());
+				drawContours(markerMask, tlines, 0, cv::Scalar(255), -1, 8);
+				for (int i = 0; i < img.rows; ++i)
+				{
+					for (int j = 0; j < img.cols; ++j)
+					{
+						if (markerMask.at<uchar>(i, j))
+						{
+							img.at<cv::Vec3b>(i, j) = ccms3[cc].GetColorCvPoint(j, i);
+						}
+					}
+				}
+				for (int i = 0; i < img.rows; ++i)
+				{
+					for (int j = 0; j < img.cols; ++j)
+					{
+						if (g_region.at<cv::Vec3b>(i, j)[0])
+						{
+							markerMask.at<uchar>(i, j) = 128;
+						}
+					}
+				}
+				g_cvshowEX.AddShow("hello", img);
+				g_cvshowEX.AddShow("markerMask", markerMask);
+				break;
+			}
+		}
+	}
 }
 
 
@@ -90,12 +143,20 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	Lines decorativeLine;
 	vavImage expImg = m_vavImage.Clone();
 	expImg.ToExpImage();
-	//expImg.ToExpImage();
+	expImg.ToExpImage();
 	const int MASK1_SIZE = 5;
 	const int MASK2_SIZE = 5;
 	const float secDer = 0.001f;
-	cv::imshow("Origin Image", m_vavImage.GetCvMat());
-	cv::imshow("Exponential Image", expImg.GetCvMat());
+//  g_cvshowEX.AddShow("Origin Image", m_vavImage.GetCvMat());
+//  g_cvshowEX.AddShow("Exponential Image", expImg.GetCvMat());
+	static int iinit = 0;
+	if (!iinit)
+	{
+		iinit = 1;
+		g_cvshowEX.Init();
+	}
+	g_cvshowEX.AddShow("Origin Image", m_vavImage.GetCvMat());
+	g_cvshowEX.AddShow("Exponential Image", expImg.GetCvMat());
 	cv::Mat ccp1 = expImg.Clone(), ccp2 = expImg.Clone();
 	cv::Mat slicimg;
 	cv::Mat regionColor = m_SLIC_Img;
@@ -122,8 +183,8 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 				Bblack_Fred1.at<cv::Vec3b>(pnts[j]) = cv::Vec3b(0, 0, 255);
 			}
 		}
-		imshow("Constraint Curves Parameter 1_0", show_ccp1);
-		imshow("Constraint Curves Parameter 1_1", Bblack_Fred1);
+		g_cvshowEX.AddShow("Constraint Curves Parameter 1_0", show_ccp1);
+		g_cvshowEX.AddShow("Constraint Curves Parameter 1_1", Bblack_Fred1);
 	}
 	if (m_CONSTRAINT_CURVES_PARAMETER_1 &&
 			m_DECORATIVE_CURVES)
@@ -238,8 +299,8 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 				}
 			}
 		}
-		imshow("decorative Curves_0", simg);
-		imshow("decorative Curves_1", visualize);
+		g_cvshowEX.AddShow("decorative Curves_0", simg);
+		g_cvshowEX.AddShow("decorative Curves_1", visualize);
 		d3dApp.SetScaleRecovery();
 		d3dApp.ClearSkeletonLines();
 		GetVavView()->SetTexture(m_vavImage.GetDx11Texture());
@@ -260,7 +321,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		d3dApp.InterSetRenderTransparencyOutput3();
 		decorative_Curves_2 = d3dApp.DrawSceneToCvMat(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 		d3dApp.SetScaleRecovery();
-		imshow("decorative Curves_2", decorative_Curves_2);
+		g_cvshowEX.AddShow("decorative Curves_2", decorative_Curves_2);
 	}
 	cv::Mat Bwhith_Fblue2;
 	if (m_CONSTRAINT_CURVES_PARAMETER_2)
@@ -283,8 +344,8 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 				Bwhith_Fblue2.at<cv::Vec3b>(pnts[j]) = cv::Vec3b(0, 0, 255);
 			}
 		}
-		imshow("Constraint Curves Parameter 2_0", show_ccp2);
-		imshow("Constraint Curves Parameter 2_1", Bwhith_Fblue2);
+		g_cvshowEX.AddShow("Constraint Curves Parameter 2_0", show_ccp2);
+		g_cvshowEX.AddShow("Constraint Curves Parameter 2_1", Bwhith_Fblue2);
 	}
 	cv::Mat ccp2_simg;
 	if (m_CONSTRAINT_CURVES_PARAMETER_2 &&
@@ -300,7 +361,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		Lines tmp_width = m_BlackLine2;
 		m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.5, 5);
 		cv::Mat colorline0 = MakeColorLineImage(m_vavImage, m_BlackLine2);
-		cv::imshow("colorline0", colorline0);
+		g_cvshowEX.AddShow("colorline0", colorline0);
 		LineEnds les = GetLineEnds(m_BlackLine2);
 		LinkLineEnds180(les, 5, 60);
 		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
@@ -340,10 +401,10 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		LinkLineEnds(les, 3, 360);
 		ConnectLineEnds5(les, m_BlackLine2, tmp_width);
 //      cv::Mat LineSplit = MakeColorLineImage(m_vavImage, m_BlackLine2);
-//      cv::imshow("before LineSplit", LineSplit);
+//      g_cvshowEX.AddShow("before LineSplit", LineSplit);
 //      m_BlackLine2 = LineSplitAtTurning(m_BlackLine2, 5);
 //      LineSplit = MakeColorLineImage(m_vavImage, m_BlackLine2);
-//      cv::imshow("after LineSplit", LineSplit);
+//      g_cvshowEX.AddShow("after LineSplit", LineSplit);
 //      tmp_width = m_BlackLine2;
 		//
 //      les = GetLineEnds(m_BlackLine2);
@@ -366,7 +427,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 			ccp2_simg.at<cv::Vec3b>(pb.y, pb.x) = cv::Vec3b(0, 255, 0);
 			ccp2_simg.at<cv::Vec3b>(pe.y, pe.x) = cv::Vec3b(255, 128, 0);
 		}
-		cv::imshow("boundary curves", ccp2_simg);
+		g_cvshowEX.AddShow("boundary curves", ccp2_simg);
 		cv::Mat region = m_vavImage.Clone();
 		cv::resize(region, region, region.size() * 2);
 		for (int j = 0; j < region.rows; j++)
@@ -379,11 +440,99 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 				}
 			}
 		}
-// 		DrawWhiteLineImage(region, m_BlackLine);
- 		cv::imshow("region1", region);
+//      DrawWhiteLineImage(region, m_BlackLine);
+		g_cvshowEX.AddShow("region1", region);
 		DrawWhiteLineImage(region, m_BlackLine2);
-		cv::imshow("region2", region);
-		cv::waitKey();
+		g_cvshowEX.AddShow("region2", region);
+		region = cv::Scalar(0);
+		for (int j = 0; j < region.rows; j++)
+		{
+			region.at<cv::Vec3b>(j, 0) = cv::Vec3b(255, 255, 255);
+			region.at<cv::Vec3b>(j, region.cols - 1) = cv::Vec3b(255, 255, 255);
+			region.at<cv::Vec3b>(j, 1) = cv::Vec3b(255, 255, 255);
+			region.at<cv::Vec3b>(j, region.cols - 2) = cv::Vec3b(255, 255, 255);
+		}
+		for (int i = 0; i < region.cols; i++)
+		{
+			region.at<cv::Vec3b>(0, i) = cv::Vec3b(255, 255, 255);
+			region.at<cv::Vec3b>(region.rows - 1, i) = cv::Vec3b(255, 255, 255);
+			region.at<cv::Vec3b>(1, i) = cv::Vec3b(255, 255, 255);
+			region.at<cv::Vec3b>(region.rows - 2, i) = cv::Vec3b(255, 255, 255);
+		}
+		DrawWhiteLineImage(region, m_BlackLine);
+		DrawWhiteLineImage(region, m_BlackLine2);
+		cv::Mat bndy = cv::imread("153_bndy.png");
+		for (int j = 0; j < bndy.rows; j++)
+		{
+			for (int i = 0; i < bndy.cols; i++)
+			{
+				if (bndy.at<cv::Vec3b>(j, i) == cv::Vec3b(255, 255, 255))
+				{
+					bndy.at<cv::Vec3b>(j, i) = cv::Vec3b(0, 0, 0);
+				}
+				else
+				{
+					bndy.at<cv::Vec3b>(j, i) = cv::Vec3b(1, 1, 1);
+				}
+			}
+		}
+		cvtColor(bndy, bndy, CV_BGR2GRAY);
+		cvThin(bndy, bndy, 1);
+		for (int j = 0; j < bndy.rows; j++)
+		{
+			for (int i = 0; i < bndy.cols; i++)
+			{
+				if (bndy.at<uchar>(j, i) == 1)
+				{
+					//region.at<cv::Vec3b>(j, i) = cv::Vec3b(255, 255, 255);
+				}
+			}
+		}
+		Dilation(region, 2, 2);
+		Erosion(region, 2, 2);
+		cvtColor(region, region, CV_BGR2GRAY);
+		normalize(region, region, 0, 1, cv::NORM_MINMAX);
+		cvThin(region, region, 10);
+		normalize(region, region, 0, 255, cv::NORM_MINMAX);
+		cvtColor(region, region, CV_GRAY2BGR);
+		cv::Mat vecout, vin = m_vavImage.Clone();
+		cv::resize(vin, vin, vin.size() * 2);
+		oriimg = vin.clone();
+		vecout = vin.clone();
+		vecout = cv::Scalar(0);
+		cps = S2_3GetPatchs(region, vin, ccms3, vecout);
+		for (int j = 0; j < bndy.rows; j++)
+		{
+			for (int i = 0; i < bndy.cols; i++)
+			{
+				if (bndy.at<uchar>(j, i) == 1)
+				{
+					for (int ci = 1; ci < cps.size() && ci<20; ++ci)
+					{
+						if (cps[ci].Outer2().size() > 100 && cps[ci].Inside(i, j))
+						{
+							region.at<cv::Vec3b>(j, i) = cv::Vec3b(255, 255, 255);
+						}
+					}
+				}
+			}
+		}
+		Dilation(region, 2, 1);
+		cvtColor(region, region, CV_BGR2GRAY);
+		normalize(region, region, 0, 1, cv::NORM_MINMAX);
+		cvThin(region, region, 10);
+		normalize(region, region, 0, 255, cv::NORM_MINMAX);
+		cvtColor(region, region, CV_GRAY2BGR);
+		//cps = S2_3GetPatchs(region, vin, ccms3, vecout);
+		img = region.clone();
+		markerMask.create(region.rows + 2, region.cols + 2, CV_8UC1);
+		g_cvshowEX.AddShow("region", region);
+		g_cvshowEX.AddShow("markerMask", region);
+		g_region = region;
+		cv::setMouseCallback("markerMask", onMouse, 0);
+		cv::setMouseCallback("region", onMouse, 0);
+		g_cvshowEX.AddShow("vecout", vecout);
+		//cv::waitKey();
 	}
 	Lines isosurfaceLines;
 	cv::Mat isoimg, reginimg, isolineimg;
@@ -392,7 +541,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		isoimg = m_vavImage.Clone();
 		//cv::GaussianBlur(isoimg, isoimg, cv::Size(5, 5), 0, 0);
 		isoimg = MakeIsoSurfaceImg(isoimg, 16);
-		cv::imshow("IsoSurface", isoimg);
+		g_cvshowEX.AddShow("IsoSurface", isoimg);
 	}
 	ColorConstraints ccms;
 	ColorConstraints ccms2;
@@ -412,7 +561,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 //		Dilation(simg, 1, 2);
 		//cmmsIndexImg = MakeIsoSurfaceImg(m_vavImage, 32);
 //      CvPatchs cps = S2_2GetPatchs(cmmsIndexImg, m_vavImage, ccms2, vecout);
-//      cv::imshow("vecout", vecout);
+//      g_cvshowEX.AddShow("vecout", vecout);
 		// set draw patch line to Diffusion
 //      Lines patchlines = GetLinesFromCvPatch(cps);
 //      Color2Side patchColor = GetLinesColor(patchlines, ccms2);
@@ -426,8 +575,8 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		cv::Mat colorline1 = MakeColorLineImage(m_vavImage, m_BlackLine2);
 		Lines colorline = LineSplitAtIntersection(m_BlackLine2, 1);
 		cv::Mat colorline2 = MakeColorLineImage(m_vavImage, colorline);
-		cv::imshow("color line 1", colorline1);
-		cv::imshow("color line 2", colorline2);
+		g_cvshowEX.AddShow("color line 1", colorline1);
+		g_cvshowEX.AddShow("color line 2", colorline2);
 //      Mats imgs = S7ReColor(cmmsIndexImg, m_vavImage.Clone(), ccms);
 //      cv::Mat tt = imgs[0].clone();
 //      for (int ii = 1; ii < imgs.size(); ++ii)
@@ -445,12 +594,12 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 //              }
 //          }
 //      }
-//      cv::imshow("tt1", tt);
+//      g_cvshowEX.AddShow("tt1", tt);
 //      S5ReColor(tt);
-//      cv::imshow("tt2", tt);
+//      g_cvshowEX.AddShow("tt2", tt);
 		S6ReColor(cmmsIndexImg, m_vavImage.Clone(), ccms);
 //      DrawColorLineImage(cmmsIndexImg, colorline);
-//      cv::imshow("cmmsIndexImg", cmmsIndexImg);
+//      g_cvshowEX.AddShow("cmmsIndexImg", cmmsIndexImg);
 //      cv::waitKey(10);
 		Index2Side i2s = GetLinesIndex2SideSmart(cmmsIndexImg, colorline, ccms);
 		i2s.left = FixIndexs(i2s.left, 100);
@@ -489,7 +638,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	    d3dApp.InterSetRenderTransparencyOutput2();
 	    isolineimg = d3dApp.DrawSceneToCvMat();
 	    d3dApp.SetScaleRecovery();
-	    cv::imshow("Isosurface Constraint0", isolineimg);
+	    g_cvshowEX.AddShow("Isosurface Constraint0", isolineimg);
 	    cvtColor(isolineimg, isolineimg, CV_BGR2GRAY);
 	    if (m_BOUNDARY_CURVES)
 	    {
@@ -512,7 +661,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	    }
 	    //      cvThin(isolineimg, isolineimg, 10);
 	    //      normalize(isolineimg, isolineimg, 0, 255, cv::NORM_MINMAX);
-	    cv::imshow("Isosurface Constraint", isolineimg);
+	    g_cvshowEX.AddShow("Isosurface Constraint", isolineimg);
 	    cvtColor(isolineimg, isolineimg, CV_GRAY2BGR);
 	    d3dApp.SetScaleRecovery();
 	}
@@ -547,7 +696,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	    d3dApp.SetScaleTemporary(1);
 	    d3dApp.BuildPoint();
 	    d3dApp.InterSetRenderTransparencyOutput1();
-	    cv::imshow("Boundary Curves constraint", d3dApp.DrawSceneToCvMat());
+	    g_cvshowEX.AddShow("Boundary Curves constraint", d3dApp.DrawSceneToCvMat());
 	    d3dApp.SetScaleRecovery();
 	    d3dApp.ClearSkeletonLines();
 	    d3dApp.InterSetRenderTransparencyDefault();
@@ -584,5 +733,5 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	}
 	*/
 	GetVavView()->OnDraw(0);
+	g_cvshowEX.Render();
 }
-
