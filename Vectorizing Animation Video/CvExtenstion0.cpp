@@ -12,6 +12,8 @@
 #include "algSpline.h"
 #include "SplineShape.h"
 #include "math\Vector2.h"
+#include "cvshowEX.h"
+#include <opencv2\imgproc\imgproc.hpp>
 
 cv::Mat CannyEdge(cv::Mat& image, double threshold1/*=0*/,
 				  double threshold2/*=30*/, int apertureSize/*=3*/, bool L2gradient/*=false*/)
@@ -1154,8 +1156,8 @@ cv::Mat TrapBallMask1(cv::Mat LineImg, int size, int moprh)
 			}
 		}
 	}
-//  cv::imshow("res", res);
-//  cv::waitKey();
+	cv::imshow("res", res);
+	cv::waitKey();
 	return res;
 }
 
@@ -1299,7 +1301,6 @@ cv::Mat TrapBallMask3(cv::Mat LineImg, int size, int moprh, int maxadd)
 	}
 	return res;
 }
-
 
 cv::Mat TrapBallMask4(cv::Mat LineImg, int moprh)
 {
@@ -1499,6 +1500,8 @@ cv::Vec3b MaskImgGet(cv::Mat LineImg, cv::Mat mask, int x, int y)
 	return cv::Vec3b();
 }
 
+
+
 cv::Mat ConvertToMedian(cv::Mat TestImg, cv::Mat src)
 {
 	cv::Mat res = TestImg.clone();
@@ -1650,7 +1653,7 @@ cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, ColorConstraints& output)
 	return res;
 }
 
-cv::Mat TrapBallMaskAll(cv::Mat image)
+cv::Mat TrapBallMaskAll(cv::Mat image, cv::Mat oriImg)
 {
 	cv::Mat stmp = image.clone();
 	for (int i = 0; i < stmp.rows; ++i)
@@ -1667,26 +1670,32 @@ cv::Mat TrapBallMaskAll(cv::Mat image)
 			}
 		}
 	}
+	int c = 1;
 	//6
-	stmp = TrapBallMask1(stmp, 6);
-	stmp = TrapBallMask3(stmp, 5, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask5(stmp, 6, 2, oriImg, c);
+	stmp = TrapBallMask5(stmp, 5, 2, oriImg, c);
+	stmp = TrapBallMask5(stmp, 4, 2, oriImg, c);
+	stmp = TrapBallMask5(stmp, 3, 2, oriImg, c);
+//	stmp = TrapBallMask1(stmp, 6);
+//	stmp = TrapBallMask3(stmp, 5, cv::MORPH_ELLIPSE, 5);
+//  stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
+//  stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
+//  stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
 	//5
-	stmp = TrapBallMask1(stmp, 5);
-	stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
-	//      //4
-	stmp = TrapBallMask1(stmp, 4);
-	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
-	//      //3
+//  stmp = TrapBallMask1(stmp, 5);
+//  stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
+//  stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
+//  stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
+	//4
+//  stmp = TrapBallMask1(stmp, 4);
+//  stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
+//  stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
+	//3
 //  stmp = TrapBallMask1(stmp, 3);
 //  stmp = TrapBallMask3(stmp, 2);
-	//      //2
+	//2
 	stmp = TrapBallMask4(stmp);
+	g_cvshowEX.AddShow("stmp 4", stmp);
 	return stmp;
 }
 
@@ -1718,7 +1727,7 @@ void S5ReColor(cv::Mat& image)
 		for (int j = 0; j < image.cols - 1; j++)
 		{
 			S6FloodFill(image, mask, cc, j, i);
-			cc =rand()%255+rand()*255;
+			cc = rand() % 255 + rand() * 255;
 		}
 	}
 }
@@ -1790,5 +1799,436 @@ Mats S7ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms)
 			}
 		}
 	}
+	return res;
+}
+
+cv::Mat TrapBallMask5(cv::Mat LineImg, int size, int moprh, cv::Mat oriImg, int& cstart)
+{
+	struct V2
+	{
+		V2() {}
+		V2(int x, int y): x(x), y(y) {}
+		int x, y;
+	};
+	typedef std::vector<V2> V2s;
+	int size2 = size * 2 + 1;
+	cv::Mat circle = getStructuringElement(moprh, cv::Size(size2, size2));
+	cv::Mat res = LineImg.clone();
+	//res = cv::Scalar(0);
+	cv::Mat hasFill, hasFill2;
+	cv::Mat Img = LineImg.clone();
+	Img = cv::Scalar(0);
+	hasFill.create(LineImg.rows - size2, LineImg.cols - size2, CV_8UC1);
+	hasFill = cv::Scalar(0);
+	hasFill2.create(LineImg.rows, LineImg.cols, CV_8UC1);
+	hasFill2 = cv::Scalar(0);
+	int c = cstart;
+	ColorConstraints colormodels;
+	for (int i = 0; i < LineImg.rows - size2; ++i)
+	{
+		for (int j = 0; j < LineImg.cols - size2; ++j)
+		{
+			if (res.at<cv::Vec3b>(i + size, j + size)[0] == 0 && CheckMaskImg1(LineImg, circle, j, i))
+			{
+				// 1. trap 上色
+				V2s checks;
+				checks.push_back(V2(j, i));
+				while (!checks.empty())
+				{
+					V2 v = checks.back();
+					checks.pop_back();
+					hasFill.at<uchar>(v.y, v.x) = 1;
+					V2 test[8];
+					for (int i = 0; i < 8; ++i)
+					{
+						test[i] = v;
+					}
+					test[0].y -= 1;
+					test[1].y += 1;
+					test[2].x -= 1;
+					test[3].x += 1;
+					test[4].x += 1;
+					test[4].y += 1;
+					test[5].x -= 1;
+					test[5].y += 1;
+					test[6].x += 1;
+					test[6].y -= 1;
+					test[7].x -= 1;
+					test[7].y -= 1;
+					for (int i = 0; i < 8; ++i)
+					{
+						if (IsSafePos(hasFill, test[i].x, test[i].y)
+								&& (hasFill.at<uchar>(test[i].y, test[i].x) == 0)
+								&& CheckMaskImg1(LineImg, circle, test[i].x, test[i].y))
+						{
+							checks.push_back(test[i]);
+						}
+					}
+					cv::Vec3b cc = MaskImgGet(res, circle, v.x, v.y);
+					if (cc[0] == 0)
+					{
+//                      c = rand();
+//                      // 上色
+//                      MaskImgDraw(res, circle, v.x, v.y, cv::Vec3b(c % 200 + 50, (c / 255) % 200 + 50,
+//                                  (c * 10) % 200 + 50));
+						MaskImgDraw(res, circle, v.x, v.y, cv::Vec3b(c % 256, (c / 256) % 256, c / 256 / 256));
+					}
+					else
+					{
+						MaskImgDraw(res, circle, v.x, v.y, cc);
+					}
+				}
+				// 2. 建 color model
+				cv::Vec3b idxColor(c % 200 + 50, (c / 255) % 200 + 50,
+								   (c * 10) % 200 + 50);
+				c++;
+				colormodels.push_back(ColorConstraint());
+				ColorConstraint& cc = colormodels.back();
+				for (int i = 0; i < res.rows; ++i)
+				{
+					for (int j = 0; j < res.cols; ++j)
+					{
+						if (res.at<cv::Vec3b>(i, j) == idxColor)
+						{
+							cc.AddPoint(j, i, oriImg.at<cv::Vec3b>(i, j));
+						}
+					}
+				}
+			}
+		}
+	}
+	cstart = c;
+	for (int u = 0; u < colormodels.size(); ++u)
+	{
+		ColorConstraint& cc = colormodels[u];
+		c = u + 1;
+		cv::Vec3b idxColor(c % 256, (c / 256) % 256, c / 256 / 256);
+		// 3. 對每個 region mark 出旁邊(上下左右)是黑的pixel
+		// 並把這些 pixel 的位置丟入 queue 中
+		V2s checks;
+		for (int i = 0; i < res.rows; ++i)
+		{
+			for (int j = 0; j < res.cols; ++j)
+			{
+				if (res.at<cv::Vec3b>(i, j) == idxColor)
+				{
+					V2 test[4];
+					for (int o = 0; o < 4; ++o)
+					{
+						test[o] = V2(j, i);
+					}
+					test[0].y -= 1;
+					test[1].y += 1;
+					test[2].x -= 1;
+					test[3].x += 1;
+					for (int o = 0; o < 4; ++o)
+					{
+						if (IsSafePos(res, test[o].x, test[o].y)
+								&& res.at<cv::Vec3b>(test[o].y, test[o].x) == cv::Vec3b(0, 0, 0))
+						{
+							checks.push_back(V2(test[o].x, test[o].y));
+						}
+					}
+				}
+			}
+		}
+		// 4. 比對那些黑色的 pixle ，顏色距離 color model 夠進的就加入 queue
+		while (!checks.empty())
+		{
+			V2 v = checks.back();
+			checks.pop_back();
+			hasFill2.at<uchar>(v.y, v.x) = 1;
+			Vector3 c1 = cc.GetColorVector3(v.x, v.y);
+			cv::Vec3b c2b = oriImg.at<cv::Vec3b>(v.y / 2, v.x / 2);
+			Vector3 c2(c2b[0], c2b[1], c2b[2]);
+			if (c1.distance(c2) < 30)
+			{
+				res.at<cv::Vec3b>(v.y, v.x) = idxColor;
+				V2 test[4];
+				for (int i = 0; i < 4; ++i)
+				{
+					test[i] = v;
+				}
+				test[0].y -= 1;
+				test[1].y += 1;
+				test[2].x -= 1;
+				test[3].x += 1;
+				for (int o = 0; o < 4; ++o)
+				{
+					if (IsSafePos(res, test[o].x, test[o].y)
+							&& res.at<cv::Vec3b>(test[o].y, test[o].x) == cv::Vec3b(0, 0, 0)
+							&& hasFill2.at<uchar>(test[o].y, test[o].x) == 0)
+					{
+						checks.push_back(V2(test[o].x, test[o].y));
+					}
+				}
+			}
+		}
+		for (int i = 0; i < res.rows; ++i)
+		{
+			for (int j = 0; j < res.cols; ++j)
+			{
+				if (res.at<cv::Vec3b>(i, j) == idxColor)
+				{
+					Img.at<cv::Vec3b>(i, j) = cc.GetColorCvPoint(j, i);
+				}
+			}
+		}
+	}
+	return res;
+}
+
+struct linkdis
+{
+	linkdis() {}
+	linkdis(int _dst, double _dis)
+		: dst(_dst), dis(_dis) {}
+	int dst;
+	double dis;
+};
+typedef std::vector<linkdis> linkdiss;
+typedef std::vector<linkdiss> linkdiss2d;
+
+cv::Mat MixTrapBallMask(cv::Mat LineImg, cv::Mat oriImg)
+{
+	struct V2
+	{
+		V2() {}
+		V2(int x, int y): x(x), y(y) {}
+		int x, y;
+	};
+	typedef std::vector<V2> V2s;
+	linkdiss2d alldis;
+	cv::Mat res = LineImg.clone(), rescopy = res.clone();
+	int maxid = 0;
+	for (int a = 0; a < res.rows; ++a)
+	{
+		for (int j = 0; j < res.cols; ++j)
+		{
+			cv::Vec3b tmp = res.at<cv::Vec3b>(a, j);
+			if (tmp[2] != 255)
+			{
+				int id = tmp[0] + tmp[1] * 256 + tmp[2] * 256 * 256;
+				if (maxid < id)
+				{
+					maxid = id;
+				}
+			}
+		}
+	}
+	// compute avg color
+	ints colorCount(maxid + 1, 0);
+	std::vector<Vector3> colors(maxid + 1);
+	for (int a = 1; a < res.rows - 1; ++a)
+	{
+		for (int b = 1; b < res.cols - 1; ++b)
+		{
+			cv::Vec3b cid1 = res.at<cv::Vec3b>(a, b);
+			if (cid1 != cv::Vec3b(255, 255, 255))
+			{
+				int id1 = cid1[0] + cid1[1] * 256 + cid1[2] * 256 * 256;
+				cv::Vec3b oriColor = oriImg.at<cv::Vec3b>(a, b);
+				colorCount[id1]++;
+				colors[id1][0] += oriColor[0];
+				colors[id1][1] += oriColor[1];
+				colors[id1][2] += oriColor[2];
+			}
+		}
+	}
+	// avg
+	for(int a = 1; a <= maxid; ++a)
+	{
+		colors[a][0] /= colorCount[a];
+		colors[a][1] /= colorCount[a];
+		colors[a][2] /= colorCount[a];
+	}
+	// trap
+	alldis.resize(maxid + 1);
+	cv::Mat mask;
+	mask.create(LineImg.rows + 2, LineImg.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	for (int a = 5; a < res.rows - 5; ++a)
+	{
+		for (int b = 5; b < res.cols - 5; ++b)
+		{
+			if (res.at<cv::Vec3b>(a, b) != cv::Vec3b(255, 255, 255))
+			{
+				if (res.at<cv::Vec3b>(a, b) != res.at<cv::Vec3b>(a, b + 1)
+						&& res.at<cv::Vec3b>(a, b + 1) != cv::Vec3b(255, 255, 255))
+				{
+					cv::Vec3b cid1 = res.at<cv::Vec3b>(a, b);
+					cv::Vec3b cid2 = res.at<cv::Vec3b>(a, b + 1);
+					int id1 = cid1[0] + cid1[1] * 256 + cid1[2] * 256 * 256;
+					int id2 = cid2[0] + cid2[1] * 256 + cid2[2] * 256 * 256;
+					cv::Vec3b c1b = oriImg.at<cv::Vec3b>(a, b);
+					Vector3 c1(c1b[0], c1b[1], c1b[2]);
+					cv::Vec3b c2b = oriImg.at<cv::Vec3b>(a, b + 1);
+					Vector3 c2(c2b[0], c2b[1], c2b[2]);
+					alldis[id1].push_back(linkdis(id2, c1.distance(c2)));
+					alldis[id2].push_back(linkdis(id1, c1.distance(c2)));
+				}
+				if (res.at<cv::Vec3b>(a, b) != res.at<cv::Vec3b>(a + 1, b)
+						&& res.at<cv::Vec3b>(a + 1, b) != cv::Vec3b(255, 255, 255))
+				{
+					cv::Vec3b cid1 = res.at<cv::Vec3b>(a, b);
+					cv::Vec3b cid2 = res.at<cv::Vec3b>(a + 1, b);
+					int id1 = cid1[0] + cid1[1] * 256 + cid1[2] * 256 * 256;
+					int id2 = cid2[0] + cid2[1] * 256 + cid2[2] * 256 * 256;
+					cv::Vec3b c1b = oriImg.at<cv::Vec3b>(a, b);
+					Vector3 c1(c1b[0], c1b[1], c1b[2]);
+					cv::Vec3b c2b = oriImg.at<cv::Vec3b>(a + 1, b);
+					Vector3 c2(c2b[0], c2b[1], c2b[2]);
+					alldis[id1].push_back(linkdis(id2, c1.distance(c2)));
+					alldis[id2].push_back(linkdis(id1, c1.distance(c2)));
+				}
+			}
+		}
+	}
+	// 計數與算差值
+	ints alreadylost;
+	//ints whowins;
+	cv::imshow("LineImg1", res);
+	int_int_maps iims(alldis.size());
+	int_double_maps idm1s(alldis.size());
+	int_double_maps idm2s(alldis.size());
+	for (int a = 1; a < alldis.size(); ++a)
+	{
+		int_int_map& iim = iims[a]; // count
+		int_double_map& idm1 = idm1s[a]; // diff
+		int_double_map& idm2 = idm2s[a];
+		for (int j = 0; j < alldis[a].size(); ++j)
+		{
+			int tdst = alldis[a][j].dst;
+			int tdis = alldis[a][j].dis;
+			if (iim.end() == iim.find(tdst))
+			{
+				iim[tdst] = 1;
+				idm1[tdst] = tdis;
+				idm2[tdst] = colors[a].distance(colors[tdst]);
+			}
+			else
+			{
+				iim[tdst] += 1;
+				idm1[tdst] += tdis;
+			}
+		}
+	}
+	for (int a = 1; a < alldis.size(); ++a)
+	{
+		int_int_map& iim = iims[a]; // count
+		int_double_map& idm1 = idm1s[a]; // diff
+		for (int_int_map::iterator it = iim.begin(); iim.end() != it; ++it)
+		{
+			int count = it->second;
+			idm1[it->first] /= count;
+		}
+	}
+	for (int a = 1; a < alldis.size(); ++a)
+	{
+		int useid = a;
+		if (alreadylost.end() != std::find(alreadylost.begin(), alreadylost.end(), useid))
+		{
+			//continue;
+			useid = std::find(alreadylost.begin(), alreadylost.end(), useid) - alreadylost.begin();
+			//useid = whowins[useid];
+		}
+		// 平均值
+		//printf("\n");
+		ints saveidx;
+		saveidx.push_back(useid);
+		while (!saveidx.empty())
+		{
+			int drawid = saveidx.back();
+			saveidx.pop_back();
+			int_int_map& iim = iims[drawid]; // count
+			int_double_map& idm1 = idm1s[drawid]; // diff
+			int_double_map& idm2 = idm2s[drawid];
+			for (int_int_map::iterator it = iim.begin(); iim.end() != it; ++it)
+			{
+				printf("iim %d ", it->first);
+				printf("idm1 %.2f ", idm1[it->first]);
+				printf("idm2 %.2f\n", idm2[it->first]);
+				//cv::Mat tmprescopy = res.clone();
+				ints::iterator ait = std::find(alreadylost.begin(), alreadylost.end(), it->first);
+				if (idm2[it->first] < 51 && idm1[it->first] < 30 && ait == alreadylost.end())
+				{
+					saveidx.push_back(it->first);
+					alreadylost.push_back(it->first);
+					//whowins.push_back(useid);
+					int c = useid;
+					cv::Vec3b newVal(c % 256, (c / 256) % 256, c / 256 / 256);
+					for (int i = 1; i < res.rows - 1; ++i)
+					{
+						for (int j = 1; j < res.cols - 1; ++j)
+						{
+							cv::Vec3b tmp = res.at<cv::Vec3b>(i, j);
+							int id = tmp[0] + tmp[1] * 256 + tmp[2] * 256 * 256;
+							if (id == it->first)
+							{
+								//tmprescopy.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 255);
+								res.at<cv::Vec3b>(i, j) = newVal;
+							}
+// 							else if (id == useid)
+// 							{
+// 								tmprescopy.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 255, 0);
+// 							}
+						}
+					}
+// 					cv::imshow("tmprescopy", tmprescopy);
+// 					cv::waitKey();
+				}
+			}
+		}
+	}
+	cv::imshow("LineImg2", res);
+	return res;
+}
+
+
+cv::Mat FixSpaceMask(cv::Mat image)
+{
+	cv::Mat res = image.clone();
+	int maxid = 0;
+	for (int a = 0; a < res.rows; ++a)
+	{
+		for (int j = 0; j < res.cols; ++j)
+		{
+			cv::Vec3b tmp = res.at<cv::Vec3b>(a, j);
+			if (tmp[2] != 255)
+			{
+				int id = tmp[0] + tmp[1] * 256 + tmp[2] * 256 * 256;
+				if (maxid < id)
+				{
+					maxid = id;
+				}
+			}
+		}
+	}
+	printf("maxid %d\n", maxid);
+	cv::Mat mask;
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	for (int a = 1; a < res.rows - 1; ++a)
+	{
+		for (int b = 1; b < res.cols - 1; ++b)
+		{
+			cv::Vec3b cid1 = res.at<cv::Vec3b>(a, b);
+			if (cid1 == cv::Vec3b(0, 0, 0))
+			{
+				cv::Point seed(b, a);
+				cv::Rect ccomp;
+				maxid++;
+				cv::Scalar newVal(maxid % 256, (maxid / 256) % 256, maxid / 256 / 256);
+				int area;
+				int lo = 0;
+				int up = 0;
+				threshold(mask, mask, 1, 128, CV_THRESH_BINARY);
+				int flags = 4 + (255 << 8) + CV_FLOODFILL_FIXED_RANGE;
+				area = floodFill(res, mask, seed, newVal, &ccomp, cv::Scalar(lo, lo, lo),
+								 cv::Scalar(up, up, up), flags);
+			}
+		}
+	}
+	printf("maxid %d\n", maxid);
 	return res;
 }

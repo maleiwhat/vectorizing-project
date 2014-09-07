@@ -7,6 +7,7 @@
 #include "ColorConstraintMedian.h"
 #include <xutility>
 
+
 #ifdef USE_CGAL
 Lines GetLines(const CgalLines& cvp, double xOffset, double yOffset)
 {
@@ -2029,7 +2030,8 @@ void ConnectLineEnds2(const LineEnds& les, Lines& pos, Lines& width)
 	width = newwidth;
 }
 
-void ConnectLineEnds3(const LineEnds& les, Lines& pos, Lines& width)
+
+void ConnectLineEnds3_Width(const LineEnds& les, Lines& pos, Lines& width)
 {
 	std::vector<bool> marked(pos.size(), false);
 	Lines newpos;
@@ -2142,6 +2144,107 @@ void ConnectLineEnds3(const LineEnds& les, Lines& pos, Lines& width)
 	}
 	pos = newpos;
 	width = newwidth;
+}
+
+
+void ConnectLineEnds3(const LineEnds& les, Lines& pos)
+{
+	std::vector<bool> marked(pos.size(), false);
+	Lines newpos;
+	for (LineEnds::const_iterator it1 = les.begin(); it1 != les.end(); ++it1)
+	{
+		const LineEnd& le1 = *it1;
+		if (!le1.beglinks.empty())
+		{
+			int nowid = le1.idx;
+			if (marked[nowid])
+			{
+				continue;
+			}
+			Line addline;
+			addline.insert(addline.end(), pos[nowid].rbegin(), pos[nowid].rend());
+			marked[nowid] = true;
+			nowid = le1.beglinks.front();
+			while (nowid != -1 && !marked[nowid])
+			{
+				marked[nowid] = true;
+				int next = nowid;
+				const Line& loopline = pos[nowid];
+				double dis1 = loopline.front().distance(addline.back());
+				double dis2 = loopline.back().distance(addline.back());
+				if (dis1 < dis2)
+				{
+					addline.insert(addline.end(), loopline.begin(), loopline.end());
+					if (!les[nowid].endlinks.empty())
+					{
+						next = les[nowid].endlinks.back();
+					}
+				}
+				else
+				{
+					addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+					if (!les[nowid].beglinks.empty())
+					{
+						next = les[nowid].beglinks.front();
+					}
+				}
+				if (next == nowid)
+				{
+					nowid = -1;
+				}
+			}
+			newpos.push_back(addline);
+		}
+		else if (!le1.endlinks.empty())
+		{
+			int nowid = le1.idx;
+			if (marked[nowid])
+			{
+				continue;
+			}
+			Line addline;
+			addline.insert(addline.end(), pos[nowid].begin(), pos[nowid].end());
+			marked[nowid] = true;
+			nowid = le1.endlinks.front();
+			while (nowid != -1 && !marked[nowid])
+			{
+				marked[nowid] = true;
+				int next = nowid;
+				const Line& loopline = pos[nowid];
+				double dis1 = loopline.front().distance(addline.back());
+				double dis2 = loopline.back().distance(addline.back());
+				if (dis1 < dis2)
+				{
+					addline.insert(addline.end(), loopline.begin(), loopline.end());
+					if (!les[nowid].endlinks.empty())
+					{
+						next = les[nowid].endlinks.back();
+					}
+				}
+				else
+				{
+					addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+					if (!les[nowid].beglinks.empty())
+					{
+						next = les[nowid].beglinks.front();
+					}
+				}
+				if (next == nowid)
+				{
+					nowid = -1;
+				}
+			}
+			newpos.push_back(addline);
+		}
+	}
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		if (!marked[i])
+		{
+			newpos.push_back(pos[i]);
+		}
+	}
+	pos = newpos;
 }
 
 
@@ -2327,7 +2430,141 @@ void ConnectLineEnds4(const LineEnds& les, Lines& pos, Lines& width)
 	width = newwidth;
 }
 
-void ConnectLineEnds5(const LineEnds& les, Lines& pos, Lines& width)
+void ConnectLineEnds5(const LineEnds& les, Lines& pos)
+{
+	std::vector<bool> marked(pos.size(), false);
+	Lines newpos;
+	int cc = 0;
+	for (LineEnds::const_iterator it1 = les.begin(); it1 != les.end(); ++it1)
+	{
+		const LineEnd& le1 = *it1;
+		if (le1.beglinks.size() > 1)
+		{
+			int nowid = le1.idx;
+			if (marked[nowid])
+			{
+				continue;
+			}
+			const Line& loopline = pos[nowid];
+			Vector2 beg = loopline.front();
+			std::vector<Vector2*> endpts;
+			Vector2 sum;
+			for (int i = 0; i < le1.beglinks.size(); ++i)
+			{
+				nowid = le1.beglinks[i];
+				double dis1 = pos[nowid].front().distance(beg);
+				double dis2 = pos[nowid].back().distance(beg);
+				if (dis1 < dis2)
+				{
+					endpts.push_back(&(pos[nowid][0]));
+					sum += pos[nowid][0];
+				}
+				else
+				{
+					endpts.push_back(&(pos[nowid][pos[nowid].size() - 1]));
+					sum += pos[nowid][pos[nowid].size() - 1];
+				}
+			}
+			sum /= le1.beglinks.size();
+			for (int i = 0; i < endpts.size(); ++i)
+			{
+				*(endpts[i]) = sum;
+			}
+		}
+		if (le1.beglinks.size() == 1)
+		{
+			int nowid = le1.idx;
+			if (marked[nowid])
+			{
+				continue;
+			}
+			Line addline;
+			addline.insert(addline.end(), pos[nowid].rbegin(), pos[nowid].rend());
+			marked[nowid] = true;
+			nowid = le1.beglinks.front();
+			while (nowid != -1 && !marked[nowid])
+			{
+				marked[nowid] = true;
+				int next = nowid;
+				const Line& loopline = pos[nowid];
+				double dis1 = loopline.front().distance(addline.back());
+				double dis2 = loopline.back().distance(addline.back());
+				if (dis1 < dis2)
+				{
+					addline.insert(addline.end(), loopline.begin(), loopline.end());
+					if (!les[nowid].endlinks.empty())
+					{
+						next = les[nowid].endlinks.back();
+					}
+				}
+				else
+				{
+					addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+					if (!les[nowid].beglinks.empty())
+					{
+						next = les[nowid].beglinks.front();
+					}
+				}
+				if (next == nowid)
+				{
+					nowid = -1;
+				}
+			}
+			newpos.push_back(addline);
+		}
+		if (le1.endlinks.size() == 1)
+		{
+			int nowid = le1.idx;
+			if (marked[nowid])
+			{
+				continue;
+			}
+			Line addline;
+			addline.insert(addline.end(), pos[nowid].begin(), pos[nowid].end());
+			marked[nowid] = true;
+			nowid = le1.endlinks.front();
+			while (nowid != -1 && !marked[nowid])
+			{
+				marked[nowid] = true;
+				int next = nowid;
+				const Line& loopline = pos[nowid];
+				double dis1 = loopline.front().distance(addline.back());
+				double dis2 = loopline.back().distance(addline.back());
+				if (dis1 < dis2)
+				{
+					addline.insert(addline.end(), loopline.begin(), loopline.end());
+					if (!les[nowid].endlinks.empty())
+					{
+						next = les[nowid].endlinks.back();
+					}
+				}
+				else
+				{
+					addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+					if (!les[nowid].beglinks.empty())
+					{
+						next = les[nowid].beglinks.front();
+					}
+				}
+				if (next == nowid)
+				{
+					nowid = -1;
+				}
+			}
+			newpos.push_back(addline);
+		}
+	}
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		if (!marked[i])
+		{
+			newpos.push_back(pos[i]);
+		}
+	}
+	pos = newpos;
+}
+
+void ConnectLineEnds5_Width(const LineEnds& les, Lines& pos, Lines& width)
 {
 	std::vector<bool> marked(pos.size(), false);
 	Lines newpos;
@@ -2476,8 +2713,8 @@ void ConnectLineEnds5(const LineEnds& les, Lines& pos, Lines& width)
 	width = newwidth;
 }
 
-void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d2,
-						 double angle)
+void ConnectNearestLines_Width(const LineEnds& les, Lines& pos, Lines& width, double d2,
+							   double angle)
 {
 	d2 *= d2;
 	for (int i = 0; i < (int)les.size(); ++i)
@@ -2730,8 +2967,489 @@ void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d
 	}
 }
 
-void ConnectNearestLines(const LineEnds& les, Lines& pos, Color2Side& width, double d2,
+
+void ConnectNearestLines(const LineEnds& les, Lines& pos, double d2,
 						 double angle)
+{
+	d2 *= d2;
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		const LineEnd& le1 = les[i];
+		int minbegp = -1, minbeg_angle = angle, minbeg_dis = d2, minbeg_id = -1;
+		int minendp = -1, minend_angle = angle, minend_dis = d2, minend_id = -1;
+		Vector2 begdst, enddst;
+		for (int j = 0; j < pos.size(); ++j)
+		{
+			Line& nowLine = pos[j];;
+			for (int k = 0; k < nowLine.size(); k ++)
+			{
+				if (le1.idx == j)
+				{
+					continue;
+				}
+				int dis1 = le1.beg.squaredDistance(nowLine[k]);
+				int dis2 = le1.end.squaredDistance(nowLine[k]);
+				if (dis1 < minbeg_dis && !le1.haslink1)
+				{
+					Vector2 p1 = nowLine[k] - le1.beg;
+					double angle1 = atan2(p1.x, p1.y) * M_1_PI * 180;
+					angle1 = std::min(abs(le1.angleBeg - angle1), abs(le1.angleBeg - (angle1 + 360)));
+					if (angle1 < angle)
+					{
+						minbeg_angle = angle1;
+						minbeg_dis = dis1;
+						minbegp = k;
+						begdst = nowLine[minbegp];
+						minbeg_id = j;
+					}
+				}
+				if (dis2 < minend_dis && !le1.haslink2)
+				{
+					Vector2 p1 = nowLine[k] - le1.end;
+					double angle1 = atan2(p1.x, p1.y) * M_1_PI * 180;
+					angle1 = std::min(abs(le1.angleEnd - angle1), abs(le1.angleEnd - (angle1 + 360)));
+					if (angle1 < angle)
+					{
+						minend_angle = angle1;
+						minend_dis = dis2;
+						minendp = k;
+						enddst = nowLine[minendp];
+						minend_id = j;
+					}
+				}
+			}
+		}
+		const int ELONGATION_LEN = 40;
+		if (minbegp != -1)
+		{
+			const Line& orgin = pos[minbeg_id];
+			Line& elongation = pos[le1.idx];
+			const Line normals = GetNormalsLen2(orgin);
+			elongation.insert(elongation.begin(), begdst);
+			int orgin_id1 = minbegp - 2;
+			int orgin_id2 = minbegp + 2;
+			if (orgin_id1 >= 0 && orgin_id2 < orgin.size())
+			{
+				Vector2 n1 = orgin[minbegp] + normals[minbegp] * 2;
+				Vector2 n2 = orgin[minbegp] - normals[minbegp] * 2;
+				Vector2 vec1 = orgin[orgin_id1] - orgin[orgin_id2];
+				Vector2 vec2 = elongation[0] - elongation[1];
+				vec1.normalise();
+				vec2.normalise();
+				double side_angle1 = acos(vec1.dotProduct(vec2)) * 180 * M_1_PI;
+				double side_angle2 = acos(vec1.dotProduct(-vec2)) * 180 * M_1_PI;
+				if (side_angle1 < 45 || side_angle2 < 45)
+				{
+					double dis1 = orgin[orgin_id1].squaredDistance(elongation[0] + vec2 * 2);
+					double dis2 = orgin[orgin_id2].squaredDistance(elongation[0] + vec2 * 2);
+					double ndis1 = n1.squaredDistance(elongation[1]);
+					double ndis2 = n2.squaredDistance(elongation[1]);
+					double nlen = orgin[minbegp].distance(elongation[1]);
+					for (int h = minbegp - 20; h < minbegp + 20 && h < orgin.size(); ++h)
+					{
+						if (h < 0)
+						{
+							h = 0;
+						}
+						double tlen = orgin[h].distance(elongation[1]);
+						if (tlen < nlen)
+						{
+							nlen = tlen;
+						}
+					}
+					nlen *= 0.6;
+					if (dis1 < dis2 && orgin_id1 < ELONGATION_LEN)
+					{
+						elongation.erase(elongation.begin());
+						if (ndis1 < ndis2)
+						{
+							for (int i = minbegp; i >= 0; --i)
+							{
+								elongation.insert(elongation.begin(), orgin[i] + normals[i] *nlen * (i / (double)minbegp));
+							}
+						}
+						else
+						{
+							for (int i = minbegp; i >= 0; --i)
+							{
+								elongation.insert(elongation.begin(), orgin[i] - normals[i] *nlen * (i / (double)minbegp));
+							}
+						}
+						elongation.insert(elongation.begin(), orgin.front());
+					}
+					else if (dis1 < dis2 && (orgin.size() - orgin_id1) < ELONGATION_LEN)
+					{
+						elongation.erase(elongation.begin());
+						int div = orgin.size() - minbegp;
+						if (ndis1 < ndis2)
+						{
+							for (int i = minbegp; i < orgin.size(); ++i)
+							{
+								elongation.insert(elongation.begin(),
+												  orgin[i] + normals[i] *nlen * ((orgin.size() - i) / (double)div));
+							}
+						}
+						else
+						{
+							for (int i = minbegp; i < orgin.size(); ++i)
+							{
+								elongation.insert(elongation.begin(),
+												  orgin[i] - normals[i] *nlen * ((orgin.size() - i) / (double)div));
+							}
+						}
+						elongation.insert(elongation.begin(), orgin.back());
+					}
+				}
+			}
+		}
+		if (minendp != -1)
+		{
+			Line& orgin = pos[minend_id];
+			Line& elongation = pos[le1.idx];
+			Line normals = GetNormalsLen2(orgin);
+			elongation.insert(elongation.end(), enddst);
+			int orgin_id1 = minendp - 2;
+			int orgin_id2 = minendp + 2;
+			if (orgin_id1 >= 0 && orgin_id2 < orgin.size())
+			{
+				Vector2 n1 = orgin[minendp] + normals[minendp] * 2;
+				Vector2 n2 = orgin[minendp] - normals[minendp] * 2;
+				int last = elongation.size() - 1;
+				Vector2 vec1 = orgin[orgin_id1] - orgin[orgin_id2];
+				Vector2 vec2 = elongation[last] - elongation[last - 1];
+				vec1.normalise();
+				vec2.normalise();
+				double side_angle1 = acos(vec1.dotProduct(vec2)) * 180 * M_1_PI;
+				double side_angle2 = acos(vec1.dotProduct(-vec2)) * 180 * M_1_PI;
+				if (side_angle1 < 45 || side_angle2 < 45)
+				{
+					double dis1 = orgin[orgin_id1].squaredDistance(elongation[last] + vec2 * 2);
+					double dis2 = orgin[orgin_id2].squaredDistance(elongation[last] + vec2 * 2);
+					double ndis1 = n1.squaredDistance(elongation[last - 1]);
+					double ndis2 = n2.squaredDistance(elongation[last - 1]);
+					double nlen = orgin[minendp].distance(elongation[last - 1]);
+					for (int h = minendp - 20; h < minendp + 20 && h < orgin.size(); ++h)
+					{
+						if (h < 0)
+						{
+							h = 0;
+						}
+						double tlen = orgin[h].distance(elongation[last - 1]);
+						if (tlen < nlen)
+						{
+							nlen = tlen;
+						}
+					}
+					nlen *= 0.6;
+					if (dis1 < dis2 && orgin_id1 < ELONGATION_LEN)
+					{
+						elongation.erase(elongation.end() - 1);
+						if (ndis1 < ndis2)
+						{
+							for (int i = minendp; i >= 0; --i)
+							{
+								elongation.insert(elongation.end(), orgin[i] + normals[i] *nlen * (i / (double)minendp));
+							}
+						}
+						else
+						{
+							for (int i = minendp; i >= 0; --i)
+							{
+								elongation.insert(elongation.end(), orgin[i] - normals[i] *nlen * (i / (double)minendp));
+							}
+						}
+						elongation.insert(elongation.end(), orgin.front());
+					}
+					else if (dis1 > dis2 && (orgin.size() - orgin_id1) < ELONGATION_LEN)
+					{
+						elongation.erase(elongation.end() - 1);
+						int div = orgin.size() - minendp;
+						if (ndis1 < ndis2)
+						{
+							for (int i = minendp; i < orgin.size(); ++i)
+							{
+								elongation.insert(elongation.end(),
+												  orgin[i] + normals[i]*nlen * ((orgin.size() - i) / (double)div));
+							}
+						}
+						else
+						{
+							for (int i = minendp; i < orgin.size(); ++i)
+							{
+								elongation.insert(elongation.end(),
+												  orgin[i] - normals[i]*nlen * ((orgin.size() - i) / (double)div));
+							}
+						}
+						elongation.insert(elongation.end(), orgin.back());
+					}
+				}
+			}
+		}
+	}
+}
+
+
+void ConnectNearestLinesColorCheck(const LineEnds& les, Lines& pos, double d2,
+								   double angle, cv::Mat img)
+{
+	d2 *= d2;
+	for (int i = 0; i < (int)les.size(); ++i)
+	{
+		const LineEnd& le1 = les[i];
+		int minbegp = -1, minbeg_angle = angle, minbeg_dis = d2, minbeg_id = -1;
+		int minendp = -1, minend_angle = angle, minend_dis = d2, minend_id = -1;
+		Vector2 begdst, enddst;
+		for (int j = 0; j < pos.size(); ++j)
+		{
+			Line& nowLine = pos[j];;
+			for (int k = 0; k < nowLine.size(); k ++)
+			{
+				if (le1.idx == j)
+				{
+					continue;
+				}
+				int dis1 = le1.beg.squaredDistance(nowLine[k]);
+				int dis2 = le1.end.squaredDistance(nowLine[k]);
+				if (dis1 < minbeg_dis && !le1.haslink1)
+				{
+					Vector2 v1 = nowLine[k];
+					Vector2 v2 = le1.beg;
+					Vector2 p1 = nowLine[k] - le1.beg;
+					double angle1 = atan2(p1.x, p1.y) * M_1_PI * 180;
+					angle1 = std::min(abs(le1.angleBeg - angle1), abs(le1.angleBeg - (angle1 + 360)));
+					if (angle1 < angle)
+					{
+						Line testline;
+						{
+							Vector2 dir = v2 - v1;
+							dir.normalise();
+							double dis = (v1 - v2).length();
+							for (double v = 0; v < dis; v += 1)
+							{
+								Vector2 pos = v1 + v * dir;
+								testline.push_back(pos);
+							}
+						}
+						testline.insert(testline.begin(), pos[le1.idx].begin(), pos[le1.idx].begin() + 5);
+						double var = GetLineColorVariance(testline, img);
+						//printf("var %f\n", var);
+						if (var < 2000)
+						{
+							minbeg_angle = angle1;
+							minbeg_dis = dis1;
+							minbegp = k;
+							begdst = nowLine[minbegp];
+							minbeg_id = j;
+						}
+					}
+				}
+				if (dis2 < minend_dis && !le1.haslink2)
+				{
+					Vector2 v1 = nowLine[k];
+					Vector2 v2 = le1.end;
+					Vector2 p1 = nowLine[k] - le1.end;
+					double angle1 = atan2(p1.x, p1.y) * M_1_PI * 180;
+					angle1 = std::min(abs(le1.angleEnd - angle1), abs(le1.angleEnd - (angle1 + 360)));
+					if (angle1 < angle)
+					{
+						Line testline;
+						{
+							Vector2 dir = v2 - v1;
+							dir.normalise();
+							double dis = (v1 - v2).length();
+							for (double v = 0; v < dis; v += 1)
+							{
+								Vector2 pos = v1 + v * dir;
+								testline.push_back(pos);
+							}
+						}
+						testline.insert(testline.begin(), pos[le1.idx].begin(), pos[le1.idx].begin() + 5);
+						double var = GetLineColorVariance(testline, img);
+						//printf("var %f\n", var);
+						if (var < 2000)
+						{
+							minend_angle = angle1;
+							minend_dis = dis2;
+							minendp = k;
+							enddst = nowLine[minendp];
+							minend_id = j;
+						}
+					}
+				}
+			}
+		}
+		const int ELONGATION_LEN = 40;
+		if (minbegp != -1)
+		{
+			const Line& orgin = pos[minbeg_id];
+			Line& elongation = pos[le1.idx];
+			const Line normals = GetNormalsLen2(orgin);
+			elongation.insert(elongation.begin(), begdst);
+			int orgin_id1 = minbegp - 2;
+			int orgin_id2 = minbegp + 2;
+			if (orgin_id1 >= 0 && orgin_id2 < orgin.size())
+			{
+				Vector2 n1 = orgin[minbegp] + normals[minbegp] * 2;
+				Vector2 n2 = orgin[minbegp] - normals[minbegp] * 2;
+				Vector2 vec1 = orgin[orgin_id1] - orgin[orgin_id2];
+				Vector2 vec2 = elongation[0] - elongation[1];
+				vec1.normalise();
+				vec2.normalise();
+				double side_angle1 = acos(vec1.dotProduct(vec2)) * 180 * M_1_PI;
+				double side_angle2 = acos(vec1.dotProduct(-vec2)) * 180 * M_1_PI;
+				if (side_angle1 < 45 || side_angle2 < 45)
+				{
+					double dis1 = orgin[orgin_id1].squaredDistance(elongation[0] + vec2 * 2);
+					double dis2 = orgin[orgin_id2].squaredDistance(elongation[0] + vec2 * 2);
+					double ndis1 = n1.squaredDistance(elongation[1]);
+					double ndis2 = n2.squaredDistance(elongation[1]);
+					double nlen = orgin[minbegp].distance(elongation[1]);
+					for (int h = minbegp - 20; h < minbegp + 20 && h < orgin.size(); ++h)
+					{
+						if (h < 0)
+						{
+							h = 0;
+						}
+						double tlen = orgin[h].distance(elongation[1]);
+						if (tlen < nlen)
+						{
+							nlen = tlen;
+						}
+					}
+					nlen *= 0.6;
+					if (dis1 < dis2 && orgin_id1 < ELONGATION_LEN)
+					{
+						elongation.erase(elongation.begin());
+						if (ndis1 < ndis2)
+						{
+							for (int i = minbegp; i >= 0; --i)
+							{
+								elongation.insert(elongation.begin(), orgin[i] + normals[i] *nlen * (i / (double)minbegp));
+							}
+						}
+						else
+						{
+							for (int i = minbegp; i >= 0; --i)
+							{
+								elongation.insert(elongation.begin(), orgin[i] - normals[i] *nlen * (i / (double)minbegp));
+							}
+						}
+						elongation.insert(elongation.begin(), orgin.front());
+					}
+					else if (dis1 < dis2 && (orgin.size() - orgin_id1) < ELONGATION_LEN)
+					{
+						elongation.erase(elongation.begin());
+						int div = orgin.size() - minbegp;
+						if (ndis1 < ndis2)
+						{
+							for (int i = minbegp; i < orgin.size(); ++i)
+							{
+								elongation.insert(elongation.begin(),
+												  orgin[i] + normals[i] *nlen * ((orgin.size() - i) / (double)div));
+							}
+						}
+						else
+						{
+							for (int i = minbegp; i < orgin.size(); ++i)
+							{
+								elongation.insert(elongation.begin(),
+												  orgin[i] - normals[i] *nlen * ((orgin.size() - i) / (double)div));
+							}
+						}
+						elongation.insert(elongation.begin(), orgin.back());
+					}
+				}
+			}
+		}
+		if (minendp != -1)
+		{
+			Line& orgin = pos[minend_id];
+			Line& elongation = pos[le1.idx];
+			Line normals = GetNormalsLen2(orgin);
+			elongation.insert(elongation.end(), enddst);
+			int orgin_id1 = minendp - 2;
+			int orgin_id2 = minendp + 2;
+			if (orgin_id1 >= 0 && orgin_id2 < orgin.size())
+			{
+				Vector2 n1 = orgin[minendp] + normals[minendp] * 2;
+				Vector2 n2 = orgin[minendp] - normals[minendp] * 2;
+				int last = elongation.size() - 1;
+				Vector2 vec1 = orgin[orgin_id1] - orgin[orgin_id2];
+				Vector2 vec2 = elongation[last] - elongation[last - 1];
+				vec1.normalise();
+				vec2.normalise();
+				double side_angle1 = acos(vec1.dotProduct(vec2)) * 180 * M_1_PI;
+				double side_angle2 = acos(vec1.dotProduct(-vec2)) * 180 * M_1_PI;
+				if (side_angle1 < 45 || side_angle2 < 45)
+				{
+					double dis1 = orgin[orgin_id1].squaredDistance(elongation[last] + vec2 * 2);
+					double dis2 = orgin[orgin_id2].squaredDistance(elongation[last] + vec2 * 2);
+					double ndis1 = n1.squaredDistance(elongation[last - 1]);
+					double ndis2 = n2.squaredDistance(elongation[last - 1]);
+					double nlen = orgin[minendp].distance(elongation[last - 1]);
+					for (int h = minendp - 20; h < minendp + 20 && h < orgin.size(); ++h)
+					{
+						if (h < 0)
+						{
+							h = 0;
+						}
+						double tlen = orgin[h].distance(elongation[last - 1]);
+						if (tlen < nlen)
+						{
+							nlen = tlen;
+						}
+					}
+					nlen *= 0.6;
+					if (dis1 < dis2 && orgin_id1 < ELONGATION_LEN)
+					{
+						elongation.erase(elongation.end() - 1);
+						if (ndis1 < ndis2)
+						{
+							for (int i = minendp; i >= 0; --i)
+							{
+								elongation.insert(elongation.end(), orgin[i] + normals[i] *nlen * (i / (double)minendp));
+							}
+						}
+						else
+						{
+							for (int i = minendp; i >= 0; --i)
+							{
+								elongation.insert(elongation.end(), orgin[i] - normals[i] *nlen * (i / (double)minendp));
+							}
+						}
+						elongation.insert(elongation.end(), orgin.front());
+					}
+					else if (dis1 > dis2 && (orgin.size() - orgin_id1) < ELONGATION_LEN)
+					{
+						elongation.erase(elongation.end() - 1);
+						int div = orgin.size() - minendp;
+						if (ndis1 < ndis2)
+						{
+							for (int i = minendp; i < orgin.size(); ++i)
+							{
+								elongation.insert(elongation.end(),
+												  orgin[i] + normals[i]*nlen * ((orgin.size() - i) / (double)div));
+							}
+						}
+						else
+						{
+							for (int i = minendp; i < orgin.size(); ++i)
+							{
+								elongation.insert(elongation.end(),
+												  orgin[i] - normals[i]*nlen * ((orgin.size() - i) / (double)div));
+							}
+						}
+						elongation.insert(elongation.end(), orgin.back());
+					}
+				}
+			}
+		}
+	}
+}
+
+
+void ConnectNearestLines2Side(const LineEnds& les, Lines& pos, Color2Side& width, double d2,
+							  double angle)
 {
 	d2 *= d2;
 	for (int i = 0; i < (int)les.size(); ++i)
@@ -3929,5 +4647,92 @@ Lines LineSplitAtTurning(Lines& lines, int nochecklen)
 		res.push_back(nline);
 	}
 	return res;
+}
+
+
+cv::Vec3b GetAvgColor(cv::Mat& image, int x1, int y1, int x2, int y2)
+{
+	if (y1 < 0)
+	{
+		y1 = 0;
+	}
+	if (y1 >= image.rows)
+	{
+		y1 = image.rows - 1;
+	}
+	if (x1 < 0)
+	{
+		x1 = 0;
+	}
+	if (x1 >= image.cols)
+	{
+		x1 = image.cols - 1;
+	}
+	if (y2 < 0)
+	{
+		y2 = 0;
+	}
+	if (y2 >= image.rows)
+	{
+		y2 = image.rows - 1;
+	}
+	if (x2 < 0)
+	{
+		x2 = 0;
+	}
+	if (x2 >= image.cols)
+	{
+		x2 = image.cols - 1;
+	}
+	Vector2 v1(x1, y1);
+	Vector2 v2(x2, y2);
+	Vector2 dir = v2 - v1;
+	dir.normalise();
+	double dis = (v1 - v2).length();
+	cv::Vec3f avgc(0, 0, 0);
+	int count = 0;
+	for (double v = 0; v < dis; v += 1)
+	{
+		Vector2 pos = v1 + v * dir;
+		cv::Vec3b c = image.at<cv::Vec3b>(pos.y, pos.x);
+		avgc[0] += c[0];
+		avgc[1] += c[1];
+		avgc[2] += c[2];
+		count++;
+	}
+	avgc /= count;
+	cv::Vec3b res(avgc[0], avgc[1], avgc[2]);
+	return res;
+}
+
+double GetColorDis(cv::Vec3b c1, cv::Vec3b c2)
+{
+	cv::Vec3b v = c1 - c2;
+	return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+}
+
+double GetLineColorVariance(const Line& cps, const cv::Mat img)
+{
+	double r = 0, g = 0, b = 0;
+	for (int i = 0; i < cps.size(); ++i)
+	{
+		cv::Vec3b data = img.at<cv::Vec3b>(cps[i].y, cps[i].x);
+		r += data[2];
+		g += data[1];
+		b += data[0];
+	}
+	r /= cps.size();
+	g /= cps.size();
+	b /= cps.size();
+	double var = 0;
+	for (int i = 0; i < cps.size(); ++i)
+	{
+		cv::Vec3b data = img.at<cv::Vec3b>(cps[i].y, cps[i].x);
+		var += abs(r - data[2]) * abs(r - data[2]);
+		var += abs(g - data[1]) * abs(g - data[1]);
+		var += abs(b - data[0]) * abs(b - data[0]);
+	}
+	var /= cps.size();
+	return var;
 }
 

@@ -14,6 +14,8 @@ Vector3s GetLinesColor(cv::Mat img, const Line& lines);
 Color2Side GetLinesColor(const Lines& lines, ColorConstraints& ccms);
 Lines GetLinesFromCvPatch(CvPatchs& cps);
 
+cv::Mat ShowColorToLine(const Line& line, const cv::Mat img);
+
 Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines, double normal_len);
 Index2Side GetLinesIndex2Side(cv::Mat img, const Lines& lines, double normal_len);
 Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstraints& ccms);

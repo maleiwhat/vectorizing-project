@@ -9,6 +9,10 @@
 #include "ColorConstraint.h"
 #include "CvExtenstion.h"
 typedef std::vector<cv::Mat> Mats;
+typedef std::map<int, int> int_int_map;
+typedef std::map<int, double> int_double_map;
+typedef std::vector<int_int_map> int_int_maps;
+typedef std::vector<int_double_map> int_double_maps;
 
 cv::Mat CannyEdge(cv::Mat& image, double threshold1 = 0, double threshold2 = 30,
 				  int apertureSize = 3, bool L2gradient = false);
@@ -33,14 +37,17 @@ void    S1FloodFill(cv::Mat& image,  cv::Mat& mask, int x, int y,
 CvLines GetSidelines(const cv::Mat& image);
 CvPatchs S1GetPatchs(const cv::Mat& image);
 CvPatchs S1GetPatchs(const cv::Mat& image0, int dilation, int erosion);
-void GetSkeletonLine(cv::Mat bmap, Lines& lines, double_vector2d& linewidths);
+void GetSkeletonLine(cv::Mat bmap, Lines& lines, double_vector2d& linewidths11);
 void GetMatrixf(int w, int h, floatptrs& ary, int x, int y, cv::Mat& img);
 
-cv::Mat TrapBallMaskAll(cv::Mat image);
+cv::Mat TrapBallMaskAll(cv::Mat image, cv::Mat oriImg);
 cv::Mat TrapBallMask1(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE);
 cv::Mat TrapBallMask2(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE);
 cv::Mat TrapBallMask3(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE, int maxadd = 9999);
 cv::Mat TrapBallMask4(cv::Mat image, int moprh = cv::MORPH_ELLIPSE);
+cv::Mat TrapBallMask5(cv::Mat image, int size, int moprh, cv::Mat oriImg, int& cstart);
+cv::Mat FixSpaceMask(cv::Mat image);
+cv::Mat MixTrapBallMask(cv::Mat image, cv::Mat oriImg);
 cv::Mat ConvertToMedian(cv::Mat image, cv::Mat src);
 cv::Mat ConvertToIndex(cv::Mat src, cv::Mat ori, ColorConstraints& output);
 void    S5ReColor(cv::Mat& image);

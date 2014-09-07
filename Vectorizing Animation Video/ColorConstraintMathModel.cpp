@@ -1,7 +1,7 @@
 
 #include "ColorConstraintMathModel.h"
 
-const int THRESHOLD = 1000000;
+const int THRESHOLD = 1000;
 const int THRESHOLD2 = 20;
 
 void ColorConstraintMathModel::AddPoint(double x, double y, const cv::Vec3b& p)

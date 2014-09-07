@@ -216,7 +216,7 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 			float v2 = pDer2[x] > 0 ? pDer2[x] * (1 - abs(pDer1[x])) : 0;
 			v2 = v2 > 0 ? v2 : 0;
 			pDer1[x] = v1;
-			pDer2[x] = v2 + v1*0.3;
+			pDer2[x] = (v2 + v1*0.3);
 			sum2 += pDer2[x];
 			//pDer2[x] = pDer2[x] > 0 ? float(pDer2[x] > 0.0f ? pDer2[x] : 0.0f) : 0;
 		}
@@ -230,32 +230,32 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		{
 			//if (pDer2[x] <= avg2 * 1)
 			{
-				pDer2[x] = powf(pDer2[x], 1.5);
+				 pDer2[x] = powf(pDer2[x], 1.4);     
 			}
 		}
 	}
 	g_cvshowEX.AddShow("m_pDer1f", m_pDer1f);
 	g_cvshowEX.AddShow("m_pDer2f", m_pDer2f);
 	normalize(m_pDer2f, m_pDer2f, 0, maxeig, cv::NORM_MINMAX);
-// 	if (1)
-// 	{
-// 		Sobel(m_pDer2f, dxx, CV_32F, 2, 0, kSize);
-// 		Sobel(m_pDer2f, dxy, CV_32F, 1, 1, kSize);
-// 		Sobel(m_pDer2f, dyy, CV_32F, 0, 2, kSize);
-// 		for (int y = 0; y < m_h; y++)
-// 		{
-// 			float* xx = dxx.ptr<float>(y);
-// 			float* xy = dxy.ptr<float>(y);
-// 			float* yy = dyy.ptr<float>(y);
-// 			float* pOrnt = m_pOrnt1f.ptr<float>(y);
-// 			for (int x = 0; x < m_w; x++)
-// 			{
-// 				compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
-// 				pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
-// 				pOrnt[x] = pOrnt[x] < 0 ? pOrnt[x] + PI2 : pOrnt[x];
-// 			}
-// 		}
-// 	}
+//  if (1)
+//  {
+//      Sobel(m_pDer2f, dxx, CV_32F, 2, 0, kSize);
+//      Sobel(m_pDer2f, dxy, CV_32F, 1, 1, kSize);
+//      Sobel(m_pDer2f, dyy, CV_32F, 0, 2, kSize);
+//      for (int y = 0; y < m_h; y++)
+//      {
+//          float* xx = dxx.ptr<float>(y);
+//          float* xy = dxy.ptr<float>(y);
+//          float* yy = dyy.ptr<float>(y);
+//          float* pOrnt = m_pOrnt1f.ptr<float>(y);
+//          for (int x = 0; x < m_w; x++)
+//          {
+//              compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
+//              pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
+//              pOrnt[x] = pOrnt[x] < 0 ? pOrnt[x] + PI2 : pOrnt[x];
+//          }
+//      }
+//  }
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
 	return m_pDer2f;
 }

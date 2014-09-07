@@ -142,11 +142,12 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	D3DApp& d3dApp = GetVavView()->GetD3DApp();
 	Lines decorativeLine;
 	vavImage expImg = m_vavImage.Clone();
-	expImg.ToExpImage();
-	expImg.ToExpImage();
+	//expImg.ToExpImage();
+	//expImg.ToExpImage();
 	const int MASK1_SIZE = 5;
 	const int MASK2_SIZE = 5;
 	const float secDer = 0.001f;
+	cv::imshow("Origin Image", m_vavImage.GetCvMat());
 //  g_cvshowEX.AddShow("Origin Image", m_vavImage.GetCvMat());
 //  g_cvshowEX.AddShow("Exponential Image", expImg.GetCvMat());
 	static int iinit = 0;
@@ -255,7 +256,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		IncreaseDensity(m_BlackLine, m_BLineWidth);
 		les = GetLineEnds(m_BlackLine);
 		// 連結角度類似的線
-		ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 5, 25);
+		ConnectNearestLines_Width(les, m_BlackLine, m_BLineWidth, 5, 25);
 		m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 5);
 		m_BLineWidth = FixLineWidths(m_BLineWidth, 50);
 		//m_BLineWidth = FixLineWidths(m_BLineWidth, 100);
@@ -364,10 +365,10 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		g_cvshowEX.AddShow("colorline0", colorline0);
 		LineEnds les = GetLineEnds(m_BlackLine2);
 		LinkLineEnds180(les, 5, 60);
-		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+		ConnectLineEnds3_Width(les, m_BlackLine2, tmp_width);
 		les = GetLineEnds(m_BlackLine2);
 		LinkLineEnds180(les, 8, 60);
-		ConnectLineEnds3(les, m_BlackLine2, tmp_width);
+		ConnectLineEnds3_Width(les, m_BlackLine2, tmp_width);
 //      les = GetLineEnds(m_BlackLine2);
 //      LinkLineEnds180(les, 10, 40);
 //      ConnectLineEnds3(les, m_BlackLine2, tmp_width);
@@ -389,17 +390,18 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 //      ConnectLineEnds3(les, m_BlackLine2, tmp_width);
 		IncreaseDensity(m_BlackLine2, tmp_width);
 		les = GetLineEnds(m_BlackLine2);
-		ConnectNearestLines(les, m_BlackLine2, tmp_width, 8, 25);
+		//ConnectNearestLines(les, m_BlackLine2, 8, 25);
+		ConnectNearestLinesColorCheck(les, m_BlackLine2, 12, 20, m_vavImage);
 //      les = GetLineEnds(m_BlackLine2);
-//      ConnectNearestLines(les, m_BlackLine2, tmp_width, 5, 30);
+//      ConnectNearestLines(les, m_BlackLine2, 5, 30);
 		m_BlackLine2 = LineSplitAtEndIntersection(m_BlackLine2, 1);
 		tmp_width = m_BlackLine2;
 		les = GetLineEnds(m_BlackLine2);
 		LinkLineEnds(les, 3, 360);
-		ConnectLineEnds5(les, m_BlackLine2, tmp_width);
+		ConnectLineEnds5(les, m_BlackLine2);
 		les = GetLineEnds(m_BlackLine2);
 		LinkLineEnds(les, 3, 360);
-		ConnectLineEnds5(les, m_BlackLine2, tmp_width);
+		ConnectLineEnds5(les, m_BlackLine2);
 //      cv::Mat LineSplit = MakeColorLineImage(m_vavImage, m_BlackLine2);
 //      g_cvshowEX.AddShow("before LineSplit", LineSplit);
 //      m_BlackLine2 = LineSplitAtTurning(m_BlackLine2, 5);
@@ -441,6 +443,36 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 			}
 		}
 //      DrawWhiteLineImage(region, m_BlackLine);
+//      {
+//          cv::Mat refimg = m_vavImage.Clone();
+//          cv::resize(refimg, refimg, refimg.size() * 2);
+//          for (int i = 0; i < m_BlackLine2.size(); ++i)
+//          {
+//              double var = GetLineColorVariance(m_BlackLine2[i], refimg);
+//              if (var > 60)
+//              {
+//                  cv::Mat black = refimg.clone();
+//                  printf("pts:%d  var:%f\n", m_BlackLine2[i].size(), var);
+//                  cv::Vec3b cc;
+//                  cc[0] = 0;
+//                  cc[1] = 0;
+//                  cc[2] = 255;
+//                  Lines::const_iterator it = m_BlackLine2.begin() + i;
+//                  {
+//                      for (int j = 0; j < it->size() - 1; ++j)
+//                      {
+//                          cv::Point p1((*it)[j].x * 2, (*it)[j].y * 2);
+//                          cv::Point p2((*it)[j + 1].x * 2, (*it)[j + 1].y * 2);
+//                          cv::line(black, p1, p2, cv::Scalar(cc), 1);
+//                      }
+//                  }
+//                  cv::imshow("line", black);
+//                  cv::Mat linecolor = ShowColorToLine(m_BlackLine2[i], refimg);
+//                  cv::imshow("linec", linecolor);
+//                  cv::waitKey();
+//              }
+//          }
+//      }
 		g_cvshowEX.AddShow("region1", region);
 		DrawWhiteLineImage(region, m_BlackLine2);
 		g_cvshowEX.AddShow("region2", region);
@@ -500,29 +532,29 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		oriimg = vin.clone();
 		vecout = vin.clone();
 		vecout = cv::Scalar(0);
-		cps = S2_3GetPatchs(region, vin, ccms3, vecout);
-		for (int j = 0; j < bndy.rows; j++)
-		{
-			for (int i = 0; i < bndy.cols; i++)
-			{
-				if (bndy.at<uchar>(j, i) == 1)
-				{
-					for (int ci = 1; ci < cps.size() && ci<20; ++ci)
-					{
-						if (cps[ci].Outer2().size() > 100 && cps[ci].Inside(i, j))
-						{
-							region.at<cv::Vec3b>(j, i) = cv::Vec3b(255, 255, 255);
-						}
-					}
-				}
-			}
-		}
-		Dilation(region, 2, 1);
-		cvtColor(region, region, CV_BGR2GRAY);
-		normalize(region, region, 0, 1, cv::NORM_MINMAX);
-		cvThin(region, region, 10);
-		normalize(region, region, 0, 255, cv::NORM_MINMAX);
-		cvtColor(region, region, CV_GRAY2BGR);
+//      cps = S2_3GetPatchs(region, vin, ccms3, vecout);
+//      for (int j = 0; j < bndy.rows; j++)
+//      {
+//          for (int i = 0; i < bndy.cols; i++)
+//          {
+//              if (bndy.at<uchar>(j, i) == 1)
+//              {
+//                  for (int ci = 1; ci < cps.size() && ci < 20; ++ci)
+//                  {
+//                      if (cps[ci].Outer2().size() > 100 && cps[ci].Inside(i, j))
+//                      {
+//                          region.at<cv::Vec3b>(j, i) = cv::Vec3b(255, 255, 255);
+//                      }
+//                  }
+//              }
+//          }
+//      }
+//      Dilation(region, 2, 1);
+//      cvtColor(region, region, CV_BGR2GRAY);
+//      normalize(region, region, 0, 1, cv::NORM_MINMAX);
+//      cvThin(region, region, 10);
+//      normalize(region, region, 0, 255, cv::NORM_MINMAX);
+//      cvtColor(region, region, CV_GRAY2BGR);
 		//cps = S2_3GetPatchs(region, vin, ccms3, vecout);
 		img = region.clone();
 		markerMask.create(region.rows + 2, region.cols + 2, CV_8UC1);
@@ -555,7 +587,11 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		cv::Mat simg = d3dApp.DrawSceneToCvMat();
 		d3dApp.SetScaleRecovery();
 		cmmsIndexImg = simg.clone();
-		cmmsIndexImg = TrapBallMaskAll(cmmsIndexImg);
+		cv::Mat size2 = m_vavImage.Clone();
+		cv::resize(size2.clone(), size2, size2.size() * 2, 0, 0, cv::INTER_CUBIC);
+		cmmsIndexImg = TrapBallMaskAll(cmmsIndexImg, size2);
+		cmmsIndexImg = FixSpaceMask(cmmsIndexImg);
+		cmmsIndexImg = MixTrapBallMask(cmmsIndexImg, size2);
 		cv::Mat vecout = m_vavImage.Clone();
 		vecout = cv::Scalar(0);
 //		Dilation(simg, 1, 2);
@@ -598,16 +634,19 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 //      S5ReColor(tt);
 //      g_cvshowEX.AddShow("tt2", tt);
 		S6ReColor(cmmsIndexImg, m_vavImage.Clone(), ccms);
-//      DrawColorLineImage(cmmsIndexImg, colorline);
-//      g_cvshowEX.AddShow("cmmsIndexImg", cmmsIndexImg);
+		//DrawColorLineImage(cmmsIndexImg, colorline);
+		cv::Mat colormask = cmmsIndexImg.clone();
+		FloodFillReColor(colormask);
+		g_cvshowEX.AddShow("cmmsIndexImg", colormask);
+		cv::imwrite("cmmsIndexImg.png", colormask);
 //      cv::waitKey(10);
 		Index2Side i2s = GetLinesIndex2SideSmart(cmmsIndexImg, colorline, ccms);
 		i2s.left = FixIndexs(i2s.left, 100);
 		i2s.right = FixIndexs(i2s.right, 100);
-		i2s.left = Maxmums2(i2s.left, colorline);
-		i2s.right = Maxmums2(i2s.right, colorline);
-//      i2s.left = MedianLenN(i2s.left, 10);
-//      i2s.right = MedianLenN(i2s.right, 10);
+//      i2s.left = Maxmums2(i2s.left, colorline);
+//      i2s.right = Maxmums2(i2s.right, colorline);
+		i2s.left = MedianLenN(i2s.left, 10);
+		i2s.right = MedianLenN(i2s.right, 10);
 		Color2Side color2s2 = LinesIndex2Color(colorline, i2s, ccms);
 //      color2s2.left = FixLineColors(color2s2.left, 600, 10);
 //      color2s2.right = FixLineColors(color2s2.right, 600, 10);

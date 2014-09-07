@@ -1969,14 +1969,14 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y)
 	int b = rand() % 256;
 	int g = rand() % 256;
 	int r = rand() % 256;
-//  if (v[0] == 0 && v[1] == 0 && v[2] == 0)
-//  {
-//      return;
-//      b = 0;
-//      g = 0;
-//      r = 0;
-//      cc--;
-//  }
+	if (v[0] == 255 && v[1] == 255 && v[2] == 255)
+	{
+		return;
+		b = 0;
+		g = 0;
+		r = 0;
+		cc--;
+	}
 	cv::Point seed(x, y);
 	cv::Rect ccomp;
 	cc++;
@@ -3773,4 +3773,19 @@ cv::Mat S6GetEngrgy(const cv::Mat& image0, int dilation, int erosion)
 	//imshow("res2", res);
 	//cv::waitKey();
 	return res;
+}
+
+void FloodFillReColor(cv::Mat& image)
+{
+	int cc = 0;
+	cv::Mat mask;
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	for (int i = 1; i < image.rows - 1; i++)
+	{
+		for (int j = 1; j < image.cols - 1; j++)
+		{
+			S3FloodFill(cc, image, mask, j, i);
+		}
+	}
 }

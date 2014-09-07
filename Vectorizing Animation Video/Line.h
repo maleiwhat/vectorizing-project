@@ -128,15 +128,21 @@ bool CheckLinkEnd_Similarity(const LineEnd& lhs, const LineEnd& rhs,
 							LineEnd::LinkMethod c, double angle);
 void ConnectLineEnds(LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds2(const LineEnds& les, Lines& pos, Lines& width);
-void ConnectLineEnds3(const LineEnds& les, Lines& pos, Lines& width);
+void ConnectLineEnds3(const LineEnds& les, Lines& pos);
+void ConnectLineEnds3_Width(const LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds4(const LineEnds& les, Lines& pos, Lines& width);
-void ConnectLineEnds5(const LineEnds& les, Lines& pos, Lines& width);
+void ConnectLineEnds5_Width(const LineEnds& les, Lines& pos, Lines& width);
+void ConnectLineEnds5(const LineEnds& les, Lines& pos);
 void ConnectSimilarColor2Side(const LineEnds& les, Lines& pos, Color2Side& width);
 
 void ClearJointArea(const LineEnds& les, Lines& pos, Color2Side& color2s, double len);
-void ConnectNearestLines(const LineEnds& les, Lines& pos, Lines& width, double d2,
+void ConnectNearestLines_Width(const LineEnds& les, Lines& pos, Lines& width, double d2,
 						 double angle);
-void ConnectNearestLines(const LineEnds& les, Lines& pos, Color2Side& width, double d2,
+void ConnectNearestLines(const LineEnds& les, Lines& pos, double d2,
+							   double angle);
+void ConnectNearestLinesColorCheck(const LineEnds& les, Lines& pos, double d2,
+						 double angle, cv::Mat img);
+void ConnectNearestLines2Side(const LineEnds& les, Lines& pos, Color2Side& width, double d2,
 						 double angle);
 void IncreaseDensity(Line& pos, Line& pos2);
 void IncreaseDensity(Lines& pos, Lines& pos2);
@@ -159,4 +165,6 @@ Lines LineSplitAtIntersection(Lines& lines, int nochecklen);
 Lines LineSplitAtEndIntersection(Lines& lines, int nochecklen);
 Lines LineSplitAtTurning(Lines& lines, int nochecklen);
 
-
+cv::Vec3b GetAvgColor(cv::Mat& image, int x1, int y1, int x2, int y2);
+double GetColorDis(cv::Vec3b c1, cv::Vec3b c2);
+double GetLineColorVariance(const Line& line, const cv::Mat img);

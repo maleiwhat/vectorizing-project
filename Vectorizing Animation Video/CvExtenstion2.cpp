@@ -552,7 +552,7 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 			li[j] = -1;
 			if (j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
-				double normal_len = 3;
+				double normal_len = 2;
 				do
 				{
 					Vector2 pos = *it2 * 2 - normals[i][j] * normal_len;
@@ -570,7 +570,7 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 			ri[j] = -1;
 			if (j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
-				double normal_len = 3;
+				double normal_len = 2;
 				do
 				{
 					Vector2 pos = *it2 * 2 + normals[i][j] * normal_len;
@@ -686,4 +686,22 @@ Lines GetLinesFromCvPatch(CvPatchs& cps)
 		res.push_back(GetLine(cps[i].Outer2()));
 	}
 	return res;
+}
+
+cv::Mat ShowColorToLine(const Line& cps, const cv::Mat img)
+{
+	cv::Mat sc;
+	int w = cps.size();
+	if (w < 200) { w = 200; }
+	sc.create(200, w, CV_8UC3);
+	sc = cv::Scalar(0);
+	for (int i = 0; i < cps.size(); ++i)
+	{
+		cv::Vec3b tc = img.at<cv::Vec3b>(cps[i].y * 2, cps[i].x * 2);
+		for (int j = 0; j < 200; ++j)
+		{
+			sc.at<cv::Vec3b>(j, i) = tc;
+		}
+	}
+	return sc;
 }

@@ -1574,7 +1574,7 @@ void VAV_MainFrame::AddFrame(cv::Mat img)
 	ConnectLineEnds(les, m_BlackLine, m_BLineWidth);
 	IncreaseDensity(m_BlackLine, m_BLineWidth);
 	les = GetLineEnds(m_BlackLine);
-	ConnectNearestLines(les, m_BlackLine, m_BLineWidth, 8, 15);
+	ConnectNearestLines_Width(les, m_BlackLine, m_BLineWidth, 8, 15);
 	m_BLineWidth = CleanOrphanedLineWidths(m_BLineWidth, 5);
 	m_BLineWidth = FixLineWidths(m_BLineWidth, 50);
 //m_BLineWidth = FixLineWidths(m_BLineWidth, 100);
@@ -1610,7 +1610,7 @@ void VAV_MainFrame::AddFrame(cv::Mat img)
 	ConnectLineEnds(les, m_BlackLine2, tmp_width);
 	IncreaseDensity(m_BlackLine2, tmp_width);
 	les = GetLineEnds(m_BlackLine2);
-	ConnectNearestLines(les, m_BlackLine2, tmp_width, 5, 15);
+	ConnectNearestLines_Width(les, m_BlackLine2, tmp_width, 5, 15);
 //      les = GetLineEnds(m_BlackLine2);
 //      ConnectNearestLines(les, m_BlackLine2, tmp_width, 10, 6, 20);
 	m_BlackLine2 = SmoothingLen5(m_BlackLine2, 0.2, 5);
