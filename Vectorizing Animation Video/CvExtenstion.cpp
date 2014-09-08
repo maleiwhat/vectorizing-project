@@ -932,7 +932,7 @@ void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2)
 		}
 	}
 	//cv::namedWindow("DrawCvPatchs", 0);
-	imshow("DrawCvPatchs", tmp_image2);
+	g_cvshowEX.AddShow("DrawCvPatchs", tmp_image2);
 	//cv::waitKey();
 }
 
@@ -1239,6 +1239,7 @@ ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold,
 	ImageSpline  is = GetImageSpline(tmp_cvps, lines, tmp_image);
 	is.SetSize(image0.cols, image0.rows);
 	CvPatchs& tcvps = is.m_CvPatchs;
+	printf("is.m_CvPatchs %d\n", is.m_CvPatchs.size());
 	// 還原 m_CvPatchs 的大小
 	for (int i = 0; i < tcvps.size(); ++i)
 	{
@@ -1266,6 +1267,7 @@ ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold,
 			cps2 = newcps2;
 		}
 	}
+	printf("is.m_LineFragments %d\n", is.m_LineFragments.size());
 	// 還原圖的大小
 	for (int i = 0; i < is.m_LineFragments.size(); ++i)
 	{
@@ -3294,6 +3296,285 @@ Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion, cv::Mat& out
 	return lines;
 }
 
+ImageSpline Sx1GetPatchs(cv::Mat& image0)
+{
+	cv::Mat mask, image, joint_mask, tmp_image, joint_image, img2u;
+	image0.copyTo(image);
+	joint_mask.create(image.rows * 2 + 1, image.cols * 2 + 1, CV_8UC1);
+	tmp_image.create(image.rows + 2, image.cols + 2, CV_8UC3);
+	joint_mask = cv::Scalar::all(0);
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	img2u = mask.clone();
+	int cc = 1;
+	CvPatchs cvps;
+	for (int i = 1; i < image.rows - 1; i++)
+	{
+		for (int j = 1; j < image.cols - 1; j++)
+		{
+			S2FloodFill(cc, image, mask, img2u, 0, j, i, cvps, 0);
+		}
+	}
+	// create bigger image to fix border problem
+	tmp_image = cv::Scalar::all(0);
+	for (int i = 0; i < image.rows ; i++)
+	{
+		for (int j = 0; j < image.cols ; j++)
+		{
+			tmp_image.at<cv::Vec3b>(i + 1, j + 1) = image.at<cv::Vec3b>(i , j);
+		}
+	}
+	cv::Mat gap_image;
+	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
+	gap_image = cv::Scalar(0);
+	cv::imwrite("Color Region.png", image);
+	image = image0.clone();
+	cv::imwrite("Original Picture.png", image);
+	//g_cvshowEX.AddShow("Original Picture", image);
+	normalize(tmp_image, img2u, 0, 255, cv::NORM_MINMAX);
+	//  g_cvshowEX.AddShow("Color Region", img2u);
+	//  cv::waitKey();
+	// Find Boundary
+	for (int i = 0; i < joint_mask.rows ; i++)
+	{
+		for (int j = 0; j < joint_mask.cols ; j++)
+		{
+			int id2 = i % 2;
+			int jd2 = j % 2;
+			cv::Vec3b& v = tmp_image.at<cv::Vec3b>(i / 2, j / 2);
+			if ((v[0] + v[1] + v[2]) == 0)
+			{
+				if (i > 0 && j > 0)
+				{
+					gap_image.at<uchar>(i - 1 , j - 1) = 255;
+				}
+			}
+			if (id2 == 1 && jd2 == 1)
+			{
+				continue;
+			}
+			if (id2 == 0 && jd2 == 0)
+			{
+				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2, j / 2);
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2, j / 2 + 1);
+				cv::Vec3b& v3 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2);
+				cv::Vec3b& v4 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+				if (v1 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+				if (v1 != v3)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+				if (v4 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+				if (v4 != v3)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+			}
+			else if (id2 == 1)
+			{
+				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2);
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+				if (v1 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+			}
+			else if (jd2 == 1)
+			{
+				cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2 , j / 2 + 1);
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+				if (v1 != v2)
+				{
+					joint_mask.at<uchar>(i , j) += 1;
+				}
+			}
+		}
+	}
+	mask.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	// create smaller image to fix border problem
+	joint_image.create(joint_mask.rows , joint_mask.cols , CV_8UC3);
+	joint_image = cv::Scalar::all(0);
+	normalize(joint_mask, img2u, 0, 255, cv::NORM_MINMAX);
+	g_cvshowEX.AddShow("joint_mask", img2u);
+	//cv::waitKey();
+	// show joint
+	for (int i = 0; i < joint_mask.rows ; i++)
+	{
+		for (int j = 0; j < joint_mask.cols ; j++)
+		{
+			if (joint_mask.at<uchar>(i, j) >= 3) // joint
+			{
+				joint_mask.at<uchar>(i, j) = 255;
+			}
+			else if (joint_mask.at<uchar>(i, j) > 0)
+			{
+				joint_mask.at<uchar>(i, j) = 128;
+			}
+		}
+	}
+	cv::imwrite("Joint Image.png", joint_mask);
+	g_cvshowEX.AddShow("Joint Image", joint_mask);
+	//cv::waitKey();
+	//  // delete gap
+	//  gap_image = cv::Scalar::all(0);
+	tmp_image = joint_image.clone();
+	for (int i = 0; i < joint_image.rows ; i++)
+	{
+		for (int j = 0; j < joint_image.cols ; j++)
+		{
+			if (joint_mask.at<uchar>(i , j) == 255) // joint
+			{
+				cv::Vec3b& v1 = joint_image.at<cv::Vec3b>(i, j);
+				v1[0] = 255;
+				v1[1] = 255;
+				v1[2] = 255;
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i, j);
+				v2[0] = 255;
+				v2[1] = 255;
+				v2[2] = 255;
+				gap_image.at<uchar>(i, j) = 128;
+			}
+			else if (joint_mask.at<uchar>(i , j) == 128)
+			{
+				cv::Vec3b& v1 = joint_image.at<cv::Vec3b>(i, j);
+				v1[0] = 255;
+				v1[1] = 255;
+				v1[2] = 255;
+				cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i, j);
+				v2[0] = 60;
+				v2[1] = 60;
+				v2[2] = 60;
+				gap_image.at<uchar>(i, j) = 128;
+			}
+		}
+	}
+	mask = cv::Scalar::all(0);
+	cc = 1;
+	for (int i = 0; i < tmp_image.rows; i++)
+	{
+		for (int j = 0; j < tmp_image.cols; j++)
+		{
+			LineFloodFill(tmp_image, mask, cc, j, i);
+		}
+	}
+	Lines lines = GetAllLineFromLineImage(tmp_image);
+	cc = 1;
+	CvPatchs tmp_cvps;
+	//cv::namedWindow("gap_image", 0);
+	g_cvshowEX.AddShow("gap_image", gap_image);
+	//cv::waitKey();
+	// don't floodfill gap
+	//gap_image = cv::Scalar::all(0);
+	mask = cv::Scalar::all(0);
+	for (int i = 0; i < joint_image.rows - 1; i++)
+	{
+		for (int j = 0; j < joint_image.cols - 1; j++)
+		{
+			S2FloodFill(cc, joint_image, mask, gap_image, 0, j, i, tmp_cvps, 1);
+		}
+	}
+	cv::Mat tmp_image2 = gap_image.clone();
+	tmp_image2.create(gap_image.size(), CV_8UC3);
+	DrawCvPatchs(tmp_cvps, tmp_image2);
+	tmp_image2 = cv::Scalar::all(0);
+	AddCathetus(tmp_cvps);
+	for (auto it = tmp_cvps.begin(); it != tmp_cvps.end(); ++it)
+	{
+		for (auto it2 = it->Outer2().begin(); it2 != it->Outer2().end(); ++it2)
+		{
+			it2->x -= 1;
+			it2->y -= 1;
+		}
+		for (auto it2 = it->Inter2().begin(); it2 != it->Inter2().end(); ++it2)
+		{
+			for (auto it3 = it2->begin(); it3 != it2->end(); ++it3)
+			{
+				it3->x -= 1;
+				it3->y -= 1;
+			}
+		}
+	}
+	printf("\n");
+	DrawCvPatchs(tmp_cvps, tmp_image2);
+	tmp_image = cv::Scalar::all(0);
+	int count = 1;
+	for (auto it = lines.begin(); it != lines.end(); ++it)
+	{
+		int b = rand() % 255;
+		int g = rand() % 255;
+		int r = rand() % 255;
+		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
+		{
+			cv::Vec3b& intensity2 = tmp_image2.at<cv::Vec3b>(it2->y, it2->x);
+			intensity2[0] = b;
+			intensity2[1] = g;
+			intensity2[2] = r;
+			cv::Vec3b& intensity = tmp_image.at<cv::Vec3b>(it2->y, it2->x);
+			intensity[0] = count % 255;
+			intensity[1] = (count / 255) % 255;
+			intensity[2] = count / (255 * 255);
+		}
+		count++;
+	}
+	g_cvshowEX.AddShow("tmp_image2", tmp_image2);
+	AddCathetus(lines);
+	ImageSpline  is = GetImageSpline(tmp_cvps, lines, tmp_image);
+	is.SetSize(image0.cols, image0.rows);
+	CvPatchs& tcvps = is.m_CvPatchs;
+	printf("is.m_CvPatchs %d\n", is.m_CvPatchs.size());
+	// 還原 m_CvPatchs 的大小
+	for (int i = 0; i < tcvps.size(); ++i)
+	{
+		CvLine& cps = tcvps[i].Outer2();
+		CvLine newcps;
+		for (int j = 0; j < cps.size(); j ++)
+		{
+			if (int(cps[j].x) % 2 == 0 && int(cps[j].y) % 2 == 0)
+			{
+				newcps.push_back(cps[j] * 0.5);
+			}
+		}
+		cps = newcps;
+		for (int j = 0; j < tcvps[i].Inter2().size(); ++j)
+		{
+			CvLine& cps2 = tcvps[i].Inter2()[j];
+			CvLine newcps2;
+			for (int k = 0; k < cps2.size(); ++k)
+			{
+				if (int(cps2[k].x) % 2 == 0 && int(cps2[k].y) % 2 == 0)
+				{
+					newcps2.push_back(cps2[k] * 0.5);
+				}
+			}
+			cps2 = newcps2;
+		}
+	}
+	printf("is.m_LineFragments %d\n", is.m_LineFragments.size());
+	// 還原圖的大小
+	for (int i = 0; i < is.m_LineFragments.size(); ++i)
+	{
+		Line& cps = is.m_LineFragments[i].m_Points;
+		Line newcps;
+		for (int j = 0; j < cps.size(); j ++)
+		{
+			if (int(cps[j].x) % 2 == 0 && int(cps[j].y) % 2 == 0)
+			{
+				newcps.push_back(cps[j] / 2);
+			}
+		}
+		cps = newcps;
+	}
+	is.SmoothingFragments();
+	return is;
+}
+
 
 Lines S7GetPatchs(const cv::Mat& image0, const cv::Mat& noline, int dilation, int erosion)
 {
@@ -3788,4 +4069,39 @@ void FloodFillReColor(cv::Mat& image)
 			S3FloodFill(cc, image, mask, j, i);
 		}
 	}
+}
+
+cv::Mat FixSpaceLine(cv::Mat image, cv::Mat oriImg)
+{
+	cv::Mat res = image.clone();
+	for (int a = 1; a < res.rows - 1; ++a)
+	{
+		for (int b = 1; b < res.cols - 1; ++b)
+		{
+			cv::Vec3b& cid1 = res.at<cv::Vec3b>(a, b);
+			if (cid1[0] == 255 && cid1[1] == 255 && cid1[2] == 255)
+			{
+				cv::Vec3b rescolor(255, 255, 255);
+				cv::Vec3b oricolor = oriImg.at<cv::Vec3b>(a, b);
+				double dis = 99999;
+				Vector3 oriv(oricolor[0], oricolor[1], oricolor[1]);
+				Weights wm = wm_init;
+				for (int i = 0; i < wm.size(); i++)
+				{
+					cv::Vec3b nn = res.at<cv::Vec3b>(a + wm[i].pos.y, b + wm[i].pos.x);
+					if (!(nn[0] == 255 && nn[1] == 255 && nn[2] == 255))
+					{
+						cv::Vec3b oricolor2 = oriImg.at<cv::Vec3b>(a + wm[i].pos.y, b + wm[i].pos.x);
+						Vector3 oriv2(oricolor2[0], oricolor2[1], oricolor2[1]);
+						if (oriv2.squaredDistance(oriv) < dis)
+						{
+							dis = oriv2.squaredDistance(oriv);
+							cid1 = nn;
+						}
+					}
+				}
+			}
+		}
+	}
+	return res;
 }

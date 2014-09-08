@@ -59,3 +59,6 @@ bool CheckMaskImg2(cv::Mat image, cv::Mat mask, int x, int y);
 bool CheckMaskImg3(cv::Mat image, cv::Mat maskbig, cv::Mat mask, int x, int y);
 void MaskImgDraw(cv::Mat image, cv::Mat mask, int x, int y, cv::Vec3b c);
 cv::Vec3b MaskImgGet(cv::Mat image, cv::Mat mask, int x, int y);
+
+cv::Mat WhiteBalance(cv::Mat oriImg);
+cv::Mat ImgSharpen(cv::Mat oriImg);

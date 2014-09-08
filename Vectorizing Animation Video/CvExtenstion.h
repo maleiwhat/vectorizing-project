@@ -62,6 +62,8 @@ CvPatchs S2_3GetPatchs(const cv::Mat& image, cv::Mat& ori_image, ColorConstraint
 					   cv::Mat& out);
 ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold, cv::Mat& image1);
 ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion);
+ImageSpline Sx1GetPatchs(cv::Mat& image0);
+
 ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
 						   cv::Mat lineImage);
 ImageSpline GetImageSpline(CvPatchs& patchs);
@@ -149,3 +151,5 @@ Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion, cv::Mat& out
 Lines S7GetPatchs(const cv::Mat& image0, const cv::Mat& noline, int dilation, int erosion);
 cv::Mat S6GetEngrgy(const cv::Mat& image0, int dilation, int erosion);
 cv::Mat MarkDiffence(cv::Mat src, int rectw, int recth);
+
+cv::Mat FixSpaceLine(cv::Mat image, cv::Mat oriImg);

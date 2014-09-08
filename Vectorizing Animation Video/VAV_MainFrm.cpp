@@ -175,12 +175,12 @@ VAV_MainFrame::VAV_MainFrame()
 	*stdout = *hf_out;
 	// init draw setting
 	m_DRAW_PATCH = false;
-	m_DRAW_SEPARATE_PATCH = false;
+	m_DRAW_SEPARATE_PATCH = true;
 	m_DRAW_CONTOUR = false;
 	m_DRAW_CONTOUR_CONTROL_POINT = false;
 	m_DRAW_CONTOUR_SKELETON_POINT = false;
 	m_DRAW_ISOSURFACE = false;
-	m_DRAW_CURVE_EXTRACTION = true;
+	m_DRAW_CURVE_EXTRACTION = false;
 	m_DRAW_CANNY_EXTRACTION = false;
 	m_CONSTRAINT_CURVES_PARAMETER_1 = true;
 	m_CONSTRAINT_CURVES_PARAMETER_2 = true;

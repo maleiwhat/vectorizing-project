@@ -144,7 +144,7 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		cv::imshow("vavImage", (cv::Mat)m_vavImage);
 		cv::Mat tmpimg = m_vavImage.Clone();
 		cv::GaussianBlur(tmpimg, tmpimg, cv::Size(5, 5), 0, 0);
-		cv::Mat isoimg = MakeIsoSurfaceImg(tmpimg, 12);
+		cv::Mat isoimg = MakeIsoSurfaceImg(tmpimg, 64);
 		is = S3GetPatchs(isoimg, m_BlackRegionThreshold * 0.01, tmpimg);
 		cv::imshow("isoimg", isoimg);
 	}
@@ -178,12 +178,12 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			TriangulationCgal_Patch cgal_patch;
 			cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
 			Patch t_patch = ToPatch(is.m_CvPatchs[i]);
-			t_patch.SmoothPatch();
+			//t_patch.SmoothPatch();
 			cgal_patch.AddPatch(t_patch);
 			is.m_CvPatchs[i].SetImage(m_vavImage);
 			ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint3();
 			cgal_patch.AddColorConstraint(constraint_sptr);
-			cgal_patch.SetCriteria(0.0, 4000);
+			cgal_patch.SetCriteria(0.0, 10);
 			cgal_patch.Compute();
 			d3dApp.AddColorTriangles(cgal_patch.GetTriangles());
 			d3dApp.AddTrianglesLine(cgal_patch.GetTriangles());

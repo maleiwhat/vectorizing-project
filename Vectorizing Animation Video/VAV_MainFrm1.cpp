@@ -10,6 +10,7 @@
 #include "CmCurveEx.h"
 #include <windows.h>
 #include "cvshowEX.h"
+#include "TriangulationCgal_Patch.h"
 
 
 cv::Mat VAV_MainFrame::Do_SLIC(double m_compatcness, double m_spcount, cv::Mat img)
@@ -139,23 +140,62 @@ static void onMouse(int event, int x, int y, int flags, void*)
 
 void VAV_MainFrame::OnButton_BuildVectorization()
 {
-	D3DApp& d3dApp = GetVavView()->GetD3DApp();
-	Lines decorativeLine;
-	vavImage expImg = m_vavImage.Clone();
-	//expImg.ToExpImage();
-	//expImg.ToExpImage();
-	const int MASK1_SIZE = 5;
-	const int MASK2_SIZE = 5;
-	const float secDer = 0.001f;
-	cv::imshow("Origin Image", m_vavImage.GetCvMat());
-//  g_cvshowEX.AddShow("Origin Image", m_vavImage.GetCvMat());
-//  g_cvshowEX.AddShow("Exponential Image", expImg.GetCvMat());
 	static int iinit = 0;
 	if (!iinit)
 	{
 		iinit = 1;
 		g_cvshowEX.Init();
 	}
+	cv::imshow("Origin Image", m_vavImage.GetCvMat());
+	D3DApp& d3dApp = GetVavView()->GetD3DApp();
+	Lines decorativeLine;
+	vavImage expImg = WhiteBalance(m_vavImage.Clone());
+	expImg = ImgSharpen(expImg);
+	{
+		cv::Mat edgesImg, src_gray = m_vavImage.Clone(), oriImg = m_vavImage.Clone();
+// 		cv::resize(src_gray.clone(), src_gray, src_gray.size() * 2, 0, 0, cv::INTER_CUBIC);
+// 		cv::resize(oriImg.clone(), oriImg, oriImg.size() * 2, 0, 0, cv::INTER_CUBIC);
+		cvtColor( src_gray, src_gray, CV_BGR2GRAY );
+		/// Reduce noise with a kernel 3x3
+		edgesImg = src_gray.clone();
+		cv::blur( src_gray, edgesImg, cv::Size(3, 3) );
+		/// Canny detector
+		int ratio = 3;
+		int kernel_size = 3;
+		int lowThreshold = 18;
+		cv::Canny( edgesImg, edgesImg, lowThreshold, lowThreshold * ratio, kernel_size );
+		cvtColor( edgesImg, edgesImg, CV_GRAY2BGR );
+		edgesImg = TrapBallMaskAll(edgesImg, oriImg);
+		edgesImg = FixSpaceMask(edgesImg);
+		edgesImg = MixTrapBallMask(edgesImg, oriImg);
+		edgesImg = FixSpaceLine(edgesImg, oriImg);
+		g_cvshowEX.AddShow("Image", edgesImg);
+		cv::waitKey();
+		ImageSpline is = Sx1GetPatchs(edgesImg);
+		for (int i = 0; i < is.m_CvPatchs.size(); ++i)
+		{
+			TriangulationCgal_Patch cgal_patch;
+			cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+			Patch t_patch = ToPatch(is.m_CvPatchs[i]);
+			t_patch.SmoothPatch();
+			cgal_patch.AddPatch(t_patch);
+			is.m_CvPatchs[i].SetImage(m_vavImage);
+			ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint3();
+			cgal_patch.AddColorConstraint(constraint_sptr);
+			cgal_patch.SetCriteria(0.0, 10);
+			cgal_patch.Compute();
+			d3dApp.AddColorTriangles(cgal_patch.GetTriangles());
+			d3dApp.AddTrianglesLine(cgal_patch.GetTriangles());
+		}
+		d3dApp.BuildPoint();
+		d3dApp.DrawScene();
+	}
+	return;
+	const int MASK1_SIZE = 5;
+	const int MASK2_SIZE = 5;
+	const float secDer = 0.001f;
+//  g_cvshowEX.AddShow("Origin Image", m_vavImage.GetCvMat());
+//  g_cvshowEX.AddShow("Exponential Image", expImg.GetCvMat());
 	g_cvshowEX.AddShow("Origin Image", m_vavImage.GetCvMat());
 	g_cvshowEX.AddShow("Exponential Image", expImg.GetCvMat());
 	cv::Mat ccp1 = expImg.Clone(), ccp2 = expImg.Clone();
@@ -371,18 +411,6 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		ConnectLineEnds3_Width(les, m_BlackLine2, tmp_width);
 //      les = GetLineEnds(m_BlackLine2);
 //      LinkLineEnds180(les, 10, 40);
-//      ConnectLineEnds3(les, m_BlackLine2, tmp_width);
-//      les = GetLineEnds(m_BlackLine2);
-//      LinkLineEnds180(les, 10, 40);
-//      ConnectLineEnds3(les, m_BlackLine2, tmp_width);
-//      les = GetLineEnds(m_BlackLine2);
-//      LinkLineEnds180(les, 15, 20);
-//      ConnectLineEnds3(les, m_BlackLine2, tmp_width);
-//      les = GetLineEnds(m_BlackLine2);
-//      LinkLineEnds180(les, 15, 30);
-//      ConnectLineEnds3(les, m_BlackLine2, tmp_width);
-//      les = GetLineEnds(m_BlackLine2);
-//      LinkLineEnds(les, 5, 30);
 //      ConnectLineEnds3(les, m_BlackLine2, tmp_width);
 		//無條件黏接
 //      les = GetLineEnds(m_BlackLine2);
@@ -643,10 +671,10 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		Index2Side i2s = GetLinesIndex2SideSmart(cmmsIndexImg, colorline, ccms);
 		i2s.left = FixIndexs(i2s.left, 100);
 		i2s.right = FixIndexs(i2s.right, 100);
-//      i2s.left = Maxmums2(i2s.left, colorline);
-//      i2s.right = Maxmums2(i2s.right, colorline);
-		i2s.left = MedianLenN(i2s.left, 10);
-		i2s.right = MedianLenN(i2s.right, 10);
+		i2s.left = Maxmums2(i2s.left, colorline);
+		i2s.right = Maxmums2(i2s.right, colorline);
+//      i2s.left = MedianLenN(i2s.left, 10);
+//      i2s.right = MedianLenN(i2s.right, 10);
 		Color2Side color2s2 = LinesIndex2Color(colorline, i2s, ccms);
 //      color2s2.left = FixLineColors(color2s2.left, 600, 10);
 //      color2s2.right = FixLineColors(color2s2.right, 600, 10);

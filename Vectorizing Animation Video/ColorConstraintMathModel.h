@@ -30,6 +30,7 @@ private:
 	Vector3s m_Colors;
 	Vector2s m_Pos;
 	bool m_NeedBuildModel;
+	VectorXd x1q, x2q, x3q;
 	VectorXd x1, x2, x3;
 };
 typedef std::vector<ColorConstraintMathModel> ColorConstraintMathModels;

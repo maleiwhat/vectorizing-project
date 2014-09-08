@@ -171,7 +171,7 @@ void VoronoiCgal_Patch::Compute()
 		insert_polygon(m_Delaunay, m_ImageSpline, i);
 		insert_polygonInter(m_Delaunay, m_ImageSpline, i);
 		Mesher mesher(m_Delaunay);
-		Criteria    criteria(0, 4000);
+		Criteria    criteria(0, 100);
 		mesher.set_criteria(criteria);
 		mesher.refine_mesh();
 		mark_domains(m_Delaunay);

@@ -1673,9 +1673,11 @@ cv::Mat TrapBallMaskAll(cv::Mat image, cv::Mat oriImg)
 	int c = 1;
 	//6
 	stmp = TrapBallMask5(stmp, 6, 2, oriImg, c);
+	g_cvshowEX.AddShow("stmp 6", stmp);
 	stmp = TrapBallMask5(stmp, 5, 2, oriImg, c);
 	stmp = TrapBallMask5(stmp, 4, 2, oriImg, c);
 	stmp = TrapBallMask5(stmp, 3, 2, oriImg, c);
+	stmp = TrapBallMask5(stmp, 2, 2, oriImg, c);
 //	stmp = TrapBallMask1(stmp, 6);
 //	stmp = TrapBallMask3(stmp, 5, cv::MORPH_ELLIPSE, 5);
 //  stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
@@ -2087,7 +2089,7 @@ cv::Mat MixTrapBallMask(cv::Mat LineImg, cv::Mat oriImg)
 	// 計數與算差值
 	ints alreadylost;
 	//ints whowins;
-	cv::imshow("LineImg1", res);
+	g_cvshowEX.AddShow("LineImg1", res);
 	int_int_maps iims(alldis.size());
 	int_double_maps idm1s(alldis.size());
 	int_double_maps idm2s(alldis.size());
@@ -2145,12 +2147,13 @@ cv::Mat MixTrapBallMask(cv::Mat LineImg, cv::Mat oriImg)
 			int_double_map& idm2 = idm2s[drawid];
 			for (int_int_map::iterator it = iim.begin(); iim.end() != it; ++it)
 			{
-				printf("iim %d ", it->first);
-				printf("idm1 %.2f ", idm1[it->first]);
-				printf("idm2 %.2f\n", idm2[it->first]);
-				//cv::Mat tmprescopy = res.clone();
+//              printf("%3d ", useid);
+//              printf("iim %d ", it->first);
+//              printf("idm1 %.2f ", idm1[it->first]);
+//              printf("idm2 %.2f\n", idm2[it->first]);
+				cv::Mat tmprescopy = res.clone();
 				ints::iterator ait = std::find(alreadylost.begin(), alreadylost.end(), it->first);
-				if (idm2[it->first] < 51 && idm1[it->first] < 30 && ait == alreadylost.end())
+				if (idm2[it->first] < 20 && idm1[it->first] < 30 && ait == alreadylost.end())
 				{
 					saveidx.push_back(it->first);
 					alreadylost.push_back(it->first);
@@ -2165,13 +2168,13 @@ cv::Mat MixTrapBallMask(cv::Mat LineImg, cv::Mat oriImg)
 							int id = tmp[0] + tmp[1] * 256 + tmp[2] * 256 * 256;
 							if (id == it->first)
 							{
-								//tmprescopy.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 255);
+								tmprescopy.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 255);
 								res.at<cv::Vec3b>(i, j) = newVal;
 							}
-// 							else if (id == useid)
-// 							{
-// 								tmprescopy.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 255, 0);
-// 							}
+							else if (id == useid)
+							{
+								tmprescopy.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 255, 0);
+							}
 						}
 					}
 // 					cv::imshow("tmprescopy", tmprescopy);
@@ -2180,7 +2183,7 @@ cv::Mat MixTrapBallMask(cv::Mat LineImg, cv::Mat oriImg)
 			}
 		}
 	}
-	cv::imshow("LineImg2", res);
+	g_cvshowEX.AddShow("LineImg2", res);
 	return res;
 }
 
@@ -2232,3 +2235,88 @@ cv::Mat FixSpaceMask(cv::Mat image)
 	printf("maxid %d\n", maxid);
 	return res;
 }
+
+cv::Mat WhiteBalance(cv::Mat oriImg)
+{
+	cv::Mat input;
+	cv::cvtColor(oriImg, input, CV_BGR2YCrCb);
+	// 先用直方圖得到門檻
+	cv::Mat res = oriImg.clone();
+	int histRGB[768] = {0};
+	int Amount = 0;
+	double AvgB = 0, AvgG = 0, AvgR = 0;
+	const double Ratio = 0.5;
+	for (int a = 0; a < res.rows; ++a)
+	{
+		for (int b = 0; b < res.cols; ++b)
+		{
+			cv::Vec3b cid1 = res.at<cv::Vec3b>(a, b);
+			int sum = (int)cid1[0] + (int)cid1[1] + (int)cid1[2];
+			histRGB[sum]++;
+		}
+	}
+	int Sum = 0;
+	int Threshold = 0;
+	for (int Y = 767; Y >= 0; Y--)
+	{
+		Sum += histRGB[Y];
+		if (Sum > res.cols * res.rows * Ratio / 100)
+		{
+			Threshold = Y;
+			break;
+		}
+	}
+	// 得到大於門檻的平均色
+	for (int a = 0; a < res.rows; ++a)
+	{
+		for (int b = 0; b < res.cols; ++b)
+		{
+			cv::Vec3b cid1 = res.at<cv::Vec3b>(a, b);
+			int sum = (int)cid1[0] + (int)cid1[1] + (int)cid1[2];
+			if (sum > Threshold)
+			{
+				AvgB += cid1[0];
+				AvgG += cid1[1];
+				AvgR += cid1[2];
+				Amount++;
+			}
+		}
+	}
+	AvgB /= Amount;
+	AvgG /= Amount;
+	AvgR /= Amount;
+	const int MaxValue = 255;
+	for (int a = 0; a < res.rows; ++a)
+	{
+		for (int b = 0; b < res.cols; ++b)
+		{
+			cv::Vec3b& cid1 = res.at<cv::Vec3b>(a, b);
+			int Blue = cid1[0] * MaxValue / AvgB;
+			int Green = cid1[1] * MaxValue / AvgG;
+			int Red = cid1[2] * MaxValue / AvgR;
+			if (Red > 255) { Red = 255; }
+			else if (Red < 0) { Red = 0; }
+			if (Green > 255) { Green = 255; }
+			else if (Green < 0) { Green = 0; }
+			if (Blue > 255) { Blue = 255; }
+			else if (Blue < 0) { Blue = 0; }
+			cid1[0] = Blue;
+			cid1[1] = Green;
+			cid1[2] = Red;
+		}
+	}
+	g_cvshowEX.AddShow("WhiteBalance", res);
+	return res;
+}
+
+cv::Mat ImgSharpen(cv::Mat oriImg)
+{
+	cv::Mat image = oriImg.clone(), res;
+	cv::GaussianBlur(image, res, cv::Size(0, 0), 3);
+	double p = 0.6;
+	cv::addWeighted(image, 1 + p, res, -p, 0, res);
+	g_cvshowEX.AddShow("ImgSharpen", res);
+	//cv::waitKey();
+	return res;
+}
+
