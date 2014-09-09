@@ -4085,7 +4085,7 @@ cv::Mat FixSpaceLine(cv::Mat image, cv::Mat oriImg)
 				cv::Vec3b oricolor = oriImg.at<cv::Vec3b>(a, b);
 				double dis = 99999;
 				Vector3 oriv(oricolor[0], oricolor[1], oricolor[1]);
-				Weights wm = wm_init;
+				Weights wm = wm_init_cross;
 				for (int i = 0; i < wm.size(); i++)
 				{
 					cv::Vec3b nn = res.at<cv::Vec3b>(a + wm[i].pos.y, b + wm[i].pos.x);

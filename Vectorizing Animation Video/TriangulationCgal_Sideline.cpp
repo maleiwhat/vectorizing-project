@@ -95,7 +95,7 @@ int TriangulationCgal_Sideline::Compute()
 	int i = 0;
 	for (auto it = lineSegs.begin(); it != lineSegs.end(); ++it, ++i)
 	{
-		m_PositionGraph.AddNewLine(it->beg, it->end, LinesWidth[i]);
+		m_PositionGraph.AddNewLine(it->beg, it->end, 1);
 	}
 	m_PositionGraph.ComputeJoints();
 	m_PositionGraph.MakeGraphLines();
@@ -112,19 +112,19 @@ int TriangulationCgal_Sideline::Compute()
 		HSplineCurve hs;
 		Line& cps = m_Controls[i];
 		Line& res = m_Lines[i];
-		Vector2 beg = res.front(), end = res.back();
-		for (int j = 0; j < res.size(); ++j)
-		{
-			hs.AddPointByDistance(res[j]);
-		}
-		double dis = hs.GetDistance();
-		int step = dis / 3.0;
-		cps.push_back(beg);
-		for (int j = 1; j < step; ++j)
-		{
-			cps.push_back(hs.GetValue(j * 3));
-		}
-		cps.push_back(end);
+// 		Vector2 beg = res.front(), end = res.back();
+// 		for (int j = 0; j < res.size(); ++j)
+// 		{
+// 			hs.AddPointByDistance(res[j]);
+// 		}
+// 		double dis = hs.GetDistance();
+// 		int step = dis / 3.0;
+// 		cps.push_back(beg);
+// 		for (int j = 1; j < step; ++j)
+// 		{
+// 			cps.push_back(hs.GetValue(j * 3));
+// 		}
+// 		cps.push_back(end);
 // 		hs.Clear();
 // 		for (int j = 0; j < cps.size(); ++j)
 // 		{

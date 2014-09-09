@@ -47,7 +47,7 @@ cv::Mat TrapBallMask3(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE, in
 cv::Mat TrapBallMask4(cv::Mat image, int moprh = cv::MORPH_ELLIPSE);
 cv::Mat TrapBallMask5(cv::Mat image, int size, int moprh, cv::Mat oriImg, int& cstart);
 cv::Mat FixSpaceMask(cv::Mat image);
-cv::Mat MixTrapBallMask(cv::Mat image, cv::Mat oriImg);
+cv::Mat MixTrapBallMask(cv::Mat image, cv::Mat oriImg, double threshold1, double threshold2);
 cv::Mat ConvertToMedian(cv::Mat image, cv::Mat src);
 cv::Mat ConvertToIndex(cv::Mat src, cv::Mat ori, ColorConstraints& output);
 void    S5ReColor(cv::Mat& image);
