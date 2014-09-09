@@ -136,11 +136,11 @@ void ImageSpline::SmoothingFragments()
 
 			for (int j = 2; j < cps.size() - 2; j ++)
 			{
-				if (CheckOnSide((int)cps[j].x, (int)cps[j].y))
-				{
-					newcps.push_back(cps[j]);
-				}
-				else
+// 				if (CheckOnSide((int)cps[j].x, (int)cps[j].y))
+// 				{
+// 					newcps.push_back(cps[j]);
+// 				}
+// 				else
 				{
 					auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
 					           6.0f;

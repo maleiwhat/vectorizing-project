@@ -11,6 +11,7 @@
 #include <windows.h>
 #include "cvshowEX.h"
 #include "TriangulationCgal_Patch.h"
+#include "TriangulationCgal_Sideline.h"
 
 
 cv::Mat VAV_MainFrame::Do_SLIC(double m_compatcness, double m_spcount, cv::Mat img)
@@ -191,8 +192,8 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		cv::Mat edgesImg, src_gray = m_vavImage.Clone(), src_grayf,
 						  oriImg = m_vavImage.Clone(), show_ccp;
 		CmCurveEx* dcurve = NULL;
-//      cv::resize(src_gray.clone(), src_gray, src_gray.size() * 2, 0, 0, cv::INTER_CUBIC);
-//      cv::resize(oriImg.clone(), oriImg, oriImg.size() * 2, 0, 0, cv::INTER_CUBIC);
+     cv::resize(src_gray.clone(), src_gray, src_gray.size() * 2, 0, 0, cv::INTER_CUBIC);
+     cv::resize(oriImg.clone(), oriImg, oriImg.size() * 2, 0, 0, cv::INTER_CUBIC);
 		{
 			// curve extration
 			cvtColor(src_gray, src_gray, CV_BGR2GRAY);
@@ -341,23 +342,34 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		edgesImg = FixSpaceLine(edgesImg, oriImg);
 		FloodFillReColor(edgesImg);
 		g_cvshowEX.AddShow("Image", edgesImg);
-		ImageSpline is = Sx1GetPatchs(edgesImg);
-		// add patch
-		TriangulationCgal_Patch cgal_patch;
-		cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
-		for(int i = 0; i < is.m_CvPatchs.size(); ++i)
+// 		ImageSpline is = Sx1GetPatchs(edgesImg);
+// 		// add patch
+// 		TriangulationCgal_Patch cgal_patch;
+// 		cgal_patch.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+// 		for(int i = 0; i < is.m_CvPatchs.size(); ++i)
+// 		{
+// 			Patch t_patch = ToPatch(is.m_CvPatchs[i]);
+// 			t_patch.SmoothPatch();
+// 			cgal_patch.AddPatch(t_patch);
+// 			is.m_CvPatchs[i].SetImage(m_vavImage);
+// 			ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint3();
+// 			cgal_patch.AddColorConstraint(constraint_sptr);
+// 		}
+// 		cgal_patch.SetCriteria(0.0, 10);
+// 		cgal_patch.Compute();
 		{
-			Patch t_patch = ToPatch(is.m_CvPatchs[i]);
-			t_patch.SmoothPatch();
-			cgal_patch.AddPatch(t_patch);
-			is.m_CvPatchs[i].SetImage(m_vavImage);
-			ColorConstraint_sptr constraint_sptr = is.m_CvPatchs[i].GetColorConstraint3();
-			cgal_patch.AddColorConstraint(constraint_sptr);
+			TriangulationCgal_Sideline cgal_contour;
+			ImageSpline is2 = ComputeLines(edgesImg, m_BlackRegionThreshold * 0.01);
+			cgal_contour.SetSize(m_vavImage.GetWidth(), m_vavImage.GetHeight());
+			cgal_contour.AddImageSpline(is2);
+			cgal_contour.SetCriteria(0.1, 100);
+			cgal_contour.Compute();
+			d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
+			d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
+			d3dApp.AddLines(cgal_contour.m_ContourLines);
 		}
-		cgal_patch.SetCriteria(0.0, 10);
-		cgal_patch.Compute();
-		d3dApp.AddColorTriangles(cgal_patch.GetTriangles());
-		d3dApp.AddTrianglesLine(cgal_patch.GetTriangles());
+// 		d3dApp.AddColorTriangles(cgal_patch.GetTriangles());
+// 		d3dApp.AddTrianglesLine(cgal_patch.GetTriangles());
 		d3dApp.BuildPoint();
 		d3dApp.DrawScene();
 	}

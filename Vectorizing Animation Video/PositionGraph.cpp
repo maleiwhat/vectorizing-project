@@ -498,8 +498,8 @@ void PositionGraph::MakeContourLines()
 		Qx[0].resize(now_line.size());
 		for (int j = 0; j < now_line.size(); j ++)
 		{
-			Qx[0][j].X = (long long)now_line[j].x * 10000;
-			Qx[0][j].Y = (long long)now_line[j].y * 10000;
+			Qx[0][j].X = now_line[j].x * 10000;
+			Qx[0][j].Y = now_line[j].y * 10000;
 		}
 		c.AddPolygons(Qx, ptSubject);
 	}

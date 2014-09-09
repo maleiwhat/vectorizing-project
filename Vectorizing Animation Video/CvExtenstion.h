@@ -35,6 +35,8 @@ void    S2FloodFill(cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range,
 					int x, int y, int dilation = 0, int erosion = 0);
 void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y, CvPatchs& out_array);
 void    S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y);
+
+void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int x, int y, int dilation /*= 0*/, int erosion /*= 0*/);
 void    S3_1FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, int x, int y, 
 					  CvPatchs& out_array, cv::Mat& ori_image, ColorConstraints& ccms,
 					  cv::Mat& out);
@@ -145,7 +147,6 @@ void Collect_Water(cv::Mat src, cv::Mat& dst, int rectw, int recth,
 
 ImageSpline ComputeLines(cv::Mat img, double BlackRegionThreshold);
 void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2);
-ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion);
 ImageSpline S5GetPatchs(const cv::Mat& image0, const cv::Mat& orig);
 Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion, cv::Mat& outimg = cv::Mat());
 Lines S7GetPatchs(const cv::Mat& image0, const cv::Mat& noline, int dilation, int erosion);
