@@ -136,7 +136,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 	if (m_DRAW_ISOSURFACE)
 	{
 		cv::imshow("vavImage", (cv::Mat)m_vavImage);
-		cv::Mat isoimg = MakeIsoSurfaceImg(m_vavImage, 4);
+		cv::Mat isoimg = MakeIsoSurfaceImg(m_vavImage, 32);
+		FloodFillReColor(isoimg);
 		cv::imshow("isoimg", isoimg);
 	}
 	if (m_DRAW_PATCH || m_DRAW_SEPARATE_PATCH)

@@ -61,4 +61,6 @@ void MaskImgDraw(cv::Mat image, cv::Mat mask, int x, int y, cv::Vec3b c);
 cv::Vec3b MaskImgGet(cv::Mat image, cv::Mat mask, int x, int y);
 
 cv::Mat WhiteBalance(cv::Mat oriImg);
+cv::Mat WhiteBalance2(cv::Mat oriImg);
 cv::Mat ImgSharpen(cv::Mat oriImg);
+void GetDbDrMbMr(cv::Mat oriImg, double& Db, double& Dr, double& Mb, double& Mr);

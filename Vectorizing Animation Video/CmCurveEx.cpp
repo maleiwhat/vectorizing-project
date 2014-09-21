@@ -230,13 +230,13 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		{
 			//if (pDer2[x] <= avg2 * 1)
 			{
-				 pDer2[x] = powf(pDer2[x], 1.4);     
+				 pDer2[x] = powf(pDer2[x], 3);     
 			}
 		}
 	}
 	g_cvshowEX.AddShow("m_pDer1f", m_pDer1f);
 	g_cvshowEX.AddShow("m_pDer2f", m_pDer2f);
-	normalize(m_pDer2f, m_pDer2f, 0, maxeig, cv::NORM_MINMAX);
+	normalize(m_pDer2f, m_pDer2f, 0, 30, cv::NORM_MINMAX);
 //  if (1)
 //  {
 //      Sobel(m_pDer2f, dxx, CV_32F, 2, 0, kSize);
@@ -286,7 +286,7 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
 			pDer[x] = float(eigval[0] > 0.0f ? eigval[0] : 0.0f);//計算二階導數
 		}
 	}
-	//GaussianBlur(m_pDer1f, m_pDer1f, cv::Size(3, 3), 0);
+	GaussianBlur(m_pDer2f, m_pDer2f, cv::Size(3, 3), 0);
 	normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
 	NoneMaximalSuppress(linkEndBound, linkStartBound);
 	return m_pDer2f;

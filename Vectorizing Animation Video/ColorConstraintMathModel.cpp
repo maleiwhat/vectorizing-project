@@ -56,7 +56,7 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(rr1, 0, 255);
 		Bounding(gg1, 0, 255);
 		Bounding(bb1, 0, 255);
-		return Vector3(rr1, gg1, bb1);
+		return Vector3(bb1, gg1, rr1);
 	}
 	else if (m_Colors.size() > THRESHOLD2)
 	{
@@ -66,7 +66,7 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(rr2, 0, 255);
 		Bounding(gg2, 0, 255);
 		Bounding(bb2, 0, 255);
-		return Vector3(rr2, gg2, bb2);
+		return Vector3(bb2, gg2, rr2);
 	}
 	else if (m_Colors.size() > 0)
 	{
@@ -85,7 +85,7 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(rr, 0, 255);
 		Bounding(gg, 0, 255);
 		Bounding(bb, 0, 255);
-		return Vector3(rr, gg, bb);
+		return Vector3(bb, gg, rr);
 	}
 	return Vector3(255, 0, 0);
 }

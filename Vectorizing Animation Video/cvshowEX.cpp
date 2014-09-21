@@ -124,6 +124,10 @@ void cvshowEX::Render()
 	{
 		h = 1150;
 	}
+	if (h < 800)
+	{
+		h = 800;
+	}
 	m_sizeimg.create(h, w + 200, CV_8UC3);
 	double scale = 1.0 / needdraw;
 	m_sizeimg = cv::Scalar(0, 0, 0);

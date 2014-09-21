@@ -15,6 +15,19 @@
 #include "cvshowEX.h"
 #include <opencv2\imgproc\imgproc.hpp>
 
+int sign(double v)
+{
+	if(v > 0)
+	{
+		return 1;
+	}
+	else if(v < 0)
+	{
+		return -1;
+	}
+	return 0;
+}
+
 cv::Mat CannyEdge(cv::Mat& image, double threshold1/*=0*/,
 				  double threshold2/*=30*/, int apertureSize/*=3*/, bool L2gradient/*=false*/)
 {
@@ -1289,7 +1302,7 @@ cv::Mat TrapBallMask3(cv::Mat LineImg, int size, int moprh, int maxadd)
 							checks.push_back(test[i]);
 						}
 					}
-					if(hasFill.at<uchar>(v.y, v.x) == 0)
+					//if(hasFill.at<uchar>(v.y, v.x) == 0)
 					{
 						hasFill.at<uchar>(v.y, v.x) = 1;
 						cv::Vec3b cc = MaskImgGet(res, circle, v.x, v.y);
@@ -1341,7 +1354,7 @@ cv::Mat TrapBallMask4(cv::Mat LineImg, int moprh)
 					if(IsSafePos(res, test[k].x, test[k].y))
 					{
 						cv::Vec3b cc = res.at<cv::Vec3b>(test[k].y, test[k].x);
-						if(cc[0] != 0 && cc[0] != 255 && cc[0] < 50)
+						if(cc[0] != 0 && cc[0] != 255)
 						{
 							res.at<cv::Vec3b>(v.y, v.x) = cc;
 							hascolor = true;
@@ -1383,7 +1396,7 @@ bool CheckMaskImg1(cv::Mat LineImg, cv::Mat mask, int x, int y)
 				{
 					return false;
 				}
-				else if(LineImg.at<cv::Vec3b>(y + i, x + j) == black)
+				else if(nowc == black)
 				{
 					has0 = true;
 				}
@@ -1432,7 +1445,7 @@ bool CheckMaskImg3(cv::Mat LineImg, cv::Mat maskbig, cv::Mat mask, int x, int y)
 		{
 			if(mask.at<uchar>(i, j) > 0)
 			{
-				if(LineImg.at<cv::Vec3b>(y + i , x + j)[0] == 255)
+				if(LineImg.at<cv::Vec3b>(y + i , x + j)[2] == 255)
 				{
 					return false;
 				}
@@ -1658,48 +1671,67 @@ cv::Mat ConvertToIndex(cv::Mat src, cv::Mat oriimg, ColorConstraints& output)
 cv::Mat TrapBallMaskAll(cv::Mat image, cv::Mat oriImg)
 {
 	cv::Mat stmp = image.clone();
-//  for (int i = 0; i < stmp.rows; ++i)
-//  {
-//      for (int j = 0; j < stmp.cols; ++j)
-//      {
-//          if (stmp.at<cv::Vec3b>(i, j)[2] > 0)
-//          {
-//              stmp.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
-//          }
-//          else
-//          {
-//              stmp.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
-//          }
-//      }
-//  }
+	for(int i = 0; i < stmp.rows; ++i)
+	{
+		for(int j = 0; j < stmp.cols; ++j)
+		{
+			if(stmp.at<cv::Vec3b>(i, j)[2] > 0)
+			{
+				stmp.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
+			}
+			else
+			{
+				stmp.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
+			}
+		}
+	}
 	int c = 1;
 	//6
+	cv::Mat show;
 	stmp = TrapBallMask5(stmp, 6, 2, oriImg, c);
-	g_cvshowEX.AddShow("stmp 6", stmp);
+	show = stmp.clone();
+	FloodFillReColor(show);
+	g_cvshowEX.AddShow("stmp 66", show);
+	stmp = TrapBallMask3(stmp, 5, cv::MORPH_ELLIPSE, 5);
+	show = stmp.clone();
+	FloodFillReColor(show);
+	g_cvshowEX.AddShow("stmp 65", show);
+	stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
+	show = stmp.clone();
+	FloodFillReColor(show);
+	g_cvshowEX.AddShow("stmp 64", show);
+	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
+	show = stmp.clone();
+	FloodFillReColor(show);
+	g_cvshowEX.AddShow("stmp 63", show);
+	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
+	show = stmp.clone();
+	FloodFillReColor(show);
+	g_cvshowEX.AddShow("stmp 62", show);
+	stmp = TrapBallMask3(stmp, 1, cv::MORPH_ELLIPSE, 5);
+	show = stmp.clone();
+	FloodFillReColor(show);
+	g_cvshowEX.AddShow("stmp 61", show);
 	stmp = TrapBallMask5(stmp, 5, 2, oriImg, c);
+	stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
+	show = stmp.clone();
+	FloodFillReColor(show);
+	g_cvshowEX.AddShow("stmp 5", show);
 	stmp = TrapBallMask5(stmp, 4, 2, oriImg, c);
-	stmp = TrapBallMask5(stmp, 3, 2, oriImg, c);
-	stmp = TrapBallMask5(stmp, 2, 2, oriImg, c);
-//	stmp = TrapBallMask1(stmp, 6);
-//	stmp = TrapBallMask3(stmp, 5, cv::MORPH_ELLIPSE, 5);
-//  stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
-//  stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
+	show = stmp.clone();
+	FloodFillReColor(show);
+	g_cvshowEX.AddShow("stmp 4", show);
+//  stmp = TrapBallMask5(stmp, 3, 2, oriImg, c);
 //  stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
-	//5
-//  stmp = TrapBallMask1(stmp, 5);
-//  stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
-//  stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
-//  stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
-	//4
-//  stmp = TrapBallMask1(stmp, 4);
-//  stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
-//  stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
-	//3
-//  stmp = TrapBallMask1(stmp, 3);
-//  stmp = TrapBallMask3(stmp, 2);
 	//2
 	stmp = TrapBallMask4(stmp);
-	g_cvshowEX.AddShow("stmp 4", stmp);
+	show = stmp.clone();
+	FloodFillReColor(show);
+	g_cvshowEX.AddShow("stmp 4", show);
 	return stmp;
 }
 
@@ -1945,7 +1977,7 @@ cv::Mat TrapBallMask5(cv::Mat LineImg, int size, int moprh, cv::Mat oriImg, int&
 			Vector3 c1 = cc.GetColorVector3(v.x, v.y);
 			cv::Vec3b c2b = oriImg.at<cv::Vec3b>(v.y / 2, v.x / 2);
 			Vector3 c2(c2b[0], c2b[1], c2b[2]);
-			if(c1.distance(c2) < 100)
+			if(c1.distance(c2) < 200)
 			{
 				res.at<cv::Vec3b>(v.y, v.x) = idxColor;
 				V2 test[4];
@@ -2155,7 +2187,7 @@ cv::Mat MixTrapBallMask(cv::Mat LineImg, cv::Mat oriImg, double threshold1, doub
 //              printf("idm2 %.2f\n", idm2[it->first]);
 				cv::Mat tmprescopy = res.clone();
 				ints::iterator ait = std::find(alreadylost.begin(), alreadylost.end(), it->first);
-				if (idm1[it->first] < threshold1 && idm2[it->first] < threshold2 && ait == alreadylost.end())
+				if(idm1[it->first] < threshold1 && idm2[it->first] < threshold2 && ait == alreadylost.end())
 				{
 					saveidx.push_back(it->first);
 					alreadylost.push_back(it->first);
@@ -2311,6 +2343,135 @@ cv::Mat WhiteBalance(cv::Mat oriImg)
 	return res;
 }
 
+void GetDbDrMbMr(cv::Mat oriImg, double& Db, double& Dr, double& Mb, double& Mr)
+{
+	double sumb = 0, sumr = 0;
+	int count = 0;
+	for(int a = 0; a < oriImg.rows; ++a)
+	{
+		for(int b = 0; b < oriImg.cols; ++b)
+		{
+			count++;
+			sumb += oriImg.at<cv::Vec3b>(a, b)[1];
+			sumr += oriImg.at<cv::Vec3b>(a, b)[2];
+		}
+	}
+	sumb /= count;
+	sumr /= count;
+	double sumdb = 0, sumdr = 0;
+	for(int a = 0; a < oriImg.rows; ++a)
+	{
+		for(int b = 0; b < oriImg.cols; ++b)
+		{
+			count++;
+			sumdb += abs(sumb - oriImg.at<cv::Vec3b>(a, b)[1]);
+			sumdr += abs(sumr - oriImg.at<cv::Vec3b>(a, b)[2]);
+		}
+	}
+	sumdb /= count;
+	sumdr /= count;
+	Db = sumdb;
+	Dr = sumdr;
+	Mb = sumb;
+	Mr = sumr;
+}
+
+cv::Mat WhiteBalance2(cv::Mat oriImg)
+{
+	cv::Mat input;
+	cv::cvtColor(oriImg, input, CV_BGR2YCrCb);
+	cv::Mat chip[12];
+	int w = input.cols / 4;
+	int h = input.rows / 3;
+	doubles Dbs;
+	doubles Drs;
+	doubles Mbs;
+	doubles Mrs;
+	int Ymax = 1;
+	for(int a = 0; a < 4; ++a)
+	{
+		for(int b = 0; b < 3; ++b)
+		{
+			chip[a * 3 + b].create(w, h, CV_8UC3);
+			int startw = a * w;
+			int starth = b * h;
+			int endw = a * w + w;
+			int endh = b * h + h;
+			if(endw > input.cols)
+			{ endw = input.cols; }
+			if(endh > input.rows)
+			{ endh = input.rows; }
+			chip[a * 3 + b] = cv::Mat(input, cv::Rect(startw, starth, endw - startw, endh - starth));
+			double db, dr, mb, mr;
+			GetDbDrMbMr(chip[a * 3 + b], db, dr, mb, mr);
+			printf("%.2f %.2f %.2f %.2f\n", db, dr, mb, mr);
+			//if(db > 1 && dr > 1)
+			{
+				Dbs.push_back(db);
+				Drs.push_back(dr);
+				Mbs.push_back(mb);
+				Mrs.push_back(mr);
+			}
+		}
+	}
+	double Dbavg = std::accumulate(Dbs.begin(), Dbs.end(), 0.0) / Dbs.size();
+	double Dravg = std::accumulate(Drs.begin(), Drs.end(), 0.0) / Drs.size();
+	double Mbavg = std::accumulate(Mbs.begin(), Mbs.end(), 0.0) / Mbs.size();
+	double Mravg = std::accumulate(Mrs.begin(), Mrs.end(), 0.0) / Mrs.size();
+	cv::Mat wtf = oriImg.clone();
+	wtf = cv::Scalar(0);
+	doubles rs, gs, bs;
+	for(int a = 0; a < oriImg.rows; ++a)
+	{
+		for(int b = 0; b < oriImg.cols; ++b)
+		{
+			if(abs(oriImg.at<cv::Vec3b>(a, b)[1] - (Mbavg + Dbavg * sign(Mbavg))) < 1.5 * Dbavg &&
+					abs(oriImg.at<cv::Vec3b>(a, b)[2] - (1.5 * Mravg + Dravg * sign(Mravg))) < 1.5 * Dravg)
+			{
+				wtf.at<cv::Vec3b>(a, b) = oriImg.at<cv::Vec3b>(a, b);
+				rs.push_back(oriImg.at<cv::Vec3b>(a, b)[2]);
+				gs.push_back(oriImg.at<cv::Vec3b>(a, b)[1]);
+				bs.push_back(oriImg.at<cv::Vec3b>(a, b)[0]);
+				if(Ymax < input.at<cv::Vec3b>(a, b)[0])
+				{
+					Ymax = input.at<cv::Vec3b>(a, b)[0];
+				}
+			}
+		}
+	}
+	printf("avg %.2f %.2f %.2f %.2f ymax %d\n", Dbavg, Dravg, Mbavg, Mravg, Ymax);
+	cv::imshow("wtf", wtf);
+	double Ravg = std::accumulate(rs.begin(), rs.end(), 0.0) / rs.size();
+	double Gavg = std::accumulate(gs.begin(), gs.end(), 0.0) / gs.size();
+	double Bavg = std::accumulate(bs.begin(), bs.end(), 0.0) / bs.size();
+	double Rgain = Ymax / Ravg;
+	double Ggain = Ymax / Gavg;
+	double Bgain = Ymax / Bavg;
+	cv::Mat res = oriImg.clone();
+	for(int a = 0; a < res.rows; ++a)
+	{
+		for(int b = 0; b < res.cols; ++b)
+		{
+			cv::Vec3b& cid1 = res.at<cv::Vec3b>(a, b);
+			int Blue = cid1[0]  * Bgain;
+			int Green = cid1[1]  * Ggain;
+			int Red = cid1[2]  * Rgain;
+			if(Red > 255) { Red = 255; }
+			else if(Red < 0) { Red = 0; }
+			if(Green > 255) { Green = 255; }
+			else if(Green < 0) { Green = 0; }
+			if(Blue > 255) { Blue = 255; }
+			else if(Blue < 0) { Blue = 0; }
+			cid1[0] = Blue;
+			cid1[1] = Green;
+			cid1[2] = Red;
+		}
+	}
+	g_cvshowEX.AddShow("WhiteBalance", res);
+	return res;
+}
+
+
 cv::Mat ImgSharpen(cv::Mat oriImg)
 {
 	cv::Mat image = oriImg.clone(), res;
@@ -2318,7 +2479,6 @@ cv::Mat ImgSharpen(cv::Mat oriImg)
 	double p = 0.6;
 	cv::addWeighted(image, 1 + p, res, -p, 0, res);
 	g_cvshowEX.AddShow("ImgSharpen", res);
-	//cv::waitKey();
 	return res;
 }
 

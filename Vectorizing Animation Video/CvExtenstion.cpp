@@ -4044,7 +4044,8 @@ void FloodFillReColor(cv::Mat& image)
 	{
 		for(int j = 1; j < image.cols - 1; j++)
 		{
-			S3FloodFill(cc, image, mask, j, i);
+			if(image.at<cv::Vec3b>(i, j) != cv::Vec3b(0, 0, 0))
+			{ S3FloodFill(cc, image, mask, j, i); }
 		}
 	}
 }

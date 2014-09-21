@@ -15,7 +15,7 @@
 
 #include "PathInterpolater.h"
 
-class BsplineCurve : public PathInterpolater
+class BSplineCurve : public PathInterpolater
 {
 public:
 	Vector2 GetValue(double time);
