@@ -244,6 +244,7 @@
     <ClInclude Include="IFExtenstion.h" />
     <ClInclude Include="ImageSpline.h" />
     <ClInclude Include="imath.h" />
+    <ClInclude Include="L0smoothing.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="LineDef.h" />
     <ClInclude Include="LineFragment.h" />
@@ -273,6 +274,7 @@
     <ClInclude Include="PropertiesWnd.h" />
     <ClInclude Include="ReadVideo.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SavepointImage.h" />
     <ClInclude Include="shared_ptr.h" />
     <ClInclude Include="SLIC.h" />
     <ClInclude Include="SplineFragment.h" />
@@ -362,6 +364,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="L0smoothing.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="LineFragment.cpp" />
     <ClCompile Include="math\AABB2D.cpp" />
@@ -384,6 +387,7 @@
     <ClCompile Include="PositionGraph_Node.cpp" />
     <ClCompile Include="PropertiesWnd.cpp" />
     <ClCompile Include="ReadVideo.cpp" />
+    <ClCompile Include="SavepointImage.cpp" />
     <ClCompile Include="SLIC.cpp" />
     <ClCompile Include="SplineFragment.cpp" />
     <ClCompile Include="SplineShape.cpp" />

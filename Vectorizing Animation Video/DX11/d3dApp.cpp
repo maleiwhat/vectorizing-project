@@ -140,7 +140,7 @@ D3DApp::D3DApp()
 	m_pDepthStencil = NULL;
 	m_polySize = 2;
 	m_diffTex = 0;
-	m_diffSteps = 12;
+	m_diffSteps = 6;
 	m_diffdistDirTexture = NULL;
 	m_diffuseTexture[0] = NULL;
 	m_diffuseTexture[1] = NULL;
