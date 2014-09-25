@@ -13,13 +13,13 @@ ColorConstraint_sptrs MakeColors(int regions, const cv::Mat& mask,
 								 const cv::Mat& img)
 {
 	ColorConstraint_sptrs ans;
-	for (int i = 0; i < regions; ++i)
+	for(int i = 0; i < regions; ++i)
 	{
 		ans.push_back(ColorConstraint_sptr(new ColorConstraint));
 	}
-	for (int i = 0; i < img.rows; ++i)
+	for(int i = 0; i < img.rows; ++i)
 	{
-		for (int j = 0; j < img.cols; ++j)
+		for(int j = 0; j < img.cols; ++j)
 		{
 			const cv::Vec3b& id_color = mask.at<cv::Vec3b>(i, j);
 			int idx = id_color[0] + id_color[1] * 255 + id_color[2] * 255 * 255;
@@ -32,19 +32,19 @@ ColorConstraint_sptrs MakeColors(int regions, const cv::Mat& mask,
 
 cv::Vec3b& GetColor(cv::Mat& image, int x, int y)
 {
-	if (y < 0)
+	if(y < 0)
 	{
 		y = 0;
 	}
-	if (y >= image.rows)
+	if(y >= image.rows)
 	{
 		y = image.rows - 1;
 	}
-	if (x < 0)
+	if(x < 0)
 	{
 		x = 0;
 	}
-	if (x >= image.cols)
+	if(x >= image.cols)
 	{
 		x = image.cols - 1;
 	}
@@ -55,11 +55,11 @@ Vector3s2d GetLinesColor(cv::Mat img, const Lines& lines)
 {
 	vavImage vimg(img);
 	Vector3s2d ans;
-	for (auto it = lines.cbegin(); it != lines.cend(); ++it)
+	for(auto it = lines.cbegin(); it != lines.cend(); ++it)
 	{
 		ans.push_back(Vector3s());
 		Vector3s& li = ans.back();
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2)
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2)
 		{
 			double r = vimg.GetBilinearR_if0(it2->x, it2->y);
 			double g = vimg.GetBilinearG_if0(it2->x, it2->y);
@@ -74,7 +74,7 @@ Vector3s GetLinesColor(cv::Mat img, const Line& lines)
 {
 	vavImage vimg(img);
 	Vector3s ans;
-	for (auto it2 = lines.cbegin(); it2 != lines.cend(); ++it2)
+	for(auto it2 = lines.cbegin(); it2 != lines.cend(); ++it2)
 	{
 		double r = vimg.GetBilinearR_if0(it2->x, it2->y);
 		double g = vimg.GetBilinearG_if0(it2->x, it2->y);
@@ -91,18 +91,18 @@ Color2Side GetLinesColor(const Lines& lines, ColorConstraints& ccms)
 	res.right.resize(lines.size());
 	Vector3s2d& cleft = res.left;
 	Vector3s2d& cright = res.right;
-	for (int i = 0; i < cleft.size(); ++i)
+	for(int i = 0; i < cleft.size(); ++i)
 	{
 		cleft[i].resize(lines[i].size());
-		for (int j = 0; j < cleft[i].size(); ++j)
+		for(int j = 0; j < cleft[i].size(); ++j)
 		{
 			cleft[i][j] = ccms.at(i).GetColorVector3(lines[i][j].x, lines[i][j].y);
 		}
 	}
-	for (int i = 0; i < cright.size(); ++i)
+	for(int i = 0; i < cright.size(); ++i)
 	{
 		cright[i].resize(lines[i].size());
-		for (int j = 0; j < cright[i].size(); ++j)
+		for(int j = 0; j < cright[i].size(); ++j)
 		{
 			cright[i][j] = Vector3(255, 255, 255);
 		}
@@ -119,13 +119,13 @@ Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines, double normal_len
 	Vector3s2d& ans_right = ans.right;
 	ans_left.resize(lines.size());
 	ans_right.resize(lines.size());
-	for (int i = 0; i < lines.size(); ++i)
+	for(int i = 0; i < lines.size(); ++i)
 	{
 		Lines::const_iterator it = lines.cbegin() + i;
 		Vector3s& li = ans_left[i];
 		int j = 0;
 		li.resize(it->size());
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
 			Vector2 pos = *it2 - normals[i][j] * normal_len;
 			double r = vimg.GetBilinearR_if0(pos.x, pos.y);
@@ -136,7 +136,7 @@ Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines, double normal_len
 		Vector3s& ri = ans_right[i];
 		ri.resize(it->size());
 		j = 0;
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
 			Vector2 pos = *it2 + normals[i][j] * normal_len;
 			double r = vimg.GetBilinearR_if0(pos.x, pos.y);
@@ -159,13 +159,13 @@ Color2Side GetLinesColor2SideSmart(cv::Mat img, cv::Mat color, const Lines& line
 	Lines normals = GetNormalsLen2(lines);
 	normals = SmoothingLen5(normals, 0, 3);
 	const double blackRadio = 1;
-	for (int idx1 = 0; idx1 < lines.size(); ++idx1)
+	for(int idx1 = 0; idx1 < lines.size(); ++idx1)
 	{
 		const Line& nowLine = lines[idx1];
 		const Line& nowNormals = normals[idx1];
 		Line& lineWidths = BLineWidth[idx1];
 		lineWidths.clear();
-		for (int idx2 = 0; idx2 < nowLine.size(); ++idx2)
+		for(int idx2 = 0; idx2 < nowLine.size(); ++idx2)
 		{
 			const double LINE_WIDTH = 4;
 			Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
@@ -173,7 +173,7 @@ Color2Side GetLinesColor2SideSmart(cv::Mat img, cv::Mat color, const Lines& line
 			double_vector line1 = vimg.GetLineLight(start.x, start.y, end.x, end.y, 360);
 			double_vector width1 = GetColorWidth(ConvertToSquareWave(ConvertToAngle(line1),
 												 15, 50), LINE_WIDTH * 2);
-			if (width1.size() == 2)
+			if(width1.size() == 2)
 			{
 				// save line width
 				lineWidths.push_back(Vector2(width1[0] * blackRadio, width1[1] * blackRadio));
@@ -190,16 +190,16 @@ Color2Side GetLinesColor2SideSmart(cv::Mat img, cv::Mat color, const Lines& line
 	Vector3s2d& ans_right = ans.right;
 	ans_left.resize(lines.size());
 	ans_right.resize(lines.size());
-	for (int i = 0; i < lines.size(); ++i)
+	for(int i = 0; i < lines.size(); ++i)
 	{
 		Lines::const_iterator it = lines.cbegin() + i;
 		Vector3s& li = ans_left[i];
 		Line& lineWidths = BLineWidth[i];
 		int j = 0;
 		li.resize(it->size());
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
-			if (lineWidths[j][0] > 0)
+			if(lineWidths[j][0] > 0)
 			{
 				Vector2 pos = *it2 - normals[i][j] * (lineWidths[j][0]);
 				double r = vcolor.GetBilinearR_if0(pos.x, pos.y);
@@ -211,9 +211,9 @@ Color2Side GetLinesColor2SideSmart(cv::Mat img, cv::Mat color, const Lines& line
 		Vector3s& ri = ans_right[i];
 		ri.resize(it->size());
 		j = 0;
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
-			if (lineWidths[j][1] > 0)
+			if(lineWidths[j][1] > 0)
 			{
 				Vector2 pos = *it2 + normals[i][j] * (lineWidths[j][1]);
 				double r = vcolor.GetBilinearR_if0(pos.x, pos.y);
@@ -239,13 +239,13 @@ Color2Side GetLinesColor2SideSmart2(cv::Mat img, cv::Mat color, const Lines& lin
 	Vector3s2d& ans_right = ans.right;
 	ans_left.resize(lines.size());
 	ans_right.resize(lines.size());
-	for (int idx1 = 0; idx1 < lines.size(); ++idx1)
+	for(int idx1 = 0; idx1 < lines.size(); ++idx1)
 	{
 		const Line& nowLine = lines[idx1];
 		const Line& nowNormals = normals[idx1];
 		Vector3s& nowLineL = ans_left[idx1];
 		Vector3s& nowLineR = ans_right[idx1];
-		for (int idx2 = 0; idx2 < nowLine.size(); ++idx2)
+		for(int idx2 = 0; idx2 < nowLine.size(); ++idx2)
 		{
 			const double LINE_WIDTH = 4;
 			Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
@@ -278,13 +278,13 @@ Color2Side GetLinesColor2SideSmart3(cv::Mat img, cv::Mat color, const Lines& lin
 	Vector3s2d& ans_right = ans.right;
 	ans_left.resize(lines.size());
 	ans_right.resize(lines.size());
-	for (int idx1 = 0; idx1 < lines.size(); ++idx1)
+	for(int idx1 = 0; idx1 < lines.size(); ++idx1)
 	{
 		const Line& nowLine = lines[idx1];
 		const Line& nowNormals = normals[idx1];
 		Vector3s& nowLineL = ans_left[idx1];
 		Vector3s& nowLineR = ans_right[idx1];
-		for (int idx2 = 0; idx2 < nowLine.size(); ++idx2)
+		for(int idx2 = 0; idx2 < nowLine.size(); ++idx2)
 		{
 			const double LINE_WIDTH = 4;
 			Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
@@ -293,14 +293,14 @@ Color2Side GetLinesColor2SideSmart3(cv::Mat img, cv::Mat color, const Lines& lin
 			Vector3s line2 = vcolor.GetLineColor(nowLine[idx2].x, nowLine[idx2].y, end.x, end.y, 120);
 			Vector3s lineOK1, lineOK2;
 			Vector3 src = vcolor.GetBilinearColor(nowLine[idx2].x, nowLine[idx2].y);
-			for (int lid = 30; lid < line1.size(); ++lid)
+			for(int lid = 30; lid < line1.size(); ++lid)
 			{
-				if (src.squaredDistance(line1[lid]) > length)
+				if(src.squaredDistance(line1[lid]) > length)
 				{
 					lineOK1.push_back(line1[lid]);
 				}
 			}
-			if (lineOK1.empty())
+			if(lineOK1.empty())
 			{
 				//nowLineL.push_back(Vector3());
 				std::sort(line1.begin(), line1.end(), LightCompareVector3);
@@ -311,14 +311,14 @@ Color2Side GetLinesColor2SideSmart3(cv::Mat img, cv::Mat color, const Lines& lin
 				std::sort(lineOK1.begin(), lineOK1.end(), LightCompareVector3);
 				nowLineL.push_back(lineOK1[lineOK1.size() / 2]);
 			}
-			for (int lid = 30; lid < line2.size(); ++lid)
+			for(int lid = 30; lid < line2.size(); ++lid)
 			{
-				if (src.squaredDistance(line2[lid]) > length)
+				if(src.squaredDistance(line2[lid]) > length)
 				{
 					lineOK2.push_back(line2[lid]);
 				}
 			}
-			if (lineOK2.empty())
+			if(lineOK2.empty())
 			{
 				//nowLineR.push_back(Vector3());
 				std::sort(line2.begin(), line2.end(), LightCompareVector3);
@@ -341,12 +341,12 @@ void OutputDiffusionCurve(std::string name, int w, int h, Color2Side& c2s,
 	out << "<!DOCTYPE CurveSetXML>" << std::endl;
 	out << " <curve_set image_width=\"" << w << "\" image_height=\"" << h <<
 		"\" nb_curves=\"" << lines.size() << "\" >" << std::endl;
-	for (int i = 0; i < lines.size(); ++i)
+	for(int i = 0; i < lines.size(); ++i)
 	{
 		Line& now_line = lines[i];
 		Vector3s& now_left = c2s.left[i];
 		Vector3s& now_right = c2s.right[i];
-		for (int j = 0; j < now_line.size(); j ++)
+		for(int j = 0; j < now_line.size(); j ++)
 		{
 			now_line[j] = Quaternion::GetRotation(now_line[j], 90);
 			now_line[j].y = -now_line[j].y;
@@ -375,7 +375,7 @@ void OutputDiffusionCurve(std::string name, int w, int h, Color2Side& c2s,
 			now_right.size() << "\" nb_blur_points=\"2\" lifetime=\"32\" >" <<
 			std::endl;
 		out << "  <control_points_set>" << std::endl;
-		for (int j = 0; j < now_line.size(); j++)
+		for(int j = 0; j < now_line.size(); j++)
 		{
 			out << "   <control_point x=\"" << now_line[j].x << "\" y=\"" << now_line[j].y
 				<< "\" />" << std::endl;
@@ -383,7 +383,7 @@ void OutputDiffusionCurve(std::string name, int w, int h, Color2Side& c2s,
 		out << "  </control_points_set>" << std::endl;
 		out << "  <left_colors_set>" << std::endl;
 		double globalID_step = 10000.0 / (now_left.size() - 1);
-		for (int j = 0; j < now_left.size(); j++)
+		for(int j = 0; j < now_left.size(); j++)
 		{
 			out << "   <left_color G=\"" << (int)now_left[j].y << "\" R=\"" <<
 				(int)now_left[j].z << "\" globalID=\"" << (int)(j * globalID_step) <<
@@ -391,7 +391,7 @@ void OutputDiffusionCurve(std::string name, int w, int h, Color2Side& c2s,
 		}
 		out << "  </left_colors_set>" << std::endl;
 		out << "  <right_colors_set>" << std::endl;
-		for (int j = 0; j < now_right.size() ; j++)
+		for(int j = 0; j < now_right.size() ; j++)
 		{
 			out << "   <right_color G=\"" << (int)now_right[j].y << "\" R=\"" <<
 				(int)now_right[j].z << "\" globalID=\"" << (int)(j * globalID_step) <<
@@ -411,9 +411,9 @@ cv::Mat MakeIsoSurfaceImg(cv::Mat img, int n)
 {
 	//cv::GaussianBlur(img, img, cv::Size(5, 5), 2);
 	cv::Mat ans = img.clone();
-	for (int i = 0; i < img.rows; i++)
+	for(int i = 0; i < img.rows; i++)
 	{
-		for (int j = 0; j < img.cols; j++)
+		for(int j = 0; j < img.cols; j++)
 		{
 			cv::Vec3b& v = img.at<cv::Vec3b>(i, j);
 //          float vv = 0.299 * v[2] + 0.587 * v[1] + 0.114 * v[0];
@@ -431,11 +431,11 @@ cv::Mat MakeIsoSurfaceImg(cv::Mat img, int n)
 ColorConstraint_sptr GetColorConstraint(cv::Mat& origin, cv::Mat& tmp)
 {
 	ColorConstraint_sptr res = ColorConstraint_sptr(new ColorConstraint);
-	for (int i = 1; i < origin.cols; i++)
+	for(int i = 1; i < origin.cols; i++)
 	{
-		for (int j = 1; j < origin.rows - 1; j++)
+		for(int j = 1; j < origin.rows - 1; j++)
 		{
-			if (tmp.at<uchar>(j + 1, i + 1))
+			if(tmp.at<uchar>(j + 1, i + 1))
 			{
 				res->AddPoint(i, j, origin.at<cv::Vec3b>(j, i));
 			}
@@ -454,16 +454,16 @@ Index2Side GetLinesIndex2Side(cv::Mat img, const Lines& lines, double normal_len
 	ans_left.resize(lines.size());
 	ans_right.resize(lines.size());
 	const int NO_COLOR = 0;
-	for (int i = 0; i < lines.size(); ++i)
+	for(int i = 0; i < lines.size(); ++i)
 	{
 		Lines::const_iterator it = lines.cbegin() + i;
 		ints& li = ans_left[i];
 		int j = 0;
 		li.resize(it->size());
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
 			Vector2 pos = *it2 * 2 - normals[i][j] * normal_len;
-			if (j >= NO_COLOR && j < it->size() - NO_COLOR)
+			if(j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
 				li[j] = vimg.GetIndex_if255(pos.x, pos.y);
 			}
@@ -471,10 +471,10 @@ Index2Side GetLinesIndex2Side(cv::Mat img, const Lines& lines, double normal_len
 		ints& ri = ans_right[i];
 		ri.resize(it->size());
 		j = 0;
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
 			Vector2 pos = *it2 * 2 + normals[i][j] * normal_len;
-			if (j >= NO_COLOR && j < it->size() - NO_COLOR)
+			if(j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
 				ri[j] = vimg.GetIndex_if255(pos.x, pos.y);
 			}
@@ -492,19 +492,19 @@ Index2Side GetLinesIndex2SideSmart(CvPatchs& cps, const Lines& lines, double nor
 	ints2d& ans_right = ans.right;
 	ans_left.resize(lines.size());
 	ans_right.resize(lines.size());
-	for (int i = 0; i < lines.size(); ++i)
+	for(int i = 0; i < lines.size(); ++i)
 	{
 		Lines::const_iterator it = lines.cbegin() + i;
 		ints& li = ans_left[i];
 		int j = 0;
 		li.resize(it->size());
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
 			li[j] = -1;
 			Vector2 pos = *it2 - normals[i][j] * normal_len;
-			for (int k = 0; k < cps.size(); ++k)
+			for(int k = 0; k < cps.size(); ++k)
 			{
-				if (cps[k].Inside(pos.x, pos.y))
+				if(cps[k].Inside(pos.x, pos.y))
 				{
 					li[j] = k + 1;
 					break;
@@ -514,13 +514,13 @@ Index2Side GetLinesIndex2SideSmart(CvPatchs& cps, const Lines& lines, double nor
 		ints& ri = ans_right[i];
 		ri.resize(it->size());
 		j = 0;
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
 			ri[j] = -1;
 			Vector2 pos = *it2 + normals[i][j] * normal_len;
-			for (int k = 0; k < cps.size(); ++k)
+			for(int k = 0; k < cps.size(); ++k)
 			{
-				if (cps[k].Inside(pos.x, pos.y))
+				if(cps[k].Inside(pos.x, pos.y))
 				{
 					ri[j] = k + 1;
 					break;
@@ -541,16 +541,16 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 	ans_left.resize(lines.size());
 	ans_right.resize(lines.size());
 	const int NO_COLOR = 0;
-	for (int i = 0; i < lines.size(); ++i)
+	for(int i = 0; i < lines.size(); ++i)
 	{
 		Lines::const_iterator it = lines.cbegin() + i;
 		ints& li = ans_left[i];
 		int j = 0;
 		li.resize(it->size());
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
 			li[j] = -1;
-			if (j >= NO_COLOR && j < it->size() - NO_COLOR)
+			if(j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
 				double normal_len = 2;
 				do
@@ -559,16 +559,16 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 					li[j] = vimg.GetIndex_no255(pos.x, pos.y);
 					normal_len += 0.5;
 				}
-				while (li[j] == -1 && normal_len < 5);
+				while(li[j] == -1 && normal_len < 5);
 			}
 		}
 		ints& ri = ans_right[i];
 		ri.resize(it->size());
 		j = 0;
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
 			ri[j] = -1;
-			if (j >= NO_COLOR && j < it->size() - NO_COLOR)
+			if(j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
 				double normal_len = 2;
 				do
@@ -577,7 +577,7 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 					ri[j] = vimg.GetIndex_no255(pos.x, pos.y);
 					normal_len += 0.5;
 				}
-				while (ri[j] == -1 && normal_len < 5);
+				while(ri[j] == -1 && normal_len < 5);
 			}
 		}
 	}
@@ -593,17 +593,17 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 	res.right.resize(idx2s.right.size());
 	Vector3s2d& cleft = res.left;
 	Vector3s2d& cright = res.right;
-	for (int i = 0; i < cleft.size(); ++i)
+	for(int i = 0; i < cleft.size(); ++i)
 	{
 		cleft[i].resize(idx2s.left[i].size());
-		for (int j = 0; j < cleft[i].size(); ++j)
+		for(int j = 0; j < cleft[i].size(); ++j)
 		{
 //          if (idx2s.left[i][j] == 283)
 //          {
 //              cleft[i][j] = Vector3(255, 255, 255);
 //          }
 //          else
-			if (idx2s.left[i][j] > 0 && idx2s.left[i][j] <= ccms.size())
+			if(idx2s.left[i][j] > 0 && idx2s.left[i][j] <= ccms.size())
 			{
 				cleft[i][j] = ccms.at(idx2s.left[i][j] - 1).GetColorVector3(lines[i][j].x, lines[i][j].y);
 			}
@@ -614,17 +614,17 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 			}
 		}
 	}
-	for (int i = 0; i < cright.size(); ++i)
+	for(int i = 0; i < cright.size(); ++i)
 	{
 		cright[i].resize(idx2s.right[i].size());
-		for (int j = 0; j < cright[i].size(); ++j)
+		for(int j = 0; j < cright[i].size(); ++j)
 		{
 //          if (idx2s.right[i][j] == 283)
 //          {
 //              cright[i][j] = Vector3(255, 255, 255);
 //          }
 //          else
-			if (idx2s.right[i][j] > 0 && idx2s.right[i][j] <= ccms.size())
+			if(idx2s.right[i][j] > 0 && idx2s.right[i][j] <= ccms.size())
 			{
 				cright[i][j] = ccms.at(idx2s.right[i][j] - 1).GetColorVector3(lines[i][j].x, lines[i][j].y);
 			}
@@ -642,12 +642,12 @@ Vector3s2d LinesIndex2Color(const Lines& lines, ints2d& idx2s, ColorConstraints&
 	printf("ccms.size(%d)\n", ccms.size());
 	Vector3s2d res;
 	res.resize(idx2s.size());
-	for (int i = 0; i < res.size(); ++i)
+	for(int i = 0; i < res.size(); ++i)
 	{
 		res[i].resize(idx2s[i].size());
-		for (int j = 0; j < res[i].size(); ++j)
+		for(int j = 0; j < res[i].size(); ++j)
 		{
-			if (idx2s[i][j] > 0 && idx2s[i][j] <= ccms.size())
+			if(idx2s[i][j] > 0 && idx2s[i][j] <= ccms.size())
 			{
 				res[i][j] = ccms.at(idx2s[i][j] - 1).GetColorVector3(lines[i][j].x, lines[i][j].y);
 			}
@@ -665,13 +665,13 @@ ints2d GetLinesIndex(cv::Mat img, const Lines& lines)
 	vavImage vimg(img);
 	ints2d ans;
 	ans.resize(lines.size());
-	for (int i = 0; i < lines.size(); ++i)
+	for(int i = 0; i < lines.size(); ++i)
 	{
 		Lines::const_iterator it = lines.cbegin() + i;
 		ints& li = ans[i];
 		int j = 0;
 		li.resize(it->size());
-		for (auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
 		{
 			li[j] = vimg.GetIndex_no255(it2->x, it2->y);
 		}
@@ -681,7 +681,7 @@ ints2d GetLinesIndex(cv::Mat img, const Lines& lines)
 Lines GetLinesFromCvPatch(CvPatchs& cps)
 {
 	Lines res;
-	for (int i = 0; i < cps.size(); ++i)
+	for(int i = 0; i < cps.size(); ++i)
 	{
 		res.push_back(GetLine(cps[i].Outer2()));
 	}
@@ -692,16 +692,75 @@ cv::Mat ShowColorToLine(const Line& cps, const cv::Mat img)
 {
 	cv::Mat sc;
 	int w = cps.size();
-	if (w < 200) { w = 200; }
+	if(w < 200) { w = 200; }
 	sc.create(200, w, CV_8UC3);
 	sc = cv::Scalar(0);
-	for (int i = 0; i < cps.size(); ++i)
+	for(int i = 0; i < cps.size(); ++i)
 	{
 		cv::Vec3b tc = img.at<cv::Vec3b>(cps[i].y * 2, cps[i].x * 2);
-		for (int j = 0; j < 200; ++j)
+		for(int j = 0; j < 200; ++j)
 		{
 			sc.at<cv::Vec3b>(j, i) = tc;
 		}
 	}
 	return sc;
+}
+
+Color2SideConstraint ConvertToConstraintC2(Lines& lines, Color2Side& colors)
+{
+	Color2SideConstraint res;
+	for(int i = 0; i < lines.size(); ++i)
+	{
+		res.left.push_back(ColorConstraint());
+		res.right.push_back(ColorConstraint());
+		ColorConstraint& left = res.left.back();
+		ColorConstraint& right = res.right.back();
+		Line& line = lines[i];
+		Vector3s& cl = colors.left[i];
+		Vector3s& cr = colors.right[i];
+		for(int j = 0; j < line.size(); ++j)
+		{
+			left.AddPoint(line[j].x, line[j].y, cl[j]);
+			right.AddPoint(line[j].x, line[j].y, cr[j]);
+		}
+		left.BuildModel();
+		right.BuildModel();
+	}
+	return res;
+}
+
+ColorConstraints ConvertToConstraintC(Lines& lines, Vector3s2d& colors)
+{
+	ColorConstraints res;
+	for(int i = 0; i < lines.size(); ++i)
+	{
+		res.push_back(ColorConstraint());
+		ColorConstraint& now = res.back();
+		Line& line = lines[i];
+		Vector3s& cl = colors[i];
+		for(int j = 0; j < line.size(); ++j)
+		{
+			now.AddPoint(line[j].x, line[j].y, cl[j]);
+		}
+		now.BuildModel();
+	}
+	return res;
+}
+
+LineWidthConstraints ConvertToConstraintLW(Lines& lines, Lines& lws)
+{
+	LineWidthConstraints res;
+	for(int i = 0; i < lines.size(); ++i)
+	{
+		res.push_back(LineWidthConstraint());
+		LineWidthConstraint& now = res.back();
+		Line& line = lines[i];
+		Line& ll = lws[i];
+		for(int j = 0; j < line.size(); ++j)
+		{
+			now.AddPoint(line[j].x, line[j].y, ll[j].x, ll[j].y);
+		}
+		now.BuildModel();
+	}
+	return res;
 }

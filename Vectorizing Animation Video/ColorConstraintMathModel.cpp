@@ -15,6 +15,7 @@ void ColorConstraintMathModel::AddPoint(double x, double y, const Vector3& p)
 {
 	m_NeedBuildModel = true;
 	m_Colors.push_back(p);
+	m_Pos.push_back(Vector2(x, y));
 }
 
 void ColorConstraintMathModel::Clear()

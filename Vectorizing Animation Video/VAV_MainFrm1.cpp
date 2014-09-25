@@ -13,6 +13,13 @@
 #include "TriangulationCgal_Patch.h"
 #include "TriangulationCgal_Sideline.h"
 
+#include <fstream>
+#include <iostream>
+#include <boost/serialization/vector.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include "LineDef.h"
+
 
 cv::Mat VAV_MainFrame::Do_SLIC(double m_compatcness, double m_spcount, cv::Mat img)
 {
@@ -556,11 +563,11 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		GetVavView()->SetTexture(m_vavImage.GetDx11Texture());
 	}
 	cv::Mat decorative_Curves_2;
+	Vector3s2d lineColors;
 	if(m_CONSTRAINT_CURVES_PARAMETER_1 &&
 			m_DECORATIVE_CURVES &&
 			m_BLACK_LINE_VECTORIZATION)
 	{
-		Vector3s2d lineColors;
 		lineColors = GetLinesColor(m_vavImage, m_BlackLine);
 		lineColors = SmoothingLen5(lineColors, 0, 10);
 		m_BLineWidth = SmoothingLen5(m_BLineWidth, 0, 10);
@@ -856,6 +863,8 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	ColorConstraints ccms;
 	ColorConstraints ccms2;
 	cv::Mat cmmsIndexImg;
+	Color2SideConstraint finalcolor;
+	Lines colorline;
 	if(m_BOUNDARY_CURVES &&
 			m_REGION_GROWING)
 	{
@@ -887,7 +896,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 //      GetVavView()->m_patchlines = patchlines;
 		// show patch img
 		cv::Mat colorline1 = MakeColorLineImage(m_vavImage, m_BlackLine2);
-		Lines colorline = LineSplitAtIntersection(m_BlackLine2, 1);
+		colorline = LineSplitAtIntersection(m_BlackLine2, 1);
 		cv::Mat colorline2 = MakeColorLineImage(m_vavImage, colorline);
 		g_cvshowEX.AddShow("color line 1", colorline1);
 		g_cvshowEX.AddShow("color line 2", colorline2);
@@ -910,7 +919,26 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 //      color2s2.right = FixLineColors(color2s2.right, 600, 10);
 		d3dApp.AddDiffusionLines(colorline, color2s2);
 		d3dApp.AddLines(m_BlackLine2);
+		finalcolor = ConvertToConstraintC2(colorline, color2s2);
 	}
+	ColorConstraints finallinecolor;
+	LineWidthConstraints finallinewidth;
+	{
+		//convert Decorative Curves
+		finallinecolor = ConvertToConstraintC(m_BlackLine, lineColors);
+		finallinewidth = ConvertToConstraintLW(m_BlackLine, m_BLineWidth);
+	}
+	std::ofstream ofs("curve.txt", std::ios::binary);
+	if(ofs.is_open())
+	{
+		boost::archive::binary_oarchive oa(ofs);
+		oa << finalcolor;
+		oa << colorline;
+		oa << m_BlackLine;
+		oa << finallinecolor;
+		oa << finallinewidth;
+	}
+	ofs.close();
 	/*
 	if (m_ISOSURFACE_REGION &&
 	        m_ISOSURFACE_CONSTRAINT)
@@ -1013,19 +1041,19 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	    colors = MedianLen(colors, 20, 3);
 	    colors = SmoothingLen5(colors, 0, 10);
 	    d3dApp.AddDiffusionLines(isosurfaceLines, colors);
-//      ints2d id2d = GetLinesIndex(cmmsIndexImg, isosurfaceLines);
-//      id2d = FixIndexs(id2d, 30);
-//      id2d = MedianLen5(id2d, 3);
-//      Vector3s2d color2s = LinesIndex2Color(isosurfaceLines, id2d, ccms);
-//      color2s = FixLineColors(color2s, 600, 10);
-//      for (int i = 0; i < colors.size(); ++i)
-//      {
-//          for (int j = 0; j < colors[i].size(); ++j)
-//          {
-//              color2s[i][j] = (colors[i][j] + color2s[i][j]) * 0.5;
-//          }
-//      }
-//       d3dApp.AddDiffusionLines(isosurfaceLines, color2s);
+	//      ints2d id2d = GetLinesIndex(cmmsIndexImg, isosurfaceLines);
+	//      id2d = FixIndexs(id2d, 30);
+	//      id2d = MedianLen5(id2d, 3);
+	//      Vector3s2d color2s = LinesIndex2Color(isosurfaceLines, id2d, ccms);
+	//      color2s = FixLineColors(color2s, 600, 10);
+	//      for (int i = 0; i < colors.size(); ++i)
+	//      {
+	//          for (int j = 0; j < colors[i].size(); ++j)
+	//          {
+	//              color2s[i][j] = (colors[i][j] + color2s[i][j]) * 0.5;
+	//          }
+	//      }
+	//       d3dApp.AddDiffusionLines(isosurfaceLines, color2s);
 	    cv::waitKey(10);
 	}
 	*/

@@ -248,6 +248,7 @@
     <ClInclude Include="Line.h" />
     <ClInclude Include="LineDef.h" />
     <ClInclude Include="LineFragment.h" />
+    <ClInclude Include="LineWidthConstraint.h" />
     <ClInclude Include="math\AABB2D.h" />
     <ClInclude Include="math\asm_math.h" />
     <ClInclude Include="math\AxisAlignedBox.h" />
@@ -367,6 +368,7 @@
     <ClCompile Include="L0smoothing.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="LineFragment.cpp" />
+    <ClCompile Include="LineWidthConstraint.cpp" />
     <ClCompile Include="math\AABB2D.cpp" />
     <ClCompile Include="math\AxisAlignedBox.cpp" />
     <ClCompile Include="math\Centroid.cpp" />

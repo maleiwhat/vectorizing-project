@@ -12,6 +12,7 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include "math/Vector2.h"
 #include "math/Vector3.h"
+#include "ColorConstraint.h"
 
 #ifdef USE_CGAL
 typedef CGAL::Exact_predicates_inexact_constructions_kernel CgalInexactKernel;
@@ -106,6 +107,21 @@ struct Acute
 	Vector2 pos;
 };
 typedef std::vector<Acute> Acutes;
+
+struct Color2SideConstraint
+{
+	ColorConstraints left;
+	ColorConstraints right;
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& left;
+		ar& right;
+	}
+};
+
 
 struct Color2Side
 {
