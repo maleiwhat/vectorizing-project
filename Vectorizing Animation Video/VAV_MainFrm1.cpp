@@ -19,7 +19,8 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include "LineDef.h"
-
+#include <boost/timer/timer.hpp>
+#include "GenerateDiffusion.h"
 
 cv::Mat VAV_MainFrame::Do_SLIC(double m_compatcness, double m_spcount, cv::Mat img)
 {
@@ -183,7 +184,12 @@ bool drawmask5x5(cv::Mat img, int x, int y, cv::Vec3b color, cv::Mat dst)
 
 
 void VAV_MainFrame::OnButton_BuildVectorization()
-{
+{	
+	D3DApp& d3dApp = GetVavView()->GetD3DApp();
+	FrameInfo fi = ComputeFrame(m_vavImage.GetCvMat());
+	SetDrawFrame(d3dApp, fi);
+	GetVavView()->OnDraw(0);
+	return;
 	static int iinit = 0;
 	if(!iinit)
 	{
@@ -191,7 +197,6 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		g_cvshowEX.Init();
 	}
 	cv::imshow("Origin Image", m_vavImage.GetCvMat());
-	D3DApp& d3dApp = GetVavView()->GetD3DApp();
 	Lines decorativeLine;
 	vavImage expImg = WhiteBalance(m_vavImage.Clone());
 	expImg = ImgSharpen(expImg);
@@ -865,6 +870,8 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 	cv::Mat cmmsIndexImg;
 	Color2SideConstraint finalcolor;
 	Lines colorline;
+	ColorConstraints finallinecolor;
+	LineWidthConstraints finallinewidth;
 	if(m_BOUNDARY_CURVES &&
 			m_REGION_GROWING)
 	{
@@ -917,16 +924,18 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		Color2Side color2s2 = LinesIndex2Color(colorline, i2s, ccms);
 //      color2s2.left = FixLineColors(color2s2.left, 600, 10);
 //      color2s2.right = FixLineColors(color2s2.right, 600, 10);
+		{
+			// build model
+			// convert Decorative Curves
+			finallinecolor = ConvertToConstraintC(m_BlackLine, lineColors);
+			lineColors = ConvertFromConstraintC(m_BlackLine, finallinecolor);
+			finallinewidth = ConvertToConstraintLW(m_BlackLine, m_BLineWidth);
+			m_BLineWidth = ConvertFromConstraintLW(m_BlackLine, finallinewidth);
+			finalcolor = ConvertToConstraintC2(colorline, color2s2);
+			color2s2 = ConvertFromConstraintC2(colorline, finalcolor);
+		}
 		d3dApp.AddDiffusionLines(colorline, color2s2);
 		d3dApp.AddLines(m_BlackLine2);
-		finalcolor = ConvertToConstraintC2(colorline, color2s2);
-	}
-	ColorConstraints finallinecolor;
-	LineWidthConstraints finallinewidth;
-	{
-		//convert Decorative Curves
-		finallinecolor = ConvertToConstraintC(m_BlackLine, lineColors);
-		finallinewidth = ConvertToConstraintLW(m_BlackLine, m_BLineWidth);
 	}
 	std::ofstream ofs("curve.txt", std::ios::binary);
 	if(ofs.is_open())

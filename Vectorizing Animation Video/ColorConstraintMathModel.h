@@ -23,6 +23,7 @@ public:
 	bool CheckColor(double x, double y, const cv::Vec3b& p, double threshold);
 	void Clear();
 	Vector3 GetColorVector3(double x, double y);
+	Vector3 GetColorVector3Reverse(double x, double y);
 	Vector3 GetColorVector3();
 	cv::Vec3b GetColorCvPoint(double x, double y);
 	int Size();

@@ -1691,47 +1691,38 @@ cv::Mat TrapBallMaskAll(cv::Mat image, cv::Mat oriImg)
 	stmp = TrapBallMask5(stmp, 6, 2, oriImg, c);
 	show = stmp.clone();
 	FloodFillReColor(show);
-	g_cvshowEX.AddShow("stmp 66", show);
 	stmp = TrapBallMask3(stmp, 5, cv::MORPH_ELLIPSE, 5);
 	show = stmp.clone();
 	FloodFillReColor(show);
-	g_cvshowEX.AddShow("stmp 65", show);
 	stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
 	show = stmp.clone();
 	FloodFillReColor(show);
-	g_cvshowEX.AddShow("stmp 64", show);
 	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
 	show = stmp.clone();
 	FloodFillReColor(show);
-	g_cvshowEX.AddShow("stmp 63", show);
 	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
 	show = stmp.clone();
 	FloodFillReColor(show);
-	g_cvshowEX.AddShow("stmp 62", show);
 	stmp = TrapBallMask3(stmp, 1, cv::MORPH_ELLIPSE, 5);
 	show = stmp.clone();
 	FloodFillReColor(show);
-	g_cvshowEX.AddShow("stmp 61", show);
 	stmp = TrapBallMask5(stmp, 5, 2, oriImg, c);
 	stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
 	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
 	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
 	show = stmp.clone();
 	FloodFillReColor(show);
-	g_cvshowEX.AddShow("stmp 5", show);
 	stmp = TrapBallMask5(stmp, 4, 2, oriImg, c);
 	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
 	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
 	show = stmp.clone();
 	FloodFillReColor(show);
-	g_cvshowEX.AddShow("stmp 4", show);
 //  stmp = TrapBallMask5(stmp, 3, 2, oriImg, c);
 //  stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
 	//2
 	stmp = TrapBallMask4(stmp);
 	show = stmp.clone();
 	FloodFillReColor(show);
-	g_cvshowEX.AddShow("stmp 4", show);
 	return stmp;
 }
 

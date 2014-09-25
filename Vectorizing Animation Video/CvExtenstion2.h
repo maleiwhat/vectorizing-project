@@ -26,11 +26,17 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 Vector3s2d LinesIndex2Color(const Lines& lines, ints2d& idx2s, ColorConstraints& ccms);
 Color2Side GetLinesColor2SideSmart(cv::Mat img, cv::Mat color, const Lines& lines,
 								   Lines& BLineWidth);
-LineWidthConstraints ConvertToConstraintLW(Lines& lines, Lines& lws);
-ColorConstraints ConvertToConstraintC(Lines& lines, Vector3s2d& colors);
-Color2SideConstraint ConvertToConstraintC2(Lines& lines, Color2Side& colors);
 Color2Side GetLinesColor2SideSmart2(cv::Mat img, cv::Mat color, const Color2Side& lines);
 Color2Side GetLinesColor2SideSmart3(cv::Mat img, cv::Mat color, const Lines& lines, double length);
 void OutputDiffusionCurve(std::string name, int w, int h, Color2Side& c2s, Lines& lines);
 cv::Mat MakeIsoSurfaceImg(cv::Mat img, int n);
 ColorConstraint_sptr GetColorConstraint(cv::Mat& origin, cv::Mat& tmp);
+
+
+LineWidthConstraints ConvertToConstraintLW(Lines& lines, Lines& lws);
+ColorConstraints ConvertToConstraintC(Lines& lines, Vector3s2d& colors);
+Color2SideConstraint ConvertToConstraintC2(Lines& lines, Color2Side& colors);
+
+Lines ConvertFromConstraintLW(Lines& lines, LineWidthConstraints lwcs);
+Vector3s2d ConvertFromConstraintC(Lines& lines, ColorConstraints ccs);
+Color2Side ConvertFromConstraintC2(Lines& lines, Color2SideConstraint c2c);

@@ -605,7 +605,7 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 //          else
 			if(idx2s.left[i][j] > 0 && idx2s.left[i][j] <= ccms.size())
 			{
-				cleft[i][j] = ccms.at(idx2s.left[i][j] - 1).GetColorVector3(lines[i][j].x, lines[i][j].y);
+				cleft[i][j] = ccms.at(idx2s.left[i][j] - 1).GetColorVector3Reverse(lines[i][j].x, lines[i][j].y);
 			}
 			else
 			{
@@ -626,7 +626,7 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 //          else
 			if(idx2s.right[i][j] > 0 && idx2s.right[i][j] <= ccms.size())
 			{
-				cright[i][j] = ccms.at(idx2s.right[i][j] - 1).GetColorVector3(lines[i][j].x, lines[i][j].y);
+				cright[i][j] = ccms.at(idx2s.right[i][j] - 1).GetColorVector3Reverse(lines[i][j].x, lines[i][j].y);
 			}
 			else
 			{
@@ -637,6 +637,7 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 	}
 	return res;
 }
+
 Vector3s2d LinesIndex2Color(const Lines& lines, ints2d& idx2s, ColorConstraints& ccms)
 {
 	printf("ccms.size(%d)\n", ccms.size());
@@ -649,7 +650,7 @@ Vector3s2d LinesIndex2Color(const Lines& lines, ints2d& idx2s, ColorConstraints&
 		{
 			if(idx2s[i][j] > 0 && idx2s[i][j] <= ccms.size())
 			{
-				res[i][j] = ccms.at(idx2s[i][j] - 1).GetColorVector3(lines[i][j].x, lines[i][j].y);
+				res[i][j] = ccms.at(idx2s[i][j] - 1).GetColorVector3Reverse(lines[i][j].x, lines[i][j].y);
 			}
 			else
 			{
@@ -660,6 +661,7 @@ Vector3s2d LinesIndex2Color(const Lines& lines, ints2d& idx2s, ColorConstraints&
 	}
 	return res;
 }
+
 ints2d GetLinesIndex(cv::Mat img, const Lines& lines)
 {
 	vavImage vimg(img);
@@ -692,7 +694,10 @@ cv::Mat ShowColorToLine(const Line& cps, const cv::Mat img)
 {
 	cv::Mat sc;
 	int w = cps.size();
-	if(w < 200) { w = 200; }
+	if(w < 200)
+	{
+		w = 200;
+	}
 	sc.create(200, w, CV_8UC3);
 	sc = cv::Scalar(0);
 	for(int i = 0; i < cps.size(); ++i)
@@ -761,6 +766,62 @@ LineWidthConstraints ConvertToConstraintLW(Lines& lines, Lines& lws)
 			now.AddPoint(line[j].x, line[j].y, ll[j].x, ll[j].y);
 		}
 		now.BuildModel();
+	}
+	return res;
+}
+
+Lines ConvertFromConstraintLW(Lines& lines, LineWidthConstraints lwcs)
+{
+	Lines res;
+	for(int i = 0; i < lines.size(); ++i)
+	{
+		res.push_back(Line());
+		Line& now = res.back();
+		Line& line = lines[i];
+		LineWidthConstraint& ll = lwcs[i];
+		now.push_back(ll.GetColorVector2(0));
+		for(int j = 1; j < line.size(); ++j)
+		{
+			now.push_back(ll.GetColorVector2(line[j - 1].distance(line[j])));
+		}
+	}
+	return res;
+}
+
+Vector3s2d ConvertFromConstraintC(Lines& lines, ColorConstraints ccs)
+{
+	Vector3s2d res;
+	for(int i = 0; i < lines.size(); ++i)
+	{
+		res.push_back(Vector3s());
+		Vector3s& now = res.back();
+		Line& line = lines[i];
+		ColorConstraint& ll = ccs[i];
+		for(int j = 0; j < line.size(); ++j)
+		{
+			now.push_back(ll.GetColorVector3(line[j].x, line[j].y));
+		}
+	}
+	return res;
+}
+
+Color2Side ConvertFromConstraintC2(Lines& lines, Color2SideConstraint c2c)
+{
+	Color2Side res;
+	for(int i = 0; i < lines.size(); ++i)
+	{
+		res.left.push_back(Vector3s());
+		res.right.push_back(Vector3s());
+		Vector3s& resll = res.left.back();
+		Vector3s& resrr = res.right.back();
+		Line& line = lines[i];
+		ColorConstraint& ll = c2c.left[i];
+		ColorConstraint& rr = c2c.right[i];
+		for(int j = 0; j < line.size(); ++j)
+		{
+			resll.push_back(ll.GetColorVector3(line[j].x, line[j].y));
+			resrr.push_back(rr.GetColorVector3(line[j].x, line[j].y));
+		}
 	}
 	return res;
 }

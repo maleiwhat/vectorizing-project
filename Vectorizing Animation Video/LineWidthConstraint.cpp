@@ -59,4 +59,11 @@ void LineWidthConstraint::BuildModel()
 	x2 = Atalu.solve(Atb2);
 }
 
+Vector2 LineWidthConstraint::GetColorVector2(double dis)
+{
+	double x = 1 + x1[0] * dis + x1[1] * dis * dis;
+	double y = 1 + x2[0] * dis + x2[1] * dis * dis;
+	return Vector2(x, y);
+}
+
 

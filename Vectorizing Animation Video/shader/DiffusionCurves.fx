@@ -477,10 +477,7 @@ PS_OUTPUT_MRT_3 CurvePS(PS_CURVE_INPUT In)
 	else
 		Out.oColor2 = float4( 0.5*length(In.distdir.yz), normalize(float2(In.distdir.y,-In.distdir.z)), In.col.w);
 	Out.oColor3 = In.oCol;
-	if (abs(Out.oColor1.y-1)<0.1 && Out.oColor1.x<0.1 && Out.oColor1.z<0.1)
-	{
-		discard;
-	}
+
 	return Out;
 }
 
@@ -534,10 +531,7 @@ PS_OUTPUT LineAntiAliasPS(PS_INPUT In)
 	else if (ncolor.w < 0.0001)
 	{
 		float4 otherColor = g_inTex[1].SampleLevel(PointSampler, In.Tex.xy, 0).xyzw;
-		if (abs(otherColor.y-1)<0.1 && otherColor.x<0.1 && otherColor.z<0.1)
-		{
-			discard;
-		}
+
 		Out.oColor = (1.0-(dd.x*g_diffX/0.7))*0.5*(otherColor+thisColor) + (dd.x*g_diffX/0.7)*thisColor;
 	}
 	if (abs(thisColor.y-1)<0.1 && thisColor.x<0.1 && thisColor.z<0.1)

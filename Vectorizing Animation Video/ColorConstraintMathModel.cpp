@@ -57,7 +57,7 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(rr1, 0, 255);
 		Bounding(gg1, 0, 255);
 		Bounding(bb1, 0, 255);
-		return Vector3(bb1, gg1, rr1);
+		return Vector3(rr1, gg1, bb1);
 	}
 	else if (m_Colors.size() > THRESHOLD2)
 	{
@@ -67,7 +67,7 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(rr2, 0, 255);
 		Bounding(gg2, 0, 255);
 		Bounding(bb2, 0, 255);
-		return Vector3(bb2, gg2, rr2);
+		return Vector3(rr2, gg2, bb2);
 	}
 	else if (m_Colors.size() > 0)
 	{
@@ -86,7 +86,7 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(rr, 0, 255);
 		Bounding(gg, 0, 255);
 		Bounding(bb, 0, 255);
-		return Vector3(bb, gg, rr);
+		return Vector3(rr, gg, bb);
 	}
 	return Vector3(255, 0, 0);
 }
@@ -229,4 +229,10 @@ bool ColorConstraintMathModel::CheckColor(double x, double y, const cv::Vec3b& p
 int ColorConstraintMathModel::Size()
 {
 	return m_Colors.size();
+}
+
+Vector3 ColorConstraintMathModel::GetColorVector3Reverse(double x, double y)
+{
+	Vector3 tmp = GetColorVector3(x, y);
+	return Vector3(tmp[2], tmp[1], tmp[0]);
 }

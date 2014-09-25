@@ -21,7 +21,7 @@ public:
 public:
 	void AddPoint(double x, double y, double w1, double w2);
 	void Clear();
-	Vector3 GetColorVector3(double dis);
+	Vector2 GetColorVector2(double dis);
 	double Length();
 	void Scale0to1();
 	void BuildModel();

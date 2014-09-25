@@ -35,6 +35,7 @@
 #include "SavepointImage.h"
 #include "L0smoothing.h"
 #include <direct.h>
+#include "GenerateDiffusion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -1861,7 +1862,6 @@ Mats MakeStaticBackGroundByMove(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgro
 				}
 			}
 		}
-		cv::imshow("errimg2", errimg);
 		cv::Mat forDilation;
 		errimg.convertTo(forDilation, CV_8UC1, 255);
 		Dilation(forDilation, 2, 3);
@@ -2254,6 +2254,15 @@ void VAV_MainFrame::OnFileOpenVideo()
 				l0bg = L0Smoothing(bg, 0.002);
 				si_l0bg.SaveImage(l0bg);
 			}
+			D3DApp& d3dApp = GetVavView()->GetD3DApp();
+			FrameInfo fi = ComputeFrame(l0bg);
+			printf("fi.curves1 %d\n", fi.curves1.size());
+			SetDrawFrame(d3dApp, fi);
+			GetVavView()->OnDraw(0);
+			BackGround bgdata;
+			bgdata.m_FI = fi;
+			bgdata.m_Moves = m_Moves;
+			SaveBGInfos("bgdata.gg", bgdata);
 		}
 		//GetVavView()->SetTimer(100, 80, 0);
 	}
