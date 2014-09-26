@@ -552,14 +552,14 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 			li[j] = -1;
 			if(j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
-				double normal_len = 2;
+				double normal_len = 1;
 				do
 				{
 					Vector2 pos = *it2 * 2 - normals[i][j] * normal_len;
 					li[j] = vimg.GetIndex_no255(pos.x, pos.y);
 					normal_len += 0.5;
 				}
-				while(li[j] == -1 && normal_len < 5);
+				while(li[j] == -1 && normal_len < 4);
 			}
 		}
 		ints& ri = ans_right[i];
@@ -570,14 +570,14 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 			ri[j] = -1;
 			if(j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
-				double normal_len = 2;
+				double normal_len = 1;
 				do
 				{
 					Vector2 pos = *it2 * 2 + normals[i][j] * normal_len;
 					ri[j] = vimg.GetIndex_no255(pos.x, pos.y);
 					normal_len += 0.5;
 				}
-				while(ri[j] == -1 && normal_len < 5);
+				while(ri[j] == -1 && normal_len < 4);
 			}
 		}
 	}
@@ -598,11 +598,6 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 		cleft[i].resize(idx2s.left[i].size());
 		for(int j = 0; j < cleft[i].size(); ++j)
 		{
-//          if (idx2s.left[i][j] == 283)
-//          {
-//              cleft[i][j] = Vector3(255, 255, 255);
-//          }
-//          else
 			if(idx2s.left[i][j] > 0 && idx2s.left[i][j] <= ccms.size())
 			{
 				cleft[i][j] = ccms.at(idx2s.left[i][j] - 1).GetColorVector3Reverse(lines[i][j].x, lines[i][j].y);
@@ -619,11 +614,6 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 		cright[i].resize(idx2s.right[i].size());
 		for(int j = 0; j < cright[i].size(); ++j)
 		{
-//          if (idx2s.right[i][j] == 283)
-//          {
-//              cright[i][j] = Vector3(255, 255, 255);
-//          }
-//          else
 			if(idx2s.right[i][j] > 0 && idx2s.right[i][j] <= ccms.size())
 			{
 				cright[i][j] = ccms.at(idx2s.right[i][j] - 1).GetColorVector3Reverse(lines[i][j].x, lines[i][j].y);

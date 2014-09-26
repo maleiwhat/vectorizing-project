@@ -22,6 +22,7 @@
 #include "ReadVideo.h"
 #include "DiffusionFrame.h"
 #include "MySLIC.h"
+#include "GenerateDiffusion.h"
 
 typedef std::vector<cv::Mat> Mats;
 typedef std::vector<cv::Vec2f> Vec2fs;
@@ -43,6 +44,8 @@ public:
 	Lines		m_BLineWidth;
 	ReadVideo	m_ReadVideo;
 	DiffusionFrames	m_DiffusionFrames;
+	BackGround	m_BackGround;
+	FrameInfos	m_FrameInfos;
 	// use for block
 	Lines		m_BlackLine2;
 	// slic

@@ -1781,7 +1781,7 @@ void S6ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms)
 					{
 						if(mask.at<uchar>(ii + 1, jj + 1) > 130)
 						{
-							ccm.AddPoint(jj * 0.5, ii * 0.5, oimg.at<cv::Vec3b>(ii, jj));
+							ccm.AddPoint(jj*0.5, ii*0.5, oimg.at<cv::Vec3b>(ii, jj));
 						}
 					}
 				}
@@ -1827,6 +1827,39 @@ Mats S7ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms)
 		}
 	}
 	return res;
+}
+
+
+void S8ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms)
+{
+	cv::Mat mask;
+	cv::resize(oimg.clone(), oimg, oimg.size() * 2, 0, 0, cv::INTER_CUBIC);
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	int cc = 1;
+	for(int i = 0; i < image.rows; i++)
+	{
+		for(int j = 0; j < image.cols - 1; j++)
+		{
+			int lastcc = cc;
+			S6FloodFill(image, mask, cc, j, i);
+			if(lastcc != cc)
+			{
+				ColorConstraint ccm;
+				for(int ii = 0; ii < image.rows; ii++)
+				{
+					for(int jj = 0; jj < image.cols; jj++)
+					{
+						if(mask.at<uchar>(ii + 1, jj + 1) > 130)
+						{
+							ccm.AddPoint(jj, ii, oimg.at<cv::Vec3b>(ii, jj));
+						}
+					}
+				}
+				ccms.push_back(ccm);
+			}
+		}
+	}
 }
 
 cv::Mat TrapBallMask5(cv::Mat LineImg, int size, int moprh, cv::Mat oriImg, int& cstart)

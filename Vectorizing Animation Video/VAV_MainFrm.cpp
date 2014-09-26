@@ -1335,14 +1335,22 @@ cv::Vec2f getMoveVectorBySIFT(cv::Mat a, cv::Mat b)
 	for(int i = 0; i < descriptors_1.rows; i++)
 	{
 		double dist = matches[i].distance;
-		if(dist < min_dist) { min_dist = dist; }
-		if(dist > max_dist) { max_dist = dist; }
+		if(dist < min_dist)
+		{
+			min_dist = dist;
+		}
+		if(dist > max_dist)
+		{
+			max_dist = dist;
+		}
 	}
 	std::vector< cv::DMatch > good_matches;
 	for(int i = 0; i < descriptors_1.rows; i++)
 	{
 		if(matches[i].distance <= std::max(min_dist * 2, 0.02))
-		{ good_matches.push_back(matches[i]); }
+		{
+			good_matches.push_back(matches[i]);
+		}
 	}
 	cv::Vec2f mv(0, 0);
 	for(int i = 0; i < good_matches.size(); i++)
@@ -2175,7 +2183,7 @@ void VAV_MainFrame::OnFileOpenVideo()
 				m_Moves.push_back(cv::Vec2f(0, 0));
 				cv::Mat prevgray, gray, flow, showflow;
 				cvtColor(img, prevgray, CV_BGR2GRAY);
-				for(int i = 1; i <= 100; ++i)
+				for(int i = 1; i <= 5; ++i)
 				{
 					char tmppath[100];
 					sprintf(tmppath, "_%04d.png", i);
@@ -2224,23 +2232,27 @@ void VAV_MainFrame::OnFileOpenVideo()
 					si_bg.SaveImage(bg);
 					si_fg.SaveImage(fg);
 				}
+				m_FrameInfos.clear();
 				for(int t = 0; t < timgs.size(); ++t)
 				{
-					cv::Mat timg = timgs[t];
+					cv::Mat timg = timgs[t].clone();
 					for(int i = 0; i < fg.rows; ++i)
 					{
 						for(int j = 0; j < fg.cols; ++j)
 						{
 							if(fg.at<uchar>(i, j) == 0)
 							{
-								timg.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 255, 0);
+								timg.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
 							}
 						}
 					}
 					char tmppath[100];
 					sprintf(tmppath, "_FG_%04d.png", t);
 					cv::imwrite(folder + name + tmppath, timg);
+					m_FrameInfos.push_back(ComputeFrameFG(timg, timgs[t]));
 				}
+				SaveFrameInfos("fg.gg", m_FrameInfos);
+				FrameInfos m_FrameInfos = LoadFrameInfos("fg.gg");
 			}
 			cv::Mat l0bg;
 			std::string l0bgfilename = folder + name + "_L0S_BG.png";
@@ -2257,14 +2269,13 @@ void VAV_MainFrame::OnFileOpenVideo()
 			D3DApp& d3dApp = GetVavView()->GetD3DApp();
 			FrameInfo fi = ComputeFrame(l0bg);
 			printf("fi.curves1 %d\n", fi.curves1.size());
-			SetDrawFrame(d3dApp, fi);
-			GetVavView()->OnDraw(0);
 			BackGround bgdata;
 			bgdata.m_FI = fi;
 			bgdata.m_Moves = m_Moves;
 			SaveBGInfos("bgdata.gg", bgdata);
+			m_BackGround = bgdata;
 		}
-		//GetVavView()->SetTimer(100, 80, 0);
+		GetVavView()->SetTimer(100, 80, 0);
 	}
 }
 

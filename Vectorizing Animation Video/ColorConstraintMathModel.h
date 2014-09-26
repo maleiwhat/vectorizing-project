@@ -28,9 +28,10 @@ public:
 	cv::Vec3b GetColorCvPoint(double x, double y);
 	int Size();
 	void BuildModel();
-private:
+//private:
 	Vector3s m_Colors;
 	Vector2s m_Pos;
+	int     m_ColorSize;
 	bool m_NeedBuildModel;
 	VectorXd x1q, x2q, x3q;
 	VectorXd x1, x2, x3;
@@ -39,22 +40,26 @@ private:
 	template<class Archive>
 	void save(Archive& ar, const unsigned int version) const
 	{
+		ar& m_ColorSize;
 		{
 			int s1 = x1.size(), s2 = x2.size(), s3 = x3.size();
 			ar& s1;
 			for(int i = 0; i < x1.size(); ++i)
 			{
-				ar& x1[i];
+				double v = x1[i];
+				ar& v;
 			}
 			ar& s2;
 			for(int i = 0; i < x2.size(); ++i)
 			{
-				ar& x2[i];
+				double v = x2[i];
+				ar& v;
 			}
 			ar& s3;
 			for(int i = 0; i < x3.size(); ++i)
 			{
-				ar& x3[i];
+				double v = x3[i];
+				ar& v;
 			}
 		}
 		{
@@ -62,17 +67,20 @@ private:
 			ar& s1;
 			for(int i = 0; i < x1q.size(); ++i)
 			{
-				ar& x1q[i];
+				double v = x1q[i];
+				ar& v;
 			}
 			ar& s2;
 			for(int i = 0; i < x2q.size(); ++i)
 			{
-				ar& x2q[i];
+				double v = x2q[i];
+				ar& v;
 			}
 			ar& s3;
 			for(int i = 0; i < x3q.size(); ++i)
 			{
-				ar& x3q[i];
+				double v = x3q[i];
+				ar& v;
 			}
 		}
 	}
@@ -80,25 +88,32 @@ private:
 	void load(Archive& ar, const unsigned int version)
 	{
 		m_NeedBuildModel = false;
+		ar& m_ColorSize;
 		{
 			int s1, s2, s3;
 			ar& s1;
 			x1.resize(s1);
 			for(int i = 0; i < x1.size(); ++i)
 			{
-				ar& x1[i];
+				double v;
+				ar& v;
+				x1[i] = v;
 			}
 			ar& s2;
-			x3.resize(s2);
+			x2.resize(s2);
 			for(int i = 0; i < x2.size(); ++i)
 			{
-				ar& x2[i];
+				double v;
+				ar& v;
+				x2[i] = v;
 			}
 			ar& s3;
 			x3.resize(s3);
 			for(int i = 0; i < x3.size(); ++i)
 			{
-				ar& x3[i];
+				double v;
+				ar& v;
+				x3[i] = v;
 			}
 		}
 		{
@@ -107,19 +122,25 @@ private:
 			x1q.resize(s1);
 			for(int i = 0; i < x1q.size(); ++i)
 			{
-				ar& x1q[i];
+				double v;
+				ar& v;
+				x1q[i] = v;
 			}
 			ar& s2;
-			x3q.resize(s2);
+			x2q.resize(s2);
 			for(int i = 0; i < x2q.size(); ++i)
 			{
-				ar& x2q[i];
+				double v;
+				ar& v;
+				x2q[i] = v;
 			}
 			ar& s3;
 			x3q.resize(s3);
 			for(int i = 0; i < x3q.size(); ++i)
 			{
-				ar& x3q[i];
+				double v;
+				ar& v;
+				x3q[i] = v;
 			}
 		}
 	}

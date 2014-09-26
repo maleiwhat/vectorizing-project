@@ -25,6 +25,8 @@
 #include "IFExtenstion.h"
 #include "Line.h"
 #include "DX11\d3dApp.h"
+#include "GenerateDiffusion.h"
+#include <boost\timer\timer.hpp>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -96,7 +98,7 @@ void VAV_View::OnDraw(CDC* /*pDC*/)
 {
 	VAV_Doc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	if (!pDoc)
+	if(!pDoc)
 	{
 		return;
 	}
@@ -216,12 +218,12 @@ void VAV_View::OnMouseHWheel(UINT nFlags, short zDelta, CPoint pt)
 
 BOOL VAV_View::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
-	if (zDelta > 0)
+	if(zDelta > 0)
 	{
 		m_Scale += 0.5;
 		printf("m_Scale %f\n", m_Scale);
 	}
-	else if (zDelta < 0)
+	else if(zDelta < 0)
 	{
 		m_Scale -= 0.25;
 		printf("m_Scale %f\n", m_Scale);
@@ -235,14 +237,14 @@ BOOL VAV_View::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 void VAV_View::OnMouseMove(UINT nFlags, CPoint point)
 {
 	CView::OnMouseMove(nFlags, point);
-	if (m_MButtonDown)
+	if(m_MButtonDown)
 	{
 		//printf("%f %f\n", m_LookCenter.x, m_LookCenter.y);
 		m_LookCenter.x = m_LookDown.x + point.x - m_MouseDown.x;
 		m_LookCenter.y = m_LookDown.y + point.y - m_MouseDown.y;
 		m_D3DApp.SetLookCenter(m_LookCenter.x , m_LookCenter.y);
 	}
-	if (m_LButtonDown)
+	if(m_LButtonDown)
 	{
 		m_MouseMove = point;
 		ShowLineNormal();
@@ -268,17 +270,17 @@ void VAV_View::OnLButtonDown(UINT nFlags, CPoint point)
 	double realX = (m_MouseMove.x - m_LookCenter.x) / m_Scale - m_LookCenter.x * 0.5;
 	double realY = (m_PicH * m_Scale - m_D3DApp.GetHeight() + m_MouseMove.y
 					- m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
-	if (realX > 0 && realY > 0 && realX < m_indexImg.cols && realY < m_indexImg.rows)
+	if(realX > 0 && realY > 0 && realX < m_indexImg.cols && realY < m_indexImg.rows)
 	{
 		cv::Vec3b p = m_indexImg.at<cv::Vec3b>(realY * 2, realX * 2);
 		int idx = p[0] + p[1] * 256 + p[2] * 256 * 256;
 		printf("%d |", idx);
 	}
-	for (int i = 0; i < m_patchs.size(); ++i)
+	for(int i = 0; i < m_patchs.size(); ++i)
 	{
-		if (m_patchs[i].Inside(realX, realY))
+		if(m_patchs[i].Inside(realX, realY))
 		{
-			if (m_HoldCtrl)
+			if(m_HoldCtrl)
 			{
 				D3DApp& d3dApp = GetD3DApp();
 				d3dApp.ClearTriangles();
@@ -365,14 +367,14 @@ void VAV_View::ShowLineNormal()
 	int idx2 = -1;
 	double dis = 5;
 	int i = 0, j;
-	for (auto it1 = m_FeatureLines.begin(); it1 != m_FeatureLines.end(); ++it1, ++i)
+	for(auto it1 = m_FeatureLines.begin(); it1 != m_FeatureLines.end(); ++it1, ++i)
 	{
 		j = 0;
 		auto tend = --(it1->end());
-		for (auto it2 = it1->begin(); it2 != tend; ++it2, ++j)
+		for(auto it2 = it1->begin(); it2 != tend; ++it2, ++j)
 		{
 			double nowDis = click.squaredDistance(*it2);
-			if (nowDis < dis)
+			if(nowDis < dis)
 			{
 				idx1 = i;
 				idx2 = j;
@@ -500,17 +502,27 @@ unsigned __stdcall VAV_View::MyThreadFunc(LPVOID lpParam)
 
 void VAV_View::OnTimer(UINT_PTR nIDEvent)
 {
-	DiffusionFrames& dframes = GetMainFrame()->m_DiffusionFrames;
+	BackGround& dframes = GetMainFrame()->m_BackGround;
+	FrameInfos& fgframes = GetMainFrame()->m_FrameInfos;
 	static int i = 0;
-	if (i >= dframes.size())
+	if(i >= fgframes.size())
 	{
 		i = 0;
 	}
+	Lines curves1 = dframes.m_FI.curves1;
+	Lines curves2 = dframes.m_FI.curves2;
+	curves1 = GetLines(curves1, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
+	curves2 = GetLines(curves2, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
 	m_D3DApp.ClearTriangles();
 	m_D3DApp.ClearSkeletonLines();
-	m_D3DApp.AddLinesWidth(dframes[i].m_BlackLine, dframes[i].m_BLineWidth, dframes[i].lineColors);
-	m_D3DApp.AddDiffusionLines(dframes[i].diffusionConstrant, dframes[i].colors);
-	m_D3DApp.AddDiffusionLines(dframes[i].m_BlackLine2, dframes[i].color2s);
+	m_D3DApp.AddDiffusionLines(curves2, dframes.m_FI.GetBoundaryColor());
+	m_D3DApp.AddLinesWidth(curves1, dframes.m_FI.GetLineWidth(), dframes.m_FI.GetLineColor());
+	Lines curves21 = fgframes[i].curves1;
+	Lines curves22 = fgframes[i].curves2;
+	curves21 = GetLines(curves21, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
+	curves22 = GetLines(curves22, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
+	m_D3DApp.AddDiffusionLines(curves22, fgframes[i].GetBoundaryColor());
+	m_D3DApp.AddLinesWidth(curves21, fgframes[i].GetLineWidth(), fgframes[i].GetLineColor());
 	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
 	i++;
@@ -519,7 +531,7 @@ void VAV_View::OnTimer(UINT_PTR nIDEvent)
 
 void VAV_View::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (nChar == 17)
+	if(nChar == 17)
 	{
 		m_HoldCtrl = true;
 	}
@@ -529,7 +541,7 @@ void VAV_View::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void VAV_View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (nChar == 17)
+	if(nChar == 17)
 	{
 		m_HoldCtrl = false;
 	}

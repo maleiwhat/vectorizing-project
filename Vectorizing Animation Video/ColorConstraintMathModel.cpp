@@ -9,6 +9,7 @@ void ColorConstraintMathModel::AddPoint(double x, double y, const cv::Vec3b& p)
 	m_NeedBuildModel = true;
 	m_Pos.push_back(Vector2(x, y));
 	m_Colors.push_back(Vector3(p[0], p[1], p[2]));
+	m_ColorSize++;
 }
 
 void ColorConstraintMathModel::AddPoint(double x, double y, const Vector3& p)
@@ -16,6 +17,7 @@ void ColorConstraintMathModel::AddPoint(double x, double y, const Vector3& p)
 	m_NeedBuildModel = true;
 	m_Colors.push_back(p);
 	m_Pos.push_back(Vector2(x, y));
+	m_ColorSize++;
 }
 
 void ColorConstraintMathModel::Clear()
@@ -23,15 +25,16 @@ void ColorConstraintMathModel::Clear()
 	m_NeedBuildModel = true;
 	m_Colors.clear();
 	m_Pos.clear();
+	m_ColorSize = 0;
 }
 
 void Bounding(double& v, double vmin, double vmax)
 {
-	if (v < vmin)
+	if(v < vmin)
 	{
 		v = vmin;
 	}
-	if (v > vmax)
+	if(v > vmax)
 	{
 		v = vmax;
 	}
@@ -39,11 +42,11 @@ void Bounding(double& v, double vmin, double vmax)
 
 Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 {
-	if (m_NeedBuildModel)
+	if(m_NeedBuildModel)
 	{
 		BuildModel();
 	}
-	if (m_Colors.size() > THRESHOLD)
+	if(m_ColorSize > THRESHOLD)
 	{
 		double rr1 = x1q[0] + x1q[1] * x + x1q[2] * y + x1q[3] * x * x + x1q[4] * y * y + x1q[5] * x * y;
 		double gg1 = x2q[0] + x2q[1] * x + x2q[2] * y + x2q[3] * x * x + x2q[4] * y * y + x2q[5] * x * y;
@@ -59,7 +62,7 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(bb1, 0, 255);
 		return Vector3(rr1, gg1, bb1);
 	}
-	else if (m_Colors.size() > THRESHOLD2)
+	else if(m_ColorSize > THRESHOLD2)
 	{
 		double rr2 = x1[0] + x1[1] * x + x1[2] * y;
 		double gg2 = x2[0] + x2[1] * x + x2[2] * y;
@@ -69,12 +72,12 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(bb2, 0, 255);
 		return Vector3(rr2, gg2, bb2);
 	}
-	else if (m_Colors.size() > 0)
+	else if(m_Colors.size() > 0)
 	{
 		double rr = 0;
 		double gg = 0;
 		double bb = 0;
-		for (int i = 0; i < m_Colors.size(); ++i)
+		for(int i = 0; i < m_Colors.size(); ++i)
 		{
 			rr += m_Colors[i].x;
 			gg += m_Colors[i].y;
@@ -93,19 +96,23 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 
 Vector3 ColorConstraintMathModel::GetColorVector3()
 {
-	if (m_Colors.empty())
-	{ return Vector3(255, 255, 255); }
+	if(m_Colors.empty())
+	{
+		return Vector3(255, 255, 255);
+	}
 	else
-	{ return m_Colors[0]; }
+	{
+		return m_Colors[0];
+	}
 }
 
 cv::Vec3b ColorConstraintMathModel::GetColorCvPoint(double x, double y)
 {
-	if (m_NeedBuildModel)
+	if(m_NeedBuildModel)
 	{
 		BuildModel();
 	}
-	if (m_Colors.size() > THRESHOLD)
+	if(m_Colors.size() > THRESHOLD)
 	{
 		double rr = x1q[0] + x1q[1] * x + x1q[2] * y + x1q[3] * x * x + x1q[4] * y * y + x1q[5] * x * y;
 		double gg = x2q[0] + x2q[1] * x + x2q[2] * y + x2q[3] * x * x + x2q[4] * y * y + x2q[5] * x * y;
@@ -115,7 +122,7 @@ cv::Vec3b ColorConstraintMathModel::GetColorCvPoint(double x, double y)
 		Bounding(bb, 0, 255);
 		return cv::Vec3b(rr, gg, bb);
 	}
-	else if (m_Colors.size() > THRESHOLD2)
+	else if(m_Colors.size() > THRESHOLD2)
 	{
 		double rr = x1[0] + x1[1] * x + x1[2] * y;
 		double gg = x2[0] + x2[1] * x + x2[2] * y;
@@ -125,12 +132,12 @@ cv::Vec3b ColorConstraintMathModel::GetColorCvPoint(double x, double y)
 		Bounding(bb, 0, 255);
 		return cv::Vec3b(rr, gg, bb);
 	}
-	else if (m_Colors.size() > 0)
+	else if(m_Colors.size() > 0)
 	{
 		double rr = 0;
 		double gg = 0;
 		double bb = 0;
-		for (int i = 0; i < m_Colors.size(); ++i)
+		for(int i = 0; i < m_Colors.size(); ++i)
 		{
 			rr += m_Colors[i].x;
 			gg += m_Colors[i].y;
@@ -149,19 +156,20 @@ cv::Vec3b ColorConstraintMathModel::GetColorCvPoint(double x, double y)
 
 ColorConstraintMathModel::ColorConstraintMathModel(): m_NeedBuildModel(true)
 {
+	m_ColorSize = 0;
 }
 
 void ColorConstraintMathModel::BuildModel()
 {
 	m_NeedBuildModel = false;
-	if (m_Colors.size() > THRESHOLD)
+	if(m_ColorSize > THRESHOLD)
 	{
 		const int LEN = m_Colors.size();
 		const int DIM = 6;
 		MatrixXd A(LEN, DIM), At, Ata;
 		VectorXd b1(LEN), b2(LEN), b3(LEN), Atb1, Atb2, Atb3;
 		int c = 0;
-		for (int i = 0; i < m_Colors.size(); ++i)
+		for(int i = 0; i < m_Colors.size(); ++i)
 		{
 			b1.coeffRef(c) = m_Colors[i][0];
 			b2.coeffRef(c) = m_Colors[i][1];
@@ -184,14 +192,14 @@ void ColorConstraintMathModel::BuildModel()
 		x2q = Atalu.solve(Atb2);
 		x3q = Atalu.solve(Atb3);
 	}
-	if (m_Colors.size() > THRESHOLD2)
+	if(m_ColorSize > THRESHOLD2)
 	{
 		const int LEN = m_Colors.size();
 		const int DIM = 3;
 		MatrixXd A(LEN, DIM), At, Ata;
 		VectorXd b1(LEN), b2(LEN), b3(LEN), Atb1, Atb2, Atb3;
 		int c = 0;
-		for (int i = 0; i < m_Colors.size(); ++i)
+		for(int i = 0; i < m_Colors.size(); ++i)
 		{
 			b1.coeffRef(c) = m_Colors[i][0];
 			b2.coeffRef(c) = m_Colors[i][1];
@@ -219,7 +227,7 @@ bool ColorConstraintMathModel::CheckColor(double x, double y, const cv::Vec3b& p
 	test.x -= p[0];
 	test.y -= p[1];
 	test.z -= p[2];
-	if (test.squaredLength() < threshold * threshold)
+	if(test.squaredLength() < threshold * threshold)
 	{
 		return true;
 	}

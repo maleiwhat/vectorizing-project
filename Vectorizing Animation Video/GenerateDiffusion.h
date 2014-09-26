@@ -22,10 +22,10 @@ private:
 	void serialize(Archive& ar, const unsigned int version)
 	{
 		ar& curves1;
-		ar& color1;
-		ar& lineWidth;
-		ar& color2;
 		ar& curves2;
+		ar& lineWidth;
+		ar& color1;
+		ar& color2;
 	}
 };
 typedef std::vector<FrameInfo> FrameInfos;
@@ -67,8 +67,9 @@ private:
 
 void SaveBGInfos(std::string path, BackGround& frms);
 FrameInfos LoadBGInfos(std::string path);
-void SaveFrameInfos(std::string path, BackGround& frms);
+void SaveFrameInfos(std::string path, FrameInfos& frms);
 FrameInfos LoadFrameInfos(std::string path);
 FrameInfo ComputeFrame(cv::Mat img);
+FrameInfo ComputeFrameFG(cv::Mat img, cv::Mat origimg);
 void SetDrawFrame(D3DApp& d3dApp, FrameInfo& fi);
 

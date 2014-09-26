@@ -186,7 +186,7 @@ bool drawmask5x5(cv::Mat img, int x, int y, cv::Vec3b color, cv::Mat dst)
 void VAV_MainFrame::OnButton_BuildVectorization()
 {	
 	D3DApp& d3dApp = GetVavView()->GetD3DApp();
-	FrameInfo fi = ComputeFrame(m_vavImage.GetCvMat());
+	FrameInfo fi = ComputeFrameFG(m_vavImage, m_vavImage);
 	SetDrawFrame(d3dApp, fi);
 	GetVavView()->OnDraw(0);
 	return;
@@ -431,7 +431,7 @@ void VAV_MainFrame::OnButton_BuildVectorization()
 		cvtColor(ccp1, ccp1, CV_BGR2GRAY);
 		ccp1.convertTo(ccp1, CV_32F, 1.0 / 255);
 		ccp1_curve = new CmCurveEx(ccp1);
-		ccp1_curve->CalSecDer(MASK1_SIZE, secDer);
+		ccp1_curve->CalSecDer(MASK1_SIZE, secDer, 0.05);
 		ccp1_curve->Link();
 		cv::Mat show_ccp1 = expImg.Clone();
 		Bblack_Fred1 = expImg.Clone();
