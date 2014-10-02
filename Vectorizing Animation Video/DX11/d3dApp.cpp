@@ -1403,12 +1403,12 @@ void D3DApp::AddLines(const Lines& lines)
 	{
 		const Line& now_line = lines[i];
 		float r, g, b;
-//      r = (rand() % 155 + 100) / 255.0f;
-//      g = (rand() % 155 + 100) / 255.0f;
-//      b = (rand() % 155 + 100) / 255.0f;
-		r = 1;
-		g = 0;
-		b = 0;
+     r = (rand() % 155 + 100) / 255.0f;
+     g = (rand() % 155 + 100) / 255.0f;
+     b = (rand() % 155 + 100) / 255.0f;
+// 		r = 1;
+// 		g = 0;
+// 		b = 0;
 		SkeletonLineVertex slv;
 		slv.color.x = r;
 		slv.color.y = g;

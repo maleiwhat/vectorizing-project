@@ -932,7 +932,7 @@ void DrawCvPatchs(CvPatchs& tmp_cvps, cv::Mat tmp_image2)
 		}
 	}
 	//cv::namedWindow("DrawCvPatchs", 0);
-	g_cvshowEX.AddShow("DrawCvPatchs", tmp_image2);
+	//g_cvshowEX.AddShow("DrawCvPatchs", tmp_image2);
 	//cv::waitKey();
 }
 
@@ -2572,7 +2572,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			tmp_image.at<cv::Vec3b>(i + 1, j + 1) = image.at<cv::Vec3b>(i , j);
 		}
 	}
-	imshow("tmp_image", tmp_image);
+	//imshow("tmp_image", tmp_image);
 	//cv::waitKey();
 	cv::Mat gap_image;
 	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
@@ -2639,9 +2639,9 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 			}
 		}
 	}
-	imshow("joint_mask", joint_mask);
+	//imshow("joint_mask", joint_mask);
 	//cv::waitKey();
-	imshow("gap_image", gap_image);
+	//imshow("gap_image", gap_image);
 	//cv::waitKey();
 	mask.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
 	mask = cv::Scalar::all(0);
@@ -2704,7 +2704,7 @@ ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion)
 		}
 	}
 	//cv::namedWindow("LineFloodFill", 0);
-	imshow("LineFloodFill", tmp_image);
+	//imshow("LineFloodFill", tmp_image);
 	//cv::waitKey();
 	Lines lines = GetAllLineFromLineImage(tmp_image);
 	cc = 1;
@@ -3057,7 +3057,7 @@ Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion, cv::Mat& out
 			S9FloodFill(image, mask, cc, j, i, 20, out_chips_mask);
 		}
 	}
-	imshow("out_chips_mask", out_chips_mask);
+	//imshow("out_chips_mask", out_chips_mask);
 	// create bigger image to fix border problem
 	tmp_image = cv::Scalar::all(0);
 	for(int i = 0; i < image.rows ; i++)
@@ -3072,7 +3072,7 @@ Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion, cv::Mat& out
 		}
 	}
 	outimg = tmp_image.clone();
-	imshow("tmp_image", tmp_image);
+	//imshow("tmp_image", tmp_image);
 	cv::Mat gap_image;
 	gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
 	gap_image = cv::Scalar(0);
@@ -3138,9 +3138,9 @@ Lines S6GetPatchs(const cv::Mat& image0, int dilation, int erosion, cv::Mat& out
 			}
 		}
 	}
-	//imshow("joint_mask", joint_mask);
-	//cv::waitKey();
-	//imshow("gap_image", gap_image);
+//  imshow("joint_mask", joint_mask);
+//  cv::waitKey();
+//  imshow("gap_image", gap_image);
 	mask.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
 	mask = cv::Scalar::all(0);
 	// show joint
@@ -4045,7 +4045,9 @@ void FloodFillReColor(cv::Mat& image)
 		for(int j = 1; j < image.cols - 1; j++)
 		{
 			if(image.at<cv::Vec3b>(i, j) != cv::Vec3b(0, 0, 0))
-			{ S3FloodFill(cc, image, mask, j, i); }
+			{
+				S3FloodFill(cc, image, mask, j, i);
+			}
 		}
 	}
 }
@@ -4107,7 +4109,7 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int r
 	}
 	cv::Point seed(x, y);
 	cv::Rect ccomp;
-	printf("bcc %d\n", cc);
+	//printf("bcc %d\n", cc);
 	cc++;
 	cv::Scalar newVal(b, g, r);
 	int area;

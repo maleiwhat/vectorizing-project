@@ -1364,6 +1364,14 @@ cv::Vec2f getMoveVectorBySIFT(cv::Mat a, cv::Mat b)
 	mv[0] = ((int)mv[0]) * 0.1;
 	mv[1] *= 10;
 	mv[1] = ((int)mv[1]) * 0.1;
+	if(mv[0] > 1000 || mv[0] < -1000)
+	{
+		mv[0] = 0;
+	}
+	if(mv[1] > 1000 || mv[1] < -1000)
+	{
+		mv[1] = 0;
+	}
 	return mv;
 }
 
@@ -1701,10 +1709,10 @@ void ImgFillBlack(cv::Mat& a, cv::Mat& b)
 				{
 					cb = ca;
 				}
-				else if(ca != black && cb != black)
-				{
-					cb = ca / 2 + cb / 2;
-				}
+//              else if(ca != black && cb != black)
+//              {
+//                  cb = ca * 0.9 + cb * 0.1;
+//              }
 			}
 		}
 	}
@@ -1814,7 +1822,10 @@ Mats MakeStaticBackGroundByMove(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgro
 		cv::Mat meanimg;
 		meanimg = timgs.front().clone();
 		ints useids;
-		for(int k = 0; k < timgs.size() - 1; ++k)
+		ImgFillBlack(timgs.front(), meanimg);
+		ImgFillBlack(timgs.back(), meanimg);
+		cv::imwrite("meanimg.png", meanimg);
+		for(int k = 1; k < timgs.size() - 1; ++k)
 		{
 			double mindis = ColorDistance(meanimg, timgs[k + 1]);
 			int idx = k + 1;
@@ -1831,7 +1842,6 @@ Mats MakeStaticBackGroundByMove(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgro
 			ImgFillBlack(timgs[idx], meanimg);
 			useids.push_back(idx);
 		}
-		ImgFillBlack(timgs.back(), meanimg);
 		cv::Mat errimg;
 		errimg.create(finalH, finalW, CV_32FC1);
 		cv::Vec3b black(0, 0, 0);
@@ -1872,7 +1882,6 @@ Mats MakeStaticBackGroundByMove(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgro
 		}
 		cv::Mat forDilation;
 		errimg.convertTo(forDilation, CV_8UC1, 255);
-		Dilation(forDilation, 2, 3);
 		foreground = forDilation;
 		background = meanimg;
 		printf("minX %d maxX %d minY %d maxY %d \n", minX, maxX, minY, maxY);
@@ -2158,6 +2167,7 @@ void VAV_MainFrame::OnFileOpenVideo()
 			SavepointImage si_bg(bgfilename);
 			SavepointImage si_fg(fgfilename);
 			cv::Mat fg, bg;
+			Mats timgs;
 //          if(si_bg.hasImage())
 //          {
 //              bg = si_bg.ReadImage();
@@ -2179,11 +2189,13 @@ void VAV_MainFrame::OnFileOpenVideo()
 					img = m_ReadVideo.GetFrame();
 					vimg0.SaveImage(img);
 				}
+				GetVavView()->SetPictureSize(img.cols, img.rows);
 				m_Video.push_back(img);
 				m_Moves.push_back(cv::Vec2f(0, 0));
 				cv::Mat prevgray, gray, flow, showflow;
 				cvtColor(img, prevgray, CV_BGR2GRAY);
-				for(int i = 1; i <= 5; ++i)
+				// 讀幾個frame
+				for(int i = 1; i <= 100; ++i)
 				{
 					char tmppath[100];
 					sprintf(tmppath, "_%04d.png", i);
@@ -2202,25 +2214,26 @@ void VAV_MainFrame::OnFileOpenVideo()
 					{
 						m_Video.push_back(imgx);
 						cvtColor(imgx, gray, CV_BGR2GRAY);
-//                  cv::calcOpticalFlowFarneback(prevgray, gray, flow,
-//                                               0.5,   //pyrScale=0.5 means a classical pyramid
-//                                               10,     //Number of pyramid layers including the initial image
-//                                               400,     //Averaging window size. Larger values increase the algorithm robustness
-//                                               10,     //Number of iterations the algorithm does at each pyramid level.
-//                                               7,     //Size of the pixel neighborhood used to find polynomial expansion in each pixel,5/7
-//                                               1.2,   //1.1/1.5
-//                                               0);
-//                  //使用makerPoints,輸出outPoints
-//                  cv::Vec2f move = getMoveVectorByFlow(flow);//對markerMask trace
+//						cv::calcOpticalFlowFarneback(prevgray, gray, flow,
+//						                             0.5,   //pyrScale=0.5 means a classical pyramid
+//						                             10,     //Number of pyramid layers including the initial image
+//						                             400,     //Averaging window size. Larger values increase the algorithm robustness
+//						                             10,     //Number of iterations the algorithm does at each pyramid level.
+//						                             7,     //Size of the pixel neighborhood used to find polynomial expansion in each pixel,5/7
+//						                             1.2,   //1.1/1.5
+//						                             0);
+//						//使用makerPoints,輸出outPoints
+//						cv::Vec2f move = getMoveVectorByFlow(flow);//對markerMask trace
 						cv::Vec2f move2 = getMoveVectorBySIFT(prevgray, gray);
-						m_Moves.push_back(-move2 + m_Moves.back());
+						m_Moves.push_back(-move2);
 						//printf("avg_vel:%f,%f\n", move[0], move[1]);
+						printf("Frame %03d   ", i);
 						printf("avg_vel2:%f,%f\n", move2[0], move2[1]);
-						printf("Frame %d\n", i);
-						prevgray = gray.clone();
+						//prevgray = gray.clone();
 					}
 				}
-				Mats timgs = MakeStaticBackGroundByMove(m_Video, m_Moves, bg, fg);
+				timgs = MakeStaticBackGroundByMove(m_Video, m_Moves, bg, fg);
+				Dilation(fg, 2, 3);
 				if(si_bg.hasImage())
 				{
 					bg = si_bg.ReadImage();
@@ -2233,26 +2246,29 @@ void VAV_MainFrame::OnFileOpenVideo()
 					si_fg.SaveImage(fg);
 				}
 				m_FrameInfos.clear();
+				cv::Vec3b black(0, 0, 0);
+				cv::Mat bigfg = fg.clone();
+				Dilation(bigfg, 2, 5);
 				for(int t = 0; t < timgs.size(); ++t)
 				{
-					cv::Mat timg = timgs[t].clone();
-					for(int i = 0; i < fg.rows; ++i)
+					cv::Mat timg = timgs[t];
+					char tmppath[100];
+					sprintf(tmppath, "_FG_%04d.png", t);
+					cv::imwrite(folder + name + tmppath, timg);
+					for(int i = 0; i < bigfg.rows; ++i)
 					{
-						for(int j = 0; j < fg.cols; ++j)
+						for(int j = 0; j < bigfg.cols; ++j)
 						{
-							if(fg.at<uchar>(i, j) == 0)
+							if(bigfg.at<uchar>(i, j) == 0) // || timg.at<cv::Vec3b>(i, j) == black)
 							{
+								//timg.at<cv::Vec3b>(i, j) = bg.at<cv::Vec3b>(i, j);
 								timg.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
 							}
 						}
 					}
-					char tmppath[100];
-					sprintf(tmppath, "_FG_%04d.png", t);
+					sprintf(tmppath, "_FGx_%04d.png", t);
 					cv::imwrite(folder + name + tmppath, timg);
-					m_FrameInfos.push_back(ComputeFrameFG(timg, timgs[t]));
 				}
-				SaveFrameInfos("fg.gg", m_FrameInfos);
-				FrameInfos m_FrameInfos = LoadFrameInfos("fg.gg");
 			}
 			cv::Mat l0bg;
 			std::string l0bgfilename = folder + name + "_L0S_BG.png";
@@ -2263,19 +2279,97 @@ void VAV_MainFrame::OnFileOpenVideo()
 			}
 			else
 			{
-				l0bg = L0Smoothing(bg, 0.002);
+				l0bg = L0Smoothing(bg, 0.001);
 				si_l0bg.SaveImage(l0bg);
 			}
+			double minx = m_Moves.front()[0];
+			double miny = m_Moves.front()[1];
+			for(int i = 1; i < m_Moves.size(); ++i)
+			{
+				if(minx > m_Moves[i][0])
+				{
+					minx = m_Moves[i][0];
+				}
+				if(miny > m_Moves[i][1])
+				{
+					miny = m_Moves[i][1];
+				}
+			}
+			for(int i = 1; i < m_Moves.size(); ++i)
+			{
+				m_Moves[i][0] -= minx;
+				m_Moves[i][1] -= miny;
+			}
 			D3DApp& d3dApp = GetVavView()->GetD3DApp();
-			FrameInfo fi = ComputeFrame(l0bg);
-			printf("fi.curves1 %d\n", fi.curves1.size());
+			ColorRegion cr;
+			FrameInfo fi;
+			fi = ComputeFrame2(l0bg, &cr);
+			printf("cr.ccms.size(%d)\n", cr.ccms.size());
+			{
+				cv::Mat tfg = fg.clone();
+				Dilation(tfg, 2, 7);
+				for(int t = 0; t < timgs.size(); ++t)
+				{
+					cv::Mat timg = timgs[t];
+					FrameInfo fgfi = ComputeFrame1FG(timg, tfg, &cr);
+					RemoveFGs_BG_Part(fgfi, tfg);
+					for(int i = 0; i < fgfi.curves2.size(); ++i)
+					{
+						if(fgfi.curves2[i].size() < 5)
+						{
+							fgfi.curves2.erase(fgfi.curves2.begin() + i);
+							fgfi.color2.left.erase(fgfi.color2.left.begin() + i);
+							fgfi.color2.right.erase(fgfi.color2.right.begin() + i);
+							--i;
+						}
+					}
+					m_FrameInfos.push_back(fgfi);
+					{
+						// show line for RemoveFGs_BG_Part
+						cv::Mat simg = timg.clone();
+						cv::resize(simg.clone(), simg, simg.size() * 2);
+						simg = cv::Scalar(0);
+						for(int i = 0; i < fgfi.curves1.size(); ++i)
+						{
+							Line& nowl = fgfi.curves1[i];
+							for(int j = 0; j < nowl.size() - 1; ++j)
+							{
+								cv::Point p1(nowl[j].x * 2, nowl[j].y * 2);
+								cv::Point p2(nowl[j + 1].x * 2, nowl[j + 1].y * 2);
+								cv::line(simg, p1, p2, cv::Scalar(255, 255, 255));
+							}
+						}
+						static int sid1 = -1;
+						sid1++;
+						char path[100];
+						FloodFillReColor(simg);
+						sprintf(path, "cmms1_%d.png", sid1);
+						cv::imwrite(path, simg);
+					}
+				}
+				SaveFrameInfos("fg.gg", m_FrameInfos);
+				//m_FrameInfos = LoadFrameInfos("fg.gg");
+			}
+			Dilation(fg, 2, 5);
+			RemoveBGs_FG_Part(fi, fg);
+			for(int i = 0; i < fi.curves2.size(); ++i)
+			{
+				if(fi.curves2[i].size() < 5)
+				{
+					fi.curves2.erase(fi.curves2.begin() + i);
+					fi.color2.left.erase(fi.color2.left.begin() + i);
+					fi.color2.right.erase(fi.color2.right.begin() + i);
+					--i;
+				}
+			}
 			BackGround bgdata;
 			bgdata.m_FI = fi;
 			bgdata.m_Moves = m_Moves;
 			SaveBGInfos("bgdata.gg", bgdata);
+			//bgdata = LoadBGInfos("bgdata.gg");
 			m_BackGround = bgdata;
 		}
-		GetVavView()->SetTimer(100, 80, 0);
+		GetVavView()->SetTimer(100, 100, 0);
 	}
 }
 

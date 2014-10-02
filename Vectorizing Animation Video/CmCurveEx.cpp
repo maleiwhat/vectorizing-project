@@ -198,7 +198,7 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 			}
 		}
 	}
-	printf("min %f max %f\n", mineig, maxeig);
+	//printf("min %f max %f\n", mineig, maxeig);
 	normalize(m_pDer2f, m_pDer2f, -1, 1, cv::NORM_MINMAX);
 	normalize(m_pDer1f, m_pDer1f, 0, 1, cv::NORM_MINMAX);
 	g_cvshowEX.AddShow("m_pDer1f0", m_pDer1f);
@@ -212,17 +212,18 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 		float* pDer1 = m_pDer1f.ptr<float>(y);
 		for (int x = 0; x < m_w; x++)
 		{
-			float v1 = pDer1[x] > 0 ? pDer1[x] * (1 - abs(pDer2[x])) : 0;
+			float v1 = pDer1[x] > 0 ? pDer1[x] + (pDer2[x]-0.5) : 0;
 			float v2 = pDer2[x] > 0 ? pDer2[x] * (1 - abs(pDer1[x])) : 0;
 			v2 = v2 > 0 ? v2 : 0;
 			pDer1[x] = v1;
-			pDer2[x] = (v2 + v1*0.3);
+			pDer2[x] = v2;
 			sum2 += pDer2[x];
 			//pDer2[x] = pDer2[x] > 0 ? float(pDer2[x] > 0.0f ? pDer2[x] : 0.0f) : 0;
 		}
 	}
+	g_cvshowEX.AddShow("fv1", m_pDer1f);
+	g_cvshowEX.AddShow("fv2", m_pDer2f);
 	avg2 = sum2 / (m_h * m_w);
-	printf("avg: %d\n", avg2);
 	for (int y = 0; y < m_h; y++)
 	{
 		float* pDer2 = m_pDer2f.ptr<float>(y);
@@ -236,6 +237,7 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 	}
 	g_cvshowEX.AddShow("m_pDer1f", m_pDer1f);
 	g_cvshowEX.AddShow("m_pDer2f", m_pDer2f);
+	cv::waitKey();
 	normalize(m_pDer2f, m_pDer2f, 0, 30, cv::NORM_MINMAX);
 //  if (1)
 //  {

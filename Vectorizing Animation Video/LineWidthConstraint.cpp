@@ -48,6 +48,11 @@ void LineWidthConstraint::BuildModel()
 		A.coeffRef(c, 0) = 1;
 		A.coeffRef(c, 1) = m_len;
 		A.coeffRef(c, 2) = m_len * m_len;
+// 		A.coeffRef(c, 3) = m_Pos[i].x;
+// 		A.coeffRef(c, 4) = m_Pos[i].y;
+// 		A.coeffRef(c, 5) = m_Pos[i].x * m_Pos[i].x;
+// 		A.coeffRef(c, 6) = m_Pos[i].y * m_Pos[i].y;
+// 		A.coeffRef(c, 7) = m_Pos[i].x * m_Pos[i].y;
 		c++;
 	}
 	At = A.transpose();
@@ -61,9 +66,9 @@ void LineWidthConstraint::BuildModel()
 
 Vector2 LineWidthConstraint::GetColorVector2(double dis)
 {
-	double x = 1 + x1[0] * dis + x1[1] * dis * dis;
-	double y = 1 + x2[0] * dis + x2[1] * dis * dis;
-	return Vector2(x, y);
+	double xx = x1[0] + x1[1] * dis + x1[2] * dis * dis;// + x1[3] * x + x1[4] * y + x1[5] * x * y;
+	double yy = x2[0] + x2[1] * dis + x2[2] * dis * dis;// + x2[3] * x + x2[4] * y + x2[5] * x * y;
+	return Vector2(xx, yy);
 }
 
 

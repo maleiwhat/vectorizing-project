@@ -531,7 +531,7 @@ Index2Side GetLinesIndex2SideSmart(CvPatchs& cps, const Lines& lines, double nor
 	return ans;
 }
 
-Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstraints& ccms)
+Index2Side GetLinesIndex2SideSmart(const Lines& lines, cv::Mat img)
 {
 	vavImage vimg(img);
 	Lines normals = GetNormalsLen2(lines);
@@ -552,14 +552,14 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 			li[j] = -1;
 			if(j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
-				double normal_len = 1;
+				double normal_len = 2;
 				do
 				{
 					Vector2 pos = *it2 * 2 - normals[i][j] * normal_len;
 					li[j] = vimg.GetIndex_no255(pos.x, pos.y);
 					normal_len += 0.5;
 				}
-				while(li[j] == -1 && normal_len < 4);
+				while(li[j] == -1 && normal_len < 5);
 			}
 		}
 		ints& ri = ans_right[i];
@@ -570,7 +570,73 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 			ri[j] = -1;
 			if(j >= NO_COLOR && j < it->size() - NO_COLOR)
 			{
-				double normal_len = 1;
+				double normal_len = 2;
+				do
+				{
+					Vector2 pos = *it2 * 2 + normals[i][j] * normal_len;
+					ri[j] = vimg.GetIndex_no255(pos.x, pos.y);
+					normal_len += 0.5;
+				}
+				while(ri[j] == -1 && normal_len < 5);
+			}
+		}
+	}
+	return ans;
+}
+
+Index2Side GetLinesIndex2SideSmart2(const Lines& lines, cv::Mat img, cv::Mat img2)
+{
+	vavImage vimg(img);
+	vavImage vimg2(img2);
+	Lines normals = GetNormalsLen2(lines);
+	Index2Side ans;
+	ints2d& ans_left = ans.left;
+	ints2d& ans_right = ans.right;
+	ans_left.resize(lines.size());
+	ans_right.resize(lines.size());
+	const int NO_COLOR = 0;
+	for(int i = 0; i < lines.size(); ++i)
+	{
+		Lines::const_iterator it = lines.cbegin() + i;
+		ints& li = ans_left[i];
+		int j = 0;
+		li.resize(it->size());
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		{
+			li[j] = -1;
+			if(j >= NO_COLOR && j < it->size() - NO_COLOR)
+			{
+				double normal_len = 1.5;
+				do
+				{
+					Vector2 pos = *it2 * 2 - normals[i][j] * normal_len;
+					li[j] = vimg.GetIndex_no255(pos.x, pos.y);
+					normal_len += 0.5;
+				}
+				while(li[j] == -1 && normal_len < 4);
+				if(li[j] < 2)
+				{
+					normal_len = 1.5;
+					li[j] = -1;
+					do
+					{
+						Vector2 pos = *it2 * 2 - normals[i][j] * normal_len;
+						li[j] = -vimg2.GetIndex_no255(pos.x, pos.y);
+						normal_len += 0.5;
+					}
+					while(li[j] == -1 && normal_len < 4);
+				}
+			}
+		}
+		ints& ri = ans_right[i];
+		ri.resize(it->size());
+		j = 0;
+		for(auto it2 = it->cbegin(); it2 != it->cend(); ++it2, ++j)
+		{
+			ri[j] = -1;
+			if(j >= NO_COLOR && j < it->size() - NO_COLOR)
+			{
+				double normal_len = 1.5;
 				do
 				{
 					Vector2 pos = *it2 * 2 + normals[i][j] * normal_len;
@@ -578,10 +644,72 @@ Index2Side GetLinesIndex2SideSmart(cv::Mat img, const Lines& lines, ColorConstra
 					normal_len += 0.5;
 				}
 				while(ri[j] == -1 && normal_len < 4);
+				if(ri[j] < 2)
+				{
+					normal_len = 1.5;
+					ri[j] = -1;
+					do
+					{
+						Vector2 pos = *it2 * 2 + normals[i][j] * normal_len;
+						ri[j] = -vimg2.GetIndex_no255(pos.x, pos.y);
+						normal_len += 0.5;
+					}
+					while(ri[j] == -1 && normal_len < 4);
+				}
 			}
 		}
 	}
 	return ans;
+}
+
+
+Color2Side LinesIndex2Color2(const Lines& lines, Index2Side& idx2s, ColorConstraints& ccms, ColorConstraints& ccms2)
+{
+	printf("ccms.size(%d)\n", ccms.size());
+	Color2Side res;
+	res.left.resize(idx2s.left.size());
+	res.right.resize(idx2s.right.size());
+	Vector3s2d& cleft = res.left;
+	Vector3s2d& cright = res.right;
+	for(int i = 0; i < cleft.size(); ++i)
+	{
+		cleft[i].resize(idx2s.left[i].size());
+		cright[i].resize(idx2s.right[i].size());
+		for(int j = 0; j < cleft[i].size(); ++j)
+		{
+			if(idx2s.left[i][j] > 0 && idx2s.left[i][j] <= ccms.size())
+			{
+				cleft[i][j] = ccms.at(idx2s.left[i][j] - 1).GetColorVector3Reverse(lines[i][j].x, lines[i][j].y);
+			}
+			else if(idx2s.left[i][j] < -1 && abs(idx2s.left[i][j]) < ccms2.size())
+			{
+				cleft[i][j] = ccms2.at(abs(idx2s.left[i][j]) - 1).GetColorVector3Reverse(lines[i][j].x, lines[i][j].y);
+				cright[i][j] = cleft[i][j];
+				continue;
+			}
+			else
+			{
+				//printf("bad idx l %d\n", idx2s.left[i][j] - 1);
+				cleft[i][j] = Vector3(255, 255, 255);
+			}
+			if(idx2s.right[i][j] > 0 && idx2s.right[i][j] <= ccms.size())
+			{
+				cright[i][j] = ccms.at(idx2s.right[i][j] - 1).GetColorVector3Reverse(lines[i][j].x, lines[i][j].y);
+			}
+			else if(idx2s.right[i][j] < -1 && abs(idx2s.right[i][j]) < ccms2.size())
+			{
+				cright[i][j] = ccms2.at(abs(idx2s.right[i][j]) - 1).GetColorVector3Reverse(lines[i][j].x, lines[i][j].y);
+				cleft[i][j] = cright[i][j];
+				continue;
+			}
+			else
+			{
+				//printf("bad idx r %d\n", idx2s.right[i][j] - 1);
+				cright[i][j] = Vector3(255, 255, 255);
+			}
+		}
+	}
+	return res;
 }
 
 
@@ -593,6 +721,7 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 	res.right.resize(idx2s.right.size());
 	Vector3s2d& cleft = res.left;
 	Vector3s2d& cright = res.right;
+	Lines normals = GetNormalsLen2(lines);
 	for(int i = 0; i < cleft.size(); ++i)
 	{
 		cleft[i].resize(idx2s.left[i].size());
@@ -600,7 +729,8 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 		{
 			if(idx2s.left[i][j] > 0 && idx2s.left[i][j] <= ccms.size())
 			{
-				cleft[i][j] = ccms.at(idx2s.left[i][j] - 1).GetColorVector3Reverse(lines[i][j].x, lines[i][j].y);
+				Vector2 pos = lines[i][j] - normals[i][j] * 2;
+				cleft[i][j] = ccms.at(idx2s.left[i][j] - 1).GetColorVector3Reverse(pos.x, pos.y);
 			}
 			else
 			{
@@ -616,7 +746,8 @@ Color2Side LinesIndex2Color(const Lines& lines, Index2Side& idx2s, ColorConstrai
 		{
 			if(idx2s.right[i][j] > 0 && idx2s.right[i][j] <= ccms.size())
 			{
-				cright[i][j] = ccms.at(idx2s.right[i][j] - 1).GetColorVector3Reverse(lines[i][j].x, lines[i][j].y);
+				Vector2 pos = lines[i][j] + normals[i][j] * 2;
+				cright[i][j] = ccms.at(idx2s.right[i][j] - 1).GetColorVector3Reverse(pos.x, pos.y);
 			}
 			else
 			{
@@ -770,9 +901,11 @@ Lines ConvertFromConstraintLW(Lines& lines, LineWidthConstraints lwcs)
 		Line& line = lines[i];
 		LineWidthConstraint& ll = lwcs[i];
 		now.push_back(ll.GetColorVector2(0));
+		double sum = 0;
 		for(int j = 1; j < line.size(); ++j)
 		{
-			now.push_back(ll.GetColorVector2(line[j - 1].distance(line[j])));
+			sum += line[j - 1].distance(line[j]);
+			now.push_back(ll.GetColorVector2(sum));
 		}
 	}
 	return res;

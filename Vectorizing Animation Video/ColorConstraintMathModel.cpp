@@ -244,3 +244,14 @@ Vector3 ColorConstraintMathModel::GetColorVector3Reverse(double x, double y)
 	Vector3 tmp = GetColorVector3(x, y);
 	return Vector3(tmp[2], tmp[1], tmp[0]);
 }
+
+Vector3 ColorConstraintMathModel::AvgColor()
+{
+	Vector3 sum;
+	for(int i = 0; i < m_Colors.size(); ++i)
+	{
+		sum += m_Colors[i];
+	}
+	sum /= m_Colors.size();
+	return sum;
+}

@@ -130,10 +130,14 @@ void ConnectLineEnds(LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds2(const LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds3(const LineEnds& les, Lines& pos);
 void ConnectLineEnds3_Width(const LineEnds& les, Lines& pos, Lines& width);
+void ConnectLineEnds3_Color(const LineEnds& les, Lines& pos, Vector3s2d& width);
+void ConnectLineEnds3_Color2(const LineEnds& les, Lines& pos, Color2Side& width);
 void ConnectLineEnds4(const LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds5_Width(const LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds5(const LineEnds& les, Lines& pos);
 void ConnectSimilarColor2Side(const LineEnds& les, Lines& pos, Color2Side& width);
+
+void MakePureDecorativeLine(Lines& lines, Lines& width, Vector3s2d& colors);
 
 void ClearJointArea(const LineEnds& les, Lines& pos, Color2Side& color2s, double len);
 void ConnectNearestLines_Width(const LineEnds& les, Lines& pos, Lines& width, double d2,

@@ -41,6 +41,7 @@ void GetSkeletonLine(cv::Mat bmap, Lines& lines, double_vector2d& linewidths11);
 void GetMatrixf(int w, int h, floatptrs& ary, int x, int y, cv::Mat& img);
 
 cv::Mat TrapBallMaskAll(cv::Mat image, cv::Mat oriImg);
+cv::Mat TrapBallMaskAllFG(cv::Mat image, cv::Mat oriImg, cv::Mat fg);
 cv::Mat TrapBallMask1(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE);
 cv::Mat TrapBallMask2(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE);
 cv::Mat TrapBallMask3(cv::Mat image, int size, int moprh = cv::MORPH_ELLIPSE, int maxadd = 9999);

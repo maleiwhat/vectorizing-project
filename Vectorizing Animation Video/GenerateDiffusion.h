@@ -10,6 +10,7 @@ struct FrameInfo
 	Lines curves1;
 	ColorConstraints color1;
 	LineWidthConstraints lineWidth;
+	Lines tmplinewidth;
 	// diffusion
 	Color2SideConstraint color2;
 	Lines curves2;
@@ -35,6 +36,7 @@ struct BackGround
 {
 	FrameInfo m_FI;
 	Vec2fs  m_Moves;
+	cv::Mat m_FG;
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -48,6 +50,9 @@ private:
 			ar& m_Moves[i][0];
 			ar& m_Moves[i][1];
 		}
+		int w = m_FG.cols;
+		int h = m_FG.rows;
+
 	}
 	template<class Archive>
 	void load(Archive& ar, const unsigned int version)
@@ -65,11 +70,24 @@ private:
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
+struct ColorRegion
+{
+	ColorConstraints ccms;
+	cv::Mat markimg;
+};
+
 void SaveBGInfos(std::string path, BackGround& frms);
-FrameInfos LoadBGInfos(std::string path);
+BackGround LoadBGInfos(std::string path);
 void SaveFrameInfos(std::string path, FrameInfos& frms);
 FrameInfos LoadFrameInfos(std::string path);
-FrameInfo ComputeFrame(cv::Mat img);
-FrameInfo ComputeFrameFG(cv::Mat img, cv::Mat origimg);
+FrameInfo ComputeFrame1(cv::Mat img, ColorRegion* cr = NULL);
+FrameInfo ComputeFrame1FG(cv::Mat img, cv::Mat fg, ColorRegion* cr);
+FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr = NULL);
+FrameInfo ComputeFrame2FG(cv::Mat img, cv::Mat fg, ColorRegion* cr);
 void SetDrawFrame(D3DApp& d3dApp, FrameInfo& fi);
-
+void RemoveBGs_FG_Part(FrameInfo& fi, cv::Mat fg);
+void RemoveFGs_BG_Part(FrameInfo& fi, cv::Mat fg);
+FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr = NULL);
+FrameInfo ComputeFrameFG09(cv::Mat img, cv::Mat fg, ColorRegion* cr);
+bool drawmask5x5(cv::Mat img, int x, int y, cv::Vec3b color, cv::Mat dst);
+bool checkmask3x3(cv::Mat img, int x, int y);

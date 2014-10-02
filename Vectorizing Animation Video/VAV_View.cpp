@@ -509,20 +509,40 @@ void VAV_View::OnTimer(UINT_PTR nIDEvent)
 	{
 		i = 0;
 	}
-	Lines curves1 = dframes.m_FI.curves1;
-	Lines curves2 = dframes.m_FI.curves2;
-	curves1 = GetLines(curves1, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
-	curves2 = GetLines(curves2, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
+	Lines curves11 = dframes.m_FI.curves1;
+	Lines curves12 = dframes.m_FI.curves2;
+	curves11 = GetLines(curves11, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
+	curves12 = GetLines(curves12, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
 	m_D3DApp.ClearTriangles();
 	m_D3DApp.ClearSkeletonLines();
-	m_D3DApp.AddDiffusionLines(curves2, dframes.m_FI.GetBoundaryColor());
-	m_D3DApp.AddLinesWidth(curves1, dframes.m_FI.GetLineWidth(), dframes.m_FI.GetLineColor());
-	Lines curves21 = fgframes[i].curves1;
-	Lines curves22 = fgframes[i].curves2;
-	curves21 = GetLines(curves21, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
-	curves22 = GetLines(curves22, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
-	m_D3DApp.AddDiffusionLines(curves22, fgframes[i].GetBoundaryColor());
-	m_D3DApp.AddLinesWidth(curves21, fgframes[i].GetLineWidth(), fgframes[i].GetLineColor());
+	Color2Side color12 = dframes.m_FI.GetBoundaryColor();
+	//m_D3DApp.AddDiffusionLines(curves12, dframes.m_FI.GetBoundaryColor());
+	if(curves11.size() > 0)
+	{
+		m_D3DApp.AddLinesWidth(curves11, dframes.m_FI.GetLineWidth(), dframes.m_FI.GetLineColor());
+	}
+	if(fgframes.size() > i)
+	{
+		Lines curves21 = fgframes[i].curves1;
+		Lines curves22 = fgframes[i].curves2;
+		curves21 = GetLines(curves21, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
+		curves22 = GetLines(curves22, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
+		Color2Side color22 = fgframes[i].GetBoundaryColor();
+		curves12.insert(curves12.end(), curves22.begin(), curves22.end());
+		color12.left.insert(color12.left.end(), color22.left.begin(), color22.left.end());
+		color12.right.insert(color12.right.end(), color22.right.begin(), color22.right.end());
+		LineEnds les = GetLineEnds(curves12);
+		LinkLineEnds180(les, 5, 60);
+		ConnectLineEnds3_Color2(les, curves12, color12);
+		m_D3DApp.AddDiffusionLines(curves12, color12);
+		color12.left = SmoothingLen5(color12.left, 0, 3);
+		color12.right = SmoothingLen5(color12.right, 0, 3);
+		m_D3DApp.AddDiffusionLines(curves12, color12);
+		if(curves21.size() > 0)
+		{
+			m_D3DApp.AddLinesWidth(curves21, fgframes[i].GetLineWidth(), fgframes[i].GetLineColor());
+		}
+	}
 	m_D3DApp.BuildPoint();
 	m_D3DApp.DrawScene();
 	i++;

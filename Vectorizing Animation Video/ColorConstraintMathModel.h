@@ -28,6 +28,7 @@ public:
 	cv::Vec3b GetColorCvPoint(double x, double y);
 	int Size();
 	void BuildModel();
+	Vector3 AvgColor();
 //private:
 	Vector3s m_Colors;
 	Vector2s m_Pos;
