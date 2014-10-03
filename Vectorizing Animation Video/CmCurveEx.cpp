@@ -237,7 +237,6 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float linkEndBound,
 	}
 	g_cvshowEX.AddShow("m_pDer1f", m_pDer1f);
 	g_cvshowEX.AddShow("m_pDer2f", m_pDer2f);
-	cv::waitKey();
 	normalize(m_pDer2f, m_pDer2f, 0, 30, cv::NORM_MINMAX);
 //  if (1)
 //  {

@@ -279,15 +279,15 @@ FrameInfo ComputeFrame1FG(cv::Mat img, cv::Mat fg, ColorRegion* cr)
 		cmmsIndexImg = FixSpaceMask(cmmsIndexImg);
 		cmmsIndexImg = MixTrapBallMask(cmmsIndexImg, size2, 30, 40);
 		S6ReColor(cmmsIndexImg, img.clone(), ccms);
-		{
-			static int sid = -1;
-			sid++;
-			char path[100];
-			simg = cmmsIndexImg.clone();
-			FloodFillReColor(simg);
-			sprintf(path, "cmms2_%d.png", sid);
-			cv::imwrite(path, simg);
-		}
+// 		{
+// 			static int sid = -1;
+// 			sid++;
+// 			char path[100];
+// 			simg = cmmsIndexImg.clone();
+// 			FloodFillReColor(simg);
+// 			sprintf(path, "cmms2_%d.png", sid);
+// 			cv::imwrite(path, simg);
+// 		}
 //		cv::Mat colorline2 = MakeColorLineImage(img, colorline);
 //      cv::Mat show = cmmsIndexImg.clone();
 //      for(int i = 0; i < show.rows; ++i)
@@ -1013,7 +1013,7 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
 		cmmsIndexImg = simg.clone();
 		cmmsIndexImg = TrapBallMaskAll(cmmsIndexImg, size2);
 		cmmsIndexImg = FixSpaceMask(cmmsIndexImg);
-		cmmsIndexImg = MixTrapBallMask(cmmsIndexImg, size2, 30, 40);
+		//cmmsIndexImg = MixTrapBallMask(cmmsIndexImg, size2, 25, 25);
 		cv::Mat vecout = img.clone();
 		vecout = cv::Scalar(0);
 		// show patch img

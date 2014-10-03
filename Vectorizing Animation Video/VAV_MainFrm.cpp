@@ -2195,7 +2195,7 @@ void VAV_MainFrame::OnFileOpenVideo()
 				cv::Mat prevgray, gray, flow, showflow;
 				cvtColor(img, prevgray, CV_BGR2GRAY);
 				// 讀幾個frame
-				for(int i = 1; i <= 100; ++i)
+				for(int i = 1; i <= 79; ++i)
 				{
 					char tmppath[100];
 					sprintf(tmppath, "_%04d.png", i);
@@ -2213,161 +2213,10 @@ void VAV_MainFrame::OnFileOpenVideo()
 					if(imgx.cols > 0)
 					{
 						m_Video.push_back(imgx);
-						cvtColor(imgx, gray, CV_BGR2GRAY);
-//						cv::calcOpticalFlowFarneback(prevgray, gray, flow,
-//						                             0.5,   //pyrScale=0.5 means a classical pyramid
-//						                             10,     //Number of pyramid layers including the initial image
-//						                             400,     //Averaging window size. Larger values increase the algorithm robustness
-//						                             10,     //Number of iterations the algorithm does at each pyramid level.
-//						                             7,     //Size of the pixel neighborhood used to find polynomial expansion in each pixel,5/7
-//						                             1.2,   //1.1/1.5
-//						                             0);
-//						//使用makerPoints,輸出outPoints
-//						cv::Vec2f move = getMoveVectorByFlow(flow);//對markerMask trace
-						cv::Vec2f move2 = getMoveVectorBySIFT(prevgray, gray);
-						m_Moves.push_back(-move2);
-						//printf("avg_vel:%f,%f\n", move[0], move[1]);
-						printf("Frame %03d   ", i);
-						printf("avg_vel2:%f,%f\n", move2[0], move2[1]);
-						//prevgray = gray.clone();
+						m_FrameInfos.push_back(ComputeFrame2(imgx));
 					}
 				}
-				timgs = MakeStaticBackGroundByMove(m_Video, m_Moves, bg, fg);
-				Dilation(fg, 2, 3);
-				if(si_bg.hasImage())
-				{
-					bg = si_bg.ReadImage();
-					fg = si_fg.ReadImage();
-					cvtColor(fg, fg, CV_BGR2GRAY);
-				}
-				else
-				{
-					si_bg.SaveImage(bg);
-					si_fg.SaveImage(fg);
-				}
-				m_FrameInfos.clear();
-				cv::Vec3b black(0, 0, 0);
-				cv::Mat bigfg = fg.clone();
-				Dilation(bigfg, 2, 5);
-				for(int t = 0; t < timgs.size(); ++t)
-				{
-					cv::Mat timg = timgs[t];
-					char tmppath[100];
-					sprintf(tmppath, "_FG_%04d.png", t);
-					cv::imwrite(folder + name + tmppath, timg);
-					for(int i = 0; i < bigfg.rows; ++i)
-					{
-						for(int j = 0; j < bigfg.cols; ++j)
-						{
-							if(bigfg.at<uchar>(i, j) == 0) // || timg.at<cv::Vec3b>(i, j) == black)
-							{
-								//timg.at<cv::Vec3b>(i, j) = bg.at<cv::Vec3b>(i, j);
-								timg.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
-							}
-						}
-					}
-					sprintf(tmppath, "_FGx_%04d.png", t);
-					cv::imwrite(folder + name + tmppath, timg);
-				}
 			}
-			cv::Mat l0bg;
-			std::string l0bgfilename = folder + name + "_L0S_BG.png";
-			SavepointImage si_l0bg(l0bgfilename);
-			if(si_l0bg.hasImage())
-			{
-				l0bg = si_l0bg.ReadImage();
-			}
-			else
-			{
-				l0bg = L0Smoothing(bg, 0.001);
-				si_l0bg.SaveImage(l0bg);
-			}
-			double minx = m_Moves.front()[0];
-			double miny = m_Moves.front()[1];
-			for(int i = 1; i < m_Moves.size(); ++i)
-			{
-				if(minx > m_Moves[i][0])
-				{
-					minx = m_Moves[i][0];
-				}
-				if(miny > m_Moves[i][1])
-				{
-					miny = m_Moves[i][1];
-				}
-			}
-			for(int i = 1; i < m_Moves.size(); ++i)
-			{
-				m_Moves[i][0] -= minx;
-				m_Moves[i][1] -= miny;
-			}
-			D3DApp& d3dApp = GetVavView()->GetD3DApp();
-			ColorRegion cr;
-			FrameInfo fi;
-			fi = ComputeFrame2(l0bg, &cr);
-			printf("cr.ccms.size(%d)\n", cr.ccms.size());
-			{
-				cv::Mat tfg = fg.clone();
-				Dilation(tfg, 2, 7);
-				for(int t = 0; t < timgs.size(); ++t)
-				{
-					cv::Mat timg = timgs[t];
-					FrameInfo fgfi = ComputeFrame1FG(timg, tfg, &cr);
-					RemoveFGs_BG_Part(fgfi, tfg);
-					for(int i = 0; i < fgfi.curves2.size(); ++i)
-					{
-						if(fgfi.curves2[i].size() < 5)
-						{
-							fgfi.curves2.erase(fgfi.curves2.begin() + i);
-							fgfi.color2.left.erase(fgfi.color2.left.begin() + i);
-							fgfi.color2.right.erase(fgfi.color2.right.begin() + i);
-							--i;
-						}
-					}
-					m_FrameInfos.push_back(fgfi);
-					{
-						// show line for RemoveFGs_BG_Part
-						cv::Mat simg = timg.clone();
-						cv::resize(simg.clone(), simg, simg.size() * 2);
-						simg = cv::Scalar(0);
-						for(int i = 0; i < fgfi.curves1.size(); ++i)
-						{
-							Line& nowl = fgfi.curves1[i];
-							for(int j = 0; j < nowl.size() - 1; ++j)
-							{
-								cv::Point p1(nowl[j].x * 2, nowl[j].y * 2);
-								cv::Point p2(nowl[j + 1].x * 2, nowl[j + 1].y * 2);
-								cv::line(simg, p1, p2, cv::Scalar(255, 255, 255));
-							}
-						}
-						static int sid1 = -1;
-						sid1++;
-						char path[100];
-						FloodFillReColor(simg);
-						sprintf(path, "cmms1_%d.png", sid1);
-						cv::imwrite(path, simg);
-					}
-				}
-				SaveFrameInfos("fg.gg", m_FrameInfos);
-				//m_FrameInfos = LoadFrameInfos("fg.gg");
-			}
-			Dilation(fg, 2, 5);
-			RemoveBGs_FG_Part(fi, fg);
-			for(int i = 0; i < fi.curves2.size(); ++i)
-			{
-				if(fi.curves2[i].size() < 5)
-				{
-					fi.curves2.erase(fi.curves2.begin() + i);
-					fi.color2.left.erase(fi.color2.left.begin() + i);
-					fi.color2.right.erase(fi.color2.right.begin() + i);
-					--i;
-				}
-			}
-			BackGround bgdata;
-			bgdata.m_FI = fi;
-			bgdata.m_Moves = m_Moves;
-			SaveBGInfos("bgdata.gg", bgdata);
-			//bgdata = LoadBGInfos("bgdata.gg");
-			m_BackGround = bgdata;
 		}
 		GetVavView()->SetTimer(100, 100, 0);
 	}

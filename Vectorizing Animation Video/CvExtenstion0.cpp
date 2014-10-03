@@ -1726,10 +1726,6 @@ cv::Mat TrapBallMaskAll(cv::Mat image, cv::Mat oriImg)
 	stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
 	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
 	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask5(stmp, 5, 2, oriImg, c);
-	stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
 	stmp = TrapBallMask5(stmp, 4, 2, oriImg, c);
 	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
 	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);

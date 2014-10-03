@@ -150,11 +150,11 @@ static void onMouse(int event, int x, int y, int flags, void*)
 void VAV_MainFrame::OnButton_BuildVectorization()
 {
 	D3DApp& d3dApp = GetVavView()->GetD3DApp();
-	FrameInfo fi = ComputeFrame2(m_vavImage);
-	m_BackGround.m_FI = fi;
-	SetDrawFrame(d3dApp, fi);
-	GetVavView()->OnDraw(0);
-	return;
+// 	FrameInfo fi = ComputeFrame2(m_vavImage);
+// 	m_BackGround.m_FI = fi;
+// 	SetDrawFrame(d3dApp, fi);
+// 	GetVavView()->OnDraw(0);
+// 	return;
 	static int iinit = 0;
 	if(!iinit)
 	{
