@@ -31,7 +31,7 @@ bool checkmask3x3(cv::Mat img, int x, int y)
 	return true;
 }
 
-bool drawmask5x5(cv::Mat img, int x, int y, cv::Vec3b color, cv::Mat dst)
+bool drawmask3x3(cv::Mat img, int x, int y, cv::Vec3b color, cv::Mat dst)
 {
 	for(int a = y - 1; a <= y + 1; ++a)
 	{
@@ -39,7 +39,7 @@ bool drawmask5x5(cv::Mat img, int x, int y, cv::Vec3b color, cv::Mat dst)
 		{
 			if(a >= 0 && b >= 0 && a < dst.rows && b < dst.cols)
 			{
-				//if(img.at<cv::Vec3b>(a, b)[2] != 0)
+				if(img.at<cv::Vec3b>(a, b)[2] != 0)
 				{
 					dst.at<cv::Vec3b>(a, b) = color;
 				}
@@ -49,19 +49,42 @@ bool drawmask5x5(cv::Mat img, int x, int y, cv::Vec3b color, cv::Mat dst)
 	return true;
 }
 
-Lines FrameInfo::GetLineWidth()
+bool drawmask5x5(cv::Mat img, int x, int y, cv::Vec3b color, cv::Mat dst)
+{
+	for(int a = y - 2; a <= y + 2; ++a)
+	{
+		for(int b = x - 2; b <= x + 2; ++b)
+		{
+			if(a >= 0 && b >= 0 && a < dst.rows && b < dst.cols)
+			{
+				if(img.at<cv::Vec3b>(a, b)[2] != 0)
+				{
+					dst.at<cv::Vec3b>(a, b) = color;
+				}
+			}
+		}
+	}
+	return true;
+}
+
+Lines FrameInfo::GetLine1Width()
 {
 	return ConvertFromConstraintLW(curves1, lineWidth);
 }
 
-Vector3s2d FrameInfo::GetLineColor()
+Vector3s2d FrameInfo::GetLine1Color()
 {
 	return ConvertFromConstraintC(curves1, color1);
 }
 
-Color2Side FrameInfo::GetBoundaryColor()
+Color2Side FrameInfo::GetLine2Color()
 {
 	return ConvertFromConstraintC2(curves2, color2);
+}
+
+Vector3s2d FrameInfo::GetLine3Color()
+{
+	return ConvertFromConstraintC(curves3, color3);
 }
 
 FrameInfo ComputeFrame1FG(cv::Mat img, cv::Mat fg, ColorRegion* cr)
@@ -260,7 +283,6 @@ FrameInfo ComputeFrame1FG(cv::Mat img, cv::Mat fg, ColorRegion* cr)
 		// show patch img
 		cv::Mat colorline1 = MakeColorLineImage(img, blackLine2);
 		colorline = LineSplitAtIntersection(blackLine2, 1);
-		
 		ColorConstraints ccms;
 		cv::Mat simg = size2.clone();
 		simg = cv::Scalar(0);
@@ -279,15 +301,15 @@ FrameInfo ComputeFrame1FG(cv::Mat img, cv::Mat fg, ColorRegion* cr)
 		cmmsIndexImg = FixSpaceMask(cmmsIndexImg);
 		cmmsIndexImg = MixTrapBallMask(cmmsIndexImg, size2, 30, 40);
 		S6ReColor(cmmsIndexImg, img.clone(), ccms);
-// 		{
-// 			static int sid = -1;
-// 			sid++;
-// 			char path[100];
-// 			simg = cmmsIndexImg.clone();
-// 			FloodFillReColor(simg);
-// 			sprintf(path, "cmms2_%d.png", sid);
-// 			cv::imwrite(path, simg);
-// 		}
+//      {
+//          static int sid = -1;
+//          sid++;
+//          char path[100];
+//          simg = cmmsIndexImg.clone();
+//          FloodFillReColor(simg);
+//          sprintf(path, "cmms2_%d.png", sid);
+//          cv::imwrite(path, simg);
+//      }
 //		cv::Mat colorline2 = MakeColorLineImage(img, colorline);
 //      cv::Mat show = cmmsIndexImg.clone();
 //      for(int i = 0; i < show.rows; ++i)
@@ -1078,16 +1100,6 @@ FrameInfos LoadFrameInfos(std::string path)
 	return frms;
 }
 
-void SetDrawFrame(D3DApp& d3dApp, FrameInfo& fi)
-{
-	d3dApp.ClearTriangles();
-	d3dApp.ClearSkeletonLines();
-	d3dApp.AddDiffusionLines(fi.curves2, fi.GetBoundaryColor());
-	d3dApp.AddLinesWidth(fi.curves1, fi.GetLineWidth(), fi.GetLineColor());
-	d3dApp.BuildPoint();
-	d3dApp.DrawScene();
-}
-
 void SaveBGInfos(std::string path, BackGround& frms)
 {
 	std::ofstream ofs(path.c_str(), std::ios::binary);
@@ -1115,8 +1127,8 @@ BackGround LoadBGInfos(std::string path)
 void RemoveBGs_FG_Part(FrameInfo& fi, cv::Mat fg)
 {
 	Lines& lines1 = fi.curves1;
-	Lines widths1 = fi.GetLineWidth();
-	Vector3s2d colors1 = fi.GetLineColor();
+	Lines widths1 = fi.GetLine1Width();
+	Vector3s2d colors1 = fi.GetLine1Color();
 	Lines reslines;
 	Lines reswidths;
 	Vector3s2d rescolors;
@@ -1157,7 +1169,7 @@ void RemoveBGs_FG_Part(FrameInfo& fi, cv::Mat fg)
 	fi.color1 = ConvertToConstraintC(reslines, rescolors);
 	Lines reslines2;
 	Lines& lines2 = fi.curves2;
-	Color2Side color2 = fi.GetBoundaryColor();
+	Color2Side color2 = fi.GetLine2Color();
 	Color2Side rescolors2;
 	for(int a = 0; a < lines2.size(); ++a)
 	{
@@ -1198,8 +1210,8 @@ void RemoveBGs_FG_Part(FrameInfo& fi, cv::Mat fg)
 void RemoveFGs_BG_Part(FrameInfo& fi, cv::Mat fg)
 {
 	Lines& lines1 = fi.curves1;
-	Lines widths1 = fi.GetLineWidth();
-	Vector3s2d colors1 = fi.GetLineColor();
+	Lines widths1 = fi.GetLine1Width();
+	Vector3s2d colors1 = fi.GetLine1Color();
 	Lines reslines;
 	Lines reswidths;
 	Vector3s2d rescolors;
@@ -1241,9 +1253,9 @@ void RemoveFGs_BG_Part(FrameInfo& fi, cv::Mat fg)
 	fi.curves1 = reslines;
 	fi.lineWidth = ConvertToConstraintLW(reslines, reswidths);
 	fi.color1 = ConvertToConstraintC(reslines, rescolors);
-	Lines reslines2;
+	reslines.clear();
 	Lines& lines2 = fi.curves2;
-	Color2Side color2 = fi.GetBoundaryColor();
+	Color2Side color2 = fi.GetLine2Color();
 	Color2Side rescolors2;
 	for(int a = 0; a < lines2.size(); ++a)
 	{
@@ -1264,7 +1276,7 @@ void RemoveFGs_BG_Part(FrameInfo& fi, cv::Mat fg)
 			{
 				if(nline.size() > 4)
 				{
-					reslines2.push_back(nline);
+					reslines.push_back(nline);
 					rescolors2.left.push_back(lcolor);
 					rescolors2.right.push_back(rcolor);
 				}
@@ -1273,12 +1285,48 @@ void RemoveFGs_BG_Part(FrameInfo& fi, cv::Mat fg)
 				rcolor.clear();
 			}
 		}
-		reslines2.push_back(nline);
+		reslines.push_back(nline);
 		rescolors2.left.push_back(lcolor);
 		rescolors2.right.push_back(rcolor);
 	}
-	fi.curves2 = reslines2;
-	fi.color2 = ConvertToConstraintC2(reslines2, rescolors2);
+	fi.curves2 = reslines;
+	fi.color2 = ConvertToConstraintC2(reslines, rescolors2);
+	reslines.clear();
+	Lines& lines3 = fi.curves3;
+	Vector3s2d colors3 = fi.GetLine3Color();
+	rescolors.clear();
+	for(int a = 0; a < lines3.size(); ++a)
+	{
+		Line nline;
+		Vector3s ncolor;
+		Line& line = lines3[a];
+		for(int b = 0; b < line.size(); ++b)
+		{
+			uchar v = fg.at<uchar>(line[b].y, line[b].x);
+			if(v != 0)
+			{
+				nline.push_back(line[b]);
+				ncolor.push_back(colors3[a][b]);
+			}
+			else
+			{
+				if(nline.size() > 5)
+				{
+					reslines.push_back(nline);
+					rescolors.push_back(ncolor);
+				}
+				nline.clear();
+				ncolor.clear();
+			}
+		}
+		if(nline.size() > 5)
+		{
+			reslines.push_back(nline);
+			rescolors.push_back(ncolor);
+		}
+	}
+	fi.curves3 = reslines;
+	fi.color3 = ConvertToConstraintC(reslines, rescolors);
 }
 
 FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr /*= NULL*/)
@@ -1646,5 +1694,48 @@ FrameInfo ComputeFrameFG09(cv::Mat img, cv::Mat fg, ColorRegion* cr)
 	fi.curves2 = colorline;
 	fi.color2 = ConvertToConstraintC2(colorline, color2s2);
 	return fi;
+}
+
+FrameInfo ComputeFrameFGIsoline(cv::Mat img)
+{
+	// ISO CONSTRAINT
+	cv::Mat   isoimg = MakeIsoSurfaceImg(img, 24);
+	Lines diffusionConstrant = S6GetPatchs(isoimg, 0, 0);
+	Vector3s2d colors;
+	colors = GetLinesColor(img, diffusionConstrant);
+//  colors = FixLineColors(colors, 400, 10);
+//  colors = MedianLen(colors, 20, 3);
+	colors = SmoothingLen5(colors, 0, 2);
+	diffusionConstrant = SmoothingLen5(diffusionConstrant, 0, 5);
+	FrameInfo res;
+	res.curves3 = diffusionConstrant;
+	res.color3 = ConvertToConstraintC(diffusionConstrant, colors);
+	return res;
+}
+
+FrameInfo ComputeCurve(cv::Mat img)
+{
+	FrameInfo res;
+	vavImage expImg = WhiteBalance2(img.clone());
+	expImg = ImgSharpen(expImg);
+	const int MASK1_SIZE = 5;
+	const int MASK2_SIZE = 5;
+	const float secDer = 0.001f;
+	cv::Mat ccp1 = img.clone(), ccp2 = expImg.Clone();
+	cv::Mat slicimg;
+	CmCurveEx* ccp1_curve = NULL;
+	CvLines tpnts2d;
+	const CEdges& edges = ccp1_curve->GetEdges();
+	for(size_t i = 0; i < edges.size(); i++)
+	{
+		tpnts2d.push_back(edges[i].pnts);
+	}
+	Lines blackLine = GetLines(tpnts2d, 0.5, 0.5);
+	cvtColor(ccp1, ccp1, CV_BGR2GRAY);
+	ccp1.convertTo(ccp1, CV_32F, 1.0 / 255);
+	ccp1_curve = new CmCurveEx(ccp1);
+	ccp1_curve->CalSecDer(MASK1_SIZE, secDer);
+	ccp1_curve->Link();
+	return res;
 }
 

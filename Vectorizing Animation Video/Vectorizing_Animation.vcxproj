@@ -211,6 +211,7 @@
     <ClInclude Include="ColorConstraintMedian.h" />
     <ClInclude Include="ColorConstraintRBF.h" />
     <ClInclude Include="ConvStr.h" />
+    <ClInclude Include="CurveMatching.h" />
     <ClInclude Include="curve\BezierCurve.h" />
     <ClInclude Include="curve\BsplineCurve.h" />
     <ClInclude Include="curve\HSplineCurve.h" />
@@ -313,6 +314,7 @@
     <ClCompile Include="ColorConstraintMedian.cpp" />
     <ClCompile Include="ColorConstraintRBF.cpp" />
     <ClCompile Include="ConvStr.cpp" />
+    <ClCompile Include="CurveMatching.cpp" />
     <ClCompile Include="curve\BezierCurve.cpp" />
     <ClCompile Include="curve\BsplineCurve.cpp" />
     <ClCompile Include="curve\HSplineCurve.cpp" />
@@ -423,6 +425,10 @@
     <ClCompile Include="VAV_MainFrm2.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="VAV_MainFrm3.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="VAV_View.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>

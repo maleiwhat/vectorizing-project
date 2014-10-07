@@ -138,7 +138,6 @@ protected:
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
 	BOOL CreateCaptionBar();
 public:
-	afx_msg void OnComboColorinterpolation();
 	afx_msg void OnButtonCanny();
 	afx_msg void OnSpinCannyThreshold1();
 	afx_msg void OnSpinCannyThreshold2();
@@ -204,6 +203,8 @@ public:
 	afx_msg void OnCheck_IsosurfaceRegion();
 	afx_msg void OnUpdateCheck_IsosurfaceRegion(CCmdUI *pCmdUI);
 	
+	afx_msg void OnButton_Curvematching();
+	afx_msg void OnButton_Zhang09();
 };
 
 

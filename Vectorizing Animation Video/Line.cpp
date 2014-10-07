@@ -602,6 +602,48 @@ Lines FixLineWidths(const Lines& widths, int range)
 }
 
 
+ints FixValueByLinearInterpolation(const ints& cvp, int range)
+{
+	ints cps = cvp;
+	for(int i = 0; i < cvp.size(); ++i)
+	{
+		if(cvp[i] < 1)
+		{
+			int lsetValueX = -1;
+			int rsetValueX = -1;
+			int j = 1;
+			for(; j < range; ++j)
+			{
+				int left = i - j;
+				int right = i + j;
+				if(left > 0 && cvp[left] > 0)
+				{
+					lsetValueX = cvp[left];
+					break;
+				}
+				if(right < cvp.size() && cvp[right] > 0)
+				{
+					rsetValueX = cvp[right];
+					break;
+				}
+			}
+			if(lsetValueX != -1 && rsetValueX != -1)
+			{
+				cps[i] = (lsetValueX + rsetValueX) / 2;
+			}
+			else if(lsetValueX != -1)
+			{
+				cps[i] = lsetValueX;
+			}
+			else if(rsetValueX != -1)
+			{
+				cps[i] = rsetValueX;
+			}
+		}
+	}
+	return cps;
+}
+
 ints FixIndexs(const ints& cvp, int range)
 {
 	ints cps = cvp;
@@ -3525,6 +3567,30 @@ void ConnectNearestLines2Side(const LineEnds& les, Lines& pos, Color2Side& width
 				FixEndWidth(elongationw2, 20);
 			}
 		}
+	}
+}
+
+void IncreaseDensity(Lines& pos)
+{
+	for(int i = 0; i < pos.size(); ++i)
+	{
+		Line& nowLine = pos[i];
+		IncreaseDensity(nowLine);
+	}
+}
+void IncreaseDensity(Line& pos)
+{
+	{
+		Line ans(pos.size() * 2 - 1);
+		for(int i = 0; i < (int)pos.size() - 1; ++i)
+		{
+			Vector2& v1 = pos[i];
+			Vector2& v2 = pos[i + 1];
+			ans[i * 2] = v1;
+			ans[i * 2 + 1] = (v2 + v1) * 0.5;
+		}
+		ans.back() = pos.back();
+		pos = ans;
 	}
 }
 

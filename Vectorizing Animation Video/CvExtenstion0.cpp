@@ -1079,6 +1079,15 @@ bool LinkTrapBallBack(Line& li, const Vector2& ahead, cv::Mat& image,
 	return false;
 }
 
+bool IsSafePos3(cv::Mat img, int x, int y)
+{
+	if(x >= 2 && y >= 2 && x < img.cols - 2 && y < img.rows - 2)
+	{
+		return true;
+	}
+	return false;
+}
+
 bool IsSafePos2(cv::Mat img, int x, int y)
 {
 	if(x >= 1 && y >= 1 && x < img.cols - 1 && y < img.rows - 1)
@@ -1720,15 +1729,34 @@ cv::Mat TrapBallMaskAll(cv::Mat image, cv::Mat oriImg)
 	}
 	int c = 1;
 	//6
-	cv::Mat show;
-	stmp = TrapBallMask5(stmp, 6, 2, oriImg, c);
-	stmp = TrapBallMask3(stmp, 5, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
-	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
+	cv::Mat show, showregion;
 	stmp = TrapBallMask5(stmp, 4, 2, oriImg, c);
 	stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
+	showregion = stmp.clone();
+	FloodFillReColor(showregion);
+	g_cvshowEX.AddShow("TrapBall=4 3", showregion);
 	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
+	showregion = stmp.clone();
+	FloodFillReColor(showregion);
+	g_cvshowEX.AddShow("TrapBall=4 2", showregion);
+	stmp = TrapBallMask3(stmp, 1, cv::MORPH_ELLIPSE, 5);
+	showregion = stmp.clone();
+	FloodFillReColor(showregion);
+	g_cvshowEX.AddShow("TrapBall=4 1", showregion);
+	stmp = TrapBallMask5(stmp, 3, 2, oriImg, c);
+	stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
+	stmp = TrapBallMask3(stmp, 1, cv::MORPH_ELLIPSE, 5);
+	showregion = stmp.clone();
+	FloodFillReColor(showregion);
+	g_cvshowEX.AddShow("TrapBall=3", showregion);
+	stmp = TrapBallMask5(stmp, 2, 2, oriImg, c);
+	showregion = stmp.clone();
+	FloodFillReColor(showregion);
+	g_cvshowEX.AddShow("TrapBall=2", showregion);
+	stmp = TrapBallMaskRect(stmp);
+	showregion = stmp.clone();
+	FloodFillReColor(showregion);
+	g_cvshowEX.AddShow("TrapBallMaskRect", showregion);
 //  stmp = TrapBallMask5(stmp, 3, 2, oriImg, c);
 //  stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
 	//2
@@ -2011,7 +2039,7 @@ cv::Mat TrapBallMask5(cv::Mat LineImg, int size, int moprh, cv::Mat oriImg, int&
 			Vector3 c1 = cc.GetColorVector3(v.x, v.y);
 			cv::Vec3b c2b = oriImg.at<cv::Vec3b>(v.y / 2, v.x / 2);
 			Vector3 c2(c2b[0], c2b[1], c2b[2]);
-			if(c1.distance(c2) < 200)
+			if(c1.distance(c2) < 30)
 			{
 				res.at<cv::Vec3b>(v.y, v.x) = idxColor;
 				V2 test[4];
@@ -2156,8 +2184,6 @@ cv::Mat MixTrapBallMask(cv::Mat LineImg, cv::Mat oriImg, double threshold1, doub
 	}
 	// ­p¼Æ»Pºâ®t­È
 	ints alreadylost;
-	//ints whowins;
-	g_cvshowEX.AddShow("LineImg1", res);
 	int_int_maps iims(alldis.size());
 	int_double_maps idm1s(alldis.size());
 	int_double_maps idm2s(alldis.size());
@@ -2251,7 +2277,6 @@ cv::Mat MixTrapBallMask(cv::Mat LineImg, cv::Mat oriImg, double threshold1, doub
 			}
 		}
 	}
-	g_cvshowEX.AddShow("LineImg2", res);
 	return res;
 }
 
@@ -2519,7 +2544,7 @@ cv::Mat WhiteBalance2(cv::Mat oriImg)
 		thres += 0.5;
 	}
 	printf("avg %.2f %.2f %.2f %.2f ymax %d\n", Dbavg, Dravg, Mbavg, Mravg, Ymax);
-	cv::imshow("wtf", wtf);
+	//cv::imshow("wtf", wtf);
 	double Ravg = std::accumulate(rs.begin(), rs.end(), 0.0) / rs.size();
 	double Gavg = std::accumulate(gs.begin(), gs.end(), 0.0) / gs.size();
 	double Bavg = std::accumulate(bs.begin(), bs.end(), 0.0) / bs.size();
@@ -2576,6 +2601,155 @@ cv::Mat ImgSharpen(cv::Mat oriImg)
 	double p = 0.6;
 	cv::addWeighted(image, 1 + p, res, -p, 0, res);
 	g_cvshowEX.AddShow("ImgSharpen", res);
+	return res;
+}
+
+bool check2x2is0(cv::Mat img, int x, int y)
+{
+	bool has0 = false;
+	if(img.at<cv::Vec3b>(y, x)[0] == 0)
+	{
+		has0 = true;
+	}
+	else if(img.at<cv::Vec3b>(y, x + 1)[0] == 0)
+	{
+		has0 = true;
+	}
+	else if(img.at<cv::Vec3b>(y + 1, x)[0] == 0)
+	{
+		has0 = true;
+	}
+	else if(img.at<cv::Vec3b>(y + 1, x + 1)[0] == 0)
+	{
+		has0 = true;
+	}
+	if(img.at<cv::Vec3b>(y, x)[0] == 255)
+	{
+		return false;
+	}
+	if(img.at<cv::Vec3b>(y, x + 1)[0] == 255)
+	{
+		return false;
+	}
+	if(img.at<cv::Vec3b>(y + 1, x)[0] == 255)
+	{
+		return false;
+	}
+	if(img.at<cv::Vec3b>(y + 1, x + 1)[0] == 255)
+	{
+		return false;
+	}
+	return has0;
+}
+
+cv::Mat TrapBallMaskRect(cv::Mat LineImg)
+{
+	cv::Mat res = LineImg.clone();
+	struct V2
+	{
+		V2() {}
+		V2(int x, int y): x(x), y(y) {}
+		int x, y;
+	};
+	typedef std::deque<V2> V2s;
+	for(int i = 0; i < res.rows - 1 ; ++i)
+	{
+		for(int j = 0; j < res.cols - 1; ++j)
+		{
+			V2 test[20];
+			V2s checks;
+			checks.push_back(V2(j, i));
+			while(!checks.empty())
+			{
+				V2 v = checks.front();
+				checks.pop_front();
+				if(!check2x2is0(res, v.x, v.y))
+				{
+					continue;
+				}
+				for(int k = 0; k < 8; ++k)
+				{
+					test[k] = v;
+				}
+				test[0].y -= 1;
+				test[1].y -= 1;
+				test[1].x += 1;
+				test[2].x += 2;
+				test[3].x += 2;
+				test[3].y += 1;
+				test[4].x += 1;
+				test[4].y += 2;
+				test[5].y += 2;
+				test[6].x -= 1;
+				test[6].y += 1;
+				test[7].x -= 1;
+				bool hascolor = false;
+				for(int k = 0; k < 8; ++k)
+				{
+					if(IsSafePos2(res, test[k].x, test[k].y))
+					{
+						cv::Vec3b cc = res.at<cv::Vec3b>(test[k].y, test[k].x);
+						if(cc[0] != 0 && cc[0] != 255)
+						{
+							res.at<cv::Vec3b>(v.y, v.x) = cc;
+							res.at<cv::Vec3b>(v.y, v.x + 1) = cc;
+							res.at<cv::Vec3b>(v.y + 1, v.x) = cc;
+							res.at<cv::Vec3b>(v.y + 1, v.x + 1) = cc;
+							hascolor = true;
+							break;
+						}
+					}
+				}
+				if(hascolor)
+				{
+					for(int k = 0; k < 20; ++k)
+					{
+						test[k] = v;
+					}
+					test[0].y -= 1;
+					test[0].x -= 1;
+					test[1].y -= 1;
+					test[2].y -= 1;
+					test[2].x += 1;
+					test[3].x += 1;
+					test[4].x += 1;
+					test[4].y += 1;
+					test[5].y += 1;
+					test[6].x -= 1;
+					test[6].y -= 1;
+					test[7].x -= 1;
+					test[8].x -= 1;
+					test[8].y -= 2;
+					test[9].y -= 2;
+					test[10].x += 1;
+					test[10].y -= 2;
+					test[11].x += 2;
+					test[11].y -= 1;
+					test[12].x += 2;
+					test[13].x += 2;
+					test[13].y += 1;
+					test[14].x += 1;
+					test[14].y += 2;
+					test[15].y += 2;
+					test[16].y += 2;
+					test[16].x -= 1;
+					test[17].x -= 2;
+					test[17].y += 1;
+					test[18].x -= 2;
+					test[19].y -= 1;
+					test[19].x -= 2;
+					for(int k = 0; k < 20; ++k)
+					{
+						if(IsSafePos3(res, test[k].x, test[k].y)
+								&& check2x2is0(res, test[k].x, test[k].y))
+						{
+							checks.push_back(test[k]);
+						}
+					}
+				}
+			}
+		}
+	}
 	return res;
 }
 

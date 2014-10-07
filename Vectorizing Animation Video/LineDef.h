@@ -127,6 +127,11 @@ struct Color2Side
 {
 	Vector3s2d left;
 	Vector3s2d right;
+	void reverse()
+	{
+		std::reverse(left.begin(), left.end());
+		std::reverse(right.begin(), right.end());
+	}
 private:
 	friend class boost::serialization::access;
 	template<class Archive>

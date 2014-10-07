@@ -1,8 +1,6 @@
 #pragma once
 #include "LineDef.h"
 #include "LineWidthConstraint.h"
-#include <opencv2\core\core.hpp>
-#include "DX11\d3dApp.h"
 
 struct FrameInfo
 {
@@ -14,9 +12,13 @@ struct FrameInfo
 	// diffusion
 	Color2SideConstraint color2;
 	Lines curves2;
-	Lines GetLineWidth();
-	Vector3s2d GetLineColor();
-	Color2Side GetBoundaryColor();
+	// isoline
+	Lines curves3;
+	ColorConstraints color3;
+	Lines GetLine1Width();
+	Vector3s2d GetLine1Color();
+	Color2Side GetLine2Color();
+	Vector3s2d GetLine3Color();
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -52,7 +54,6 @@ private:
 		}
 		int w = m_FG.cols;
 		int h = m_FG.rows;
-
 	}
 	template<class Archive>
 	void load(Archive& ar, const unsigned int version)
@@ -84,10 +85,12 @@ FrameInfo ComputeFrame1(cv::Mat img, ColorRegion* cr = NULL);
 FrameInfo ComputeFrame1FG(cv::Mat img, cv::Mat fg, ColorRegion* cr);
 FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr = NULL);
 FrameInfo ComputeFrame2FG(cv::Mat img, cv::Mat fg, ColorRegion* cr);
-void SetDrawFrame(D3DApp& d3dApp, FrameInfo& fi);
+FrameInfo ComputeCurve(cv::Mat img);
 void RemoveBGs_FG_Part(FrameInfo& fi, cv::Mat fg);
 void RemoveFGs_BG_Part(FrameInfo& fi, cv::Mat fg);
 FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr = NULL);
 FrameInfo ComputeFrameFG09(cv::Mat img, cv::Mat fg, ColorRegion* cr);
 bool drawmask5x5(cv::Mat img, int x, int y, cv::Vec3b color, cv::Mat dst);
+bool drawmask3x3(cv::Mat img, int x, int y, cv::Vec3b color, cv::Mat dst);
 bool checkmask3x3(cv::Mat img, int x, int y);
+FrameInfo ComputeFrameFGIsoline(cv::Mat img);

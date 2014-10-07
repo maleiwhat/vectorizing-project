@@ -150,6 +150,8 @@ void ConnectNearestLines2Side(const LineEnds& les, Lines& pos, Color2Side& width
 						 double angle);
 void IncreaseDensity(Line& pos, Line& pos2);
 void IncreaseDensity(Lines& pos, Lines& pos2);
+void IncreaseDensity(Lines& pos);
+void IncreaseDensity(Line& pos);
 void FixBeginWidth(Line& width, int len);
 void FixEndWidth(Line& width, int len);
 void FixBeginWidth(Vector3s& width, int len);

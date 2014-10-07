@@ -1390,7 +1390,7 @@ ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
 		{
 			end = lines[li2.m_id].front();
 		}
-		assert(start == end);
+		//assert(start != end);
 		patchContour.push_back(ps);
 		if(it->Inter2().size() == 0)
 		{

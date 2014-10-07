@@ -1,8 +1,8 @@
 
 #include "ColorConstraintMathModel.h"
 
-const int THRESHOLD = 20;
-const int THRESHOLD2 = 20;
+const int QUARTIC_THRESHOLD = 900;
+const int LINEAR_THRESHOLD = 400;
 
 void ColorConstraintMathModel::AddPoint(double x, double y, const cv::Vec3b& p)
 {
@@ -46,23 +46,17 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 	{
 		BuildModel();
 	}
-	if(m_ColorSize > THRESHOLD)
+	if(m_ColorSize > QUARTIC_THRESHOLD)
 	{
 		double rr1 = x1q[0] + x1q[1] * x + x1q[2] * y + x1q[3] * x * x + x1q[4] * y * y + x1q[5] * x * y;
 		double gg1 = x2q[0] + x2q[1] * x + x2q[2] * y + x2q[3] * x * x + x2q[4] * y * y + x2q[5] * x * y;
 		double bb1 = x3q[0] + x3q[1] * x + x3q[2] * y + x3q[3] * x * x + x3q[4] * y * y + x3q[5] * x * y;
-		double rr2 = x1[0] + x1[1] * x + x1[2] * y;
-		double gg2 = x2[0] + x2[1] * x + x2[2] * y;
-		double bb2 = x3[0] + x3[1] * x + x3[2] * y;
-		rr1 = (rr1 + rr2) * 0.5;
-		gg1 = (gg1 + gg2) * 0.5;
-		bb1 = (bb1 + bb2) * 0.5;
 		Bounding(rr1, 0, 255);
 		Bounding(gg1, 0, 255);
 		Bounding(bb1, 0, 255);
 		return Vector3(rr1, gg1, bb1);
 	}
-	else if(m_ColorSize > THRESHOLD2)
+	else if(m_ColorSize > LINEAR_THRESHOLD)
 	{
 		double rr2 = x1[0] + x1[1] * x + x1[2] * y;
 		double gg2 = x2[0] + x2[1] * x + x2[2] * y;
@@ -72,24 +66,9 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
 		Bounding(bb2, 0, 255);
 		return Vector3(rr2, gg2, bb2);
 	}
-	else if(m_Colors.size() > 0)
+	else if(m_ColorSize > 0)
 	{
-		double rr = 0;
-		double gg = 0;
-		double bb = 0;
-		for(int i = 0; i < m_Colors.size(); ++i)
-		{
-			rr += m_Colors[i].x;
-			gg += m_Colors[i].y;
-			bb += m_Colors[i].z;
-		}
-		rr /= m_Colors.size();
-		gg /= m_Colors.size();
-		bb /= m_Colors.size();
-		Bounding(rr, 0, 255);
-		Bounding(gg, 0, 255);
-		Bounding(bb, 0, 255);
-		return Vector3(rr, gg, bb);
+		return m_Median;
 	}
 	return Vector3(255, 0, 0);
 }
@@ -112,7 +91,7 @@ cv::Vec3b ColorConstraintMathModel::GetColorCvPoint(double x, double y)
 	{
 		BuildModel();
 	}
-	if(m_Colors.size() > THRESHOLD)
+	if(m_ColorSize > QUARTIC_THRESHOLD)
 	{
 		double rr = x1q[0] + x1q[1] * x + x1q[2] * y + x1q[3] * x * x + x1q[4] * y * y + x1q[5] * x * y;
 		double gg = x2q[0] + x2q[1] * x + x2q[2] * y + x2q[3] * x * x + x2q[4] * y * y + x2q[5] * x * y;
@@ -122,7 +101,7 @@ cv::Vec3b ColorConstraintMathModel::GetColorCvPoint(double x, double y)
 		Bounding(bb, 0, 255);
 		return cv::Vec3b(rr, gg, bb);
 	}
-	else if(m_Colors.size() > THRESHOLD2)
+	else if(m_ColorSize > LINEAR_THRESHOLD)
 	{
 		double rr = x1[0] + x1[1] * x + x1[2] * y;
 		double gg = x2[0] + x2[1] * x + x2[2] * y;
@@ -132,24 +111,9 @@ cv::Vec3b ColorConstraintMathModel::GetColorCvPoint(double x, double y)
 		Bounding(bb, 0, 255);
 		return cv::Vec3b(rr, gg, bb);
 	}
-	else if(m_Colors.size() > 0)
+	else if(m_ColorSize > 0)
 	{
-		double rr = 0;
-		double gg = 0;
-		double bb = 0;
-		for(int i = 0; i < m_Colors.size(); ++i)
-		{
-			rr += m_Colors[i].x;
-			gg += m_Colors[i].y;
-			bb += m_Colors[i].z;
-		}
-		rr /= m_Colors.size();
-		gg /= m_Colors.size();
-		bb /= m_Colors.size();
-		Bounding(rr, 0, 255);
-		Bounding(gg, 0, 255);
-		Bounding(bb, 0, 255);
-		return cv::Vec3b(rr, gg, bb);
+		return cv::Vec3b(m_Median[0], m_Median[1], m_Median[2]);
 	}
 	return cv::Vec3b(255, 0, 0);
 }
@@ -159,10 +123,38 @@ ColorConstraintMathModel::ColorConstraintMathModel(): m_NeedBuildModel(true)
 	m_ColorSize = 0;
 }
 
+bool CompareVector3(const Vector3& a, const Vector3& b)
+{
+	if(a.x < b.x)
+	{
+		return true;
+	}
+	else if(a.x > b.x)
+	{
+		return false;
+	}
+	if(a.y < b.y)
+	{
+		return true;
+	}
+	else if(a.y > b.y)
+	{
+		return false;
+	}
+	if(a.z < b.z)
+	{
+		return true;
+	}
+	else if(a.z > b.z)
+	{
+		return false;
+	}
+}
 void ColorConstraintMathModel::BuildModel()
 {
 	m_NeedBuildModel = false;
-	if(m_ColorSize > THRESHOLD)
+	m_ColorSize = m_Colors.size();
+	if(m_Colors.size() > QUARTIC_THRESHOLD)
 	{
 		const int LEN = m_Colors.size();
 		const int DIM = 6;
@@ -192,7 +184,7 @@ void ColorConstraintMathModel::BuildModel()
 		x2q = Atalu.solve(Atb2);
 		x3q = Atalu.solve(Atb3);
 	}
-	if(m_ColorSize > THRESHOLD2)
+	else if(m_Colors.size() > LINEAR_THRESHOLD)
 	{
 		const int LEN = m_Colors.size();
 		const int DIM = 3;
@@ -218,6 +210,12 @@ void ColorConstraintMathModel::BuildModel()
 		x1 = Atalu.solve(Atb1);
 		x2 = Atalu.solve(Atb2);
 		x3 = Atalu.solve(Atb3);
+	}
+	else if(m_Colors.size() > 0)
+	{
+		Vector3s tmp = m_Colors;
+		std::sort(tmp.begin(), tmp.end(), CompareVector3);
+		m_Median = tmp[m_ColorSize / 2];
 	}
 }
 
