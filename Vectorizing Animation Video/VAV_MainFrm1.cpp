@@ -714,7 +714,7 @@ cv::Point GetNormalFrom2Point(const cv::Point& p1, const cv::Point& p2)
 	return cv::Point(-v.y, v.x);
 }
 
-void DrawWidthToRasterImage(const cv::Point& p1, const cv::Point& n, int w, cv::Vec3b c, cv::Mat img)
+void DrawWidthToRasterImage(const cv::Point& p1, const cv::Point& n, int w, cv::Vec3b c, cv::Mat& img)
 {
 	for(int i = 0; i <= w; ++i)
 	{
@@ -726,7 +726,7 @@ void DrawWidthToRasterImage(const cv::Point& p1, const cv::Point& n, int w, cv::
 	}
 }
 
-int GetWidthFromRasterImage(const cv::Point& p1, const cv::Point& n, cv::Mat img)
+int GetWidthFromRasterImage(const cv::Point& p1, const cv::Point& n, cv::Mat& img)
 {
 	cv::Vec3b white(255, 255, 255);
 	cv::Vec3b red(0, 0, 255);
@@ -744,7 +744,7 @@ int GetWidthFromRasterImage(const cv::Point& p1, const cv::Point& n, cv::Mat img
 			{
 				maxw = i;
 			}
-			else if (maxw > 0)
+			else if(maxw > 0)
 			{
 				return maxw;
 			}
@@ -757,7 +757,7 @@ int GetWidthFromRasterImage(const cv::Point& p1, const cv::Point& n, cv::Mat img
 	return maxw;
 }
 
-ints GetLW_Points(const CvLine& cline, cv::Mat img)
+ints GetLW_Points(const CvLine& cline, cv::Mat& img)
 {
 	ints res;
 	for(int i = 0; i < cline.size(); ++i)
@@ -767,7 +767,7 @@ ints GetLW_Points(const CvLine& cline, cv::Mat img)
 	return res;
 }
 
-ints GetRW_Points(const CvLine& cline, cv::Mat img)
+ints GetRW_Points(const CvLine& cline, cv::Mat& img)
 {
 	ints res;
 	for(int i = 0; i < cline.size(); ++i)
@@ -776,7 +776,7 @@ ints GetRW_Points(const CvLine& cline, cv::Mat img)
 	}
 	return res;
 }
-ints GetTW_Points(const CvLine& cline, cv::Mat img)
+ints GetTW_Points(const CvLine& cline, cv::Mat& img)
 {
 	ints res;
 	for(int i = 0; i < cline.size(); ++i)
@@ -785,7 +785,7 @@ ints GetTW_Points(const CvLine& cline, cv::Mat img)
 	}
 	return res;
 }
-ints GetBW_Points(const CvLine& cline, cv::Mat img)
+ints GetBW_Points(const CvLine& cline, cv::Mat& img)
 {
 	ints res;
 	for(int i = 0; i < cline.size(); ++i)
@@ -795,7 +795,7 @@ ints GetBW_Points(const CvLine& cline, cv::Mat img)
 	return res;
 }
 
-ints GetLeftWidthFromPoints(const CvLine& cline, const CvLine& normal, cv::Mat img)
+ints GetLeftWidthFromPoints(const CvLine& cline, const CvLine& normal, cv::Mat& img)
 {
 	ints res;
 	for(int i = 0; i < cline.size(); ++i)
@@ -805,7 +805,7 @@ ints GetLeftWidthFromPoints(const CvLine& cline, const CvLine& normal, cv::Mat i
 	return res;
 }
 
-ints GetRightWidthFromPoints(const CvLine& cline, const CvLine& normal, cv::Mat img)
+ints GetRightWidthFromPoints(const CvLine& cline, const CvLine& normal, cv::Mat& img)
 {
 	ints res;
 	for(int i = 0; i < cline.size(); ++i)
@@ -889,15 +889,61 @@ void VAV_MainFrame::OnButton_Zhang09()
 			{
 				const CvLine& pnts = edges[i].pnts;
 				CvLine normals = GetNormalsFromPoints(pnts);
-				ints leftW = GetLeftWidthFromPoints(pnts, normals, limg);
-				ints rightW = GetRightWidthFromPoints(pnts, normals, limg);
-				leftW = FixIndexs(leftW, 3);
-				rightW = FixIndexs(rightW, 3);
+				ints leftW = GetLeftWidthFromPoints(pnts, normals, show_ccp);
+				ints rightW = GetRightWidthFromPoints(pnts, normals, show_ccp);
+				leftW = FixValueByLinearInterpolation(leftW, 3);
+				rightW = FixValueByLinearInterpolation(rightW, 3);
 				cv::Vec3b color(rand() % 200 + 55, rand() % 200 + 55, rand() % 200 + 55);
 				for(int i = 0; i < pnts.size(); ++i)
 				{
-					DrawWidthToRasterImage(pnts[i], normals[i], rightW[i], color, limg);
-					DrawWidthToRasterImage(pnts[i], -normals[i], leftW[i], color, limg);
+					if(rightW[i] > 0 && leftW[i] > 0)
+					{
+						DrawWidthToRasterImage(pnts[i], normals[i], rightW[i], color, limg);
+						DrawWidthToRasterImage(pnts[i], -normals[i], leftW[i], color, limg);
+					}
+				}
+				for(int i = 0; i < pnts.size() - 1; ++i)
+				{
+					if(rightW[i] > 0 && leftW[i] > 0)
+					{
+						cv::Point v = pnts[i + 1] - pnts[i];
+						if(v.y < 0 && v.x > 0)
+						{
+							cv::Point p1 = pnts[i];
+							cv::Point p2 = pnts[i];
+							p1.y -= 1;
+							p2.x += 1;
+							DrawWidthToRasterImage(p1, -normals[i], leftW[i], color, limg);
+							DrawWidthToRasterImage(p2, normals[i], rightW[i], color, limg);
+						}
+						if(v.y > 0 && v.x > 0)
+						{
+							cv::Point p1 = pnts[i];
+							cv::Point p2 = pnts[i];
+							p1.y += 1;
+							p2.x += 1;
+							DrawWidthToRasterImage(p2, -normals[i], leftW[i], color, limg);
+							DrawWidthToRasterImage(p1, normals[i], rightW[i], color, limg);
+						}
+						if(v.y > 0 && v.x < 0)
+						{
+							cv::Point p1 = pnts[i];
+							cv::Point p2 = pnts[i];
+							p1.y += 1;
+							p2.x -= 1;
+							DrawWidthToRasterImage(p1, -normals[i], leftW[i], color, limg);
+							DrawWidthToRasterImage(p2, normals[i], rightW[i], color, limg);
+						}
+						if(v.y < 0 && v.x < 0)
+						{
+							cv::Point p1 = pnts[i];
+							cv::Point p2 = pnts[i];
+							p1.y -= 1;
+							p2.x -= 1;
+							DrawWidthToRasterImage(p2, -normals[i], leftW[i], color, limg);
+							DrawWidthToRasterImage(p1, normals[i], rightW[i], color, limg);
+						}
+					}
 				}
 			}
 			g_cvshowEX.AddShow("limg", limg);
@@ -906,23 +952,34 @@ void VAV_MainFrame::OnButton_Zhang09()
 			{
 				const CvLine& pnts = edges[i].pnts;
 				CvLine normals = GetNormalsFromPoints(pnts);
-				ints lW = GetLW_Points(pnts, limg);
-				ints rW = GetRW_Points(pnts, limg);
-				ints tW = GetTW_Points(pnts, limg);
-				ints bW = GetBW_Points(pnts, limg);
-				lW = FixIndexs(lW, 3);
-				rW = FixIndexs(rW, 3);
-				tW = FixIndexs(tW, 3);
-				bW = FixIndexs(bW, 3);
+				ints lW = GetLW_Points(pnts, show_ccp);
+				ints rW = GetRW_Points(pnts, show_ccp);
+				ints tW = GetTW_Points(pnts, show_ccp);
+				ints bW = GetBW_Points(pnts, show_ccp);
+				lW = FixValueByLinearInterpolation(lW, 8);
+				rW = FixValueByLinearInterpolation(rW, 8);
+				tW = FixValueByLinearInterpolation(tW, 8);
+				bW = FixValueByLinearInterpolation(bW, 8);
+				lW = ClearNoise(lW, 10);
+				rW = ClearNoise(rW, 10);
+				tW = ClearNoise(tW, 10);
+				bW = ClearNoise(bW, 10);
 				cv::Vec3b color(rand() % 200 + 55, rand() % 200 + 55, rand() % 200 + 55);
-				for(int i = 0; i < pnts.size(); ++i)
+				for(int j = 0; j < pnts.size(); ++j)
 				{
-					if((lW[i] > 0 && rW[i] > 0) || (tW[i] > 0 && bW[i] > 0))
+					if(limg.at<cv::Vec3b>(pnts[j]) == red)
 					{
-						DrawWidthToRasterImage(pnts[i], cv::Point(-1, 0), lW[i], color, limg);
-						DrawWidthToRasterImage(pnts[i], cv::Point(1, 0), rW[i], color, limg);
-						DrawWidthToRasterImage(pnts[i], cv::Point(0, -1), tW[i], color, limg);
-						DrawWidthToRasterImage(pnts[i], cv::Point(0, 1), bW[i], color, limg);
+						limg.at<cv::Vec3b>(pnts[j]) = color;
+					}
+					if(lW[j] > 0 && rW[j] > 0)
+					{
+						DrawWidthToRasterImage(pnts[j], cv::Point(-1, 0), lW[j], color, limg);
+						DrawWidthToRasterImage(pnts[j], cv::Point(1, 0), rW[j], color, limg);
+					}
+					if(tW[j] > 0 && bW[j] > 0)
+					{
+						DrawWidthToRasterImage(pnts[j], cv::Point(0, -1), tW[j], color, limg);
+						DrawWidthToRasterImage(pnts[j], cv::Point(0, 1), bW[j], color, limg);
 					}
 				}
 			}

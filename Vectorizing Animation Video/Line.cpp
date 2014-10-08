@@ -378,6 +378,40 @@ Vector3s2d SmoothingLen5(const Vector3s2d& cvp, double centroidRadio /*= 1.0*/, 
 	return cps;
 }
 
+
+ints SmoothingLen3(const ints& cvp, int repeat /*= 1*/)
+{
+	if(cvp.size() <= 2)
+	{
+		return cvp;
+	}
+	ints cps = cvp;
+	ints newcps;
+	for(int repeatCount = 0; repeatCount < repeat; repeatCount++)
+	{
+		newcps.clear();
+		newcps.push_back(cps.front());
+		for(int j = 1; j < cps.size() - 1; j ++)
+		{
+			auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1]) * 0.25;
+			newcps.push_back(vec);
+		}
+		newcps.push_back(cps.back());
+		cps = newcps;
+		// move centroid
+		newcps.clear();
+		newcps.push_back(cps.front());
+		for(int j = 1; j < cps.size() - 1; j ++)
+		{
+			newcps.push_back(cps[j]);
+		}
+		newcps.push_back(cps.back());
+		cps = newcps;
+	}
+	return cps;
+}
+
+
 Line SmoothingLen3(const Line& cvp, double centroidRadio, int repeat /*= 1*/)
 {
 	if(cvp.size() <= 2)
@@ -616,28 +650,30 @@ ints FixValueByLinearInterpolation(const ints& cvp, int range)
 			{
 				int left = i - j;
 				int right = i + j;
-				if(left > 0 && cvp[left] > 0)
+				if(left < 0)
+				{
+					left = 0;
+				}
+				if(cvp[left] > 0)
 				{
 					lsetValueX = cvp[left];
-					break;
 				}
-				if(right < cvp.size() && cvp[right] > 0)
+				if(right >= cvp.size())
+				{
+					right = cvp.size() - 1;
+				}
+				if(cvp[right] > 0)
 				{
 					rsetValueX = cvp[right];
+				}
+				if(lsetValueX != -1 && rsetValueX != -1)
+				{
 					break;
 				}
 			}
 			if(lsetValueX != -1 && rsetValueX != -1)
 			{
 				cps[i] = (lsetValueX + rsetValueX) / 2;
-			}
-			else if(lsetValueX != -1)
-			{
-				cps[i] = lsetValueX;
-			}
-			else if(rsetValueX != -1)
-			{
-				cps[i] = rsetValueX;
 			}
 		}
 	}
@@ -4975,61 +5011,61 @@ void ConnectLineEnds3_Color2(const LineEnds& les, Lines& pos, Color2Side& color2
 	for(LineEnds::const_iterator it1 = les.begin(); it1 != les.end(); ++it1)
 	{
 		const LineEnd& le1 = *it1;
-// 		if(!le1.beglinks.empty())
-// 		{
-// 			int nowid = le1.idx;
-// 			if(marked[nowid])
-// 			{
-// 				continue;
-// 			}
-// 			Line addline;
-// 			Vector3s addleft;
-// 			Vector3s addright;
-// 			addline.insert(addline.end(), pos[nowid].rbegin(), pos[nowid].rend());
-// 			addright.insert(addright.end(), color2.left[nowid].rbegin(), color2.left[nowid].rend());
-// 			addleft.insert(addleft.end(), color2.right[nowid].rbegin(), color2.right[nowid].rend());
-// 			marked[nowid] = true;
-// 			nowid = le1.beglinks.front();
-// 			while(nowid != -1 && !marked[nowid])
-// 			{
-// 				marked[nowid] = true;
-// 				int next = nowid;
-// 				const Line& loopline = pos[nowid];
-// 				const Vector3s& loopleft = color2.left[nowid];
-// 				const Vector3s& loopright = color2.right[nowid];
-// 				double dis1 = loopline.front().distance(addline.back());
-// 				double dis2 = loopline.back().distance(addline.back());
-// 				if(dis1 < dis2)
-// 				{
-// 					addline.insert(addline.end(), loopline.begin(), loopline.end());
-// 					addleft.insert(addleft.end(), loopleft.begin(), loopleft.end());
-// 					addright.insert(addright.end(), loopright.begin(), loopright.end());
-// 					if(!les[nowid].endlinks.empty())
-// 					{
-// 						next = les[nowid].endlinks.back();
-// 					}
-// 				}
-// 				else
-// 				{
-// 					addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
-// 					addright.insert(addright.end(), loopleft.rbegin(), loopleft.rend());
-// 					addleft.insert(addleft.end(), loopright.rbegin(), loopright.rend());
-// 					if(!les[nowid].beglinks.empty())
-// 					{
-// 						next = les[nowid].beglinks.front();
-// 					}
-// 				}
-// 				if(next == nowid)
-// 				{
-// 					nowid = -1;
-// 				}
-// 			}
-// 			newpos.push_back(addline);
-// 			newleft.push_back(addleft);
-// 			newright.push_back(addright);
-// 		}
-// 		else 
-			if(!le1.endlinks.empty())
+//      if(!le1.beglinks.empty())
+//      {
+//          int nowid = le1.idx;
+//          if(marked[nowid])
+//          {
+//              continue;
+//          }
+//          Line addline;
+//          Vector3s addleft;
+//          Vector3s addright;
+//          addline.insert(addline.end(), pos[nowid].rbegin(), pos[nowid].rend());
+//          addright.insert(addright.end(), color2.left[nowid].rbegin(), color2.left[nowid].rend());
+//          addleft.insert(addleft.end(), color2.right[nowid].rbegin(), color2.right[nowid].rend());
+//          marked[nowid] = true;
+//          nowid = le1.beglinks.front();
+//          while(nowid != -1 && !marked[nowid])
+//          {
+//              marked[nowid] = true;
+//              int next = nowid;
+//              const Line& loopline = pos[nowid];
+//              const Vector3s& loopleft = color2.left[nowid];
+//              const Vector3s& loopright = color2.right[nowid];
+//              double dis1 = loopline.front().distance(addline.back());
+//              double dis2 = loopline.back().distance(addline.back());
+//              if(dis1 < dis2)
+//              {
+//                  addline.insert(addline.end(), loopline.begin(), loopline.end());
+//                  addleft.insert(addleft.end(), loopleft.begin(), loopleft.end());
+//                  addright.insert(addright.end(), loopright.begin(), loopright.end());
+//                  if(!les[nowid].endlinks.empty())
+//                  {
+//                      next = les[nowid].endlinks.back();
+//                  }
+//              }
+//              else
+//              {
+//                  addline.insert(addline.end(), loopline.rbegin(), loopline.rend());
+//                  addright.insert(addright.end(), loopleft.rbegin(), loopleft.rend());
+//                  addleft.insert(addleft.end(), loopright.rbegin(), loopright.rend());
+//                  if(!les[nowid].beglinks.empty())
+//                  {
+//                      next = les[nowid].beglinks.front();
+//                  }
+//              }
+//              if(next == nowid)
+//              {
+//                  nowid = -1;
+//              }
+//          }
+//          newpos.push_back(addline);
+//          newleft.push_back(addleft);
+//          newright.push_back(addright);
+//      }
+//      else
+		if(!le1.endlinks.empty())
 		{
 			int nowid = le1.idx;
 			if(marked[nowid])
@@ -5095,4 +5131,31 @@ void ConnectLineEnds3_Color2(const LineEnds& les, Lines& pos, Color2Side& color2
 	pos = newpos;
 	color2.left = newleft;
 	color2.right = newright;
+}
+
+ints ClearNoise(const ints& cvp, int n)
+{
+	ints cps = cvp;
+	int halfn = n / 2;
+	int conti = 0;
+	for(int i = 0; i < cps.size(); ++i)
+	{
+		ints tmp;
+		if(cps[i] > 0)
+		{
+			conti++;
+		}
+		else
+		{
+			if(conti < n)
+			{
+				for(int j = i - conti; j < i; ++j)
+				{
+					cps[j] = 0;
+				}
+			}
+			conti = 0;
+		}
+	}
+	return cps;
 }

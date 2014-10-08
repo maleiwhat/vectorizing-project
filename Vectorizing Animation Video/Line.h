@@ -31,12 +31,13 @@ Lines   SmoothingLen5(const Lines& cvp, double centroidRadio = 1.0, int repeat =
 Lines   SmoothingLen3(const Lines& cvp, double centroidRadio = 1.0, int repeat = 1);
 Vector3s    SmoothingLen5(const Vector3s& cvp, double centroidRadio = 1.0, int repeat = 1);
 Vector3s2d   SmoothingLen5(const Vector3s2d& cvp, double centroidRadio = 1.0, int repeat = 1);
+ints SmoothingLen3(const ints& cvp, int repeat = 1);
 
 ints2d    MedianLenN(const ints2d& cvp, int n, int repeat = 1);
 ints2d    MedianLen5(const ints2d& cvp, int repeat = 1);
 ints    MedianLenN(const ints& cvp, int n, int repeat = 1);
 ints    MedianLen5(const ints& cvp, int repeat = 1);
-
+ints	ClearNoise(const ints& cvp, int n);
 
 Vector3s    MedianLen5(const Vector3s& cvp, int repeat = 1);
 Vector3s2d    MedianLen5(const Vector3s2d& cvp, int repeat = 1);
@@ -123,9 +124,9 @@ Acutes LinkLineAcutes(LineEnds& les, double distance, double angle);
 void LinkLineEnds180(LineEnds& les, double distance, double angle);
 void LinkLineEnds(LineEnds& les, double distance, double angle);
 bool CheckLinkEnd_Similarity180(const LineEnd& lhs, const LineEnd& rhs,
-							LineEnd::LinkMethod c, double angle);
+								LineEnd::LinkMethod c, double angle);
 bool CheckLinkEnd_Similarity(const LineEnd& lhs, const LineEnd& rhs,
-							LineEnd::LinkMethod c, double angle);
+							 LineEnd::LinkMethod c, double angle);
 void ConnectLineEnds(LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds2(const LineEnds& les, Lines& pos, Lines& width);
 void ConnectLineEnds3(const LineEnds& les, Lines& pos);
@@ -141,13 +142,13 @@ void MakePureDecorativeLine(Lines& lines, Lines& width, Vector3s2d& colors);
 
 void ClearJointArea(const LineEnds& les, Lines& pos, Color2Side& color2s, double len);
 void ConnectNearestLines_Width(const LineEnds& les, Lines& pos, Lines& width, double d2,
-						 double angle);
-void ConnectNearestLines(const LineEnds& les, Lines& pos, double d2,
 							   double angle);
-void ConnectNearestLinesColorCheck(const LineEnds& les, Lines& pos, double d2,
-						 double angle, cv::Mat img);
-void ConnectNearestLines2Side(const LineEnds& les, Lines& pos, Color2Side& width, double d2,
+void ConnectNearestLines(const LineEnds& les, Lines& pos, double d2,
 						 double angle);
+void ConnectNearestLinesColorCheck(const LineEnds& les, Lines& pos, double d2,
+								   double angle, cv::Mat img);
+void ConnectNearestLines2Side(const LineEnds& les, Lines& pos, Color2Side& width, double d2,
+							  double angle);
 void IncreaseDensity(Line& pos, Line& pos2);
 void IncreaseDensity(Lines& pos, Lines& pos2);
 void IncreaseDensity(Lines& pos);
@@ -174,3 +175,4 @@ Lines LineSplitAtTurning(Lines& lines, int nochecklen);
 cv::Vec3b GetAvgColor(cv::Mat& image, int x1, int y1, int x2, int y2);
 double GetColorDis(cv::Vec3b c1, cv::Vec3b c2);
 double GetLineColorVariance(const Line& line, const cv::Mat img);
+ints FixValueByLinearInterpolation(const ints& cvp, int range);
