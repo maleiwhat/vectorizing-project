@@ -399,8 +399,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 			ColorConstraints ccms;
 			stmp = ConvertToIndex(stmp, m_vavImage.Clone(), ccms);
 			Index2Side i2s = GetLinesIndex2Side(stmp, m_BlackLine2, 2);
-			i2s.left = FixIndexs(i2s.left, 10);
-			i2s.right = FixIndexs(i2s.right, 10);
+			i2s.left = FixIndexs(i2s.left, 10, ccms.size());
+			i2s.right = FixIndexs(i2s.right, 10, ccms.size());
 			Color2Side color2s2 = LinesIndex2Color(m_BlackLine2, i2s, ccms);
 			d3dApp.AddDiffusionLines(m_BlackLine2, color2s2);
 			d3dApp.AddLines(m_BlackLine2);

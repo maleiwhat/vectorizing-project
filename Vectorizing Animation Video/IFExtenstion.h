@@ -2,6 +2,7 @@
 #include "math\BasicMath.h"
 
 double_vector Curvature(const double_vector& angles);
+double_vector CurvatureDiff(const double_vector& angles);
 double_vector Accumulation(const double_vector& line);
 double_vector AbsAccumulation(const double_vector& line);
 

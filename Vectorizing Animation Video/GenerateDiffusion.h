@@ -6,14 +6,17 @@ struct FrameInfo
 {
 	// decorative
 	Lines curves1;
+	Vector3s2d ocolor1;
 	ColorConstraints color1;
 	LineWidthConstraints lineWidth;
 	Lines tmplinewidth;
 	// diffusion
+	Color2Side ocolor2;
 	Color2SideConstraint color2;
 	Lines curves2;
 	// isoline
 	Lines curves3;
+	Vector3s2d ocolor3;
 	ColorConstraints color3;
 	Lines GetLine1Width();
 	Vector3s2d GetLine1Color();

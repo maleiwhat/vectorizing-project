@@ -153,4 +153,5 @@ Lines S7GetPatchs(const cv::Mat& image0, const cv::Mat& noline, int dilation, in
 cv::Mat S6GetEngrgy(const cv::Mat& image0, int dilation, int erosion);
 cv::Mat MarkDiffence(cv::Mat src, int rectw, int recth);
 
-cv::Mat FixSpaceLine(cv::Mat image, cv::Mat oriImg);
+cv::Mat FixSpaceLine1(cv::Mat image, cv::Mat oriImg, double initdis);
+cv::Mat FixSpaceLine2(cv::Mat image, cv::Mat oriImg, double initdis);

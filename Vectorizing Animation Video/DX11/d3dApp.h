@@ -57,6 +57,9 @@ public:
 	void AddDiffusionLines(const Lines& lines);
 	void AddDiffusionLines(const Lines& lines, const Vector3s2d& colors);
 	void AddDiffusionLines(const Lines& lines, const Color2Side& colors);
+	void SetDiffusionRegions(int n);
+	void AddDiffusionLinesRegion(int r, const Lines& lines, const Vector3s2d& colors);
+	void AddDiffusionLinesRegion(int r, const Lines& lines, const Color2Side& colors);
 	void ClearPatchs();
 	void ClearCovers();
 	void ClearSkeletonLines();

@@ -104,7 +104,7 @@ void ImageSpline::SmoothingFragments()
 {
 	m_SplineFragments.clear();
 	// ¥­§¡¦UÂI
-	for(int count = 0; count < 3; count++)
+	for(int count = 0; count < 2; count++)
 	{
 		for(int i = 0; i < m_LineFragments.size(); ++i)
 		{

@@ -7,9 +7,37 @@ double_vector Curvature(const double_vector& angles)
 {
 	double_vector ans = angles;
 	ans[0] = 0;
-	for (int i = 1; i < ans.size(); i++)
+	for(int i = 1; i < ans.size(); i++)
 	{
 		ans[i] = angles[i] - angles[i - 1];
+	}
+	return ans;
+}
+
+double_vector CurvatureDiff(const double_vector& angles)
+{
+	double_vector ans = angles;
+	ans[0] = 0;
+	for(int i = 1; i < ans.size(); i++)
+	{
+		double diff1 = abs(angles[i] - angles[i - 1]);
+		double diff2 = 999;
+		if(angles[i] > 180 && angles[i - 1] <= 180)
+		{
+			diff2 = (angles[i] - 360) - angles[i - 1];
+		}
+		else if(angles[i] <= 180 && angles[i - 1] > 180)
+		{
+			diff2 = (angles[i]) - (angles[i - 1] - 360);
+		}
+		if(diff1 > diff2)
+		{
+			ans[i] = diff2;
+		}
+		else
+		{
+			ans[i] = diff1;
+		}
 	}
 	return ans;
 }
@@ -17,7 +45,7 @@ double_vector Curvature(const double_vector& angles)
 double_vector Accumulation(const double_vector& line)
 {
 	double_vector ans = line;
-	for (int i = 1; i < line.size(); i++)
+	for(int i = 1; i < line.size(); i++)
 	{
 		ans[i] = ans[i] + ans[i - 1];
 	}
@@ -28,7 +56,7 @@ double_vector AbsAccumulation(const double_vector& line)
 {
 	double_vector ans = line;
 	ans[0] = abs(ans[0]);
-	for (int i = 1; i < line.size(); i++)
+	for(int i = 1; i < line.size(); i++)
 	{
 		ans[i] = abs(ans[i]) + ans[i - 1];
 	}
@@ -48,7 +76,7 @@ double_vector ConvertToAngle(const double_vector& data, double zero)
 		angle = atan2(3, dy) * M_1_PI * 180 + zero;
 		ans.push_back(angle);
 	}
-	for (int i = 2; i < data.size() - 2; ++i)
+	for(int i = 2; i < data.size() - 2; ++i)
 	{
 		double dy = tmp[i + 2] - tmp[i - 2];
 		double angle = atan2(3, dy) * M_1_PI * 180 + zero;
@@ -71,17 +99,17 @@ double_vector SmoothingLoop(const double_vector& data, double centroidRadio,
 {
 	double_vector cps = data;
 	double_vector newcps;
-	for (int count = 0; count < repeat; ++count)
+	for(int count = 0; count < repeat; ++count)
 	{
 		newcps.clear();
 		int last = (int)cps.size() - 1;
-		if (cps.size() < 5)
+		if(cps.size() < 5)
 		{
 			continue;
 		}
 		newcps.push_back((cps[last] + cps[0] + cps[1]) / 3.0f);
 		newcps.push_back((cps[0] + cps[1] + cps[2]) / 3.0f);
-		for (int j = 2; j < cps.size() - 2; j ++)
+		for(int j = 2; j < cps.size() - 2; j ++)
 		{
 			auto vec = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
 					   5.0f;
@@ -100,17 +128,17 @@ double_vector SmoothingLen3(const double_vector& data, double centroidRadio,
 	double_vector cps = data;
 	double_vector newcps;
 	double_vector centroids;
-	for (int count = 0; count < repeat; ++count)
+	for(int count = 0; count < repeat; ++count)
 	{
 		centroids.clear();
 		newcps.clear();
 		int last = (int)cps.size() - 1;
-		if (cps.size() < 5)
+		if(cps.size() < 5)
 		{
 			continue;
 		}
 		newcps.push_back((cps[0] * 2 + cps[1]) / 3.0f);
-		for (int j = 1; j < cps.size() - 1; j ++)
+		for(int j = 1; j < cps.size() - 1; j ++)
 		{
 			auto vec = (cps[j] * 2 + cps[j - 1] + cps[j + 1]) * 0.25;
 			newcps.push_back(vec);
@@ -121,7 +149,7 @@ double_vector SmoothingLen3(const double_vector& data, double centroidRadio,
 		// move centroid
 		newcps.clear();
 		newcps.push_back(cps.front());
-		for (int j = 1; j < cps.size() - 1; j ++)
+		for(int j = 1; j < cps.size() - 1; j ++)
 		{
 			double nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1]) / 3.0f;
 			nowCentroid = centroids[j - 1] - nowCentroid;
@@ -139,19 +167,19 @@ double_vector SmoothingLen5(const double_vector& data, double centroidRadio,
 	double_vector cps = data;
 	double_vector newcps;
 	double_vector centroids;
-	for (int count = 0; count < repeat; ++count)
+	for(int count = 0; count < repeat; ++count)
 	{
 		centroids.clear();
 		newcps.clear();
 		int last = (int)cps.size() - 1;
-		if (cps.size() < 5)
+		if(cps.size() < 5)
 		{
 			continue;
 		}
 		newcps.push_back((cps[0] * 2 + cps[1]) / 3.0f);
 		newcps.push_back((cps[1] * 2 + cps[0] + cps[2]) * 0.25f);
 		centroids.push_back((cps[0] + cps[1]  + cps[2]) / 3.0f);
-		for (int j = 2; j < cps.size() - 2; j ++)
+		for(int j = 2; j < cps.size() - 2; j ++)
 		{
 			auto vec = (cps[j] * 2 + cps[j + 1] + cps[j - 1] + cps[j + 2] + cps[j - 2]) /
 					   6.0f;
@@ -162,7 +190,7 @@ double_vector SmoothingLen5(const double_vector& data, double centroidRadio,
 		centroids.push_back((cps[last] + cps[last - 1]  + cps[last - 2]) / 3.0f);
 		newcps.push_back((cps[last - 1] * 2 + cps[last] + cps[last - 2]) * 0.25f);
 		newcps.push_back((cps[last - 1] + cps[last] * 2) / 3.0f);
-		if (cps.size() == newcps.size())
+		if(cps.size() == newcps.size())
 		{
 			cps = newcps;
 		}
@@ -172,7 +200,7 @@ double_vector SmoothingLen5(const double_vector& data, double centroidRadio,
 		double cert = (cps[0] + cps[1]  + cps[2]) / 3.0f;
 		cert = centroids[0] - cert;
 		newcps.push_back(cps[1] + cert);
-		for (int j = 2; j < cps.size() - 2; j ++)
+		for(int j = 2; j < cps.size() - 2; j ++)
 		{
 			double nowCentroid = (cps[j] + cps[j + 1] + cps[j - 1] + cps[j + 2] +
 								  cps[j - 2]) / 5.0f;
@@ -183,7 +211,7 @@ double_vector SmoothingLen5(const double_vector& data, double centroidRadio,
 		cert = centroids[last - 2] - cert;
 		newcps.push_back(cps[last - 1] + cert);
 		newcps.push_back(cps.back());
-		if (cps.size() == newcps.size())
+		if(cps.size() == newcps.size())
 		{
 			cps = newcps;
 		}
@@ -196,13 +224,13 @@ double_vector ConvertToSquareWave(const double_vector& data, int error,
 {
 	double_vector ans;
 	const int size = (int)data.size();
-	for (int i = 0; i < size; ++i)
+	for(int i = 0; i < size; ++i)
 	{
-		if (data[i] - zero > error)
+		if(data[i] - zero > error)
 		{
 			ans.push_back(zero + value);
 		}
-		else if (zero - data[i] > error)
+		else if(zero - data[i] > error)
 		{
 			ans.push_back(zero - value);
 		}
@@ -220,33 +248,33 @@ bool IsBlackLine(const double_vector& data, double zero)
 	int lookline = 0;
 	const int check_length = 15;
 	const int size = (int)data.size();
-	for (int i = 0; i < size && !end; ++i)
+	for(int i = 0; i < size && !end; ++i)
 	{
-		if (data[i] > zero)
+		if(data[i] > zero)
 		{
-			if (i == 0 && data.back() < zero)
+			if(i == 0 && data.back() < zero)
 			{
 				lookline--;
 			}
 			// find zero point
-			for (int j = i; j < size * 2; ++j)
+			for(int j = i; j < size * 2; ++j)
 			{
-				if (abs(data[j % size] - zero) < 1)
+				if(abs(data[j % size] - zero) < 1)
 				{
 					i = j % size;
-					if (j >= size)
+					if(j >= size)
 					{
 						end = true;
 					}
 					break;
 				}
 			}
-			for (int j = i; j < i + check_length; ++j)
+			for(int j = i; j < i + check_length; ++j)
 			{
-				if (data[j % size] < zero)
+				if(data[j % size] < zero)
 				{
 					lookline++;
-					if (j >= size)
+					if(j >= size)
 					{
 						end = true;
 					}
@@ -255,7 +283,7 @@ bool IsBlackLine(const double_vector& data, double zero)
 			}
 		}
 	}
-	if (lookline == 2)
+	if(lookline == 2)
 	{
 		return true;
 	}
@@ -271,15 +299,15 @@ bool IsBrightLine(const double_vector& data, double zero /*= 290*/)
 	int lookline = 0;
 	const int check_length = 15;
 	const int size = (int)data.size();
-	for (int i = 0; i < size && !end; ++i)
+	for(int i = 0; i < size && !end; ++i)
 	{
-		if (data[i] < zero)
+		if(data[i] < zero)
 		{
-			if (i == 0)
+			if(i == 0)
 			{
-				for (int j = size - check_length; j < size; ++j)
+				for(int j = size - check_length; j < size; ++j)
 				{
-					if (data[j] < zero)
+					if(data[j] < zero)
 					{
 						lookline--;
 						break;
@@ -287,24 +315,24 @@ bool IsBrightLine(const double_vector& data, double zero /*= 290*/)
 				}
 			}
 			// find zero point
-			for (int j = i; j < size * 2; ++j)
+			for(int j = i; j < size * 2; ++j)
 			{
-				if (abs(data[j % size] - zero) < 1)
+				if(abs(data[j % size] - zero) < 1)
 				{
 					i = j % size;
-					if (j >= size)
+					if(j >= size)
 					{
 						end = true;
 					}
 					break;
 				}
 			}
-			for (int j = i; j < i + check_length; ++j)
+			for(int j = i; j < i + check_length; ++j)
 			{
-				if (data[j % size] > zero)
+				if(data[j % size] > zero)
 				{
 					lookline++;
-					if (j >= size)
+					if(j >= size)
 					{
 						end = true;
 					}
@@ -313,7 +341,7 @@ bool IsBrightLine(const double_vector& data, double zero /*= 290*/)
 			}
 		}
 	}
-	if (lookline == 2)
+	if(lookline == 2)
 	{
 		return true;
 	}
@@ -328,34 +356,34 @@ bool IsShading(const double_vector& data, double zero)
 	const int size = (int)data.size();
 	int jump = 0;
 	int now = 0;
-	for (int i = 0; i < size; ++i)
+	for(int i = 0; i < size; ++i)
 	{
-		if (data[i] > zero)
+		if(data[i] > zero)
 		{
-			if (now == 0)
+			if(now == 0)
 			{
 				now = 1;
 			}
-			else if (now == -1)
+			else if(now == -1)
 			{
 				now = 1;
 				jump++;
 			}
 		}
-		else if (data[i] < zero)
+		else if(data[i] < zero)
 		{
-			if (now == 0)
+			if(now == 0)
 			{
 				now = -1;
 			}
-			else if (now == 1)
+			else if(now == 1)
 			{
 				now = -1;
 				jump++;
 			}
 		}
 	}
-	if (jump == 1 || jump == 2)
+	if(jump == 1 || jump == 2)
 	{
 		return true;
 	}
@@ -369,29 +397,29 @@ double_vector GetBlackLine(const double_vector& data, double zero /*= 290*/)
 	bool end = false;
 	const int check_length = 15;
 	const int size = (int)data.size();
-	for (int i = 0; i < size && !end; ++i)
+	for(int i = 0; i < size && !end; ++i)
 	{
-		if (data[i] > zero)
+		if(data[i] > zero)
 		{
 			// find zero point
-			for (int j = i; j < size * 2; ++j)
+			for(int j = i; j < size * 2; ++j)
 			{
-				if (abs(data[j % size] - zero) < 1)
+				if(abs(data[j % size] - zero) < 1)
 				{
 					i = j % size;
-					if (j >= size)
+					if(j >= size)
 					{
 						end = true;
 					}
 					break;
 				}
 			}
-			for (int j = i; j < i + check_length; ++j)
+			for(int j = i; j < i + check_length; ++j)
 			{
-				if (data[j % size] < zero)
+				if(data[j % size] < zero)
 				{
 					ans.push_back(((j % size) * 360.0 / size + 180) / 180 * M_PI);
-					if (j >= size)
+					if(j >= size)
 					{
 						end = true;
 					}
@@ -406,13 +434,13 @@ double_vector GetBlackLine(const double_vector& data, double zero /*= 290*/)
 double GetVariance(const double_vector& data)
 {
 	double sum = 0;
-	for (int i = 0; i < data.size(); ++i)
+	for(int i = 0; i < data.size(); ++i)
 	{
 		sum += data[i];
 	}
 	sum /= data.size();
 	double variance = 0;
-	for (int i = 0; i < data.size(); ++i)
+	for(int i = 0; i < data.size(); ++i)
 	{
 		double v = sum - data[i];
 		variance += v * v;
@@ -424,9 +452,9 @@ double_vector LogSmooth(const double_vector& data, double zero)
 {
 	double_vector ans;
 	const int size = (int)data.size();
-	for (int i = 0; i < size; ++i)
+	for(int i = 0; i < size; ++i)
 	{
-		if (data[i] - zero >= 0)
+		if(data[i] - zero >= 0)
 		{
 			ans.push_back(zero + 0.1 * exp(0.4 * (data[i] - zero)));
 		}
@@ -445,19 +473,19 @@ double_vector GetLineWidth(const double_vector& data, double lineWidth,
 	bool end = false;
 	const int check_length = 179;
 	const int size = (int)data.size();
-	for (int i = size / 2; i > size / 2 - check_length && !end; --i)
+	for(int i = size / 2; i > size / 2 - check_length && !end; --i)
 	{
-		if (data[i] > zero)
+		if(data[i] > zero)
 		{
-			for (int j = i; j >= 0; --j)
+			for(int j = i; j >= 0; --j)
 			{
-				if (data[j] <= zero)
+				if(data[j] <= zero)
 				{
 					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
 					end = true;
 					break;
 				}
-				else if (j == 0)
+				else if(j == 0)
 				{
 					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
 					end = true;
@@ -465,18 +493,18 @@ double_vector GetLineWidth(const double_vector& data, double lineWidth,
 			}
 		}
 	}
-	for (int i = size / 2; i < size / 2 + check_length; ++i)
+	for(int i = size / 2; i < size / 2 + check_length; ++i)
 	{
-		if (data[i] < zero)
+		if(data[i] < zero)
 		{
-			for (int j = i; j < size; ++j)
+			for(int j = i; j < size; ++j)
 			{
-				if (data[j] >= zero)
+				if(data[j] >= zero)
 				{
 					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
 					return ans;
 				}
-				else if (j == size - 1)
+				else if(j == size - 1)
 				{
 					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
 					return ans;
@@ -494,24 +522,24 @@ double_vector GetColorWidth(const double_vector& data, double lineWidth, double 
 	const int size = (int)data.size();
 	const int skip = 60;
 	int zcount = 0;
-	for (int x = size / 2 - skip; x > 0 && !end; --x)
+	for(int x = size / 2 - skip; x > 0 && !end; --x)
 	{
-		if (data[x] > zero)
+		if(data[x] > zero)
 		{
 			zcount = 0;
-			for (int j = x; j >= 0; --j)
+			for(int j = x; j >= 0; --j)
 			{
-				if (data[j] < zero)
+				if(data[j] < zero)
 				{
 					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
 					end = true;
 					break;
 				}
-				else if (data[j] == zero)
+				else if(data[j] == zero)
 				{
 					zcount++;
 				}
-				if (zcount > 20)
+				if(zcount > 20)
 				{
 					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
 					end = true;
@@ -519,22 +547,22 @@ double_vector GetColorWidth(const double_vector& data, double lineWidth, double 
 			}
 			zcount = 0;
 		}
-		else if (data[x] < zero)
+		else if(data[x] < zero)
 		{
 			zcount = 0;
-			for (int j = x; j >= 0; --j)
+			for(int j = x; j >= 0; --j)
 			{
-				if (data[j] > zero)
+				if(data[j] > zero)
 				{
 					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
 					end = true;
 					break;
 				}
-				else if (data[j] == zero)
+				else if(data[j] == zero)
 				{
 					zcount++;
 				}
-				if (zcount > 20)
+				if(zcount > 20)
 				{
 					ans.push_back(lineWidth * 0.5 - j * lineWidth / 360.0);
 					end = true;
@@ -542,38 +570,38 @@ double_vector GetColorWidth(const double_vector& data, double lineWidth, double 
 			}
 			zcount = 0;
 		}
-		else if (zcount > 20)
+		else if(zcount > 20)
 		{
 			ans.push_back(lineWidth * 0.5 - x * lineWidth / 360.0);
 			end = true;
 		}
-		if (data[x] == zero)
+		if(data[x] == zero)
 		{
 			zcount++;
 		}
 	}
-	if (ans.size() > 1)
+	if(ans.size() > 1)
 	{
 		ans.resize(1);
 	}
 	end = false;
-	for (int x = size / 2 + skip; x < size; ++x)
+	for(int x = size / 2 + skip; x < size; ++x)
 	{
-		if (data[x] < zero)
+		if(data[x] < zero)
 		{
 			zcount = 0;
-			for (int j = x; j < size; ++j)
+			for(int j = x; j < size; ++j)
 			{
-				if (data[j] > zero)
+				if(data[j] > zero)
 				{
 					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
 					return ans;
 				}
-				else if (data[j] == zero)
+				else if(data[j] == zero)
 				{
 					zcount++;
 				}
-				if (zcount > 20)
+				if(zcount > 20)
 				{
 					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
 					return ans;
@@ -581,21 +609,21 @@ double_vector GetColorWidth(const double_vector& data, double lineWidth, double 
 			}
 			zcount = 0;
 		}
-		else if (data[x] > zero)
+		else if(data[x] > zero)
 		{
 			zcount = 0;
-			for (int j = x; j < size; ++j)
+			for(int j = x; j < size; ++j)
 			{
-				if (data[j] <= zero)
+				if(data[j] <= zero)
 				{
 					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
 					return ans;
 				}
-				else if (data[j] == zero)
+				else if(data[j] == zero)
 				{
 					zcount++;
 				}
-				if (zcount > 20)
+				if(zcount > 20)
 				{
 					ans.push_back(j * lineWidth / 360.0 - lineWidth * 0.5);
 					return ans;
@@ -603,12 +631,12 @@ double_vector GetColorWidth(const double_vector& data, double lineWidth, double 
 			}
 			zcount = 0;
 		}
-		else if (zcount > 20)
+		else if(zcount > 20)
 		{
 			ans.push_back(x * lineWidth / 360.0 - lineWidth * 0.5);
 			return ans;
 		}
-		if (data[x] == zero)
+		if(data[x] == zero)
 		{
 			zcount++;
 		}

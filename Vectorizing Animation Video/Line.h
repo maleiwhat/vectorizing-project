@@ -64,8 +64,8 @@ Vector3s2d  FixLineColors(const Vector3s2d& aLine, int range, int findlimit);
 Line    FixLineWidths(const Line& aLine, int range);
 Lines   FixLineWidths(const Lines& aLine, int range);
 
-ints    FixIndexs(const ints& aLine, int range);
-ints2d  FixIndexs(const ints2d& aLine, int range);
+ints    FixIndexs(const ints& aLine, int range, int maxid);
+ints2d  FixIndexs(const ints2d& aLine, int range, int maxid);
 
 ints    Maxmums(const ints& aLine);
 ints2d  Maxmums(const ints2d& aLine);
@@ -122,6 +122,7 @@ void MarkHasLink_LineEnds(LineEnds& les, const Lines& cvp);
 
 Acutes LinkLineAcutes(LineEnds& les, double distance, double angle);
 void LinkLineEnds180(LineEnds& les, double distance, double angle);
+void LinkLineEnds180self(Lines& lines, LineEnds& les, double distance, double angle);
 void LinkLineEnds(LineEnds& les, double distance, double angle);
 bool CheckLinkEnd_Similarity180(const LineEnd& lhs, const LineEnd& rhs,
 								LineEnd::LinkMethod c, double angle);
@@ -176,3 +177,9 @@ cv::Vec3b GetAvgColor(cv::Mat& image, int x1, int y1, int x2, int y2);
 double GetColorDis(cv::Vec3b c1, cv::Vec3b c2);
 double GetLineColorVariance(const Line& line, const cv::Mat img);
 ints FixValueByLinearInterpolation(const ints& cvp, int range);
+
+Line	Localmaximum(const Line& lines, int range);
+Lines	Localmaximum(const Lines& lines, int range);
+Lines	BuildBspline(const Lines& lines);
+Line	HalfSmooth(const Line& lines, int range);
+Lines	HalfSmooth(const Lines& lines, int range);
