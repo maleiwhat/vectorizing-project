@@ -73,7 +73,7 @@ void TriangulationCgal_Patch::Compute()
 	mesher.mark_facets();
 	mark_domains(m_Triangulation);
 	m_Triangles.clear();
-	Triangle t;
+	ColorTriangle t;
 	Finite_faces_iterator fc = m_Triangulation.finite_faces_begin();
 
 	for (; fc != m_Triangulation.finite_faces_end(); ++fc)
@@ -81,20 +81,20 @@ void TriangulationCgal_Patch::Compute()
 		if (fc->is_in_domain() && fc->info().in_domain()
 				&& fc->info().nesting_level != TRIANGLE_TRANSPARENT)
 		{
-			t.m_Points[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
-			t.m_Points[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
-			t.m_Points[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
+			t.pts[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
+			t.pts[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
+			t.pts[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
 
 			if (fc->info().nesting_level >= 0
 					&& m_ColorConstraint.size() > fc->info().nesting_level
 					&& m_ColorConstraint[fc->info().nesting_level].get())
 			{
-				t.m_Colors[0] = m_ColorConstraint[fc->info().nesting_level]->
-				                GetColorVector3(t.m_Points[0].x, t.m_Points[0].y);
-				t.m_Colors[1] = m_ColorConstraint[fc->info().nesting_level]->
-				                GetColorVector3(t.m_Points[1].x, t.m_Points[1].y);
-				t.m_Colors[2] = m_ColorConstraint[fc->info().nesting_level]->
-				                GetColorVector3(t.m_Points[2].x, t.m_Points[2].y);
+				t.color[0] = m_ColorConstraint[fc->info().nesting_level]->
+				                GetColorVector3(t.pts[0].x, t.pts[0].y);
+				t.color[1] = m_ColorConstraint[fc->info().nesting_level]->
+				                GetColorVector3(t.pts[1].x, t.pts[1].y);
+				t.color[2] = m_ColorConstraint[fc->info().nesting_level]->
+				                GetColorVector3(t.pts[2].x, t.pts[2].y);
 // 				t.m_Colors[0] = m_ColorConstraint[fc->info().nesting_level]->
 // 					GetColorVector3();
 // 				t.m_Colors[1] = m_ColorConstraint[fc->info().nesting_level]->
@@ -104,9 +104,9 @@ void TriangulationCgal_Patch::Compute()
 			}
 			else
 			{
-				t.m_Colors[0] = 255;
-				t.m_Colors[1] = 0;
-				t.m_Colors[2] = 0;
+				t.color[0] = 255;
+				t.color[1] = 0;
+				t.color[2] = 0;
 			}
 
 			m_Triangles.push_back(t);

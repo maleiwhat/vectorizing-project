@@ -86,8 +86,8 @@ void VAV_MainFrame::OnButtonCGALTriangulation()
 		cgal_contour.MakeColorSequential();
 		d3dApp.AddColorTriangles(cgal_contour.GetTriangles());
 		d3dApp.AddTrianglesLine(cgal_contour.GetTriangles());
-		d3dApp.SetScaleTemporary(1);
-		d3dApp.BuildPoint();
+// 		d3dApp.SetScaleTemporary(1);
+// 		d3dApp.BuildPoint();
 // 		d3dApp.InterSetRenderTransparencyOutput1();
 // 		cv::Mat simg = d3dApp.DrawSceneToCvMat();
 // 		d3dApp.SetScaleRecovery();

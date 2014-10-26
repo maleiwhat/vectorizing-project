@@ -149,7 +149,7 @@ bool CompareVector3(const Vector3& a, const Vector3& b)
     {
         return false;
     }
-    return true;
+    return false;
 }
 void ColorConstraintMathModel::BuildModel()
 {

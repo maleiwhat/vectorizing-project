@@ -276,6 +276,7 @@
     <ClInclude Include="print.h" />
     <ClInclude Include="PropertiesWnd.h" />
     <ClInclude Include="ReadVideo.h" />
+    <ClInclude Include="RegionDiffusion.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SavepointImage.h" />
     <ClInclude Include="shared_ptr.h" />
@@ -393,6 +394,10 @@
     <ClCompile Include="PositionGraph_Node.cpp" />
     <ClCompile Include="PropertiesWnd.cpp" />
     <ClCompile Include="ReadVideo.cpp" />
+    <ClCompile Include="RegionDiffusion.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SavepointImage.cpp" />
     <ClCompile Include="SLIC.cpp" />
     <ClCompile Include="SplineFragment.cpp" />

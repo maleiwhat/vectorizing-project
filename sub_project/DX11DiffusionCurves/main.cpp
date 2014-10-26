@@ -100,8 +100,8 @@ ID3D11DeviceContext*    m_DeviceContext = NULL;
 IDXGISwapChain*         g_pSwapChain = NULL;
 ID3D11RenderTargetView* m_pRenderTargetView = NULL;
 
-const int WIDTH = 1080;
-const int HEIGHT = 1080;
+const int WIDTH = 800;
+const int HEIGHT = 800;
 
 float m_fWidth;
 float m_fHeight;

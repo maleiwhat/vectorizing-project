@@ -9,7 +9,7 @@
 #include "Line.h"
 
 
-D3DApp::D3DApp()
+D3DApp::D3DApp(): m_RegionDiffusion(this)
 {
     SplineShape ss;
     m_pd3dDevice = NULL;
@@ -170,6 +170,7 @@ D3DApp::D3DApp()
     m_pScale = NULL;
     m_pPan = NULL;
     m_pPolySize = NULL;
+    m_pAlpha = NULL;
 }
 
 D3DApp::~D3DApp()
@@ -248,6 +249,7 @@ void D3DApp::initDirect3D()
 
 void D3DApp::OnResize(int w, int h)
 {
+    m_RegionDiffusion.ReadD3DSetting();
     if(!m_pd3dDevice)
     {
         return;
@@ -266,6 +268,7 @@ void D3DApp::OnResize(int w, int h)
     printf("w: %d h:%d\n", m_ClientWidth, m_ClientHeight);
     // Release the old views, as they hold references to the buffers we
     // will be destroying.  Also release the old depth/stencil buffer.
+    m_RegionDiffusion.OnResizeRelease();
     // main
     ReleaseCOM(m_RenderTargetView);
     ReleaseCOM(m_DepthStencilView);
@@ -385,6 +388,7 @@ void D3DApp::OnResize(int w, int h)
             &m_otherTextureRV));
     HR(m_pd3dDevice->CreateRenderTargetView(m_otherTexture, NULL,
                                             &m_otherTextureTV));
+    m_RegionDiffusion.OnResize(w, h);
 }
 void D3DApp::OnDrawToBimapResize()
 {
@@ -467,6 +471,8 @@ void D3DApp::DrawScene()
     InterSetLookCenter(m_LookCenterX, m_LookCenterY);
     InterSetScale(m_Scale);
     InterDraw();
+    m_RegionDiffusion.ReadD3DSetting();
+    m_RegionDiffusion.DrawScene();
     m_SwapChain->Present(0, 0);
 }
 
@@ -474,6 +480,8 @@ void D3DApp::DrawScene()
 
 void D3DApp::BuildShaderFX()
 {
+    m_RegionDiffusion.ReadD3DSetting();
+    m_RegionDiffusion.BuildShaderFX();
     ID3DBlob* pCode;
     ID3DBlob* pError;
     //Picture
@@ -738,6 +746,7 @@ void D3DApp::BuildShaderFX()
     m_pDiffX = pEffect11->GetVariableByName("g_diffX")->AsScalar();
     m_pDiffY = pEffect11->GetVariableByName("g_diffY")->AsScalar();
     m_pScale = pEffect11->GetVariableByName("g_scale")->AsScalar();
+    m_pAlpha = pEffect11->GetVariableByName("g_alpha")->AsScalar();
     m_pPolySize = pEffect11->GetVariableByName("g_polySize")->AsScalar();
     m_pPan = pEffect11->GetVariableByName("g_pan")->AsVector();
     m_pDrawVectorsTechnique->GetPassByIndex(0)->GetDesc(&PassDesc);
@@ -795,6 +804,8 @@ void D3DApp::ClearTriangles()
 
 void D3DApp::BuildPoint()
 {
+    m_RegionDiffusion.ReadD3DSetting();
+    m_RegionDiffusion.BuildPoint();
     if(!m_Init)
     {
         return;
@@ -971,14 +982,14 @@ void special_normal(Vector2& v)
     }
 }
 
-void D3DApp::AddTriangles(const Triangles& tris, const vavImage& vimage)
+void D3DApp::AddTriangles(const ColorTriangles& tris, const vavImage& vimage)
 {
     TriangleVertex tv;
     for(int i = 0; i < tris.size(); ++i)
     {
-        const Vector2& v1 = tris[i].m_Points[0];
-        const Vector2& v2 = tris[i].m_Points[1];
-        const Vector2& v3 = tris[i].m_Points[2];
+        const Vector2& v1 = tris[i].pts[0];
+        const Vector2& v2 = tris[i].pts[1];
+        const Vector2& v3 = tris[i].pts[2];
         Vector2 vmove;
         vmove = v2 - v1 + v3 - v1;
         special_normal(vmove);
@@ -992,18 +1003,18 @@ void D3DApp::AddTriangles(const Triangles& tris, const vavImage& vimage)
         special_normal(vmove);
         vmove += v3;
         const const cv::Vec3b& c3 = vimage.GetColor(v3.x, v3.y);
-        tv.p1.x = tris[i].m_Points[0].x;
-        tv.p1.y = m_PicH - tris[i].m_Points[0].y;
+        tv.p1.x = tris[i].pts[0].x;
+        tv.p1.y = m_PicH - tris[i].pts[0].y;
         tv.c1.x = c1[2] / 255.0f;
         tv.c1.y = c1[1] / 255.0f;
         tv.c1.z = c1[0] / 255.0f;
-        tv.p2.x = tris[i].m_Points[1].x;
-        tv.p2.y = m_PicH - tris[i].m_Points[1].y;
+        tv.p2.x = tris[i].pts[1].x;
+        tv.p2.y = m_PicH - tris[i].pts[1].y;
         tv.c2.x = c2[2] / 255.0f;
         tv.c2.y = c2[1] / 255.0f;
         tv.c2.z = c2[0] / 255.0f;
-        tv.p3.x = tris[i].m_Points[2].x;
-        tv.p3.y = m_PicH - tris[i].m_Points[2].y;
+        tv.p3.x = tris[i].pts[2].x;
+        tv.p3.y = m_PicH - tris[i].pts[2].y;
         tv.c3.x = c3[2] / 255.0f;
         tv.c3.y = c3[1] / 255.0f;
         tv.c3.z = c3[0] / 255.0f;
@@ -1011,7 +1022,7 @@ void D3DApp::AddTriangles(const Triangles& tris, const vavImage& vimage)
     }
 }
 
-void D3DApp::AddPatchTriangles(const Triangles& tris)
+void D3DApp::AddPatchTriangles(const ColorTriangles& tris)
 {
     TriangleVertex tv;
     float r, g, b;
@@ -1020,21 +1031,21 @@ void D3DApp::AddPatchTriangles(const Triangles& tris)
     b = 50 / 255.0f;
     for(int i = 0; i < tris.size(); ++i)
     {
-        const Vector2& v1 = tris[i].m_Points[0];
-        const Vector2& v2 = tris[i].m_Points[1];
-        const Vector2& v3 = tris[i].m_Points[2];
-        tv.p1.x = tris[i].m_Points[0].x;
-        tv.p1.y = m_PicH - tris[i].m_Points[0].y;
+        const Vector2& v1 = tris[i].pts[0];
+        const Vector2& v2 = tris[i].pts[1];
+        const Vector2& v3 = tris[i].pts[2];
+        tv.p1.x = tris[i].pts[0].x;
+        tv.p1.y = m_PicH - tris[i].pts[0].y;
         tv.c1.x = r;
         tv.c1.y = g;
         tv.c1.z = b;
-        tv.p2.x = tris[i].m_Points[1].x;
-        tv.p2.y = m_PicH - tris[i].m_Points[1].y;
+        tv.p2.x = tris[i].pts[1].x;
+        tv.p2.y = m_PicH - tris[i].pts[1].y;
         tv.c2.x = r;
         tv.c2.y = g;
         tv.c2.z = b;
-        tv.p3.x = tris[i].m_Points[2].x;
-        tv.p3.y = m_PicH - tris[i].m_Points[2].y;
+        tv.p3.x = tris[i].pts[2].x;
+        tv.p3.y = m_PicH - tris[i].pts[2].y;
         tv.c3.x = r;
         tv.c3.y = g;
         tv.c3.z = b;
@@ -1042,34 +1053,34 @@ void D3DApp::AddPatchTriangles(const Triangles& tris)
     }
 }
 
-void D3DApp::AddColorTriangles(const Triangles& tris)
+void D3DApp::AddColorTriangles(const ColorTriangles& tris)
 {
     TriangleVertex tv;
     for(int i = 0; i < tris.size(); ++i)
     {
-        const Vector2& v1 = tris[i].m_Points[0];
-        const Vector2& v2 = tris[i].m_Points[1];
-        const Vector2& v3 = tris[i].m_Points[2];
-        tv.p1.x = tris[i].m_Points[0].x;
-        tv.p1.y = m_PicH - tris[i].m_Points[0].y;
-        tv.c1.x = tris[i].m_Colors[0][2] / 255.0f;
-        tv.c1.y = tris[i].m_Colors[0][1] / 255.0f;
-        tv.c1.z = tris[i].m_Colors[0][0] / 255.0f;
-        tv.p2.x = tris[i].m_Points[1].x;
-        tv.p2.y = m_PicH - tris[i].m_Points[1].y;
-        tv.c2.x = tris[i].m_Colors[1][2] / 255.0f;
-        tv.c2.y = tris[i].m_Colors[1][1] / 255.0f;
-        tv.c2.z = tris[i].m_Colors[1][0] / 255.0f;
-        tv.p3.x = tris[i].m_Points[2].x;
-        tv.p3.y = m_PicH - tris[i].m_Points[2].y;
-        tv.c3.x = tris[i].m_Colors[2][2] / 255.0f;
-        tv.c3.y = tris[i].m_Colors[2][1] / 255.0f;
-        tv.c3.z = tris[i].m_Colors[2][0] / 255.0f;
+        const Vector2& v1 = tris[i].pts[0];
+        const Vector2& v2 = tris[i].pts[1];
+        const Vector2& v3 = tris[i].pts[2];
+        tv.p1.x = tris[i].pts[0].x;
+        tv.p1.y = m_PicH - tris[i].pts[0].y;
+        tv.c1.x = tris[i].color[0][2] / 255.0f;
+        tv.c1.y = tris[i].color[0][1] / 255.0f;
+        tv.c1.z = tris[i].color[0][0] / 255.0f;
+        tv.p2.x = tris[i].pts[1].x;
+        tv.p2.y = m_PicH - tris[i].pts[1].y;
+        tv.c2.x = tris[i].color[1][2] / 255.0f;
+        tv.c2.y = tris[i].color[1][1] / 255.0f;
+        tv.c2.z = tris[i].color[1][0] / 255.0f;
+        tv.p3.x = tris[i].pts[2].x;
+        tv.p3.y = m_PicH - tris[i].pts[2].y;
+        tv.c3.x = tris[i].color[2][2] / 255.0f;
+        tv.c3.y = tris[i].color[2][1] / 255.0f;
+        tv.c3.z = tris[i].color[2][0] / 255.0f;
         m_TriangleVertices.push_back(tv);
     }
 }
 
-void D3DApp::AddTrianglesLine(const Triangles& tris)
+void D3DApp::AddTrianglesLine(const ColorTriangles& tris)
 {
     TriangleVertex tv;
     float r, g, b;
@@ -1078,21 +1089,21 @@ void D3DApp::AddTrianglesLine(const Triangles& tris)
     b = (rand() % 255) / 255.0f;
     for(int i = 0; i < tris.size(); ++i)
     {
-        const Vector2& v1 = tris[i].m_Points[0];
-        const Vector2& v2 = tris[i].m_Points[1];
-        const Vector2& v3 = tris[i].m_Points[2];
-        tv.p1.x = tris[i].m_Points[0].x;
-        tv.p1.y = m_PicH - tris[i].m_Points[0].y;
+        const Vector2& v1 = tris[i].pts[0];
+        const Vector2& v2 = tris[i].pts[1];
+        const Vector2& v3 = tris[i].pts[2];
+        tv.p1.x = tris[i].pts[0].x;
+        tv.p1.y = m_PicH - tris[i].pts[0].y;
         tv.c1.x = r;
         tv.c1.y = g;
         tv.c1.z = b;
-        tv.p2.x = tris[i].m_Points[1].x;
-        tv.p2.y = m_PicH - tris[i].m_Points[1].y;
+        tv.p2.x = tris[i].pts[1].x;
+        tv.p2.y = m_PicH - tris[i].pts[1].y;
         tv.c2.x = r;
         tv.c2.y = g;
         tv.c2.z = b;
-        tv.p3.x = tris[i].m_Points[2].x;
-        tv.p3.y = m_PicH - tris[i].m_Points[2].y;
+        tv.p3.x = tris[i].pts[2].x;
+        tv.p3.y = m_PicH - tris[i].pts[2].y;
         tv.c3.x = r;
         tv.c3.y = g;
         tv.c3.z = b;
@@ -1203,6 +1214,7 @@ void D3DApp::SetTransparency_SelectPatch(float t)
 {
     m_Transparency_SelectPatch = t;
     m_SelectPatch_Alpha->SetFloat(t);
+    m_pAlpha->SetFloat(t);
 }
 
 void D3DApp::SetTransparency_TriangleLine(float t)
@@ -1399,6 +1411,8 @@ void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths)
 
 void D3DApp::AddLines(const Lines& lines)
 {
+    m_RegionDiffusion.AddLines(lines);
+    return;
     for(int i = 0; i < lines.size(); ++i)
     {
         const Line& now_line = lines[i];
@@ -1406,9 +1420,6 @@ void D3DApp::AddLines(const Lines& lines)
         r = (rand() % 155 + 100) / 255.0f;
         g = (rand() % 155 + 100) / 255.0f;
         b = (rand() % 155 + 100) / 255.0f;
-//      r = 1;
-//      g = 0;
-//      b = 0;
         SkeletonLineVertex slv;
         slv.color.x = r;
         slv.color.y = g;
@@ -1749,6 +1760,8 @@ void D3DApp::InterDraw(bool drawDiffusion)
     {
         return;
     }
+    float BlendFactor[4] = {0, 0, 0, 0};
+    m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
     m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteON, 0);
     //Draw Diffusion
     if(drawDiffusion && m_CurveVertexes.size() > 0)
@@ -1870,8 +1883,6 @@ void D3DApp::InterDraw(bool drawDiffusion)
             m_DeviceContext->Draw(6, 0);
         }
     }
-    float BlendFactor[4] = {0, 0, 0, 0};
-    m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
     m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
     //Draw Picture
     if(m_PicsVertices.size() > 0)
@@ -2098,6 +2109,7 @@ void D3DApp::InterSetRenderTransparencyOutput1()
 {
     m_Triangle_Alpha->SetFloat(1);
     m_SelectPatch_Alpha->SetFloat(0);
+    m_pAlpha->SetFloat(0);
     m_TriangleLine_Alpha->SetFloat(0);
     m_Lines_Alpha->SetFloat(1);
     m_Lines2w_CenterAlpha->SetFloat(1);
@@ -2109,6 +2121,7 @@ void D3DApp::InterSetRenderTransparencyOutput2()
 {
     m_Triangle_Alpha->SetFloat(0);
     m_SelectPatch_Alpha->SetFloat(0);
+    m_pAlpha->SetFloat(0);
     m_TriangleLine_Alpha->SetFloat(0);
     m_Lines_Alpha->SetFloat(0);
     m_Lines2w_CenterAlpha->SetFloat(0);
@@ -2120,6 +2133,7 @@ void D3DApp::InterSetRenderTransparencyOutput3()
 {
     m_Triangle_Alpha->SetFloat(0);
     m_SelectPatch_Alpha->SetFloat(0);
+    m_pAlpha->SetFloat(0);
     m_TriangleLine_Alpha->SetFloat(0);
     m_Lines_Alpha->SetFloat(0);
     m_Lines2w_CenterAlpha->SetFloat(1);
@@ -2131,6 +2145,7 @@ void D3DApp::InterSetRenderTransparencyDefault()
 {
     m_Triangle_Alpha->SetFloat(m_Transparency_Triangle);
     m_SelectPatch_Alpha->SetFloat(m_Transparency_SelectPatch);
+    m_pAlpha->SetFloat(m_Transparency_SelectPatch);
     m_TriangleLine_Alpha->SetFloat(m_Transparency_TriangleLine);
     m_Lines_Alpha->SetFloat(m_Transparency_Lines);
     m_Lines2w_CenterAlpha->SetFloat(m_Transparency_Lines);
@@ -2254,18 +2269,18 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
         vtx1.rcolor.w = 0.0;
         vtx2.lcolor.w = 0.0;
         vtx2.rcolor.w = 0.0;
-        for(int j = 0; j < now_line.size()-1; ++j)
+        for(int j = 0; j < now_line.size() - 1; ++j)
         {
-            if(now_line[j].distance(now_line[j+1]) < 0.01)
+            if(now_line[j].distance(now_line[j + 1]) < 0.01)
             {
-                now_line.erase(now_line.begin()+j);
+                now_line.erase(now_line.begin() + j);
                 --j;
             }
         }
         if(now_line.size() > 3 && now_line.size() % 2 == 1)
         {
-            Vector2 np = (now_line[0] + now_line[1])/2;
-            now_line.insert(now_line.begin()+1, np);
+            Vector2 np = (now_line[0] + now_line[1]) / 2;
+            now_line.insert(now_line.begin() + 1, np);
         }
         for(int j = 0; j < now_line.size() - 1; ++j)
         {
@@ -2309,6 +2324,8 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 
 void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 {
+    m_RegionDiffusion.AddDiffusionLines(lines, colors);
+    return;
     float scale = 1 / 255.0f;
     for(int i = 0; i < lines.size(); ++i)
     {
@@ -2325,20 +2342,20 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
         vtx1.rcolor.w = 0;
         vtx2.lcolor.w = 0;
         vtx2.rcolor.w = 0;
-        for(int j = 0; j < now_line.size()-1; ++j)
+        for(int j = 0; j < now_line.size() - 1; ++j)
         {
-            if(now_line[j].distance(now_line[j+1]) < 0.01)
+            if(now_line[j].distance(now_line[j + 1]) < 0.01)
             {
-                now_line.erase(now_line.begin()+j);
+                now_line.erase(now_line.begin() + j);
                 --j;
             }
         }
         if(now_line.size() > 3)
         {
-            Vector2 np = (now_line[0] + now_line[1])/2;
-            now_line.insert(now_line.begin()+1, np);
+            Vector2 np = (now_line[0] + now_line[1]) / 2;
+            now_line.insert(now_line.begin() + 1, np);
         }
-        for(int j = 0; j < now_line.size()-1; ++j)
+        for(int j = 0; j < now_line.size() - 1; ++j)
         {
             vtx1.lcolor.x = now_lcolor[j].x * scale;
             vtx1.lcolor.y = now_lcolor[j].y * scale;
@@ -2370,7 +2387,7 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
             curveline[j - 1].nb = curveline[j + 1].pos;
         }
         (curveline.end() - 2)->nb = (curveline.end() - 4)->pos;
-		(curveline.end() - 3)->nb = (curveline.end() - 1)->pos;
+        (curveline.end() - 3)->nb = (curveline.end() - 1)->pos;
         curveline.back().nb = D3DXVECTOR2(10000.0f, 10000.0f);
         m_CurveVertexes.insert(m_CurveVertexes.end(), curveline.begin(), curveline.end());
     }

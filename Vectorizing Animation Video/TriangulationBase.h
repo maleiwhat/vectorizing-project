@@ -3,23 +3,29 @@
 #include "math/Vector3.h"
 #include <vector>
 
-
 struct Triangle
 {
-	Vector2 m_Points[3];
-	Vector3 m_Colors[3];
+	Vector2 pts[3];
 };
 typedef std::vector<Triangle> Triangles;
+typedef std::vector<Triangles> Triangles2d;
+
+struct ColorTriangle
+{
+	Vector2 pts[3];
+	Vector3 color[3];
+};
+typedef std::vector<ColorTriangle> ColorTriangles;
 
 class TriangulationBase
 {
 public:
 	virtual ~TriangulationBase() {}
-	Triangles& GetTriangles()
+	ColorTriangles& GetTriangles()
 	{
 		return m_Triangles;
 	}
 protected:
-	Triangles   m_Triangles;
+	ColorTriangles   m_Triangles;
 };
 

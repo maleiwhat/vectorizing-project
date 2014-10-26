@@ -329,8 +329,8 @@ const cv::Mat& CmCurveEx::CalFirDer(int kSize, float linkEndBound,
             pDer[x] = sqrt(dx[x] * dx[x] + dy[x] * dy[x]);
         }
     }
-    GaussianBlur(m_pDer2f, m_pDer2f, cv::Size(3, 3), 0);
-    normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
+    //GaussianBlur(m_pDer2f, m_pDer2f, cv::Size(3, 3), 0);
+    //normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
     NoneMaximalSuppress(linkEndBound, linkStartBound);
     return m_pDer2f;
 }

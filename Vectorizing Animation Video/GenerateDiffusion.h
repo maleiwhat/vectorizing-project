@@ -1,6 +1,7 @@
 #pragma once
 #include "LineDef.h"
 #include "LineWidthConstraint.h"
+#include "TriangulationBase.h"
 
 struct FrameInfo
 {
@@ -18,6 +19,8 @@ struct FrameInfo
 	Lines curves3;
 	Vector3s2d ocolor3;
 	ColorConstraints color3;
+	ColorTriangles	ctris;
+	Triangles2d		tris2d;
 	Lines GetLine1Width();
 	Vector3s2d GetLine1Color();
 	Color2Side GetLine2Color();

@@ -21,6 +21,7 @@
 #include "PositionGraph.h"
 #include "LineDef.h"
 #include "vavImage.h"
+#include "RegionDiffusion.h"
 
 
 class TriangulationCgal_Sideline : public TriangulationBase
@@ -93,10 +94,12 @@ public:
 	void insert_polygonInter2(Triangulation& cdt, ImageSpline& is, PatchSpline& ps);
 	void SetColor( ColorConstraint_sptrs& colors );
 	void RemoveShadingLine(vavImage& img);
+	void Insert_lines(Triangulation& cdt);
+	Triangles2d GetAllRegion();
 	static const int TRIANGLE_NOT_INIT = -1;
 	static const int TRIANGLE_TRANSPARENT = -2;
 
-
+	int		m_RegionCount;
 	Triangulation   m_Triangulation;
 	Criteria    m_Criteria;
 	Points      m_SeedPoints;

@@ -12,6 +12,7 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include "TriangulationCgal_Sideline.h"
 
 
 
@@ -1383,6 +1384,125 @@ void RemoveFGs_BG_Part(FrameInfo& fi, cv::Mat fg)
     fi.color3 = ConvertToConstraintC(reslines, rescolors);
 }
 
+
+cv::Point GetNormalFrom2Point(const cv::Point& p1, const cv::Point& p2)
+{
+    cv::Point v = p2 - p1;
+    return cv::Point(-v.y, v.x);
+}
+
+void DrawWidthToRasterImage(const cv::Point& p1, const cv::Point& n, int w, cv::Vec3b c, cv::Mat& img)
+{
+    for(int i = 0; i <= w; ++i)
+    {
+        cv::Point dst = p1 + n * i;
+        if(dst.x >= 0 && dst.y >= 0 && dst.x < img.cols && dst.y < img.rows)
+        {
+            img.at<cv::Vec3b> (dst) = c;
+        }
+    }
+}
+
+int GetWidthFromRasterImage(const cv::Point& p1, const cv::Point& n, cv::Mat& img)
+{
+    cv::Vec3b white(255, 255, 255);
+    cv::Vec3b red(0, 0, 255);
+    int maxw = 0;
+    for(int i = 1; i <= 3; ++i)
+    {
+        cv::Point dst = p1 + n * i;
+        if(dst.x >= 0 && dst.y >= 0 && dst.x < img.cols && dst.y < img.rows)
+        {
+            if(img.at<cv::Vec3b> (dst) == red)
+            {
+                return maxw;
+            }
+            else if(img.at<cv::Vec3b> (dst) == white)
+            {
+                maxw = i;
+            }
+            else if(maxw > 0)
+            {
+                return maxw;
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+    return maxw;
+}
+
+ints GetLW_Points(const CvLine& cline, cv::Mat& img)
+{
+    ints res;
+    for(int i = 0; i < cline.size(); ++i)
+    {
+        res.push_back(GetWidthFromRasterImage(cline[i], cv::Point(-1, 0), img));
+    }
+    return res;
+}
+
+ints GetRW_Points(const CvLine& cline, cv::Mat& img)
+{
+    ints res;
+    for(int i = 0; i < cline.size(); ++i)
+    {
+        res.push_back(GetWidthFromRasterImage(cline[i], cv::Point(1, 0), img));
+    }
+    return res;
+}
+ints GetTW_Points(const CvLine& cline, cv::Mat& img)
+{
+    ints res;
+    for(int i = 0; i < cline.size(); ++i)
+    {
+        res.push_back(GetWidthFromRasterImage(cline[i], cv::Point(0, -1), img));
+    }
+    return res;
+}
+ints GetBW_Points(const CvLine& cline, cv::Mat& img)
+{
+    ints res;
+    for(int i = 0; i < cline.size(); ++i)
+    {
+        res.push_back(GetWidthFromRasterImage(cline[i], cv::Point(0, 1), img));
+    }
+    return res;
+}
+
+ints GetLeftWidthFromPoints(const CvLine& cline, const CvLine& normal, cv::Mat& img)
+{
+    ints res;
+    for(int i = 0; i < cline.size(); ++i)
+    {
+        res.push_back(GetWidthFromRasterImage(cline[i], -normal[i], img));
+    }
+    return res;
+}
+
+ints GetRightWidthFromPoints(const CvLine& cline, const CvLine& normal, cv::Mat& img)
+{
+    ints res;
+    for(int i = 0; i < cline.size(); ++i)
+    {
+        res.push_back(GetWidthFromRasterImage(cline[i], normal[i], img));
+    }
+    return res;
+}
+
+CvLine GetNormalsFromPoints(const CvLine& cline)
+{
+    CvLine res;
+    for(int i = 0; i < cline.size() - 1; ++i)
+    {
+        res.push_back(GetNormalFrom2Point(cline[i], cline[i + 1]));
+    }
+    res.push_back(res.back());
+    return res;
+}
+
 FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr /*= NULL*/)
 {
     cv::Mat edgesImg, src_gray = img.clone(), src_grayf,
@@ -1401,172 +1521,215 @@ FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr /*= NULL*/)
         const std::vector<CEdge>& edges = dcurve->GetEdges();
         for(size_t i = 0; i < edges.size(); i++)
         {
-            const std::vector<cv::Point>& pnts = edges[i].pnts;
+            const CvLine& pnts = edges[i].pnts;
             for(size_t j = 0; j < pnts.size(); j++)
             {
-                show_ccp.at<cv::Vec3b>(pnts[j]) = cv::Vec3b(0, 0, 255);
+                show_ccp.at<cv::Vec3b> (pnts[j]) = cv::Vec3b(0, 0, 255);
             }
         }
     }
     {
         // canny
         /// Reduce noise with a kernel 3x3
-        edgesImg = src_gray.clone();
-        //cv::blur(src_gray, edgesImg, cv::Size(3, 3));
-        /// Canny detector
-        int ratio = 3;
-        int kernel_size = 3;
-        int lowThreshold = 18;
-        cv::Canny(edgesImg, edgesImg, lowThreshold, lowThreshold * ratio, kernel_size);
+//         edgesImg = src_gray.clone();
+//         cv::blur(src_gray, edgesImg, cv::Size(3, 3));
+//         /// Canny detector
+//         int ratio = 3;
+//         int kernel_size = 3;
+//         int lowThreshold = 12;
+//         cv::Canny(edgesImg, edgesImg, lowThreshold, lowThreshold * ratio, kernel_size);
+//      cvtColor(edgesImg, edgesImg, CV_GRAY2BGR);
+        edgesImg = img.clone();
+        edgesImg = cv::Scalar(0);
+        CmCurveEx* ccurve = NULL;
+        ccurve = new CmCurveEx(src_grayf);
+        ccurve->CalFirDer(5, 0.001f, 0.05f);
+        ccurve->Link();
+        const std::vector<CEdge>& edges = ccurve->GetEdges();
+        for(size_t i = 0; i < edges.size(); i++)
+        {
+            const CvLine& pnts = edges[i].pnts;
+            for(size_t j = 0; j < pnts.size(); j++)
+            {
+                edgesImg.at<cv::Vec3b> (pnts[j]) = cv::Vec3b(255, 255, 255);
+            }
+        }
     }
     {
         // ­× decorative curve
         cv::Vec3b red(0, 0, 255), white(255, 255, 255), black(0, 0, 0);
-        cvtColor(edgesImg, edgesImg, CV_GRAY2BGR);
+        g_cvshowEX.AddShow("edgesImg", edgesImg);
         for(int i = 1; i < show_ccp.rows - 1; i++)
         {
             for(int j = 1; j < show_ccp.cols - 1 ; j++)
             {
-                cv::Vec3b& v1 = show_ccp.at<cv::Vec3b>(i, j);
-                cv::Vec3b& v2 = edgesImg.at<cv::Vec3b>(i, j);
+                cv::Vec3b& v1 = show_ccp.at<cv::Vec3b> (i, j);
+                cv::Vec3b& v2 = edgesImg.at<cv::Vec3b> (i, j);
                 if(v2 == white && v1[2] == 0)
                 {
                     v1 = white;
                 }
             }
         }
-        for(int n = 0; n < 2; ++n)
+        g_cvshowEX.AddShow("dcurve0", show_ccp);
         {
-            for(int i = 1; i < show_ccp.rows - 1; i++)
+            cv::Mat limg = show_ccp.clone();
+            const std::vector<CEdge>& edges = dcurve->GetEdges();
+            for(size_t i = 0; i < edges.size(); i++)
             {
-                for(int j = 1; j < show_ccp.cols - 1 ; j++)
+                const CvLine& pnts = edges[i].pnts;
+                CvLine normals = GetNormalsFromPoints(pnts);
+                ints lW = GetLW_Points(pnts, show_ccp);
+                ints rW = GetRW_Points(pnts, show_ccp);
+                ints tW = GetTW_Points(pnts, show_ccp);
+                ints bW = GetBW_Points(pnts, show_ccp);
+                lW = FixValueByLinearInterpolation(lW, 8);
+                rW = FixValueByLinearInterpolation(rW, 8);
+                tW = FixValueByLinearInterpolation(tW, 8);
+                bW = FixValueByLinearInterpolation(bW, 8);
+                lW = ClearNoise(lW, 10);
+                rW = ClearNoise(rW, 10);
+                tW = ClearNoise(tW, 10);
+                bW = ClearNoise(bW, 10);
+                cv::Vec3b color(rand() % 200 + 55, rand() % 200 + 55, rand() % 200 + 55);
+                for(int j = 0; j < pnts.size(); ++j)
                 {
-                    cv::Vec3b& v = show_ccp.at<cv::Vec3b>(i, j);
-                    if(v == black)
+                    if(limg.at<cv::Vec3b> (pnts[j]) == red)
                     {
-                        {
-                            cv::Vec3b& v1 = show_ccp.at<cv::Vec3b>(i, j + 1);
-                            cv::Vec3b& v2 = show_ccp.at<cv::Vec3b>(i, j - 1);
-                            if((v1 == red && v2 == white)
-                                    || (v2 == red && v1 == white)
-                                    || (v2 == white && v1 == white)
-                                    || (v2 == red && v1 == red))
-                            {
-                                v = white;
-                            }
-                        }
-                        {
-                            cv::Vec3b& v1 = show_ccp.at<cv::Vec3b>(i + 1, j);
-                            cv::Vec3b& v2 = show_ccp.at<cv::Vec3b>(i - 1, j);
-                            if((v1 == red && v2 == white)
-                                    || (v2 == red && v1 == white)
-                                    || (v2 == white && v1 == white)
-                                    || (v2 == red && v1 == red))
-                            {
-                                v = white;
-                            }
-                        }
+                        limg.at<cv::Vec3b> (pnts[j]) = color;
+                    }
+                    if(lW[j] > 0 && rW[j] > 0)
+                    {
+                        DrawWidthToRasterImage(pnts[j], cv::Point(-1, 0), lW[j], color, limg);
+                        DrawWidthToRasterImage(pnts[j], cv::Point(1, 0), rW[j], color, limg);
+                        DrawWidthToRasterImage(pnts[j], cv::Point(-1, 0), lW[j], color, edgesImg);
+                        DrawWidthToRasterImage(pnts[j], cv::Point(1, 0), rW[j], color, edgesImg);
+                    }
+                    if(tW[j] > 0 && bW[j] > 0)
+                    {
+                        DrawWidthToRasterImage(pnts[j], cv::Point(0, -1), tW[j], color, limg);
+                        DrawWidthToRasterImage(pnts[j], cv::Point(0, 1), bW[j], color, limg);
+                        DrawWidthToRasterImage(pnts[j], cv::Point(0, -1), tW[j], color, edgesImg);
+                        DrawWidthToRasterImage(pnts[j], cv::Point(0, 1), bW[j], color, edgesImg);
                     }
                 }
             }
+            g_cvshowEX.AddShow("limg2", limg);
         }
     }
-    ints2d isdcurve(dcurve->GetEdges().size());
-    {
-        // detection decorative curve
-        const std::vector<CEdge>& edges = dcurve->GetEdges();
-        for(size_t i = 0; i < edges.size(); i++)
-        {
-            const std::vector<cv::Point>& pnts = edges[i].pnts;
-            isdcurve[i].resize(pnts.size());
-            for(size_t j = 0; j < pnts.size(); j++)
-            {
-                if(checkmask3x3(show_ccp, pnts[j].x, pnts[j].y))
-                {
-                    isdcurve[i][j] = 1;
-                }
-            }
-        }
-        cv::Vec3b linecolor(255, 255, 255);
-        for(size_t i = 0; i < edges.size(); i++)
-        {
-            const std::vector<cv::Point>& pnts = edges[i].pnts;
-            int pcount = 0;
-            for(size_t j = 0; j < pnts.size(); j++)
-            {
-                if(isdcurve[i][j])
-                {
-                    pcount++;
-                    drawmask5x5(show_ccp, pnts[j].x, pnts[j].y, linecolor, edgesImg);
-                }
-            }
-            if(pcount * 2 > pnts.size())
-            {
-                for(size_t j = 0; j < pnts.size(); j++)
-                {
-                    isdcurve[i][j] = 1;
-                    drawmask5x5(show_ccp, pnts[j].x, pnts[j].y, linecolor, edgesImg);
-                }
-            }
-        }
-    }
+    g_cvshowEX.AddShow("edgesImg0", edgesImg);
     edgesImg = TrapBallMaskAll(edgesImg, oriImg);
+    cv::Mat showregion = edgesImg.clone();
+    FloodFillReColor(showregion);
+    g_cvshowEX.AddShow("TrapBallMaskAll", showregion);
     edgesImg = FixSpaceMask(edgesImg);
-    edgesImg = MixTrapBallMask(edgesImg, oriImg, 30, 40);
-    {
-        const std::vector<CEdge>& edges = dcurve->GetEdges();
-        cv::Vec3b linecolor(rand() % 256, rand() % 256, rand() % 200 + 55);
-        for(size_t i = 0; i < edges.size(); i++)
-        {
-            linecolor = cv::Vec3b(rand() % 256, rand() % 256, rand() % 200 + 55);
-            const std::vector<cv::Point>& pnts = edges[i].pnts;
-            for(size_t j = 0; j < pnts.size(); j++)
-            {
-                if(isdcurve[i][j])
-                {
-                    drawmask5x5(show_ccp, pnts[j].x, pnts[j].y, linecolor, edgesImg);
-                }
-                else
-                {
-                }
-            }
-        }
-    }
+    g_cvshowEX.AddShow("FixSpaceMask", edgesImg);
+    edgesImg = MixTrapBallMask(edgesImg, oriImg, 20, 20);
+    showregion = edgesImg.clone();
+    FloodFillReColor(showregion);
+    g_cvshowEX.AddShow("MixTrapBallMask", showregion);
     cv::Mat show_trap;
-    edgesImg = FixSpaceLine1(edgesImg, oriImg, 100000);
+    edgesImg = FixSpaceLine1(edgesImg, oriImg, 100);
+    edgesImg = FixSpaceLine2(edgesImg, oriImg, 100);
+    edgesImg = FixSpaceLine1(edgesImg, oriImg, 200);
+    edgesImg = FixSpaceLine2(edgesImg, oriImg, 200);
+    edgesImg = FixSpaceLine1(edgesImg, oriImg, 200);
+    edgesImg = FixSpaceLine2(edgesImg, oriImg, 200);
     show_trap = edgesImg.clone();
     FloodFillReColor(show_trap);
+    g_cvshowEX.AddShow("FixSpaceLine 200", show_trap);
+    edgesImg = FixSpaceLine2(edgesImg, oriImg, 1000);
+    edgesImg = FixSpaceLine1(edgesImg, oriImg, 1500);
+    show_trap = edgesImg.clone();
+    FloodFillReColor(show_trap);
+    g_cvshowEX.AddShow("FixSpaceLine 1000", show_trap);
+    edgesImg = FixSpaceLine1(edgesImg, oriImg, 10000);
+    edgesImg = FixSpaceLine2(edgesImg, oriImg, 100000);
+    edgesImg = FixSpaceLine2(edgesImg, oriImg, 100000);
+    show_trap = edgesImg.clone();
+    FloodFillReColor(show_trap);
+    g_cvshowEX.AddShow("FixSpaceLine 10000", show_trap);
+    {
+        // draw decorative line
+        const std::vector<CEdge>& edges = dcurve->GetEdges();
+        for(size_t i = 0; i < edges.size(); i++)
+        {
+            const CvLine& pnts = edges[i].pnts;
+            CvLine normals = GetNormalsFromPoints(pnts);
+            ints lW = GetLW_Points(pnts, show_ccp);
+            ints rW = GetRW_Points(pnts, show_ccp);
+            ints tW = GetTW_Points(pnts, show_ccp);
+            ints bW = GetBW_Points(pnts, show_ccp);
+            lW = MedianLenN(lW, 4);
+            rW = MedianLenN(rW, 4);
+            tW = MedianLenN(tW, 4);
+            bW = MedianLenN(bW, 4);
+			lW = FixValueByLinearInterpolation(lW, 8);
+			rW = FixValueByLinearInterpolation(rW, 8);
+			tW = FixValueByLinearInterpolation(tW, 8);
+			bW = FixValueByLinearInterpolation(bW, 8);
+            lW = ClearNoise(lW, 3);
+            rW = ClearNoise(rW, 3);
+            tW = ClearNoise(tW, 3);
+            bW = ClearNoise(bW, 3);
+            cv::Vec3b color(rand() % 255, rand() % 200 + 55, rand() % 200 + 55);
+            for(int j = 0; j < pnts.size(); ++j)
+            {
+                if(lW[j] > 0 && rW[j] > 0)
+                {
+                    DrawWidthToRasterImage(pnts[j], cv::Point(-1, 0), lW[j], color, edgesImg);
+                    DrawWidthToRasterImage(pnts[j], cv::Point(1, 0), rW[j], color, edgesImg);
+                }
+                if(tW[j] > 0 && bW[j] > 0)
+                {
+                    DrawWidthToRasterImage(pnts[j], cv::Point(0, -1), tW[j], color, edgesImg);
+                    DrawWidthToRasterImage(pnts[j], cv::Point(0, 1), bW[j], color, edgesImg);
+                }
+            }
+        }
+    }
+    show_trap = edgesImg.clone();
+    FloodFillReColor(show_trap);
+    g_cvshowEX.AddShow("add decorative line", show_trap);
+	edgesImg=MixTrapBallMask(edgesImg, img, 20, 20);
     ImageSpline is = S4GetPatchs(edgesImg, 0, 0);
     Lines colorline;
     for(int i = 0; i < is.m_LineFragments.size(); ++i)
     {
         colorline.push_back(is.m_LineFragments[i].m_Points);
     }
+    colorline = HalfSmooth(colorline, 10);
+    colorline = Localmaximum(colorline, 10);
+    colorline = SmoothingLen3(colorline, 0.3, 5);
+    colorline = BuildBspline(colorline);
     ColorConstraints ccms0;
     cv::Mat size2 = img.clone();
-    //cv::resize(edgesImg.clone(), edgesImg, edgesImg.size() * 2, 0, 0, cv::INTER_NEAREST);
     S6ReColor(edgesImg, img.clone(), ccms0);
-    if(cr)
-    {
-        cr->ccms = ccms0;
-        cr->markimg = edgesImg.clone();
-    }
-    //DrawColorLineImage(cmmsIndexImg, colorline);
     cv::Mat colormask = edgesImg.clone();
     FloodFillReColor(colormask);
+    g_cvshowEX.AddShow("edgesImg", colormask);
+    cv::imwrite("cmmsIndexImg.png", colormask);
     Index2Side i2s = GetLinesIndex2SideSmart(colorline, edgesImg);
     i2s.left = FixIndexs(i2s.left, 100, ccms0.size());
     i2s.right = FixIndexs(i2s.right, 100, ccms0.size());
-//  i2s.left = MedianLenN(i2s.left, 10);
-//  i2s.right = MedianLenN(i2s.right, 10);
-    i2s.left = Maxmums2(i2s.left, colorline);
-    i2s.right = Maxmums2(i2s.right, colorline);
+    i2s.left = Maxmums(i2s.left);
+    i2s.right = Maxmums(i2s.right);
     Color2Side color2s2 = LinesIndex2Color(colorline, i2s, ccms0);
-    //d3dApp.AddDiffusionLines(colorline, color2s2);
     FrameInfo fi;
     fi.curves2 = colorline;
     fi.ocolor2 = color2s2;
     fi.color2 = ConvertToConstraintC2(colorline, color2s2);
+#ifdef USE_CGAL
+    TriangulationCgal_Sideline cgal_contour;
+    cgal_contour.SetSize(img.cols, img.rows);
+    is.SmoothingFragments();
+    cgal_contour.AddImageSpline(is);
+    cgal_contour.SetCriteria(0.1, 4000);
+    int region = cgal_contour.Compute();
+    cgal_contour.MakeColorSequential();
+    fi.ctris = cgal_contour.GetTriangles();
+    fi.tris2d = cgal_contour.GetAllRegion();
+#endif // USE_CGAL
     return fi;
 }
 

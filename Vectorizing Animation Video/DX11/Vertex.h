@@ -67,6 +67,7 @@ struct SkeletonLineVertex
 	D3DXVECTOR3 color;
 };
 typedef std::vector<SkeletonLineVertex> SkeletonLineVertexes;
+typedef std::vector<SkeletonLineVertexes> SkeletonLineVertexes2d;
 
 struct VSO_Vertex
 {
@@ -74,6 +75,7 @@ struct VSO_Vertex
 	D3DXVECTOR2 tex; // Texturecoords
 };
 typedef std::vector<VSO_Vertex> VSO_Vertexes;
+typedef std::vector<VSO_Vertexes> VSO_Vertexes2d;
 
 struct CURVE_Vertex
 {
@@ -83,6 +85,7 @@ struct CURVE_Vertex
 	D3DXVECTOR2 nb;     // previous vertex and next vertex
 };
 typedef std::vector<CURVE_Vertex> CURVE_Vertexes;
+typedef std::vector<CURVE_Vertexes> CURVE_Vertexes2d;
 
 
 extern D3D11_INPUT_ELEMENT_DESC VertexDesc_PointVertex[];

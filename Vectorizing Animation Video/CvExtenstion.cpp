@@ -1401,10 +1401,10 @@ ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
         last_lineidx = -1;
         for(auto it2 = it->Inter2().begin(); it2 != it->Inter2().end(); ++it2)
         {
-            if(it2->size() < 4)
-            {
-                continue;
-            }
+//             if(it2->size() < 4)
+//             {
+//                 continue;
+//             }
             ps = PatchSpline();
             for(auto it3 = ++(it2->begin()); it3 != it2->end(); ++it3)
             {
@@ -1505,7 +1505,7 @@ ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,
                 {
                     patchInter.push_back(ps);
                 }
-                //assert(start == end);
+                assert(start == end);
             }
         }
         patchInters.push_back(patchInter);
@@ -4055,9 +4055,9 @@ void FloodFillReColor(cv::Mat& image)
 cv::Mat FixSpaceLine2(cv::Mat image, cv::Mat oriImg, double initdis)
 {
     cv::Mat res = image.clone();
-    for(int a = res.rows - 1; a > 0; --a)
+    for(int a = res.rows - 2; a > 1; --a)
     {
-        for(int b = res.cols - 1; b > 0 ; --b)
+        for(int b = res.cols - 2; b > 1 ; --b)
         {
             cv::Vec3b& cid1 = res.at<cv::Vec3b>(a, b);
             if(cid1[0] == 255 && cid1[1] == 255 && cid1[2] == 255)
