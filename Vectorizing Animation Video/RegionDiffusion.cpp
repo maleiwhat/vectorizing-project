@@ -84,6 +84,7 @@ RegionDiffusion::RegionDiffusion(D3DApp* app)
     m_pPan = NULL;
     m_pPolySize = NULL;
 	m_pAlpha = NULL;
+	m_SkeletonLines_Alpha = NULL;
 }
 
 RegionDiffusion::~RegionDiffusion(void)

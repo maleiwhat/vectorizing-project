@@ -920,6 +920,22 @@ Vector3 vavImage::GetBilinearColor(double x, double y)
 	return Vector3(r, g, b);
 }
 
+int vavImage::GetIndex_int(int x, int y)
+{
+	if (y < 0 || (y >= m_Image.rows) || x < 0 || (x >= m_Image.cols))
+	{
+		return -1;
+	}
+	if (m_Image.at<cv::Vec3b>(y, x)[2] != 255)
+	{
+		cv::Vec3b color = m_Image.at<cv::Vec3b>(y, x);
+		int v = color[0] + color[1] * 256 + color[2] * 256 * 256;
+		return v;
+	}
+	return -1;
+}
+
+
 int vavImage::GetIndex_no255(double x, double y)
 {
 	if (y < 1 || (y + 1 >= m_Image.rows) || x < 1 || (x + 1 >= m_Image.cols))

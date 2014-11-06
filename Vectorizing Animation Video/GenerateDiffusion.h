@@ -91,6 +91,7 @@ FrameInfo ComputeFrame1(cv::Mat img, ColorRegion* cr = NULL);
 FrameInfo ComputeFrame1FG(cv::Mat img, cv::Mat fg, ColorRegion* cr);
 FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr = NULL);
 FrameInfo ComputeFrame2FG(cv::Mat img, cv::Mat fg, ColorRegion* cr);
+FrameInfo ComputeFrame3(cv::Mat img, ColorRegion* cr = NULL);
 FrameInfo ComputeCurve(cv::Mat img);
 void RemoveBGs_FG_Part(FrameInfo& fi, cv::Mat fg);
 void RemoveFGs_BG_Part(FrameInfo& fi, cv::Mat fg);

@@ -5424,3 +5424,75 @@ Line HalfSmooth(const Line& cvp, int range)
     cps.push_back(cvp.back());
     return cps;
 }
+
+double SqDistPointSegment(const Vector2& a, const Vector2& b, const Vector2& c)
+{
+    const Vector2 ab = b - a, ac = c - a, bc = c - b;
+    double e = ac.dotProduct(ab);
+    if(e <= 0)
+    {
+        return ac.dotProduct(ac);
+    }
+    float f = ab.dotProduct(ab);
+    if(e >= f)
+    {
+        return bc.dotProduct(bc);
+    }
+    return ac.dotProduct(ac) - e * e / f;
+}
+
+Line DouglasPeucker(const Line& list, double epsilon)
+{
+    if(list.size() < 3)
+    {
+        return list;
+    }
+    double dmax = 0;
+    int index = 0;
+    int end = list.size() - 1;
+    for(int i = 1; i < list.size() - 1; i++)
+    {
+        double d = SqDistPointSegment(list[0], list[end], list[i]);
+        if(d > dmax)
+        {
+            index = i;
+            dmax = d;
+        }
+    }
+    Line a;
+    if(dmax < epsilon)
+    {
+        a.resize(2);
+        a[0] = list.front();
+        a[1] = list.back();
+        return a;
+    }
+    else
+    {
+        a.resize(index + 1);
+        Line b(list.size() - index);
+        for(int i = 0; i < index + 1; i++)
+        {
+            a[i] = list[i];
+        }
+        for(int i = index; i < list.size(); i++)
+        {
+            b[i - index] = list[i];
+        }
+        a = DouglasPeucker(a, epsilon);
+        b = DouglasPeucker(b, epsilon);
+        a.insert(a.end(), b.begin(), b.end());
+        a.erase(std::unique(a.begin(), a.end()), a.end());
+        return a;
+    }
+}
+
+Lines DouglasPeucker(const Lines& list, double epsilon)
+{
+    Lines res(list.size());
+    for(int i = 0; i < list.size(); ++i)
+    {
+        res[i] = DouglasPeucker(list[i], epsilon);
+    }
+    return res;
+}

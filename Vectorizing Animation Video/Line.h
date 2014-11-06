@@ -183,3 +183,9 @@ Lines	Localmaximum(const Lines& lines, int range);
 Lines	BuildBspline(const Lines& lines);
 Line	HalfSmooth(const Line& lines, int range);
 Lines	HalfSmooth(const Lines& lines, int range);
+
+// segment a, b and point c
+double SqDistPointSegment(const Vector2& a, const Vector2& b, const Vector2& c);
+Lines DouglasPeucker(const Lines& list, double epsilon);
+Line DouglasPeucker(const Line& list, double epsilon);
+

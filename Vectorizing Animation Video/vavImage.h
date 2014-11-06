@@ -47,6 +47,7 @@ public:
 	int  GetIndex_no255(double x, double y);
 	int  GetIndex_if255(double x, double y);
 	int  GetIndex_hasno255(double x, double y);
+	int  GetIndex_int(int x, int y);
 
 	double_vector GetRingLight(double x, double y, double radius, int div);
 	double_vector GetRingR(double x, double y, double radius, int div);
@@ -87,6 +88,7 @@ public:
 		m_Image = mat.clone();
 		return *this;
 	}
+	
 private:
 	static ID3D11Device* m_Device;
 	static ID3D11DeviceContext* m_DeviceContext;

@@ -4055,9 +4055,9 @@ void FloodFillReColor(cv::Mat& image)
 cv::Mat FixSpaceLine2(cv::Mat image, cv::Mat oriImg, double initdis)
 {
     cv::Mat res = image.clone();
-    for(int a = res.rows - 2; a > 1; --a)
+    for(int a = res.rows - 1; a > 0; --a)
     {
-        for(int b = res.cols - 2; b > 1 ; --b)
+        for(int b = res.cols - 1; b > 0 ; --b)
         {
             cv::Vec3b& cid1 = res.at<cv::Vec3b>(a, b);
             if(cid1[0] == 255 && cid1[1] == 255 && cid1[2] == 255)
@@ -4069,15 +4069,20 @@ cv::Mat FixSpaceLine2(cv::Mat image, cv::Mat oriImg, double initdis)
                 Weights wm = wm_init_cross;
                 for(int i = 0; i < wm.size(); i++)
                 {
-                    cv::Vec3b nn = image.at<cv::Vec3b>(a + wm[i].pos.y, b + wm[i].pos.x);
-                    if(!(nn[0] == 255 && nn[1] == 255 && nn[2] == 255))
+                    int y = a + wm[i].pos.y;
+                    int x = b + wm[i].pos.x;
+                    if(y >= 0 && x >= 0 && y < image.rows && x < image.cols)
                     {
-                        cv::Vec3b oricolor2 = oriImg.at<cv::Vec3b>(a + wm[i].pos.y, b + wm[i].pos.x);
-                        Vector3 oriv2(oricolor2[0], oricolor2[1], oricolor2[1]);
-                        if(oriv2.squaredDistance(oriv) < dis)
+                        cv::Vec3b nn = image.at<cv::Vec3b>(y, x);
+                        if(!(nn[0] == 255 && nn[1] == 255 && nn[2] == 255))
                         {
-                            dis = oriv2.squaredDistance(oriv);
-                            cid1 = nn;
+                            cv::Vec3b oricolor2 = oriImg.at<cv::Vec3b>(a + wm[i].pos.y, b + wm[i].pos.x);
+                            Vector3 oriv2(oricolor2[0], oricolor2[1], oricolor2[1]);
+                            if(oriv2.squaredDistance(oriv) < dis)
+                            {
+                                dis = oriv2.squaredDistance(oriv);
+                                cid1 = nn;
+                            }
                         }
                     }
                 }
@@ -4090,9 +4095,9 @@ cv::Mat FixSpaceLine2(cv::Mat image, cv::Mat oriImg, double initdis)
 cv::Mat FixSpaceLine1(cv::Mat image, cv::Mat oriImg, double initdis)
 {
     cv::Mat res = image.clone();
-    for(int a = 1; a < res.rows - 1; ++a)
+    for(int a = 0; a < res.rows ; ++a)
     {
-        for(int b = 1; b < res.cols - 1; ++b)
+        for(int b = 0; b < res.cols ; ++b)
         {
             cv::Vec3b& cid1 = res.at<cv::Vec3b>(a, b);
             if(cid1[0] == 255 && cid1[1] == 255 && cid1[2] == 255)
@@ -4104,15 +4109,20 @@ cv::Mat FixSpaceLine1(cv::Mat image, cv::Mat oriImg, double initdis)
                 Weights wm = wm_init_cross;
                 for(int i = 0; i < wm.size(); i++)
                 {
-                    cv::Vec3b nn = image.at<cv::Vec3b>(a + wm[i].pos.y, b + wm[i].pos.x);
-                    if(!(nn[0] == 255 && nn[1] == 255 && nn[2] == 255))
+                    int y = a + wm[i].pos.y;
+                    int x = b + wm[i].pos.x;
+                    if(y >= 0 && x >= 0 && y < image.rows && x < image.cols)
                     {
-                        cv::Vec3b oricolor2 = oriImg.at<cv::Vec3b>(a + wm[i].pos.y, b + wm[i].pos.x);
-                        Vector3 oriv2(oricolor2[0], oricolor2[1], oricolor2[1]);
-                        if(oriv2.squaredDistance(oriv) < dis)
+                        cv::Vec3b nn = image.at<cv::Vec3b>(y, x);
+                        if(!(nn[0] == 255 && nn[1] == 255 && nn[2] == 255))
                         {
-                            dis = oriv2.squaredDistance(oriv);
-                            cid1 = nn;
+                            cv::Vec3b oricolor2 = oriImg.at<cv::Vec3b>(a + wm[i].pos.y, b + wm[i].pos.x);
+                            Vector3 oriv2(oricolor2[0], oricolor2[1], oricolor2[1]);
+                            if(oriv2.squaredDistance(oriv) < dis)
+                            {
+                                dis = oriv2.squaredDistance(oriv);
+                                cid1 = nn;
+                            }
                         }
                     }
                 }
@@ -4172,5 +4182,190 @@ void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int r
             }
         }
     }
+}
+
+Lines GetRegionLines(const cv::Mat& image0)
+{
+    assert(image0.type() == CV_8UC3);
+    cv::Mat img1u, img2u, cImg2;
+    cImg2 = image0.clone();
+    cvtColor(image0, img1u, CV_BGR2GRAY);
+    cv::Mat srcImg1f, show3u = cv::Mat::zeros(img1u.size(), CV_8UC3);
+    img1u.convertTo(srcImg1f, CV_32FC1, 1.0 / 255);
+    cv::Mat mask, image, joint_mask, tmp_image, joint_image;
+    image0.copyTo(image);
+    joint_mask.create(image.rows * 2 + 1, image.cols * 2 + 1, CV_8UC1);
+    tmp_image.create(image.rows + 2, image.cols + 2, CV_8UC3);
+    joint_mask = cv::Scalar::all(0);
+    mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+    image0.copyTo(image);
+    mask = cv::Scalar::all(0);
+    int cc = 1;
+    for(int i = 1; i < image.rows - 1; i++)
+    {
+        for(int j = 1; j < image.cols - 1; j++)
+        {
+            S3FloodFill(cc, image, mask, joint_mask, 0, j, i, 0, 0);
+        }
+    }
+    // create bigger image to fix border problem
+    tmp_image = cv::Scalar::all(0);
+    for(int i = 0; i < image.rows ; i++)
+    {
+        for(int j = 0; j < image.cols ; j++)
+        {
+            tmp_image.at<cv::Vec3b>(i + 1, j + 1) = image.at<cv::Vec3b>(i , j);
+        }
+    }
+    //imshow("tmp_image", tmp_image);
+    //cv::waitKey();
+    cv::Mat gap_image;
+    gap_image.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
+    gap_image = cv::Scalar(0);
+    // Find Boundary
+    for(int i = 0; i < joint_mask.rows ; i++)
+    {
+        for(int j = 0; j < joint_mask.cols ; j++)
+        {
+            int id2 = i % 2;
+            int jd2 = j % 2;
+            cv::Vec3b& v = tmp_image.at<cv::Vec3b>(i / 2, j / 2);
+            if((v[0] + v[1] + v[2]) == 0)
+            {
+                if(i > 0 && j > 0)
+                {
+                    gap_image.at<uchar>(i - 1 , j - 1) = 255;
+                }
+            }
+            if(id2 == 1 && jd2 == 1)
+            {
+                continue;
+            }
+            if(id2 == 0 && jd2 == 0)
+            {
+                cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2, j / 2);
+                cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2, j / 2 + 1);
+                cv::Vec3b& v3 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2);
+                cv::Vec3b& v4 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+                if(v1 != v2)
+                {
+                    joint_mask.at<uchar>(i , j) += 1;
+                }
+                if(v1 != v3)
+                {
+                    joint_mask.at<uchar>(i , j) += 1;
+                }
+                if(v4 != v2)
+                {
+                    joint_mask.at<uchar>(i , j) += 1;
+                }
+                if(v4 != v3)
+                {
+                    joint_mask.at<uchar>(i , j) += 1;
+                }
+            }
+            else if(id2 == 1)
+            {
+                cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2);
+                cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+                if(v1 != v2)
+                {
+                    joint_mask.at<uchar>(i , j) += 1;
+                }
+            }
+            else if(jd2 == 1)
+            {
+                cv::Vec3b& v1 = tmp_image.at<cv::Vec3b>(i / 2 , j / 2 + 1);
+                cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i / 2 + 1, j / 2 + 1);
+                if(v1 != v2)
+                {
+                    joint_mask.at<uchar>(i , j) += 1;
+                }
+            }
+        }
+    }
+    //imshow("joint_mask", joint_mask);
+    //cv::waitKey();
+    //imshow("gap_image", gap_image);
+    //cv::waitKey();
+    mask.create(joint_mask.rows + 2, joint_mask.cols + 2, CV_8UC1);
+    mask = cv::Scalar::all(0);
+    // show joint
+    for(int i = 0; i < joint_mask.rows ; i++)
+    {
+        for(int j = 0; j < joint_mask.cols ; j++)
+        {
+            if(joint_mask.at<uchar>(i, j) >= 3)  // joint
+            {
+                joint_mask.at<uchar>(i, j) = 255;
+            }
+            else if(joint_mask.at<uchar>(i, j) > 0)
+            {
+                joint_mask.at<uchar>(i, j) = 60;
+            }
+        }
+    }
+    // create smaller image to fix border problem
+    joint_image.create(joint_mask.rows , joint_mask.cols , CV_8UC3);
+    joint_image = cv::Scalar::all(0);
+    tmp_image = joint_image.clone();
+    for(int i = 0; i < joint_image.rows ; i++)
+    {
+        for(int j = 0; j < joint_image.cols ; j++)
+        {
+            if(joint_mask.at<uchar>(i , j) == 255)  // joint
+            {
+                cv::Vec3b& v1 = joint_image.at<cv::Vec3b>(i, j);
+                v1[0] = 255;
+                v1[1] = 255;
+                v1[2] = 255;
+                cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i, j);
+                v2[0] = 255;
+                v2[1] = 255;
+                v2[2] = 255;
+                gap_image.at<uchar>(i, j) = 128;
+            }
+            else if(joint_mask.at<uchar>(i , j) == 60)
+            {
+                cv::Vec3b& v1 = joint_image.at<cv::Vec3b>(i, j);
+                v1[0] = 255;
+                v1[1] = 255;
+                v1[2] = 255;
+                cv::Vec3b& v2 = tmp_image.at<cv::Vec3b>(i, j);
+                v2[0] = 60;
+                v2[1] = 60;
+                v2[2] = 60;
+                gap_image.at<uchar>(i, j) = 128;
+            }
+        }
+    }
+    mask = cv::Scalar::all(0);
+    cc = 1;
+    for(int i = 0; i < tmp_image.rows; i++)
+    {
+        for(int j = 0; j < tmp_image.cols; j++)
+        {
+            LineFloodFill(tmp_image, mask, cc, j, i);
+        }
+    }
+    //cv::namedWindow("LineFloodFill", 0);
+    imwrite("tmp_image.png", tmp_image);
+    //cv::waitKey();
+    Lines lines = GetAllLineFromLineImage(tmp_image);
+    // 還原圖的大小
+    for(int i = 0; i < lines.size(); ++i)
+    {
+        Line& cps = lines[i];
+        Line newcps;
+        for(int j = 0; j < cps.size(); j ++)
+        {
+            if(int(cps[j].x) % 2 == 0 && int(cps[j].y) % 2 == 0)
+            {
+                newcps.push_back(cps[j] * 0.5);
+            }
+        }
+        cps = newcps;
+    }
+    return lines;
 }
 

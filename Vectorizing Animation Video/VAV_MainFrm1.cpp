@@ -714,10 +714,10 @@ void VAV_MainFrame::OnButton_Zhang09()
 {
     D3DApp& d3dApp = GetVavView()->GetD3DApp();
     FrameInfo fi = ComputeFrame09(m_vavImage);
-    //d3dApp.AddColorTriangles(fi.ctris);
+    d3dApp.AddColorTriangles(fi.ctris);
     d3dApp.AddTrianglesLine(fi.ctris);
-	d3dApp.m_RegionDiffusion.SetDiffusionRegions(1);
-	d3dApp.m_RegionDiffusion.SetRegions(fi.tris2d);
-	d3dApp.AddDiffusionLines(fi.curves2, fi.GetLine2Color());
-	d3dApp.AddLines(fi.curves2);
+// 	d3dApp.m_RegionDiffusion.SetDiffusionRegions(1);
+// 	d3dApp.m_RegionDiffusion.SetRegions(fi.tris2d);
+// 	d3dApp.AddDiffusionLines(fi.curves2, fi.GetLine2Color());
+	//d3dApp.AddLines(fi.curves1);
 }

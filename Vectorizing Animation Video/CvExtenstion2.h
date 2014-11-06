@@ -19,6 +19,7 @@ cv::Mat ShowColorToLine(const Line& line, const cv::Mat img);
 
 Color2Side GetLinesColor2Side(cv::Mat img, const Lines& lines, double normal_len);
 Index2Side GetLinesIndex2Side(cv::Mat img, const Lines& lines, double normal_len);
+Index2Side GetLinesIndex2SideCV(const Lines& lines, cv::Mat img);
 Index2Side GetLinesIndex2SideSmart(const Lines& lines, cv::Mat img);
 Index2Side GetLinesIndex2SideSmart2(const Lines& lines, cv::Mat img, cv::Mat img2);
 Index2Side GetLinesIndex2SideSmart(CvPatchs& cps, const Lines& lines, double length);

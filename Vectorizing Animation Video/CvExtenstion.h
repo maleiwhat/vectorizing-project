@@ -64,6 +64,7 @@ CvPatchs S2_3GetPatchs(const cv::Mat& image, cv::Mat& ori_image, ColorConstraint
 					   cv::Mat& out);
 ImageSpline S3GetPatchs(cv::Mat& image0, double BlackRegionThreshold, cv::Mat& image1);
 ImageSpline S4GetPatchs(const cv::Mat& image0, int dilation, int erosion);
+Lines GetRegionLines(const cv::Mat& image);
 ImageSpline Sx1GetPatchs(cv::Mat& image0);
 
 ImageSpline GetImageSpline(CvPatchs& patchs, const Lines& lines,

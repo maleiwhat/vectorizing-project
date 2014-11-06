@@ -348,6 +348,9 @@
     <ClInclude Include="RegionDiffusion.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="PicMesh.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="algSpline.cpp">
@@ -627,6 +630,9 @@
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="RegionDiffusion.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="PicMesh.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>

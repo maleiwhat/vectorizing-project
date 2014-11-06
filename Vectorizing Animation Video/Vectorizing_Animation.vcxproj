@@ -111,7 +111,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>USE_CGAL;_WIN64;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;CGAL_NO_AUTOLINK;_SCL_SECURE_NO_WARNINGS;_USING_V110_SDK71_;WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;USE_CGAL;_WIN64;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;CGAL_NO_AUTOLINK;_SCL_SECURE_NO_WARNINGS;_USING_V110_SDK71_;WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -170,7 +170,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>USE_CGAL;_WIN64;USE_CGAL;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;CGAL_NO_AUTOLINK;_SCL_SECURE_NO_WARNINGS;_USING_V110_SDK71_;WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;USE_CGAL;_WIN64;USE_CGAL;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;CGAL_NO_AUTOLINK;_SCL_SECURE_NO_WARNINGS;_USING_V110_SDK71_;WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -271,6 +271,7 @@
     <ClInclude Include="OutputWnd.h" />
     <ClInclude Include="Patch.h" />
     <ClInclude Include="PatchSpline.h" />
+    <ClInclude Include="PicMesh.h" />
     <ClInclude Include="PositionGraph.h" />
     <ClInclude Include="PositionGraph_Node.h" />
     <ClInclude Include="print.h" />
@@ -390,6 +391,7 @@
     <ClCompile Include="OutputWnd.cpp" />
     <ClCompile Include="Patch.cpp" />
     <ClCompile Include="PatchSpline.cpp" />
+    <ClCompile Include="PicMesh.cpp" />
     <ClCompile Include="PositionGraph.cpp" />
     <ClCompile Include="PositionGraph_Node.cpp" />
     <ClCompile Include="PropertiesWnd.cpp" />
