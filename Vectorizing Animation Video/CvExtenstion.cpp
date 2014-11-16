@@ -4132,6 +4132,45 @@ cv::Mat FixSpaceLine1(cv::Mat image, cv::Mat oriImg, double initdis)
     return res;
 }
 
+cv::Mat FixSpaceLineX(cv::Mat image, cv::Mat oriImg, double initdis)
+{
+	cv::Mat res = image.clone();
+	for(int a = 0; a < res.rows ; ++a)
+	{
+		for(int b = 0; b < res.cols ; ++b)
+		{
+			cv::Vec3b& cid1 = res.at<cv::Vec3b>(a, b);
+			if(cid1[0] == 255 && cid1[1] == 255 && cid1[2] == 255)
+			{
+				cv::Vec3b rescolor(255, 255, 255);
+				cv::Vec3b oricolor = oriImg.at<cv::Vec3b>(a, b);
+				double dis = initdis;
+				Vector3 oriv(oricolor[0], oricolor[1], oricolor[1]);
+				Weights wm = wm_init_cross;
+				for(int i = 1; i < wm.size(); i+=2)
+				{
+					int y = a + wm[i].pos.y;
+					int x = b + wm[i].pos.x;
+					if(y >= 0 && x >= 0 && y < image.rows && x < image.cols)
+					{
+						cv::Vec3b nn = image.at<cv::Vec3b>(y, x);
+						if(!(nn[0] == 255 && nn[1] == 255 && nn[2] == 255))
+						{
+							cv::Vec3b oricolor2 = oriImg.at<cv::Vec3b>(a + wm[i].pos.y, b + wm[i].pos.x);
+							Vector3 oriv2(oricolor2[0], oricolor2[1], oricolor2[1]);
+							if(oriv2.squaredDistance(oriv) < dis)
+							{
+								dis = oriv2.squaredDistance(oriv);
+								cid1 = nn;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return res;
+}
 
 void S3FloodFill(int& cc, cv::Mat& image, cv::Mat& mask01, cv::Mat mask02, int range, int x, int y, int dilation /*= 0*/, int erosion /*= 0*/)
 {

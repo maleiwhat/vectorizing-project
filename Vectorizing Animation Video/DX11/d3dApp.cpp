@@ -471,8 +471,8 @@ void D3DApp::DrawScene()
     InterSetLookCenter(m_LookCenterX, m_LookCenterY);
     InterSetScale(m_Scale);
     InterDraw();
-    m_RegionDiffusion.ReadD3DSetting();
-    m_RegionDiffusion.DrawScene();
+//     m_RegionDiffusion.ReadD3DSetting();
+//     m_RegionDiffusion.DrawScene();
     m_SwapChain->Present(0, 0);
 }
 
@@ -1884,6 +1884,7 @@ void D3DApp::InterDraw(bool drawDiffusion)
         }
     }
     m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
+	m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
     //Draw Picture
     if(m_PicsVertices.size() > 0)
     {
@@ -2324,8 +2325,8 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Vector3s2d& colors)
 
 void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 {
-    m_RegionDiffusion.AddDiffusionLines(lines, colors);
-    return;
+//     m_RegionDiffusion.AddDiffusionLines(lines, colors);
+//     return;
     float scale = 1 / 255.0f;
     for(int i = 0; i < lines.size(); ++i)
     {

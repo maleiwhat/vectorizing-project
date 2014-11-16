@@ -231,26 +231,26 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float lineimg_threshold,
         {
             //if (pDer2[x] <= avg2 * 1)
             {
-                pDer2[x] = powf(pDer2[x], 3);
+                //pDer2[x] = powf(pDer2[x], 2);
             }
         }
     }
     g_cvshowEX.AddShow("m_pDer1f", m_pDer1f);
     g_cvshowEX.AddShow("m_pDer2f", m_pDer2f);
     double initmax = 30;
-    double avg = 99;
-    for(; avg > lineimg_threshold; initmax*=0.5)
-    {
-        normalize(m_pDer2f, m_pDer2f, 0, initmax, cv::NORM_MINMAX);
-        cv::Scalar v = cv::mean(m_pDer2f);
-        avg = v[0];
-    }
-    for(;avg < lineimg_threshold*0.5; initmax*=2)
-    {
-        normalize(m_pDer2f, m_pDer2f, 0, initmax, cv::NORM_MINMAX);
-        cv::Scalar v = cv::mean(m_pDer2f);
-        avg = v[0];
-    }
+    double avg = cv::mean(m_pDer2f)[0];
+//     for(; avg > lineimg_threshold; initmax*=0.5)
+//     {
+//         normalize(m_pDer2f, m_pDer2f, 0, initmax, cv::NORM_MINMAX);
+//         cv::Scalar v = cv::mean(m_pDer2f);
+//         avg = v[0];
+//     }
+//     for(;avg < lineimg_threshold*0.5; initmax*=2)
+//     {
+//         normalize(m_pDer2f, m_pDer2f, 0, initmax, cv::NORM_MINMAX);
+//         cv::Scalar v = cv::mean(m_pDer2f);
+//         avg = v[0];
+//     }
     printf("mean %f\n", avg);
 //  if (1)
 //  {

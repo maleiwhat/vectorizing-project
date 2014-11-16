@@ -2,6 +2,7 @@
 #include "LineDef.h"
 #include "LineWidthConstraint.h"
 #include "TriangulationBase.h"
+#include "PicMesh.h"
 
 struct FrameInfo
 {
@@ -15,11 +16,13 @@ struct FrameInfo
 	Color2Side ocolor2;
 	Color2SideConstraint color2;
 	Lines curves2;
+	// picmesh
+	PicMesh picmesh;
 	// isoline
 	Lines curves3;
 	Vector3s2d ocolor3;
 	ColorConstraints color3;
-	ColorTriangles	ctris;
+	//ColorTriangles	ctris;
 	Triangles2d		tris2d;
 	Lines GetLine1Width();
 	Vector3s2d GetLine1Color();

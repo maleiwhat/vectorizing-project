@@ -94,6 +94,7 @@ public:
 public:
 	void AddFrame(cv::Mat img);
 	void OnFileOpenVideo();
+	void OnFileOpenVideo2();
 	void OnFileOpenPicture();
 	cv::Mat Do_SLIC(double m_compatcness , double m_spcount, cv::Mat img);
 	VAV_View* GetVavView();

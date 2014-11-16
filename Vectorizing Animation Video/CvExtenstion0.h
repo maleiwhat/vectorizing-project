@@ -55,7 +55,7 @@ cv::Mat ConvertToIndex(cv::Mat src, cv::Mat ori, ColorConstraints& output);
 void    S5ReColor(cv::Mat& image);
 void    S6ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms);
 Mats    S7ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms);
-void    S8ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms);
+void    S8ReColor(cv::Mat& image, cv::Mat& oimg, cv::Mat& mask, ColorConstraints& ccms);
 
 bool CheckMaskImg1(cv::Mat image, cv::Mat mask, int x, int y);
 bool CheckMaskImg2(cv::Mat image, cv::Mat mask, int x, int y);

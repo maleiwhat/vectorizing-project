@@ -1703,9 +1703,9 @@ cv::Mat TrapBallMaskAllFG(cv::Mat image, cv::Mat oriImg, cv::Mat fg)
     int c = 2;
     //6
     cv::Mat show;
-    stmp = TrapBallMask5(stmp, 4, 2, oriImg, c);
-    stmp = TrapBallMask3(stmp, 3, cv::MORPH_ELLIPSE, 5);
-    stmp = TrapBallMask3(stmp, 2, cv::MORPH_ELLIPSE, 5);
+    stmp = TrapBallMask5(stmp, 5, 2, oriImg, c);
+    stmp = TrapBallMask3(stmp, 5, cv::MORPH_ELLIPSE, 5);
+    stmp = TrapBallMask3(stmp, 4, cv::MORPH_ELLIPSE, 5);
     stmp = TrapBallMask4(stmp);
     return stmp;
 }
@@ -1855,36 +1855,36 @@ Mats S7ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms)
 }
 
 
-void S8ReColor(cv::Mat& image, cv::Mat& oimg, ColorConstraints& ccms)
+void S8ReColor(cv::Mat& image, cv::Mat& oimg, cv::Mat& mask2, ColorConstraints& ccms)
 {
-    cv::Mat mask;
-    cv::resize(oimg.clone(), oimg, oimg.size() * 2, 0, 0, cv::INTER_CUBIC);
-    mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
-    mask = cv::Scalar::all(0);
-    int cc = 1;
-    for(int i = 0; i < image.rows; i++)
-    {
-        for(int j = 0; j < image.cols - 1; j++)
-        {
-            int lastcc = cc;
-            S6FloodFill(image, mask, cc, j, i);
-            if(lastcc != cc && lastcc != 1)
-            {
-                ColorConstraint ccm;
-                for(int ii = 0; ii < image.rows; ii++)
-                {
-                    for(int jj = 0; jj < image.cols; jj++)
-                    {
-                        if(mask.at<uchar>(ii + 1, jj + 1) > 130)
-                        {
-                            ccm.AddPoint(jj * 0.5, ii * 0.5, oimg.at<cv::Vec3b>(ii, jj));
-                        }
-                    }
-                }
-                ccms.push_back(ccm);
-            }
-        }
-    }
+	cv::Mat mask;
+	//cv::resize(oimg.clone(), oimg, oimg.size() * 2, 0, 0, cv::INTER_CUBIC);
+	mask.create(image.rows + 2, image.cols + 2, CV_8UC1);
+	mask = cv::Scalar::all(0);
+	int cc = 1;
+	for(int i = 0; i < image.rows; i++)
+	{
+		for(int j = 0; j < image.cols - 1; j++)
+		{
+			int lastcc = cc;
+			S6FloodFill(image, mask, cc, j, i);
+			if(lastcc != cc)
+			{
+				ColorConstraint ccm;
+				for(int ii = 0; ii < image.rows; ii++)
+				{
+					for(int jj = 0; jj < image.cols; jj++)
+					{
+						if(mask.at<uchar>(ii + 1, jj + 1) > 130 && mask2.at<uchar>(ii, jj) == 0)
+						{
+							ccm.AddPoint(jj, ii, oimg.at<cv::Vec3b>(ii, jj));
+						}
+					}
+				}
+				ccms.push_back(ccm);
+			}
+		}
+	}
 }
 
 cv::Mat TrapBallMask5(cv::Mat LineImg, int size, int moprh, cv::Mat oriImg, int& cstart)

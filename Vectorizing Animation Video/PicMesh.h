@@ -16,6 +16,8 @@ struct BasicTraits : public OpenMesh::DefaultTraits
 	FaceTraits
 	{
 	public:
+		// for mapping id
+		int mapid;
 		// colorid
 		int cid;
 		// region id
@@ -31,6 +33,10 @@ struct BasicTraits : public OpenMesh::DefaultTraits
 	VertexTraits
 	{
 	public:
+		// for interpolation color
+		Vector3 c;
+		// for mapping id
+		int mapid;
 		int left;
 		int right;
 		VertexT(): left(-1), right(-1) { }
@@ -57,7 +63,18 @@ class PicMesh : public BasicMesh
 public:
 	PicMesh(void);
 	~PicMesh(void);
+	// get middle point of face
+	BasicMesh::Point MidPoint(FHandle fh);
+
 	void ReadFromSideline(TriangulationCgal_Sideline* data);
+	// draw black color for no color
+	void MakeColor1();
+	// don't draw for no color
+	void MakeColor2();
+	void MappingMesh(PicMesh& pm, double x, double y);
+	// out1 is this mesh color, out2 is input mapping color
+	void GetMappingCT(PicMesh& pm, ColorTriangles& out1, ColorTriangles& out2);
+	ColorTriangles Interpolation(ColorTriangles& c1, ColorTriangles& c2, double alpha);
 	Lines m_Lines;
 	VHandles2d	m_LinesVH;
 	HHandles2d	m_LinesHH;

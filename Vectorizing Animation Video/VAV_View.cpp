@@ -502,59 +502,74 @@ unsigned __stdcall VAV_View::MyThreadFunc(LPVOID lpParam)
 
 void VAV_View::OnTimer(UINT_PTR nIDEvent)
 {
+    m_D3DApp.ClearTriangles();
     BackGround& dframes = GetMainFrame()->m_BackGround;
     FrameInfos& fgframes = GetMainFrame()->m_FrameInfos;
+    static ColorTriangles c1, c2;
+    const int LEN = 10;
+    static ColorTriangles ctsx[LEN];
+    if(c1.empty())
+    {
+        fgframes[0].picmesh.GetMappingCT(fgframes[1].picmesh, c1, c2);
+        printf("c1 %d c2 %d\n", c1.size(), c2.size());
+        for(int i = 0; i < LEN; ++i)
+        {
+            ctsx[i] = fgframes[0].picmesh.Interpolation(c1, c2, (float)i / LEN);
+            printf("ctsx[%d]  %d\n", i, ctsx[i].size());
+        }
+    }
     static int i = 0;
-    if(i >= fgframes.size())
+    if(i >= LEN + 3)
     {
         i = 0;
     }
-    Lines curves11 = dframes.m_FI.curves1;
-    Lines curves12 = dframes.m_FI.curves2;
-    Color2Side color12;
-    if(curves11.size() > 0)
+    ColorTriangles cts = dframes.m_FI.picmesh.m_Trangles;
+//     if(cts.size() > 0)
+//     {
+//         for(int a = 0; a < cts.size(); ++a)
+//         {
+//             for(int b = 0; b < 3; ++b)
+//             {
+//                 cts[a].pts[b].x -= dframes.m_Moves[i][0];
+//                 cts[a].pts[b].y += dframes.m_Moves[i][1];
+//             }
+//         }
+//         m_D3DApp.AddColorTriangles(cts);
+//         m_D3DApp.AddTrianglesLine(cts);
+//     }
+//     Lines curves11 = dframes.m_FI.curves1;
+//     Lines curves12 = dframes.m_FI.curves2;
+//     Color2Side color12;
+//     if(curves11.size() > 0)
+//     {
+//         curves11 = GetLines(curves11, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
+//         m_D3DApp.AddLinesWidth(curves11, dframes.m_FI.GetLine1Width(), dframes.m_FI.ocolor1);
+//     }
     {
-        curves11 = GetLines(curves11, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
-        curves12 = GetLines(curves12, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
-        m_D3DApp.ClearTriangles();
-        m_D3DApp.ClearSkeletonLines();
-        color12 = dframes.m_FI.ocolor2;
-        m_D3DApp.AddDiffusionLines(curves12, dframes.m_FI.ocolor2);
-        if(curves11.size() > 0)
+        //if(ctsx[i].size() > 0)
         {
-            m_D3DApp.AddLinesWidth(curves11, dframes.m_FI.GetLine1Width(), dframes.m_FI.ocolor1);
+//             for(int a = 0; a < ctsx.size(); ++a)
+//             {
+//                 for(int b = 0; b < 3; ++b)
+//                 {
+//                     ctsx[a].pts[b].x -= dframes.m_Moves[i][0];
+//                     ctsx[a].pts[b].y += dframes.m_Moves[i][1];
+//                 }
+//             }
+            if(i < LEN)
+            {
+                m_D3DApp.AddColorTriangles(ctsx[i]);
+                m_D3DApp.AddTrianglesLine(ctsx[i]);
+            }
+			else
+			{
+				m_D3DApp.AddColorTriangles(fgframes[1].picmesh.m_Trangles);
+				m_D3DApp.AddTrianglesLine(fgframes[1].picmesh.m_Trangles);
+			}
+            m_D3DApp.BuildPoint();
+            m_D3DApp.DrawScene();
         }
     }
-    if(fgframes.size() > i)
-    {
-        Lines curves21 = fgframes[i].curves1;
-        Lines curves22 = fgframes[i].curves2;
-        Lines curves23 = fgframes[i].curves3;
-        if(curves21.size() > 0)
-        {
-            curves21 = GetLines(curves21, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
-            curves22 = GetLines(curves22, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
-            Color2Side color22 = fgframes[i].ocolor2;
-            curves12.insert(curves12.end(), curves22.begin(), curves22.end());
-            color12.left.insert(color12.left.end(), color22.left.begin(), color22.left.end());
-            color12.right.insert(color12.right.end(), color22.right.begin(), color22.right.end());
-            LineEnds les = GetLineEnds(curves12);
-            LinkLineEnds180(les, 5, 60);
-            ConnectLineEnds3_Color2(les, curves12, color12);
-            color12.left = SmoothingLen5(color12.left, 0, 3);
-            color12.right = SmoothingLen5(color12.right, 0, 3);
-            m_D3DApp.AddDiffusionLines(curves12, color12);
-            //m_D3DApp.AddDiffusionLines(curves22, color22);
-            m_D3DApp.AddLinesWidth(curves21, fgframes[i].GetLine1Width(), fgframes[i].ocolor1);
-        }
-        if(curves23.size() > 0)
-        {
-            curves23 = GetLines(curves23, -dframes.m_Moves[i][0], dframes.m_Moves[i][1]);
-            m_D3DApp.AddDiffusionLines(curves23, fgframes[i].GetLine3Color());
-        }
-    }
-    m_D3DApp.BuildPoint();
-    m_D3DApp.DrawScene();
     i++;
 }
 

@@ -48,9 +48,9 @@ Vector3 ColorConstraintMathModel::GetColorVector3(double x, double y)
     }
     if(m_ColorSize > QUARTIC_THRESHOLD)
     {
-		double rr1 = x1q[0] + x1q[1] * x + x1q[2] * y + x1q[3] * x * x + x1q[4] * y * y + x1q[5] * x * y + x1q[6] * x * x * x + x1q[7] * y * y * y;
-		double gg1 = x2q[0] + x2q[1] * x + x2q[2] * y + x2q[3] * x * x + x2q[4] * y * y + x2q[5] * x * y + x2q[6] * x * x * x + x2q[7] * y * y * y;
-		double bb1 = x3q[0] + x3q[1] * x + x3q[2] * y + x3q[3] * x * x + x3q[4] * y * y + x3q[5] * x * y + x3q[6] * x * x * x + x3q[7] * y * y * y;
+		double rr1 = x1q[0] + x1q[1] * x + x1q[2] * y + x1q[3] * x * x + x1q[4] * y * y + x1q[5] * x * y;
+		double gg1 = x2q[0] + x2q[1] * x + x2q[2] * y + x2q[3] * x * x + x2q[4] * y * y + x2q[5] * x * y;
+		double bb1 = x3q[0] + x3q[1] * x + x3q[2] * y + x3q[3] * x * x + x3q[4] * y * y + x3q[5] * x * y;
         Bounding(rr1, 0, 255);
         Bounding(gg1, 0, 255);
         Bounding(bb1, 0, 255);
@@ -93,9 +93,9 @@ cv::Vec3b ColorConstraintMathModel::GetColorCvPoint(double x, double y)
     }
     if(m_ColorSize > QUARTIC_THRESHOLD)
     {
-        double rr = x1q[0] + x1q[1] * x + x1q[2] * y + x1q[3] * x * x + x1q[4] * y * y + x1q[5] * x * y + x1q[6] * x * x * x + x1q[7] * y * y * y;
-        double gg = x2q[0] + x2q[1] * x + x2q[2] * y + x2q[3] * x * x + x2q[4] * y * y + x2q[5] * x * y + x2q[6] * x * x * x + x2q[7] * y * y * y;
-        double bb = x3q[0] + x3q[1] * x + x3q[2] * y + x3q[3] * x * x + x3q[4] * y * y + x3q[5] * x * y + x3q[6] * x * x * x + x3q[7] * y * y * y;
+        double rr = x1q[0] + x1q[1] * x + x1q[2] * y + x1q[3] * x * x + x1q[4] * y * y + x1q[5] * x * y;
+        double gg = x2q[0] + x2q[1] * x + x2q[2] * y + x2q[3] * x * x + x2q[4] * y * y + x2q[5] * x * y;
+        double bb = x3q[0] + x3q[1] * x + x3q[2] * y + x3q[3] * x * x + x3q[4] * y * y + x3q[5] * x * y;
         Bounding(rr, 0, 255);
         Bounding(gg, 0, 255);
         Bounding(bb, 0, 255);
@@ -158,7 +158,7 @@ void ColorConstraintMathModel::BuildModel()
     if(m_Colors.size() > QUARTIC_THRESHOLD)
     {
         const int LEN = m_Colors.size();
-        const int DIM = 8;
+        const int DIM = 6;
         MatrixXd A(LEN, DIM), At, Ata;
         VectorXd b1(LEN), b2(LEN), b3(LEN), Atb1, Atb2, Atb3;
         for(int i = 0; i < m_Colors.size(); ++i)
@@ -172,8 +172,6 @@ void ColorConstraintMathModel::BuildModel()
             A.coeffRef(i, 3) = m_Pos[i].x * m_Pos[i].x;
             A.coeffRef(i, 4) = m_Pos[i].y * m_Pos[i].y;
             A.coeffRef(i, 5) = m_Pos[i].x * m_Pos[i].y;
-            A.coeffRef(i, 6) = m_Pos[i].x * m_Pos[i].x * m_Pos[i].x;
-            A.coeffRef(i, 7) = m_Pos[i].y * m_Pos[i].y * m_Pos[i].y;
         }
         At = A.transpose();
         Ata = At * A;
