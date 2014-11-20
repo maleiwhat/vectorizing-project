@@ -301,8 +301,8 @@ const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
             pDer[x] = float(eigval[0] > 0.0f ? eigval[0] : 0.0f);//計算二階導數
         }
     }
-    GaussianBlur(m_pDer2f, m_pDer2f, cv::Size(3, 3), 0);
-    normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
+    //GaussianBlur(m_pDer2f, m_pDer2f, cv::Size(3, 3), 0);
+    //normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
     NoneMaximalSuppress(linkEndBound, linkStartBound);
     return m_pDer2f;
 }

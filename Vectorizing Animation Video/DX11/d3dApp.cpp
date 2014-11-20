@@ -1412,7 +1412,6 @@ void D3DApp::AddLines(const Lines& lines, const double_vector2d& linewidths)
 void D3DApp::AddLines(const Lines& lines)
 {
     m_RegionDiffusion.AddLines(lines);
-    return;
     for(int i = 0; i < lines.size(); ++i)
     {
         const Line& now_line = lines[i];

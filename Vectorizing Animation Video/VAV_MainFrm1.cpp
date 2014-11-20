@@ -151,7 +151,8 @@ void SetDrawFrame(D3DApp& d3dApp, FrameInfo& fi)
     d3dApp.ClearTriangles();
     d3dApp.ClearSkeletonLines();
 //     d3dApp.AddDiffusionLines(fi.curves2, fi.ocolor2);
-//     d3dApp.AddLines(fi.curves2);
+    d3dApp.AddLines(fi.curves2);
+	d3dApp.AddLines(fi.curves3);
     d3dApp.AddLinesWidth(fi.curves1, fi.GetLine1Width(), fi.ocolor1);
     d3dApp.AddColorTriangles(fi.picmesh.m_Trangles);
     d3dApp.AddTrianglesLine(fi.picmesh.m_Trangles);
@@ -179,5 +180,4 @@ void VAV_MainFrame::OnButton_Zhang09()
 //  d3dApp.m_RegionDiffusion.SetDiffusionRegions(1);
 //  d3dApp.m_RegionDiffusion.SetRegions(fi.tris2d);
 //  d3dApp.AddDiffusionLines(fi.curves2, fi.GetLine2Color());
-    //d3dApp.AddLines(fi.curves1);
 }

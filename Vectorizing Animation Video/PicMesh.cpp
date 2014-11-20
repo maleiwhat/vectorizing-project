@@ -57,7 +57,7 @@ void PicMesh::ReadFromSideline(TriangulationCgal_Sideline* ts)
     {
         m_Regions[data(*fit).rid].push_back(*fit);
     }
-    // 把兩邊的顏色填上
+    // 把兩邊的顏色填上，標上end point
     m_LinesVH.resize(m_Lines.size());
     m_LinesHH.resize(m_Lines.size());
     for(int i = 0; i < m_Lines.size(); ++i)
@@ -134,7 +134,6 @@ void PicMesh::ReadFromSideline(TriangulationCgal_Sideline* ts)
             }
         }
     }
-	
     for(int i = 0; i < m_Regions.size(); ++i)
     {
         ints rnum;
@@ -181,7 +180,7 @@ void PicMesh::MakeColor1()
             Point p = point(*fvit);
             t.pts[c][0] = p[0];
             t.pts[c][1] = p[1];
-            if(tid > 0)
+            if(tid > 0 && m_ColorConstraint.size() >= tid)
             {
                 t.color[c] = m_ColorConstraint[tid - 1].GetColorVector3(p[0], p[1]);
             }
@@ -224,8 +223,8 @@ void PicMesh::MappingMesh(PicMesh& pm, double x, double y)
     for(BasicMesh::VIter pvit = vertices_begin(); pvit != vertices_end(); ++pvit)
     {
         BasicMesh::Point now = point(*pvit);
-		now[0] += x;
-		now[1] += y;
+        now[0] += x;
+        now[1] += y;
         double tdis = (pm.point(lastV) - now).sqrnorm();
         double mindis = tdis;
         for(; tdis > 1;)
@@ -257,8 +256,8 @@ void PicMesh::MappingMesh(PicMesh& pm, double x, double y)
     for(BasicMesh::FIter pvit = faces_begin(); pvit != faces_end(); ++pvit)
     {
         BasicMesh::Point now = MidPoint(*pvit);
-		now[0] += x;
-		now[1] += y;
+        now[0] += x;
+        now[1] += y;
         double tdis = (pm.MidPoint(lastF) - now).sqrnorm();
         for(; tdis > 1;)
         {
@@ -322,7 +321,7 @@ void PicMesh::GetMappingCT(PicMesh& pm, ColorTriangles& out1, ColorTriangles& ou
         int mapid = data(*fit).mapid;
         FHandle mfh(mapid);
         int tid = pm.data(mfh).cid;
-		//int tid = data(*fit).cid;
+        //int tid = data(*fit).cid;
         int c = 0;
         for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
         {
@@ -371,5 +370,291 @@ ColorTriangles PicMesh::Interpolation(ColorTriangles& c1, ColorTriangles& c2, do
         t.pts[2] = c1[i].pts[2] * (1 - alpha) + c2[i].pts[2] * alpha;
     }
     return res;
+}
+
+void PicMesh::MakeRegionLine(double lmax)
+{
+    // mark boundary constraint
+    for(VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        Point p = point(*vit);
+        if(p[0] == 0 || p[1] == 0 || p[0] == m_w || p[1] == m_h)
+        {
+            data(*vit).constraint += 1;
+        }
+    }
+    // mark constraint point
+    for(int i = 0; i < m_LinesVH.size(); ++i)
+    {
+        for(int j = 0; j < m_LinesVH[i].size(); ++j)
+        {
+            data(m_LinesVH[i][j]).constraint += 1;
+            data(m_LinesVH[i][j]).lineid = i;
+            data(m_LinesVH[i][j]).lineidx = j;
+        }
+    }
+    // mark end point
+    for(int i = 0; i < m_LinesVH.size(); ++i)
+    {
+        data(m_LinesVH[i].front()).end = true;
+        data(m_LinesVH[i].back()).end = true;
+    }
+    for(int i = 0; i < m_LinesVH.size(); ++i)
+    {
+        Line& nowline = m_Lines[i];
+        int last = m_LinesVH[i].size() - 1;
+        Vector2 out;
+        bool res;
+        if(data(m_LinesVH[i][0]).constraint == 1)
+        {
+            Point dir;
+            if(m_LinesVH[i].size() > 3)
+            {
+                Vector2 v = nowline[1] - nowline[2];
+                dir = Point(v[0], v[1]);
+            }
+            else
+            {
+                Vector2 v = nowline[0] - nowline[1];
+                dir = Point(v[0], v[1]);
+            }
+            dir.normalize();
+            res = ConnectOneRingConstraint(m_LinesVH[i][0], m_LinesVH[i][1], out, dir, lmax);
+            if(res)
+            {
+                nowline.insert(nowline.begin(), out);
+            }
+        }
+        if(data(m_LinesVH[i][last]).constraint == 1)
+        {
+            Point dir;
+            if(m_LinesVH[i].size() > 3)
+            {
+                Vector2 v = nowline[last - 1] - nowline[last - 2];
+                dir = Point(v[0], v[1]);
+            }
+            else
+            {
+                Vector2 v = nowline[last] - nowline[last - 1];
+                dir = Point(v[0], v[1]);
+            }
+            dir.normalize();
+            res = ConnectOneRingConstraint(m_LinesVH[i][last], m_LinesVH[i][last - 1], out, dir, lmax);
+            if(res)
+            {
+                nowline.insert(nowline.end(), out);
+            }
+        }
+    }
+}
+
+bool PicMesh::ConnectOneRingConstraint(VHandle vh, VHandle lastvh, Vector2& out, Point dir, double lmax)
+{
+    VHandles ends;
+    VHandles constraints;
+    VHandles alls;
+    for(VVIter vvit = vv_iter(vh); vvit.is_valid(); ++vvit)
+    {
+        if(*vvit != lastvh)
+        {
+            if(data(*vvit).end)
+            {
+                ends.push_back(*vvit);
+                alls.push_back(*vvit);
+            }
+            else if(data(*vvit).constraint > 0)
+            {
+                if(data(*vvit).lineid == data(vh).lineid)
+                {
+                    if(abs(data(*vvit).lineidx - data(vh).lineidx) > 5)
+                    {
+                        constraints.push_back(*vvit);
+                        alls.push_back(*vvit);
+                    }
+                }
+                else
+                {
+                    constraints.push_back(*vvit);
+                    alls.push_back(*vvit);
+                }
+            }
+        }
+    }
+    // 移除同一條線的constraint點
+    if(ends.size() > 0 && constraints.size() > 0)
+    {
+        for(int i = 0; i < ends.size(); ++i)
+        {
+            for(int j = 0; j < constraints.size(); ++j)
+            {
+                if(data(ends[i]).lineid == data(constraints[j]).lineid)
+                {
+                    constraints.erase(constraints.begin() + j);
+                    j--;
+                }
+            }
+        }
+    }
+    if(ends.size() > 0 && constraints.size() > 0)
+    {
+        for(int i = 0; i < ends.size(); ++i)
+        {
+            if(data(ends[i]).constraint > 1)
+            {
+                Point p = point(ends[i]);
+                double dstlen = (p - point(vh)).length();
+                bool isok = true;
+                for(int j = 0; j < constraints.size(); ++j)
+                {
+                    if((point(constraints[j]) - point(vh)).length() * 1.5 < dstlen)
+                    {
+                        isok = false;
+                        break;
+                    }
+                }
+                if(isok && dstlen < lmax)
+                {
+                    out = Vector2(p[0], p[1]);
+                    data(vh).end = false;
+                    data(ends[i]).constraint += 1;
+                    return true;
+                }
+            }
+        }
+//         for(int i = 0; i < ends.size(); ++i)
+//         {
+//             for(int j = 0; j < constraints.size(); ++j)
+//             {
+//                 if(isConnection(ends[i], constraints[j]))
+//                 {
+//                     Point p1 = dir;
+//                     p1.normalize();
+//                     Point p2 = point(ends[i]) - point(vh);
+//                     p2.normalize();
+//                     Point p3 = point(constraints[j]) - point(vh);
+//                     p3.normalize();
+//                     if((p1 - p3).length() < 0.6)
+//                     {
+//                         Point p = point(constraints[j]);
+//                         if((p - point(vh)).length() < lmax)
+//                         {
+//                             out = Vector2(p[0], p[1]);
+//                             data(vh).end = false;
+//                             data(constraints[j]).end = true;
+//                             data(constraints[j]).constraint += 1;
+//                             return true;
+//                         }
+//                     }
+//                     else if((p1 - p2).length() < (p1 - p3).length())
+//                     {
+//                         Point p = point(ends[i]);
+//                         if((p - point(vh)).length() < lmax)
+//                         {
+//                             out = Vector2(p[0], p[1]);
+//                             data(vh).end = false;
+//                             data(ends[i]).end = true;
+//                             data(ends[i]).constraint += 1;
+//                             return true;
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+    }
+    if(ends.size() == 1)
+    {
+        Point p = point(ends[0]);
+        if((p - point(vh)).length() < 2)
+        {
+            out = Vector2(p[0], p[1]);
+            data(vh).end = false;
+            data(ends[0]).end = false;
+            return true;
+        }
+    }
+    if(alls.size() > 0)
+    {
+        Point p = dir;
+        p.normalize();
+        Vector2 v(p[0], p[1]);
+        doubles lens;
+        for(int i = 0; i < alls.size(); ++i)
+        {
+            Point px = point(alls[i]) - point(vh);
+            px.normalize();
+            Vector2 v2(px[0], px[1]);
+            lens.push_back(v.distance(v2));
+        }
+        double minlen = 99;
+        int idx = 0;
+        for(int i = 0; i < lens.size(); ++i)
+        {
+            if(minlen > lens[i])
+            {
+                minlen = lens[i];
+                idx = i;
+            }
+        }
+        Point op = point(alls[idx]);
+        if((op - point(vh)).length() < lmax)
+        {
+            out = Vector2(op[0], op[1]);
+            //data(vh).end = false;
+            data(alls[idx]).end = true;
+            data(alls[idx]).constraint += 1;
+            return true;
+        }
+    }
+    if(ends.size() > 1)
+    {
+        Point p = dir;
+        p.normalize();
+        Vector2 v(p[0], p[1]);
+        doubles lens;
+        for(int i = 0; i < ends.size(); ++i)
+        {
+            Point px = point(ends[i]) - point(vh);
+            px.normalize();
+            Vector2 v2(px[0], px[1]);
+            lens.push_back(v.distance(v2));
+        }
+        double minlen = 99;
+        int idx = 0;
+        for(int i = 0; i < lens.size(); ++i)
+        {
+            if(minlen > lens[i])
+            {
+                minlen = lens[i];
+                idx = i;
+            }
+        }
+        Point op = point(ends[idx]);
+        if((op - point(vh)).length() < lmax)
+        {
+            out = Vector2(op[0], op[1]);
+            data(vh).end = false;
+            data(ends[idx]).end = false;
+            return true;
+        }
+    }
+    return false;
+}
+
+void PicMesh::SetSize(int w, int h)
+{
+    m_w = w;
+    m_h = h;
+}
+
+bool PicMesh::isConnection(VHandle vh1, VHandle vh2)
+{
+    for(VVIter vvit = vv_iter(vh1); vvit.is_valid(); ++vvit)
+    {
+        if(*vvit == vh2)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
