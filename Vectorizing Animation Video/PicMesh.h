@@ -8,6 +8,7 @@
 #include "LineDef.h"
 #include "ColorConstraint.h"
 #include "TriangulationBase.h"
+#include "vavImage.h"
 
 
 struct BasicTraits : public OpenMesh::DefaultTraits
@@ -22,13 +23,16 @@ struct BasicTraits : public OpenMesh::DefaultTraits
 		int cid;
 		// region id
 		int rid;
+		// Color
+		Vector3 c2;
 		FaceT() : cid(-1), rid(-1) { }
 	};
 	EdgeTraits
 	{
 	public:
-		int idx;
-		EdgeT(): idx(-1) { }
+		// check is constraint
+		bool constraint;
+		EdgeT(): constraint(false) { }
 	};
 	VertexTraits
 	{
@@ -41,8 +45,14 @@ struct BasicTraits : public OpenMesh::DefaultTraits
 		char constraint;
 		// for check end point
 		bool end;
+		// for use
+		bool use;
 		// for interpolation color
 		Vector3 c;
+		// for sample color
+		Vector3 c2;
+		// for compute use
+		Vector3 c3;
 		// for mapping id
 		int mapid;
 		VertexT(): end(false), constraint(0), mapid(0), lineid(-1) { }
@@ -79,7 +89,7 @@ public:
 	void MakeColor2();
 	// add region line by triangle information
 	// lmax is max distance of connection line
-	void MakeRegionLine(double lmax);
+	void MakeRegionLine(cv::Mat& img, double lmax);
 	// mapping next mesh
 	void MappingMesh(PicMesh& pm, double x, double y);
 	// out1 is this mesh color, out2 is input mapping color
@@ -87,11 +97,33 @@ public:
 	// interpolation c1 to c2
 	ColorTriangles Interpolation(ColorTriangles& c1, ColorTriangles& c2, double alpha);
 	// Connect one ring edge, return true if success
-	bool ConnectOneRingConstraint(VHandle vh, VHandle lastvh, Vector2& out, Point dir, double lmax);
+	bool ConnectOneRingConstraint1(vavImage& img, VHandle vh, VHandle lastvh, Vector2& out, Point dir, double lmax);
+	// Connect one ring edge, return true if success
+	bool ConnectOneRingConstraint2(vavImage& img, VHandle vh, VHandle lastvh, Vector2& out, Point dir, double lmax);
 	// check vertex connection
 	bool isConnection(VHandle vh1, VHandle vh2);
 	// set w h
 	void SetSize(int w, int h);
+	// draw color for color model
+	void MakeColor3();
+	// draw color form image color
+	void MakeColor4(cv::Mat& img);
+
+	void GetConstraintFaceColor(cv::Mat& img);
+
+	// Dilation face color
+	void Dilation();
+
+	// use picture build color model
+	void BuildColorModels(cv::Mat& img);
+	// get lighter color
+	bool GetLighterColor(cv::Mat& img, VHandle vh1, VHandle vh2, Vector3& c);
+	// get gradient of line 
+	double GetLineGradient(vavImage& img, VHandle vh1, VHandle vh2, double len);
+	// internel function
+	void blurC2();
+	// light blur
+	void lightblurC2();
 	// save w h
 	int m_w, m_h;
 	Lines m_Lines;

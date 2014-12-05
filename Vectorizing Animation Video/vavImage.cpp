@@ -914,9 +914,9 @@ void vavImage::ToLogImage()
 
 Vector3 vavImage::GetBilinearColor(double x, double y)
 {
-	double r = GetBilinearR_if0(x, y);
-	double g = GetBilinearG_if0(x, y);
-	double b = GetBilinearB_if0(x, y);
+	double r = GetBilinearR(x, y);
+	double g = GetBilinearG(x, y);
+	double b = GetBilinearB(x, y);
 	return Vector3(r, g, b);
 }
 

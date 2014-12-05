@@ -1340,7 +1340,7 @@ void VAV_MainFrame::OnFileOpenVideo2()
 // 		PicMesh tmp = m_FrameInfos[0].picmesh;
 // 		m_FrameInfos[0].picmesh = m_FrameInfos[1].picmesh;
 // 		m_FrameInfos[1].picmesh = tmp;
-        m_FrameInfos[0].picmesh.MappingMesh(m_FrameInfos[1].picmesh, m_Moves[1][0], m_Moves[1][1]);
+        m_FrameInfos[0].picmesh1.MappingMesh(m_FrameInfos[1].picmesh1, m_Moves[1][0], m_Moves[1][1]);
  		GetVavView()->OnTimer(0);
         GetVavView()->SetTimer(100, 500, 0);
     }

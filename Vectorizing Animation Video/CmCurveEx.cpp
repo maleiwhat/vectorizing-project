@@ -278,33 +278,31 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float lineimg_threshold,
 const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
                                     float linkStartBound)
 {
-    cv::Mat dxx, dxy, dyy;
-    Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
-    Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
-    Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
-    double eigval[2], eigvec[2][2];
-    for(int y = 0; y < m_h; y++)
-    {
-        float* xx = dxx.ptr<float>(y);
-        float* xy = dxy.ptr<float>(y);
-        float* yy = dyy.ptr<float>(y);
-        float* pOrnt = m_pOrnt1f.ptr<float>(y);
-        float* pDer = m_pDer2f.ptr<float>(y);
-        for(int x = 0; x < m_w; x++)
-        {
-            compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
-            pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
-            if(pOrnt[x] < 0.0f)
-            {
-                pOrnt[x] += PI2;
-            }
-            pDer[x] = float(eigval[0] > 0.0f ? eigval[0] : 0.0f);//計算二階導數
-        }
-    }
-    //GaussianBlur(m_pDer2f, m_pDer2f, cv::Size(3, 3), 0);
-    //normalize(m_pDer2f, m_pDer2f, 0, 1, cv::NORM_MINMAX);
-    NoneMaximalSuppress(linkEndBound, linkStartBound);
-    return m_pDer2f;
+	cv::Mat dxx, dxy, dyy;
+	Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
+	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
+	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
+	cv::Mat m_pDer1f = m_pDer2f.clone();
+	double eigval[2], eigvec[2][2];
+	for (int y = 0; y < m_h; y++)
+	{
+		float* xx = dxx.ptr<float>(y);
+		float* xy = dxy.ptr<float>(y);
+		float* yy = dyy.ptr<float>(y);
+		float* pOrnt = m_pOrnt1f.ptr<float>(y);
+		float* pDer2 = m_pDer2f.ptr<float>(y);
+		float* pDer1 = m_pDer1f.ptr<float>(y);
+		for (int x = 0; x < m_w; x++)
+		{
+			compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
+			pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
+			pOrnt[x] = pOrnt[x] < 0 ? pOrnt[x] + PI2 : pOrnt[x];
+
+			pDer2[x] = eigval[0];//計算二階導數
+		}
+	}
+	NoneMaximalSuppress(linkEndBound, linkStartBound);
+	return m_pDer2f;
 }
 
 const cv::Mat& CmCurveEx::CalFirDer(int kSize, float linkEndBound,

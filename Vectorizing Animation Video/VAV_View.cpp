@@ -510,11 +510,11 @@ void VAV_View::OnTimer(UINT_PTR nIDEvent)
     static ColorTriangles ctsx[LEN];
     if(c1.empty())
     {
-        fgframes[0].picmesh.GetMappingCT(fgframes[1].picmesh, c1, c2);
+        fgframes[0].picmesh1.GetMappingCT(fgframes[1].picmesh1, c1, c2);
         printf("c1 %d c2 %d\n", c1.size(), c2.size());
         for(int i = 0; i < LEN; ++i)
         {
-            ctsx[i] = fgframes[0].picmesh.Interpolation(c1, c2, (float)i / LEN);
+            ctsx[i] = fgframes[0].picmesh1.Interpolation(c1, c2, (float)i / LEN);
             printf("ctsx[%d]  %d\n", i, ctsx[i].size());
         }
     }
@@ -523,7 +523,7 @@ void VAV_View::OnTimer(UINT_PTR nIDEvent)
     {
         i = 0;
     }
-    ColorTriangles cts = dframes.m_FI.picmesh.m_Trangles;
+    ColorTriangles cts = dframes.m_FI.picmesh1.m_Trangles;
 //     if(cts.size() > 0)
 //     {
 //         for(int a = 0; a < cts.size(); ++a)
@@ -563,8 +563,8 @@ void VAV_View::OnTimer(UINT_PTR nIDEvent)
             }
 			else
 			{
-				m_D3DApp.AddColorTriangles(fgframes[1].picmesh.m_Trangles);
-				m_D3DApp.AddTrianglesLine(fgframes[1].picmesh.m_Trangles);
+				m_D3DApp.AddColorTriangles(fgframes[1].picmesh1.m_Trangles);
+				m_D3DApp.AddTrianglesLine(fgframes[1].picmesh1.m_Trangles);
 			}
             m_D3DApp.BuildPoint();
             m_D3DApp.DrawScene();

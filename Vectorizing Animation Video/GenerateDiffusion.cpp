@@ -630,7 +630,7 @@ FrameInfo ComputeFrame3(cv::Mat img, ColorRegion* cr)
     const int MASK1_SIZE = 5;
     const int MASK2_SIZE = 5;
     const float secDer = 0.001f;
-    cv::Mat ccp1 = img.clone(), ccp2 = expImg.Clone();
+    cv::Mat ccp1 = img.clone(), ccp2 = img.clone();
     cv::Mat slicimg;
     CmCurveEx* ccp1_curve = NULL;
     CmCurveEx* ccp2_curve = NULL;
@@ -852,8 +852,25 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
     expImg = ImgSharpen(expImg);
     const int MASK1_SIZE = 5;
     const int MASK2_SIZE = 5;
-    const float secDer = 0.001f;
-    cv::Mat ccp1 = img.clone(), ccp2 = expImg.Clone();
+    const float secDer = 0.05f;
+    cv::Mat ccp1 = img.clone(), ccp2 = img.clone(), imgf;
+	ccp2.convertTo(imgf, CV_32FC3, 1.0 / 255);
+	for(int j = 0; j < ccp2.cols ; ++j)
+	{
+		for(int i = 0; i < ccp2.rows ; ++i)
+		{
+			cv::Vec3f& intensity = imgf.at<cv::Vec3f>(i, j);
+			intensity[0] = - pow((1 - intensity[0]), 3);
+			intensity[1] = - pow((1 - intensity[1]), 3);
+			intensity[2] = - pow((1 - intensity[2]), 3);
+		}
+	}
+	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
+	imgf.convertTo(ccp2, CV_8UC3, 255);
+    for(int i = 1; i < 7; i++)
+    {
+        bilateralFilter(ccp2.clone(), ccp2, i, i * 2, i * 0.5);
+    }
     cv::Mat slicimg;
     CmCurveEx* ccp1_curve = NULL;
     CmCurveEx* ccp2_curve = NULL;
@@ -974,13 +991,13 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
     //if(m_CONSTRAINT_CURVES_PARAMETER_2)
     {
         cvtColor(ccp2, ccp2, CV_BGR2GRAY);
-        ccp2.convertTo(ccp2, CV_32F, 1.0 / 255);
+        ccp2.convertTo(ccp2, CV_32FC1, 1.0 / 255);
         ccp2_curve = new CmCurveEx(ccp2);
         //ccp2_curve->CalSecDer2(MASK2_SIZE, 0.5, secDer);
-        ccp2_curve->CalSecDer(MASK2_SIZE, 1.5f, 0.5f);
+        ccp2_curve->CalSecDer(MASK2_SIZE, 1.4f, 0.05f);
         ccp2_curve->Link();
-        cv::Mat show_ccp2 = expImg.Clone();
-        Bwhith_Fblue2 = expImg.Clone();
+        cv::Mat show_ccp2 = img.clone();
+        Bwhith_Fblue2 = img.clone();
         Bwhith_Fblue2 = cv::Scalar(0);
         const std::vector<CEdge>& edges = ccp2_curve->GetEdges();
         for(size_t i = 0; i < edges.size(); i++)
@@ -990,10 +1007,11 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
             {
                 cv::line(show_ccp2, cv::Point(pnts[j].x, pnts[j].y),
                          cv::Point(pnts[j + 1].x, pnts[j + 1].y), cv::Scalar(0, 0, 255));
-                //show_ccp2.at<cv::Vec3b>(pnts[j]) = cv::Vec3b(0, 0, 255);
+                show_ccp2.at<cv::Vec3b>(pnts[j]) = cv::Vec3b(0, 0, 255);
                 Bwhith_Fblue2.at<cv::Vec3b>(pnts[j]) = cv::Vec3b(0, 0, 255);
             }
         }
+		cv::imshow("ccc", show_ccp2);
     }
     //if(m_CONSTRAINT_CURVES_PARAMETER_2 && m_BOUNDARY_CURVES)
     {
@@ -1079,22 +1097,31 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         colorline = DouglasPeucker(colorline, 0.3);
         IncreaseDensity(colorline);
         colorline = SmoothingLen3(colorline, 0.3, 3);
-        TriangulationCgal_Sideline cgal_contour;
-        cgal_contour.m_i2s = i2s;
-        cgal_contour.SetSize(img.cols, img.rows);
-        cgal_contour.AddLines(blackLine2);
-        cgal_contour.SetCriteria(0.01, 50);
-        cgal_contour.SetColor(ccms);
-        int region = cgal_contour.Compute();
-        PicMesh pm;
-        pm.SetSize(img.cols, img.rows);
-        pm.ReadFromSideline(&cgal_contour);
-        pm.MakeColor1();
-        pm.MakeRegionLine(12);
-        //fi.ctris = pm.m_Trangles;
-        fi.picmesh = pm;
-        fi.curves2 = pm.m_Lines;
-        fi.curves3 = blackLine2;
+        TriangulationCgal_Sideline cgal_contour1, cgal_contour2;
+        cgal_contour1.m_i2s = i2s;
+        cgal_contour1.SetSize(img.cols, img.rows);
+        cgal_contour1.AddLines(blackLine2);
+        cgal_contour1.SetCriteria(0.01, 50);
+        cgal_contour1.SetColor(ccms);
+        int region = cgal_contour1.Compute();
+        PicMesh pm1;
+        pm1.SetSize(img.cols, img.rows);
+        pm1.ReadFromSideline(&cgal_contour1);
+        pm1.MakeColor1();
+        pm1.MakeRegionLine(img, 10);
+        cgal_contour2.m_i2s = i2s;
+        cgal_contour2.AddLines(pm1.m_Lines);
+        cgal_contour2.SetCriteria(0.15, 5);
+        cgal_contour2.Compute();
+        PicMesh pm2;
+        pm2.SetSize(img.cols, img.rows);
+        pm2.ReadFromSideline(&cgal_contour2);
+        pm2.BuildColorModels(img.clone());
+        pm2.MakeColor4(img);
+        fi.picmesh1 = pm2;
+		fi.picmesh2 = pm2;
+        fi.curves2 = pm1.m_Lines;
+        //fi.curves3 = blackLine2;
 #endif // USE_CGAL
         /*
         cv::Mat vecout = img.clone();
@@ -1376,7 +1403,7 @@ FrameInfo ComputeFrame2FG(cv::Mat img, cv::Mat fg, ColorRegion* cr)
         pm.ReadFromSideline(&cgal_contour);
         pm.MakeColor2();
         //fi.ctris = pm.m_Trangles;
-        fi.picmesh = pm;
+        fi.picmesh1 = pm;
 #endif // USE_CGAL
     }
     return fi;
@@ -2001,7 +2028,7 @@ FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr /*= NULL*/)
     pm.ReadFromSideline(&cgal_contour);
     pm.MakeColor1();
     //fi.ctris = pm.m_Trangles;
-    fi.picmesh = pm;
+    fi.picmesh1 = pm;
 #endif // USE_CGAL
     return fi;
 }

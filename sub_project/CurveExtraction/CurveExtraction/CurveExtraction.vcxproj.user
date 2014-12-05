@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerWorkingDirectory>C:\Users\damody\Desktop\畢業相關\vectorizing-project\sub_project\CurveExtraction\CurveExtraction\data</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>C:\Users\damody\Desktop\畢業相關\test_picture\tmp</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>x6.png</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>0SAINT_SEIYA_The_Hades_Chapter_Inferno_Kosho_04_0002.png</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerWorkingDirectory>C:\Users\damody\Desktop\畢業相關\vectorizing-project\sub_project\CurveExtraction\CurveExtraction\data</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>C:\Users\damody\Desktop\畢業相關\test_picture\tmp</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>x24.png</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>0SAINT_SEIYA_The_Hades_Chapter_Inferno_Kosho_04_0002.png</LocalDebuggerCommandArguments>
   </PropertyGroup>
 </Project>
