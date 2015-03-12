@@ -252,6 +252,7 @@ int VAV_MainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DockPane(&m_wndOutput);
 	m_wndProperties.EnableDocking(CBRS_ALIGN_ANY);
 	DockPane(&m_wndProperties);
+	Beep(750, 300);
 	return 0;
 }
 

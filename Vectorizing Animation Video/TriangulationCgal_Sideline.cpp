@@ -33,7 +33,6 @@ int TriangulationCgal_Sideline::Compute()
     Insert_lines(m_Triangulation);
     Mesher mesher(m_Triangulation);
     mesher.set_criteria(m_Criteria);
-    ColorTriangle t;
     //mesher.mark_facets();
     mesher.refine_mesh();
     mark_domains2(m_Triangulation);
@@ -46,26 +45,7 @@ int TriangulationCgal_Sideline::Compute()
             CTriangulation::Vertex_handle vh = m_Triangulation.nearest_vertex(now);
         }
     }
-    m_Triangles.clear();
-    Finite_faces_iterator fc;
-    fc = m_Triangulation.finite_faces_begin();
-    for(; fc != m_Triangulation.finite_faces_end(); ++fc)
-    {
-        if(fc->is_in_domain())
-        {
-            t.pts[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
-            t.pts[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
-            t.pts[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
-            int idx = fc->info().color_label;
-            if(idx >= 0 && idx < m_ColorConstraint.size())
-            {
-                t.color[0] = m_ColorConstraint[idx].GetColorVector3(t.pts[0].x, t.pts[0].y);
-                t.color[1] = m_ColorConstraint[idx].GetColorVector3(t.pts[1].x, t.pts[1].y);
-                t.color[2] = m_ColorConstraint[idx].GetColorVector3(t.pts[2].x, t.pts[2].y);
-            }
-            m_Triangles.push_back(t);
-        }
-    }
+    
     return 0;
 }
 
@@ -337,4 +317,29 @@ void TriangulationCgal_Sideline::AddLines(Lines& is)
 void TriangulationCgal_Sideline::SetColor(ColorConstraints& colors)
 {
     m_ColorConstraint = colors;
+}
+
+void TriangulationCgal_Sideline::MakeColorByModel()
+{
+	ColorTriangle t;
+	m_Triangles.clear();
+	Finite_faces_iterator fc;
+	fc = m_Triangulation.finite_faces_begin();
+	for(; fc != m_Triangulation.finite_faces_end(); ++fc)
+	{
+		if(fc->is_in_domain())
+		{
+			t.pts[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
+			t.pts[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
+			t.pts[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
+			int idx = fc->info().color_label;
+			if(idx >= 0 && idx < m_ColorConstraint.size())
+			{
+				t.color[0] = m_ColorConstraint[idx].GetColorVector3(t.pts[0].x, t.pts[0].y);
+				t.color[1] = m_ColorConstraint[idx].GetColorVector3(t.pts[1].x, t.pts[1].y);
+				t.color[2] = m_ColorConstraint[idx].GetColorVector3(t.pts[2].x, t.pts[2].y);
+			}
+			m_Triangles.push_back(t);
+		}
+	}
 }

@@ -201,6 +201,7 @@
   <ItemGroup>
     <ClInclude Include="algSpline.h" />
     <ClInclude Include="algSpline2d.h" />
+    <ClInclude Include="BasicMesh.h" />
     <ClInclude Include="CgalPatch.h" />
     <ClInclude Include="ClassView.h" />
     <ClInclude Include="clipper.hpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="ColorConstraintAverage.h" />
     <ClInclude Include="ColorConstraintMathModel.h" />
     <ClInclude Include="ColorConstraintMedian.h" />
+    <ClInclude Include="ColorConstraintMyRBF.h" />
     <ClInclude Include="ColorConstraintRBF.h" />
     <ClInclude Include="ConvStr.h" />
     <ClInclude Include="CurveMatching.h" />
@@ -276,6 +278,7 @@
     <ClInclude Include="PositionGraph_Node.h" />
     <ClInclude Include="print.h" />
     <ClInclude Include="PropertiesWnd.h" />
+    <ClInclude Include="RBFMesh.h" />
     <ClInclude Include="ReadVideo.h" />
     <ClInclude Include="RegionDiffusion.h" />
     <ClInclude Include="resource.h" />
@@ -314,6 +317,7 @@
     <ClCompile Include="ColorConstraintAverage.cpp" />
     <ClCompile Include="ColorConstraintMathModel.cpp" />
     <ClCompile Include="ColorConstraintMedian.cpp" />
+    <ClCompile Include="ColorConstraintMyRBF.cpp" />
     <ClCompile Include="ColorConstraintRBF.cpp" />
     <ClCompile Include="ConvStr.cpp" />
     <ClCompile Include="CurveMatching.cpp" />
@@ -395,6 +399,7 @@
     <ClCompile Include="PositionGraph.cpp" />
     <ClCompile Include="PositionGraph_Node.cpp" />
     <ClCompile Include="PropertiesWnd.cpp" />
+    <ClCompile Include="RBFMesh.cpp" />
     <ClCompile Include="ReadVideo.cpp" />
     <ClCompile Include="RegionDiffusion.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>

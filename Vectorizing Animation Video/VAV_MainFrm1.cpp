@@ -154,7 +154,7 @@ void SetDrawFrame(D3DApp& d3dApp, FrameInfo& fi)
     d3dApp.AddLines(fi.curves2);
 	d3dApp.AddLines(fi.curves3);
     d3dApp.AddLinesWidth(fi.curves1, fi.GetLine1Width(), fi.ocolor1);
-    d3dApp.AddColorTriangles(fi.picmesh2.m_Trangles);
+    d3dApp.AddColorTriangles(fi.picmesh1.m_Trangles);
     d3dApp.AddTrianglesLine(fi.picmesh1.m_Trangles);
     d3dApp.BuildPoint();
     d3dApp.DrawScene();

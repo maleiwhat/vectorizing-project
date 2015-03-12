@@ -1,77 +1,9 @@
 #pragma once
-#undef max
-#undef min
-#include <OpenMesh/Core/IO/MeshIO.hh>
-#include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
-#include <OpenMesh/Core/Mesh/PolyMesh_ArrayKernelT.hh>
-#include <OpenMesh/Tools/Utils/getopt.h>
-#include "LineDef.h"
+#include "BasicMesh.h"
+
 #include "ColorConstraint.h"
 #include "TriangulationBase.h"
 #include "vavImage.h"
-
-
-struct BasicTraits : public OpenMesh::DefaultTraits
-{
-	typedef OpenMesh::Vec3d Point;
-	FaceTraits
-	{
-	public:
-		// for mapping id
-		int mapid;
-		// colorid
-		int cid;
-		// region id
-		int rid;
-		// Color
-		Vector3 c2;
-		FaceT() : cid(-1), rid(-1) { }
-	};
-	EdgeTraits
-	{
-	public:
-		// check is constraint
-		bool constraint;
-		EdgeT(): constraint(false) { }
-	};
-	VertexTraits
-	{
-	public:
-		// for constraint line index
-		int lineidx;
-		// for constraint line id
-		int lineid;
-		// for check is constraint point
-		char constraint;
-		// for check end point
-		bool end;
-		// for use
-		bool use;
-		// for interpolation color
-		Vector3 c;
-		// for sample color
-		Vector3 c2;
-		// for compute use
-		Vector3 c3;
-		// for mapping id
-		int mapid;
-		VertexT(): end(false), constraint(0), mapid(0), lineid(-1) { }
-	};
-};
-
-typedef OpenMesh::TriMesh_ArrayKernelT<BasicTraits> BasicMesh;
-
-typedef std::vector<BasicMesh::FHandle> FHandles;
-typedef std::vector<FHandles> FHandles2d;
-typedef std::vector<BasicMesh::EHandle> EHandles;
-typedef std::vector<EHandles> EHandles2d;
-typedef std::vector<BasicMesh::VHandle> VHandles;
-typedef std::vector<VHandles> VHandles2d;
-typedef std::vector<BasicMesh::HHandle> HHandles;
-typedef std::vector<HHandles> HHandles2d;
-typedef std::vector<BasicMesh::HHandle*> HHandlePs;
-typedef std::vector<BasicMesh::VHandle*> VHandlePs;
-typedef std::vector<BasicMesh::FHandle*> FHandlePs;
 
 class TriangulationCgal_Sideline;
 class PicMesh : public BasicMesh
@@ -92,8 +24,16 @@ public:
 	void MakeRegionLine(cv::Mat& img, double lmax);
 	// mapping next mesh
 	void MappingMesh(PicMesh& pm, double x, double y);
+	// mapping next mesh and if color distance so big dont mapping
+	void MappingMeshByColor(PicMesh& pm, double x, double y);
+	// mapping next mesh by midpoint
+	void MappingMeshByMidPoint(PicMesh& pm, double x, double y);
+	// mark different region
+	void MarkDifferentRegion2(PicMesh& pm, double v, double x, double y);
+	// mark different region
+	void MarkDifferentRegion1(vavImage& img, double v, double x, double y);
 	// out1 is this mesh color, out2 is input mapping color
-	void GetMappingCT(PicMesh& pm, ColorTriangles& out1, ColorTriangles& out2);
+	void GetMappingCT(PicMesh& pm, ColorTriangles& out1, ColorTriangles& out2, double x, double y);
 	// interpolation c1 to c2
 	ColorTriangles Interpolation(ColorTriangles& c1, ColorTriangles& c2, double alpha);
 	// Connect one ring edge, return true if success
@@ -108,6 +48,25 @@ public:
 	void MakeColor3();
 	// draw color form image color
 	void MakeColor4(cv::Mat& img);
+	// draw mark region form image color
+	void MakeColor5(cv::Mat& img);
+	// modify MakeColor4
+	void MakeColor6(cv::Mat& img);
+
+	// make same region same color
+	void MakeColor7(Vector3s& colors, ints& lastmap);
+
+	void MakeColor72(ColorConstraints& colors, ints& lastmap, double x, double y);
+
+	// make same face same color
+	void MakeColor8(PicMesh& pm);
+
+	// draw color use c2
+	void MakeColor9();
+
+	void FillConstraintRegion();
+
+	void MarkColoredFace();
 
 	void GetConstraintFaceColor(cv::Mat& img);
 
@@ -116,6 +75,8 @@ public:
 
 	// use picture build color model
 	void BuildColorModels(cv::Mat& img);
+	// use mesh color build color model
+	void BuildColorModels();
 	// get lighter color
 	bool GetLighterColor(cv::Mat& img, VHandle vh1, VHandle vh2, Vector3& c);
 	// get gradient of line 
@@ -124,12 +85,20 @@ public:
 	void blurC2();
 	// light blur
 	void lightblurC2();
+	// remove black
+	void removeblackC2();
+	// blurfacec2
+	void blurFaceC2();
+	void blurFaceC2x();
 	// save w h
 	int m_w, m_h;
 	Lines m_Lines;
 	VHandles2d	m_LinesVH;
 	HHandles2d	m_LinesHH;
 	FHandles2d	m_Regions;
+	ints		m_DifferentRegionIDs;
+	// for next region
+	ints		m_MapingRegionIDs;
 	Index2Side	m_i2s;
 	ColorTriangles	m_Trangles;
 	ColorConstraints m_ColorConstraint;

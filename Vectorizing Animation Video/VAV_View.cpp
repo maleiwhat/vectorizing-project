@@ -502,27 +502,32 @@ unsigned __stdcall VAV_View::MyThreadFunc(LPVOID lpParam)
 
 void VAV_View::OnTimer(UINT_PTR nIDEvent)
 {
+	Vec2fs& moves = GetMainFrame()->m_Moves;
     m_D3DApp.ClearTriangles();
     BackGround& dframes = GetMainFrame()->m_BackGround;
     FrameInfos& fgframes = GetMainFrame()->m_FrameInfos;
     static ColorTriangles c1, c2;
-    const int LEN = 10;
-    static ColorTriangles ctsx[LEN];
-    if(c1.empty())
+    static int i = 1;
+    static int lasti = -1;
+    static int playidx = -1;
+    const int LEN = 18;
+    const int LEN2 = 1;
+    playidx++;
+    if(playidx >= LEN2)
     {
-        fgframes[0].picmesh1.GetMappingCT(fgframes[1].picmesh1, c1, c2);
-        printf("c1 %d c2 %d\n", c1.size(), c2.size());
-        for(int i = 0; i < LEN; ++i)
-        {
-            ctsx[i] = fgframes[0].picmesh1.Interpolation(c1, c2, (float)i / LEN);
-            printf("ctsx[%d]  %d\n", i, ctsx[i].size());
-        }
+		playidx = 0;
+        i++;
     }
-    static int i = 0;
-    if(i >= LEN + 3)
+    if(i >= LEN)
     {
         i = 0;
     }
+    if(lasti != i)
+    {
+        lasti = i;
+        //fgframes[i].picmesh1.GetMappingCT(fgframes[i + 1].picmesh1, c1, c2, -moves[i+1][0], -moves[i+1][1]);
+    }
+	printf("i %d playi %d\n", i, playidx);
     ColorTriangles cts = dframes.m_FI.picmesh1.m_Trangles;
 //     if(cts.size() > 0)
 //     {
@@ -546,31 +551,13 @@ void VAV_View::OnTimer(UINT_PTR nIDEvent)
 //         m_D3DApp.AddLinesWidth(curves11, dframes.m_FI.GetLine1Width(), dframes.m_FI.ocolor1);
 //     }
     {
-        //if(ctsx[i].size() > 0)
-        {
-//             for(int a = 0; a < ctsx.size(); ++a)
-//             {
-//                 for(int b = 0; b < 3; ++b)
-//                 {
-//                     ctsx[a].pts[b].x -= dframes.m_Moves[i][0];
-//                     ctsx[a].pts[b].y += dframes.m_Moves[i][1];
-//                 }
-//             }
-            if(i < LEN)
-            {
-                m_D3DApp.AddColorTriangles(ctsx[i]);
-                m_D3DApp.AddTrianglesLine(ctsx[i]);
-            }
-			else
-			{
-				m_D3DApp.AddColorTriangles(fgframes[1].picmesh1.m_Trangles);
-				m_D3DApp.AddTrianglesLine(fgframes[1].picmesh1.m_Trangles);
-			}
-            m_D3DApp.BuildPoint();
-            m_D3DApp.DrawScene();
-        }
+        //ColorTriangles ctsx = fgframes[i].picmesh1.Interpolation(c1, c2, (float)playidx / LEN2);
+		ColorTriangles ctsx = fgframes[i].picmesh1.m_Trangles;
+        m_D3DApp.AddColorTriangles(ctsx);
+        m_D3DApp.AddTrianglesLine(ctsx);
+        m_D3DApp.BuildPoint();
+        m_D3DApp.DrawScene();
     }
-    i++;
 }
 
 

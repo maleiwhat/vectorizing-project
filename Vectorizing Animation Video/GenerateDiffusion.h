@@ -18,7 +18,6 @@ struct FrameInfo
 	Lines curves2;
 	// picmesh
 	PicMesh picmesh1;
-	PicMesh picmesh2;
 	// isoline
 	Lines curves3;
 	Vector3s2d ocolor3;

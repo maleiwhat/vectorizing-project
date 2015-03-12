@@ -34,6 +34,9 @@
     <Filter Include="zip">
       <UniqueIdentifier>{f8078998-b9da-4812-a89f-95f71fb20fd3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ColorConstraint">
+      <UniqueIdentifier>{bd7cccb4-bb4d-4e2e-8e5e-57117bc9f1f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -73,12 +76,6 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="CmCurveEx.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="ColorConstraint.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="ColorConstraintMedian.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="ConvStr.h">
@@ -288,12 +285,6 @@
     <ClInclude Include="clipper.hpp">
       <Filter>clipper</Filter>
     </ClInclude>
-    <ClInclude Include="ColorConstraintAverage.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="ColorConstraintRBF.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
     <ClInclude Include="IFExtenstion.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
@@ -316,9 +307,6 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="DiffusionFrame.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="ColorConstraintMathModel.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="SLIC.h">
@@ -351,6 +339,30 @@
     <ClInclude Include="PicMesh.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="ColorConstraintRBF.h">
+      <Filter>ColorConstraint</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorConstraint.h">
+      <Filter>ColorConstraint</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorConstraintAverage.h">
+      <Filter>ColorConstraint</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorConstraintMathModel.h">
+      <Filter>ColorConstraint</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorConstraintMedian.h">
+      <Filter>ColorConstraint</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorConstraintMyRBF.h">
+      <Filter>ColorConstraint</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicMesh.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="RBFMesh.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="algSpline.cpp">
@@ -366,9 +378,6 @@
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="CmCurveEx.cpp">
-      <Filter>原始程式檔</Filter>
-    </ClCompile>
-    <ClCompile Include="ColorConstraintMedian.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="ConvStr.cpp">
@@ -563,12 +572,6 @@
     <ClCompile Include="clipper.cpp">
       <Filter>clipper</Filter>
     </ClCompile>
-    <ClCompile Include="ColorConstraintAverage.cpp">
-      <Filter>原始程式檔</Filter>
-    </ClCompile>
-    <ClCompile Include="ColorConstraintRBF.cpp">
-      <Filter>原始程式檔</Filter>
-    </ClCompile>
     <ClCompile Include="IFExtenstion.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
@@ -597,9 +600,6 @@
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="VAV_MainFrm1.cpp">
-      <Filter>原始程式檔</Filter>
-    </ClCompile>
-    <ClCompile Include="ColorConstraintMathModel.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="SLIC.cpp">
@@ -633,6 +633,24 @@
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="PicMesh.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorConstraintAverage.cpp">
+      <Filter>ColorConstraint</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorConstraintMathModel.cpp">
+      <Filter>ColorConstraint</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorConstraintMedian.cpp">
+      <Filter>ColorConstraint</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorConstraintMyRBF.cpp">
+      <Filter>ColorConstraint</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorConstraintRBF.cpp">
+      <Filter>ColorConstraint</Filter>
+    </ClCompile>
+    <ClCompile Include="RBFMesh.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>

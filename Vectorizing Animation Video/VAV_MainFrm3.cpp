@@ -1239,11 +1239,15 @@ void VAV_MainFrame::OnFileOpenVideo2()
     CString filepath;
     CString filename;
     CString filefolder;
+    Mats timgs;
     if(dlg.DoModal() == IDOK)
     {
+        cv::Mat fg, bg;
         filepath = dlg.GetPathName(); // return full path and filename
         filefolder = dlg.GetFolderPath();
         filename = dlg.GetFileName();
+		std::string bgfilename;
+		std::string fgfilename;
         if(filepath.GetLength() > 1)
         {
             std::string path = ConvStr::GetStr(filepath.GetString());
@@ -1256,12 +1260,11 @@ void VAV_MainFrame::OnFileOpenVideo2()
             m_Video.clear();
             m_Moves.clear();
             m_ReadVideo.Read(path);
-            std::string bgfilename = folder + name + "_MSBGBM_BG.png";
-            std::string fgfilename = folder + name + "_MSBGBM_FG.png";
-            SavepointImage si_bg(bgfilename);
-            SavepointImage si_fg(fgfilename);
-            cv::Mat fg, bg;
-            Mats timgs;
+            bgfilename = folder + name + "_MSBGBM_BG.png";
+            fgfilename = folder + name + "_MSBGBM_FG.png";
+            
+            
+
             //          if(si_bg.hasImage())
             //          {
             //              bg = si_bg.ReadImage();
@@ -1289,7 +1292,8 @@ void VAV_MainFrame::OnFileOpenVideo2()
                 cv::Mat prevgray, gray, flow, showflow;
                 cvtColor(img, prevgray, CV_BGR2GRAY);
                 // Åª´X­Óframe
-                for(int i = 1; i <= 2; ++i)
+                cv::Mat lastimg;
+                for(int i = 1; i <= 20; ++i)
                 {
                     char tmppath[100];
                     sprintf(tmppath, "_%04d.png", i);
@@ -1304,45 +1308,91 @@ void VAV_MainFrame::OnFileOpenVideo2()
                         imgx = m_ReadVideo.GetFrame();
                         vimgx.SaveImage(imgx);
                     }
-                    if(imgx.cols > 0)
+                    if(imgx.cols > 0 && i > 1)
                     {
-						cvtColor(imgx, gray, CV_BGR2GRAY);
-						cv::Vec2f move2 = getMoveVectorBySIFT(prevgray, gray);
-						prevgray = gray.clone();
-						m_Moves.push_back(-move2);
-						//printf("avg_vel:%f,%f\n", move[0], move[1]);
-						printf("Frame %03d   ", i);
-						printf("avg_vel2:%f,%f\n", move2[0], move2[1]);
+						m_Video.push_back(imgx);
+                        timgs.push_back(imgx);
+                        cvtColor(imgx, gray, CV_BGR2GRAY);
+                        cv::Vec2f move2 = getMoveVectorBySIFT(prevgray, gray);
+                        //prevgray = gray.clone();
+                        m_Moves.push_back(move2);
+                        //printf("avg_vel:%f,%f\n", move[0], move[1]);
+                        printf("Frame %03d   ", i);
+                        printf("avg_vel2:%f,%f\n", move2[0], move2[1]);
                         FrameInfo fi = ComputeFrame2(imgx);
+                        if(!m_FrameInfos.empty())
+                        {
+                            //m_FrameInfos.back().picmesh1.MarkDifferentRegion1(vavImage(imgx), 50, move2[0], move2[1]);
+//                          m_FrameInfos.back().picmesh1.MarkDifferentRegion2(fi.picmesh1, 50, move2[0], move2[1]);
+//                          m_FrameInfos.back().picmesh1.MakeColor5(lastimg);
+                        }
                         m_FrameInfos.push_back(fi);
+                        lastimg = imgx;
                     }
                 }
             }
         }
-		double minx = m_Moves.front()[0];
-		double miny = m_Moves.front()[1];
-		for(int i = 1; i < m_Moves.size(); ++i)
+        Vec2fs      moves;
+		double mx = 0, my = 0;
+        for(int i = 0; i < m_Moves.size(); ++i)
+        {
+            moves.push_back(-m_Moves[i]);
+        }
+		double minx = moves.front()[0];
+		double miny = moves.front()[1];
+		for(int i = 1; i < moves.size(); ++i)
 		{
-			if(minx > m_Moves[i][0])
+			if(minx > moves[i][0])
 			{
-				minx = m_Moves[i][0];
+				minx = moves[i][0];
 			}
-			if(miny > m_Moves[i][1])
+			if(miny > moves[i][1])
 			{
-				miny = m_Moves[i][1];
+				miny = moves[i][1];
 			}
 		}
-		for(int i = 1; i < m_Moves.size(); ++i)
-		{
-			m_Moves[i][0] -= minx;
-			m_Moves[i][1] -= miny;
-		}
-// 		PicMesh tmp = m_FrameInfos[0].picmesh;
-// 		m_FrameInfos[0].picmesh = m_FrameInfos[1].picmesh;
-// 		m_FrameInfos[1].picmesh = tmp;
-        m_FrameInfos[0].picmesh1.MappingMesh(m_FrameInfos[1].picmesh1, m_Moves[1][0], m_Moves[1][1]);
- 		GetVavView()->OnTimer(0);
+        MakeStaticBackGroundByMove(m_Video, moves, bg, fg);
+		SavepointImage si_bg(bgfilename);
+		SavepointImage si_fg(fgfilename);
+        si_bg.SaveImage(bg);
+        si_fg.SaveImage(fg);
+		FrameInfo bgfi = ComputeFrame2(bg);
+//         m_FrameInfos[0].picmesh1.MappingMesh(m_FrameInfos[0].picmesh1, 0, 0);
+//         m_FrameInfos[0].picmesh1.MakeColor6(timgs[0]);
+		bgfi.picmesh1.MakeColor1();
+        double movex = 0, movey = 0;
+        for(int i = 0; i < m_FrameInfos.size() - 1; ++i)
+        {
+//             movex += -m_Moves[i + 1][0];
+//             movey += -m_Moves[i + 1][1];
+            m_FrameInfos[i].picmesh1.MappingMesh(bgfi.picmesh1, moves[i+1][0]-minx, moves[i+1][1]-miny);
+            //m_FrameInfos[i].picmesh1.MappingMeshMappingMeshByMidPointm_FrameInfos[i-1].picmesh1, -m_Moves[i+1][0], -m_Moves[i+1][1]);
+        }
+        int csize = m_FrameInfos[0].picmesh1.m_Regions.size();
+        ColorConstraints Colors = m_FrameInfos[0].picmesh1.m_ColorConstraint;
+        Vector3s Colors2;
+        ints idxs;
+        for(int i = 0; i < csize; ++i)
+        {
+            Colors2.push_back(Vector3(rand() % 256, rand() % 256, rand() % 256));
+            idxs.push_back(i);
+        }
+        movex = 0;
+        movey = 0;
+        for(int i = 0; i < m_FrameInfos.size() - 1; ++i)
+        {
+            ints tmp = idxs;
+            movex += -m_Moves[i][0];
+            movey += -m_Moves[i][1];
+            //m_FrameInfos[i].picmesh1.MakeColor72(Colors, tmp, movex, movey);
+            //m_FrameInfos[i].picmesh1.MakeColor7(Colors2, tmp);
+            m_FrameInfos[i].picmesh1.MakeColor9();
+        }
+        GetVavView()->OnTimer(0);
         GetVavView()->SetTimer(100, 500, 0);
+        Beep(750, 300);
+        Beep(1750, 300);
+        Beep(10750, 300);
     }
 }
 

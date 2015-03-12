@@ -1084,9 +1084,9 @@ void D3DApp::AddTrianglesLine(const ColorTriangles& tris)
 {
     TriangleVertex tv;
     float r, g, b;
-    r = (rand() % 255) / 255.0f;
-    g = (rand() % 255) / 255.0f;
-    b = (rand() % 255) / 255.0f;
+    r = 0.7;
+    g = 1;
+    b = 0.3;
     for(int i = 0; i < tris.size(); ++i)
     {
         const Vector2& v1 = tris[i].pts[0];

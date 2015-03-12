@@ -1111,17 +1111,17 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         pm1.MakeRegionLine(img, 10);
         cgal_contour2.m_i2s = i2s;
         cgal_contour2.AddLines(pm1.m_Lines);
-        cgal_contour2.SetCriteria(0.15, 5);
+        cgal_contour2.SetCriteria(0, 5);
         cgal_contour2.Compute();
         PicMesh pm2;
         pm2.SetSize(img.cols, img.rows);
         pm2.ReadFromSideline(&cgal_contour2);
-        pm2.BuildColorModels(img.clone());
-        pm2.MakeColor4(img);
+        //pm2.BuildColorModels(img.clone());
+        //pm2.MakeColor6(img);
+		//pm2.MakeColor3();
         fi.picmesh1 = pm2;
-		fi.picmesh2 = pm2;
         fi.curves2 = pm1.m_Lines;
-        //fi.curves3 = blackLine2;
+        fi.curves3 = blackLine2;
 #endif // USE_CGAL
         /*
         cv::Mat vecout = img.clone();

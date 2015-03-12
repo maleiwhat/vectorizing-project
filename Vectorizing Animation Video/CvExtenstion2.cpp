@@ -932,7 +932,7 @@ ColorConstraints ConvertToConstraintC(Lines& lines, Vector3s2d& colors)
     {
         res.push_back(ColorConstraint());
         ColorConstraint& now = res.back();
-        Line& line = lines[i];
+        Line& line = lines[i];    
         Vector3s& cl = colors[i];
         for(int j = 0; j < line.size(); ++j)
         {

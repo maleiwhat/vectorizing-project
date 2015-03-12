@@ -6,6 +6,12 @@
 #include <boost/chrono/time_point.hpp>
 #include <iostream>
 
+void TriangulationCgal_SeedPoint::AddPointIdx(double x, double y, int id)
+{
+	Triangulation::Vertex_handle vh = m_Triangulation.insert(Point(x, y));
+	vh->info().mapid = id;
+}
+
 void TriangulationCgal_SeedPoint::AddPoint(double x, double y)
 {
 	m_Triangulation.insert(Point(x, y));

@@ -137,6 +137,7 @@ void PicMesh::ReadFromSideline(TriangulationCgal_Sideline* ts)
                     if(ii == minidx)
                     {
                         thhs.push_back(find_halfedge(last, *vvit));
+                        data(edge_handle(thhs.back())).constraint = 1;
                         FHandle tfh = face_handle(thhs.back());
                         if(tfh.is_valid())
                         {
@@ -202,6 +203,7 @@ void PicMesh::MakeColor1()
     {
         int tid = data(*fit).cid;
         int rid = data(*fit).rid;
+        data(*fit).c2 = colors[rid];
         int c = 0;
         for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
         {
@@ -248,7 +250,7 @@ void PicMesh::MakeColor2()
 
 void PicMesh::MappingMesh(PicMesh& pm, double x, double y)
 {
-    BasicMesh::VHandle lastV = *(--pm.vertices_end());
+    BasicMesh::VHandle lastV(pm.n_vertices() / 2);
     for(BasicMesh::VIter pvit = vertices_begin(); pvit != vertices_end(); ++pvit)
     {
         BasicMesh::Point now = point(*pvit);
@@ -281,10 +283,145 @@ void PicMesh::MappingMesh(PicMesh& pm, double x, double y)
         }
         data(*pvit).mapid = lastV.idx();
     }
-    BasicMesh::FHandle lastF = *(--pm.faces_end());
-    for(BasicMesh::FIter pvit = faces_begin(); pvit != faces_end(); ++pvit)
+    for(BasicMesh::FIter pfit = faces_begin(); pfit != faces_end(); ++pfit)
     {
-        BasicMesh::Point now = MidPoint(*pvit);
+        BasicMesh::Point now = MidPoint(*pfit);
+        now[0] += x;
+        now[1] += y;
+        BasicMesh::VHandle lastV(pm.n_vertices() / 2);
+        double tdis = (pm.point(lastV) - now).sqrnorm();
+        double mindis = tdis;
+        for(; tdis > 1;)
+        {
+            int minidx = -1;
+            for(VVIter vvit = pm.vv_iter(lastV); vvit.is_valid(); ++vvit)
+            {
+                Point tp = pm.point(*vvit);;
+                double dis = (tp - now).sqrnorm();
+                if(dis < mindis)
+                {
+                    mindis = dis;
+                    minidx = (*vvit).idx();
+                }
+            }
+            if(minidx >= 0)
+            {
+                tdis = mindis;
+                lastV = BasicMesh::VHandle(minidx);
+            }
+            else
+            {
+                break;
+            }
+        }
+        int minidx = -1;
+        int ridx = -1;
+        mindis = 999999;
+        for(VFIter ffit = pm.vf_iter(lastV); ffit.is_valid(); ++ffit)
+        {
+            Point tp = pm.MidPoint(*ffit);
+            double dis = (tp - now).sqrnorm();
+            if(dis < mindis)
+            {
+                mindis = dis;
+                minidx = (*ffit).idx();
+                ridx = pm.data(*ffit).rid;
+            }
+        }
+        data(*pfit).mapid = ridx;
+        BasicMesh::FHandle lastF(minidx);
+        if(minidx >= 0)
+        {
+            data(*pfit).c2 = pm.data(lastF).c2;
+        }
+    }
+    ints count(pm.m_Regions.size());
+    for(int i = 0; i < m_Regions.size(); ++i)
+    {
+        FHandles& region = m_Regions[i];
+        Vector3 sum;
+        int step = region.size() / 20;
+        if(step < 1)
+        {
+            step = 1;
+        }
+		int count = 0;
+        for(int j = 0; j < region.size(); j += step)
+        {
+            sum += data(region[j]).c2;
+			count++;
+        }
+        sum /= count;
+        Vector3 dst;
+        double dis = 9999999;
+        for(int j = 0; j < region.size(); ++j)
+        {
+            double ndis = sum.squaredDistance(data(region[j]).c2);
+            if(ndis < dis)
+            {
+                dst = data(region[j]).c2;
+                dis = ndis;
+            }
+        }
+        for(int j = 0; j < region.size(); ++j)
+        {
+            data(region[j]).c2 = sum;
+        }
+    }
+}
+
+void PicMesh::MappingMeshByColor(PicMesh& pm, double x, double y)
+{
+    BasicMesh::VHandle lastV = *(--pm.vertices_end());
+    for(BasicMesh::VIter pvit = vertices_begin(); pvit != vertices_end(); ++pvit)
+    {
+        BasicMesh::Point now = point(*pvit);
+        now[0] += x;
+        now[1] += y;
+        double tdis = (pm.point(lastV) - now).sqrnorm();
+        double mindis = tdis;
+        for(; tdis > 1;)
+        {
+            int minidx = -1;
+            for(VVIter vvit = pm.vv_iter(lastV); vvit.is_valid(); ++vvit)
+            {
+                Point tp = pm.point(*vvit);;
+                double dis = (tp - now).sqrnorm();
+                if(dis < mindis)
+                {
+                    mindis = dis;
+                    minidx = (*vvit).idx();
+                }
+            }
+            if(minidx >= 0)
+            {
+                tdis = mindis;
+                lastV = BasicMesh::VHandle(minidx);
+            }
+            else
+            {
+                break;
+            }
+        }
+        if(data(*pvit).c2 != Vector3() && pm.data(lastV).c2 != Vector3())
+        {
+            if(data(*pvit).c2.squaredDistance(pm.data(lastV).c2) < 1000)
+            {
+                data(*pvit).mapid = lastV.idx();
+            }
+        }
+        else if(data(*pvit).c2 == Vector3() && pm.data(lastV).c2 != Vector3())
+        {
+        }
+        else
+        {
+            data(*pvit).mapid = lastV.idx();
+        }
+    }
+    BasicMesh::FHandle lastF = *(--pm.faces_end());
+    for(BasicMesh::FIter pfit = faces_begin(); pfit != faces_end(); ++pfit)
+    {
+        BasicMesh::Point now = MidPoint(*pfit);
         now[0] += x;
         now[1] += y;
         double tdis = (pm.MidPoint(lastF) - now).sqrnorm();
@@ -314,61 +451,86 @@ void PicMesh::MappingMesh(PicMesh& pm, double x, double y)
                 break;
             }
         }
-        data(*pvit).mapid = lastF.idx();
+        if(data(*pfit).c2 != Vector3() && pm.data(lastF).c2 != Vector3())
+        {
+            if(data(*pfit).c2.squaredDistance(pm.data(lastF).c2) < 1000)
+            {
+                data(*pfit).mapid = lastF.idx();
+            }
+        }
+        else
+        {
+            data(*pfit).mapid = lastF.idx();
+        }
     }
 }
 
-void PicMesh::GetMappingCT(PicMesh& pm, ColorTriangles& out1, ColorTriangles& out2)
+void PicMesh::GetMappingCT(PicMesh& pm, ColorTriangles& out1, ColorTriangles& out2, double x, double y)
 {
-    printf("pm.n_vertices() %d\n", pm.n_vertices());
+    //printf("pm.n_vertices() %d\n", pm.n_vertices());
     out1.clear();
     out2.clear();
     ColorTriangle t;
+    out1 = m_Trangles;
     for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
     {
-        int tid = data(*fit).cid;
-        int c = 0;
-        for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
-        {
-            Point p = point(*fvit);
-            t.pts[c][0] = p[0];
-            t.pts[c][1] = p[1];
-            if(tid > 0)
-            {
-                t.color[c] = m_ColorConstraint[tid - 1].GetColorVector3(p[0], p[1]);
-            }
-            else
-            {
-                t.color[c] = Vector3(0, 0, 0);
-            }
-            ++c;
-        }
-        out1.push_back(t);
-    }
-    for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
-    {
+        Vector3 tmp;
         int mapid = data(*fit).mapid;
         FHandle mfh(mapid);
-        int tid = pm.data(mfh).cid;
-        //int tid = data(*fit).cid;
         int c = 0;
         for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
         {
             int mapid2 = data(*fvit).mapid;
-            VHandle mvh(mapid2);
-            Point p = pm.point(mvh);
-            t.pts[c][0] = p[0];
-            t.pts[c][1] = p[1];
-            if(tid > 0)
+            if(mapid2 >= 0)
             {
-                t.color[c] = pm.m_ColorConstraint[tid - 1].GetColorVector3(p[0], p[1]);
+                VHandle mvh(mapid2);
+                Point p = pm.point(mvh);
+                t.pts[c][0] = p[0];
+                t.pts[c][1] = p[1];
+                t.color[c] = pm.data(mvh).c2;
             }
             else
             {
-                t.color[c] = Vector3(0, 0, 0);
+                Point p = point(*fvit);
+                t.pts[c][0] = p[0] + x;
+                t.pts[c][1] = p[1] + y;
+                t.color[c] = out1[out2.size()].color[c];
+            }
+            if(t.color[c] != Vector3())
+            {
+                tmp = t.color[c];
             }
             ++c;
         }
+        for(int i = 0; i < 3; ++i)
+        {
+            if(t.color[i] == Vector3())
+            {
+                t.color[i] = tmp;
+                t.color[i] = out1[out2.size()].color[i];
+            }
+        }
+//         if(tmp != Vector3())
+//         {
+//             for(int i = 0; i < 3; ++i)
+//             {
+//                 if(t.color[i] == Vector3())
+//                 {
+//                     t.color[i] = tmp;
+//                 }
+//             }
+//         }
+//         else if(mapid >= 0 && mapid < (*pm.faces_end()).idx())
+//         {
+//             tmp = pm.data(mfh).c2;
+//             for(int i = 0; i < 3; ++i)
+//             {
+//                 if(t.color[i] == Vector3())
+//                 {
+//                     t.color[i] = tmp;
+//                 }
+//             }
+//         }
         out2.push_back(t);
     }
 }
@@ -382,7 +544,8 @@ BasicMesh::Point PicMesh::MidPoint(FHandle fh)
         const Point& p = point(*fv_it);
         v[k++] = p;
     }
-    return (v[0] + v[1] + v[2]) * 0.33333;
+    Point res = (v[0] + v[1] + v[2]) * 0.33333;
+    return res;
 }
 
 ColorTriangles PicMesh::Interpolation(ColorTriangles& c1, ColorTriangles& c2, double alpha)
@@ -863,6 +1026,67 @@ void PicMesh::BuildColorModels(cv::Mat& img)
                 }
             }
         }
+        cc.BuildModel();
+    }
+}
+
+
+void PicMesh::BuildColorModels()
+{
+    // mark boundary constraint
+    for(int i = 0; i < m_LinesHH.size(); ++i)
+    {
+        HHandles& nowhh = m_LinesHH[i];
+        for(int j = 0; j < nowhh.size(); ++j)
+        {
+            data(edge_handle(nowhh[j])).constraint = true;
+        }
+    }
+    for(VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        Point p = point(*vit);
+        if(p[0] == 0 || p[1] == 0 || p[0] == m_w || p[1] == m_h)
+        {
+            data(*vit).constraint = 1;
+        }
+    }
+    // mark constraint point
+    for(int i = 0; i < m_LinesVH.size(); ++i)
+    {
+        for(int j = 0; j < m_LinesVH[i].size(); ++j)
+        {
+            data(m_LinesVH[i][j]).constraint = 1;
+            data(m_LinesVH[i][j]).lineid = i;
+            data(m_LinesVH[i][j]).lineidx = j;
+        }
+    }
+    for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        data(*vit).use = false;
+    }
+    m_ColorConstraint.clear();
+    for(int i = 0; i < m_Regions.size(); ++i)
+    {
+        m_ColorConstraint.push_back(ColorConstraint());
+        ColorConstraint& cc = m_ColorConstraint.back();
+        FHandles& region = m_Regions[i];
+        for(int j = 0; j < region.size(); ++j)
+        {
+            if(data(region[j]).c2 != Vector3())
+            {
+                Point p = MidPoint(region[j]);
+                cc.AddPoint(p[0], p[1], data(region[j]).c2);
+            }
+            for(FVIter fvit = fv_iter(region[j]); fvit.is_valid(); ++fvit)
+            {
+                if(data(*fvit).c2 != Vector3())
+                {
+                    Point p2 = point(*fvit);
+                    cc.AddPoint(p2[0], p2[1], data(*fvit).c2);
+                }
+            }
+        }
+        cc.BuildModel();
     }
 }
 
@@ -926,13 +1150,19 @@ void PicMesh::MakeColor4(cv::Mat& img)
         if(data(*vit).constraint == 0)
         {
             Point p = point(*vit);
-            data(*vit).c2 =  vimg.GetBilinearColor(p[0] - 0.5, p[1] - 0.5);
+            Vector3 c2 = vimg.GetBilinearColor(p[0] - 0.5, p[1] - 0.5);
+            std::swap(c2[0], c2[2]);
+            if(c2 == Vector3())
+            {
+                c2.x = 1;
+            }
+            data(*vit).c2 = c2;
         }
     }
     // blur c2
     lightblurC2();
-	lightblurC2();
-	lightblurC2();
+    lightblurC2();
+    lightblurC2();
     // get face color from vertex
     for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
     {
@@ -956,9 +1186,11 @@ void PicMesh::MakeColor4(cv::Mat& img)
     Dilation();
     Dilation();
     Dilation();
-	Dilation();
+    Dilation();
     // get face color
     GetConstraintFaceColor(img);
+    blurFaceC2();
+    blurFaceC2();
     for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
     {
         int rid = data(*fit).rid;
@@ -970,7 +1202,6 @@ void PicMesh::MakeColor4(cv::Mat& img)
             t.pts[c][0] = p[0];
             t.pts[c][1] = p[1];
             t.color[c] = data(*fvit).c2;
-            std::swap(t.color[c][0], t.color[c][2]);
             if(t.color[c] != Vector3())
             {
                 tmp = t.color[c];
@@ -990,7 +1221,6 @@ void PicMesh::MakeColor4(cv::Mat& img)
         else
         {
             tmp = data(*fit).c2;
-            std::swap(tmp[0], tmp[2]);
             for(int i = 0; i < 3; ++i)
             {
                 if(t.color[i] == Vector3())
@@ -1000,6 +1230,57 @@ void PicMesh::MakeColor4(cv::Mat& img)
             }
         }
         m_Trangles.push_back(t);
+    }
+}
+
+void PicMesh::MakeColor5(cv::Mat& img)
+{
+    vavImage vimg(img);
+    m_Trangles.clear();
+    for(int i = 0; i < m_DifferentRegionIDs.size(); ++i)
+    {
+        FHandles region = m_Regions[m_DifferentRegionIDs[i]];
+        for(FHandles::iterator fit = region.begin(); fit != region.end(); ++fit)
+        {
+            ColorTriangle t;
+            int rid = data(*fit).rid;
+            int c = 0;
+            Vector3 tmp;
+            for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
+            {
+                Point p = point(*fvit);
+                t.pts[c][0] = p[0];
+                t.pts[c][1] = p[1];
+                t.color[c] = data(*fvit).c2;
+                if(t.color[c] != Vector3())
+                {
+                    tmp = t.color[c];
+                }
+                ++c;
+            }
+            if(tmp != Vector3())
+            {
+                for(int i = 0; i < 3; ++i)
+                {
+                    if(t.color[i] == Vector3())
+                    {
+                        t.color[i] = tmp;
+                    }
+                }
+            }
+            else
+            {
+                tmp = data(*fit).c2;
+                for(int i = 0; i < 3; ++i)
+                {
+                    if(t.color[i] == Vector3())
+                    {
+                        t.color[i] = tmp;
+                    }
+                }
+            }
+            m_Trangles.push_back(t);
+        }
     }
 }
 
@@ -1082,8 +1363,8 @@ void PicMesh::lightblurC2()
                 {
                     if(GetLight(data(*vv_itr).c2) > light)
                     {
-                        count += 2;
-                        blur += data(*vv_itr).c2 * 2;
+                        count += 5;
+                        blur += data(*vv_itr).c2 * 5;
                     }
                     else
                     {
@@ -1128,16 +1409,7 @@ void PicMesh::GetConstraintFaceColor(cv::Mat& img)
 {
     for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
     {
-        bool facenocolor = true;
-        for(FVIter fv_itr = fv_iter(*fit) ; fv_itr.is_valid(); ++fv_itr)
-        {
-            if(data(*fv_itr).constraint == 0)
-            {
-                facenocolor = false;
-                break;
-            }
-        }
-        if(facenocolor && data(*fit).c2 == Vector3())
+        if(data(*fit).mark == 0)
         {
             for(FEIter fe_itr = fe_iter(*fit) ; fe_itr.is_valid(); ++fe_itr)
             {
@@ -1151,12 +1423,641 @@ void PicMesh::GetConstraintFaceColor(cv::Mat& img)
                                            to_vertex_handle(_hedge), cx);
                 if(res)
                 {
-					std::swap(cx[0], cx[2]);
+                    if(cx == Vector3())
+                    {
+                        cx.x = 1;
+                    }
                     data(*fit).c2 = cx;
+                    data(*fit).mark = -2;
                     break;
                 }
             }
         }
+    }
+}
+
+void PicMesh::blurFaceC2x()
+{
+    for(BasicMesh::FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        if(data(*fit).mark == -2)
+        {
+            int count = 1;
+            Vector3 blur = data(*fit).c2;
+            for(FFIter ff_itr = ff_iter(*fit) ; ff_itr.is_valid(); ++ff_itr)
+            {
+                if(data(*ff_itr).c2 != Vector3())
+                {
+                    count++;
+                    blur += data(*ff_itr).c2;
+                }
+            }
+            blur /= count;
+            data(*fit).c3 = blur;
+        }
+    }
+    for(BasicMesh::FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        if(data(*fit).mark == -2)
+        {
+            data(*fit).c2 = data(*fit).c3;
+        }
+    }
+}
+
+void PicMesh::blurFaceC2()
+{
+    for(BasicMesh::FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        if(data(*fit).c2 != Vector3())
+        {
+            int count = 1;
+            Vector3 blur = data(*fit).c2;
+            for(FFIter ff_itr = ff_iter(*fit) ; ff_itr.is_valid(); ++ff_itr)
+            {
+                if(data(*ff_itr).c2 != Vector3())
+                {
+                    count++;
+                    blur += data(*ff_itr).c2;
+                }
+            }
+            blur /= count;
+            data(*fit).c3 = blur;
+        }
+    }
+    for(BasicMesh::FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        if(data(*fit).c2 != Vector3())
+        {
+            data(*fit).c2 = data(*fit).c3;
+        }
+    }
+}
+
+void PicMesh::MarkDifferentRegion1(vavImage& vimg, double v, double x, double y)
+{
+    m_DifferentRegionIDs.clear();
+    for(int i = 0; i < m_Regions.size(); ++i)
+    {
+        double sum = 0;
+        FHandles& region = m_Regions[i];
+        int count = 0;
+        for(int j = 0; j < region.size(); ++j)
+        {
+            for(FVIter fvit = fv_iter(region[j]); fvit.is_valid(); ++fvit)
+            {
+                Vector3 c1 = data(*fvit).c2;
+                if(c1 != Vector3())
+                {
+                    Point p = point(*fvit);
+                    Vector3 c2 = vimg.GetBilinearColor(p[0] + x, p[1] + y);
+                    std::swap(c2[0], c2[2]);
+                    sum += c1.distance(c2);
+                    count++;
+                }
+            }
+        }
+        sum /= count;
+        if(sum > v)
+        {
+            m_DifferentRegionIDs.push_back(i);
+        }
+    }
+    printf("m_Regions %d m_DifferentRegionIDs %d\n",
+           m_Regions.size(), m_DifferentRegionIDs.size());
+}
+
+void PicMesh::MarkDifferentRegion2(PicMesh& pm, double v, double x, double y)
+{
+    BasicMesh::VHandle lastV = *(--pm.vertices_end());
+    m_DifferentRegionIDs.clear();
+    for(int i = 0; i < m_Regions.size(); ++i)
+    {
+        double sum = 0;
+        FHandles& region = m_Regions[i];
+        int count = 0;
+        for(int j = 0; j < region.size(); ++j)
+        {
+            for(FVIter fvit = fv_iter(region[j]); fvit.is_valid(); ++fvit)
+            {
+                Vector3 c1 = data(*fvit).c2;
+                if(c1 != Vector3())
+                {
+                    BasicMesh::Point now = point(*fvit);
+                    now[0] += x;
+                    now[1] += y;
+                    double tdis = (pm.point(lastV) - now).sqrnorm();
+                    double mindis = tdis;
+                    for(; tdis > 1;)
+                    {
+                        int minidx = -1;
+                        for(VVIter vvit = pm.vv_iter(lastV); vvit.is_valid(); ++vvit)
+                        {
+                            Point tp = pm.point(*vvit);;
+                            double dis = (tp - now).sqrnorm();
+                            if(dis < mindis)
+                            {
+                                mindis = dis;
+                                minidx = (*vvit).idx();
+                            }
+                        }
+                        if(minidx >= 0)
+                        {
+                            tdis = mindis;
+                            lastV = BasicMesh::VHandle(minidx);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    Vector3 c2 = pm.data(lastV).c2;
+                    sum += c1.distance(c2);
+                    count++;
+                }
+            }
+        }
+        sum /= count;
+        if(sum > v)
+        {
+            m_DifferentRegionIDs.push_back(i);
+        }
+    }
+    printf("m_Regions %d m_DifferentRegionIDs %d\n",
+           m_Regions.size(), m_DifferentRegionIDs.size());
+}
+
+void PicMesh::MakeColor6(cv::Mat& img)
+{
+    vavImage vimg(img);
+    // mark boundary constraint
+    for(VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        Point p = point(*vit);
+        if(p[0] == 0 || p[1] == 0 || p[0] == m_w || p[1] == m_h)
+        {
+            data(*vit).constraint = 1;
+        }
+    }
+    // mark constraint point
+    for(int i = 0; i < m_LinesVH.size(); ++i)
+    {
+        for(int j = 0; j < m_LinesVH[i].size(); ++j)
+        {
+            data(m_LinesVH[i][j]).constraint = 1;
+        }
+    }
+    m_Trangles.clear();
+    ColorTriangle t;
+    // get color far constraint
+    for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        if(data(*vit).constraint == 0)
+        {
+            Point p = point(*vit);
+            Vector3 c2 = vimg.GetBilinearColor(p[0] - 0.5, p[1] - 0.5);
+            std::swap(c2[0], c2[2]);
+            if(c2 == Vector3())
+            {
+                c2.x = 1;
+            }
+            data(*vit).c2 = c2;
+        }
+    }
+    // blur c2
+    lightblurC2();
+    lightblurC2();
+    lightblurC2();
+
+//  removeblackC2();
+//  removeblackC2();
+//  removeblackC2();
+    BuildColorModels();
+    MarkColoredFace();
+    FillConstraintRegion();
+    FillConstraintRegion();
+//
+//     for(int i = 0; i < m_Regions.size(); ++i)
+//     {
+//         double sum = 0;
+//         FHandles& region = m_Regions[i];
+//         if(region.empty())
+//         {
+//             continue;
+//         }
+//         int count = 0;
+//         if(data(region[0]).mark == 0)
+//         {
+//             Vector3 sumc;
+//             for(int j = 0; j < region.size(); ++j)
+//             {
+//                 Point p = MidPoint(region[j]);
+//                 Vector3 c = vimg.GetBilinearColor(p[0] - 0.5, p[1] - 0.5);
+//                 std::swap(c[0], c[2]);
+//              sumc += c;
+//             }
+//          sumc /= region.size();
+//             for(int j = 0; j < region.size(); ++j)
+//             {
+//                 data(region[j]).mark = -2;
+//              data(region[j]).c2 = sumc;
+//             }
+//         }
+//     }
+    for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        int rid = data(*fit).rid;
+        int c = 0;
+        int c0 = 0;
+        BasicMesh::Point mid = MidPoint(*fit);
+        for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
+        {
+            Point p = point(*fvit);
+            t.pts[c][0] = p[0];
+            t.pts[c][1] = p[1];
+
+            if(data(*fit).mark > 0 && rid >= 0 && m_ColorConstraint.size() > rid)
+            {
+                t.color[c] = m_ColorConstraint[rid].GetColorVector3(p[0], p[1], mid[0], mid[1]);
+            }
+            else if(data(*fit).mark < 0)
+            {
+                t.color[c] = data(*fit).c2;
+            }
+            ++c;
+
+        }
+        if(data(*fit).mark != 0)
+        {
+            m_Trangles.push_back(t);
+        }
+    }
+}
+
+void PicMesh::removeblackC2()
+{
+    for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        if(data(*vit).constraint == 0)
+        {
+            int count = 0;
+            Vector3 dst = data(*vit).c2;
+            double light = GetLight(dst);
+            int vsmall = 0;
+            int vlight = 0;
+            Vector3 sum;
+            for(VVIter vv_itr = vv_iter(*vit) ; vv_itr.is_valid(); ++vv_itr)
+            {
+                count++;
+                if(data(*vv_itr).constraint == 0)
+                {
+                    if(GetLight(data(*vv_itr).c2) < light)
+                    {
+                        vsmall++;
+                    }
+                    else
+                    {
+                        sum += data(*vv_itr).c2;
+                        vlight++;
+                    }
+                }
+            }
+            if(vlight > 0)
+            {
+                sum /= vlight;
+                data(*vit).c3 = sum;
+            }
+        }
+    }
+    for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        if(data(*vit).constraint == 0 && data(*vit).c3 != Vector3())
+        {
+            data(*vit).c2 = data(*vit).c3;
+        }
+    }
+}
+
+void PicMesh::MarkColoredFace()
+{
+    for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        int rid = data(*fit).rid;
+        int c = 0;
+        int c0 = 0;
+        BasicMesh::Point mid = MidPoint(*fit);
+        for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
+        {
+            if(data(*fvit).constraint == 0)
+            {
+                c0++;
+            }
+        }
+        if(c0 > 0)
+        {
+            data(*fit).mark = c0;
+            if(c0 < 3)
+            {
+                Vector3 sumc;
+                for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
+                {
+                    if(data(*fvit).constraint == 0)
+                    {
+                        sumc += data(*fvit).c2;
+                    }
+                }
+                sumc /= c0;
+                data(*fit).c2 = sumc;
+            }
+        }
+    }
+}
+
+void PicMesh::FillConstraintRegion()
+{
+    for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        if(data(*fit).mark == 0)
+        {
+            for(FaceHalfedgeIter feit = fh_iter(*fit); feit.is_valid(); ++feit)
+            {
+                if(data(edge_handle(*feit)).constraint == 0)
+                {
+                    BasicMesh::HalfedgeHandle _hedge = *feit;
+                    FaceHandle fh = opposite_face_handle(_hedge);
+                    if(fh.is_valid() && data(fh).mark < 3 && data(fh).mark != 0)
+                    {
+                        data(*fit).c2 = data(fh).c2;
+                        data(*fit).mark = -1;
+                        break;
+                    }
+                }
+            }
+            if(data(*fit).mark == -1)
+            {
+                FHandles que;
+                for(FaceHalfedgeIter feit = fh_iter(*fit); feit.is_valid(); ++feit)
+                {
+                    if(data(edge_handle(*feit)).constraint == 0)
+                    {
+                        BasicMesh::HalfedgeHandle _hedge = *feit;
+                        FaceHandle fh = opposite_face_handle(_hedge);
+                        if(fh.is_valid() && data(fh).mark == 0)
+                        {
+                            que.push_back(fh);
+                            data(fh).c2 = data(*fit).c2;
+                        }
+                    }
+                }
+                while(!que.empty())
+                {
+                    FHandle now = que.back();
+                    que.pop_back();
+                    for(FaceHalfedgeIter feit = fh_iter(now); feit.is_valid(); ++feit)
+                    {
+                        if(edge_handle(*feit).is_valid() &&
+                                data(edge_handle(*feit)).constraint == 0)
+                        {
+                            BasicMesh::HalfedgeHandle _hedge = *feit;
+                            FaceHandle fh = opposite_face_handle(_hedge);
+                            if(fh.is_valid() && data(fh).mark == 0)
+                            {
+                                que.push_back(fh);
+                                data(fh).c2 = data(*fit).c2;
+                                data(fh).mark = -1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void PicMesh::MappingMeshByMidPoint(PicMesh& pm, double x, double y)
+{
+    BasicMesh::VHandle lastV(pm.n_vertices() / 2);
+    for(BasicMesh::VIter pvit = vertices_begin(); pvit != vertices_end(); ++pvit)
+    {
+        BasicMesh::Point now = point(*pvit);
+        now[0] += x;
+        now[1] += y;
+        double tdis = (pm.point(lastV) - now).sqrnorm();
+        double mindis = tdis;
+        for(; tdis > 1;)
+        {
+            int minidx = -1;
+            for(VVIter vvit = pm.vv_iter(lastV); vvit.is_valid(); ++vvit)
+            {
+                Point tp = pm.point(*vvit);;
+                double dis = (tp - now).sqrnorm();
+                if(dis < mindis)
+                {
+                    mindis = dis;
+                    minidx = (*vvit).idx();
+                }
+            }
+            if(minidx >= 0)
+            {
+                tdis = mindis;
+                lastV = BasicMesh::VHandle(minidx);
+            }
+            else
+            {
+                break;
+            }
+        }
+        data(*pvit).mapid = lastV.idx();
+    }
+    for(BasicMesh::FIter pfit = faces_begin(); pfit != faces_end(); ++pfit)
+    {
+        BasicMesh::Point now = MidPoint(*pfit);
+        now[0] += x;
+        now[1] += y;
+        BasicMesh::VHandle lastV(pm.n_vertices() / 2);
+        double tdis = (pm.point(lastV) - now).sqrnorm();
+        double mindis = tdis;
+        for(; tdis > 1;)
+        {
+            int minidx = -1;
+            for(VVIter vvit = pm.vv_iter(lastV); vvit.is_valid(); ++vvit)
+            {
+                Point tp = pm.point(*vvit);;
+                double dis = (tp - now).sqrnorm();
+                if(dis < mindis)
+                {
+                    mindis = dis;
+                    minidx = (*vvit).idx();
+                }
+            }
+            if(minidx >= 0)
+            {
+                tdis = mindis;
+                lastV = BasicMesh::VHandle(minidx);
+            }
+            else
+            {
+                break;
+            }
+        }
+        int minidx = -1;
+        int minidxf = -1;
+        mindis = 999999;
+        for(VFIter ffit = pm.vf_iter(lastV); ffit.is_valid(); ++ffit)
+        {
+            Point tp = pm.MidPoint(*ffit);
+            double dis = (tp - now).sqrnorm();
+            if(dis < mindis)
+            {
+                mindis = dis;
+                minidx = pm.data(*ffit).rid;
+                minidxf = (*ffit).idx();
+            }
+        }
+        BasicMesh::FHandle lastF(minidxf);
+        data(*pfit).mapid = minidx;
+        if(minidxf >= 0)
+        {
+            data(*pfit).c2 = pm.data(lastF).c2;
+        }
+    }
+    printf("m_Regions.size() %d\n", m_Regions.size());
+    m_MapingRegionIDs.resize(m_Regions.size());
+    for(int i = 0; i < m_Regions.size(); ++i)
+    {
+        ints count(pm.m_Regions.size(), 0);
+        for(int j = 0; j < m_Regions[i].size(); ++j)
+        {
+            int mapid = data(m_Regions[i][j]).mapid;
+            if(mapid >= 0 && mapid < count.size())
+            {
+                count[mapid]++;
+            }
+        }
+        int maxcount = 0;
+        int maxid = 0;
+        for(int j = 0; j < pm.m_Regions.size(); ++j)
+        {
+            if(count[j] > maxcount)
+            {
+                maxcount = count[j];
+                maxid = j;
+            }
+        }
+        //printf("%d maxid %d\n", i, maxid);
+        m_MapingRegionIDs[i] = maxid;
+    }
+}
+
+void PicMesh::MakeColor7(Vector3s& colors, ints& lastmap)
+{
+    //printf("m_MapingRegionIDs.size() %d\n", m_MapingRegionIDs.size());
+    ints newmaps(m_MapingRegionIDs.size());
+    for(int i = 0; i < m_MapingRegionIDs.size(); ++i)
+    {
+        newmaps[i] = lastmap[m_MapingRegionIDs[i]];
+    }
+    ColorTriangle t;
+    m_Trangles.clear();
+    for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        int rid = newmaps[data(*fit).rid];
+        int c = 0;
+        for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
+        {
+            Point p = point(*fvit);
+            t.pts[c][0] = p[0];
+            t.pts[c][1] = p[1];
+            if(rid >= 0 && rid < colors.size())
+            {
+                t.color[c] = colors[rid];
+            }
+            ++c;
+        }
+        m_Trangles.push_back(t);
+    }
+    lastmap = newmaps;
+}
+
+void PicMesh::MakeColor72(ColorConstraints& colors, ints& lastmap, double x, double y)
+{
+    //printf("m_MapingRegionIDs.size() %d\n", m_MapingRegionIDs.size());
+    ints newmaps(m_MapingRegionIDs.size());
+    for(int i = 0; i < m_MapingRegionIDs.size(); ++i)
+    {
+        newmaps[i] = lastmap[m_MapingRegionIDs[i]];
+    }
+    ColorTriangle t;
+    m_Trangles.clear();
+    for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        int rid = newmaps[data(*fit).rid];
+        int c = 0;
+        for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
+        {
+            Point p = point(*fvit);
+            t.pts[c][0] = p[0];
+            t.pts[c][1] = p[1];
+            if(rid >= 0 && rid < colors.size())
+            {
+                t.color[c] = colors[rid].GetColorVector3(p[0] + x, p[1] + y);
+            }
+            ++c;
+        }
+        m_Trangles.push_back(t);
+    }
+    lastmap = newmaps;
+}
+
+void PicMesh::MakeColor8(PicMesh& pm)
+{
+    //printf("m_MapingRegionIDs.size() %d\n", m_MapingRegionIDs.size());
+//  ints newmaps(lastmap.size());
+//  for(int i = 0; i < lastmap.size(); ++i)
+//  {
+//      if(m_MapingRegionIDs.size() > lastmap[i])
+//      {
+//          newmaps[i] = m_MapingRegionIDs[lastmap[i]];
+//          printf("newmaps[%d] %d old %d last %d\n", i, newmaps[i], m_MapingRegionIDs[lastmap[i]], lastmap[i]);
+//      }
+//  }
+    ColorTriangle t;
+    m_Trangles.clear();
+    for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        int rid = data(*fit).mapid;
+        Vector3 cc = pm.data(FHandle(rid)).c2;
+        data(*fit).c2 = cc;
+        int c = 0;
+        for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
+        {
+            Point p = point(*fvit);
+            t.pts[c][0] = p[0];
+            t.pts[c][1] = p[1];
+            t.color[c] = cc;
+            ++c;
+        }
+        m_Trangles.push_back(t);
+    }
+    //lastmap = newmaps;
+}
+
+void PicMesh::MakeColor9()
+{
+    ColorTriangle t;
+    m_Trangles.clear();
+    for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        int c = 0;
+        for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
+        {
+            Point p = point(*fvit);
+            t.pts[c][0] = p[0];
+            t.pts[c][1] = p[1];
+            t.color[c] = data(*fit).c2;
+            ++c;
+        }
+        m_Trangles.push_back(t);
     }
 }
 
