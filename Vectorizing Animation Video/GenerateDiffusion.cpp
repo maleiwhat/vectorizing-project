@@ -14,6 +14,7 @@
 #include <boost/archive/text_iarchive.hpp>
 #include "TriangulationCgal_Sideline.h"
 #include "PicMesh.h"
+#include <opencv2/highgui/highgui.hpp>
 
 
 bool checkmask3x3(cv::Mat img, int x, int y)
@@ -849,7 +850,17 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
     FrameInfo fi;
     Lines decorativeLine;
     vavImage expImg = WhiteBalance(img.clone());
+	char buff[100];
+	static int scount = 0;
+	sprintf(buff, "test/pic%03d_step01_WB.png", ++scount);
+	cv::imwrite(buff, expImg.GetCvMat());
     expImg = ImgSharpen(expImg);
+	sprintf(buff, "test/pic%03d_step02_IS.png", scount);
+	cv::imwrite(buff, expImg.GetCvMat());
+	cv::Mat size2 = img.clone();
+	cv::resize(size2.clone(), size2, size2.size() * 2, 0, 0, cv::INTER_CUBIC);
+	sprintf(buff, "test/pic%03d_step02_S2.png", scount);
+	cv::imwrite(buff, size2);
     const int MASK1_SIZE = 5;
     const int MASK2_SIZE = 5;
     const float secDer = 0.05f;
@@ -871,6 +882,8 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
     {
         bilateralFilter(ccp2.clone(), ccp2, i, i * 2, i * 0.5);
     }
+	sprintf(buff, "test/pic%03d_step03_BF.png", scount);
+	cv::imwrite(buff, ccp2);
     cv::Mat slicimg;
     CmCurveEx* ccp1_curve = NULL;
     CmCurveEx* ccp2_curve = NULL;
@@ -897,7 +910,9 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
                 Bblack_Fred1.at<cv::Vec3b>(pnts[j]) = cv::Vec3b(0, 0, 255);
             }
         }
-        g_cvshowEX.AddShow("show_ccp1", show_ccp1);
+        //g_cvshowEX.AddShow("show_ccp1", show_ccp1);
+// 		sprintf(buff, "test/pic%03d_step04_CE.png", scount);
+// 		cv::imwrite(buff, show_ccp1);
     }
     //if(m_CONSTRAINT_CURVES_PARAMETER_1 && m_DECORATIVE_CURVES)
     {
@@ -915,8 +930,39 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         les = GetLineEnds(blackLine);
         LinkLineEnds180(les, 8, 60);
         ConnectLineEnds3(les, blackLine);
+		if (0)
+		{
+			cv::Mat picout = expImg.Clone();
+			for(size_t i = 0; i < blackLine.size(); i++)
+			{
+				const Line& pnts = blackLine[i];
+				for(size_t j = 0; j < pnts.size() - 1; j++)
+				{
+					cv::line(picout, cv::Point(pnts[j].x, pnts[j].y),
+						cv::Point(pnts[j + 1].x, pnts[j + 1].y), cv::Scalar(0, 0, 255));
+				}
+			}
+			sprintf(buff, "test/pic%03d_step05_L180.png", scount);
+			cv::imwrite(buff, picout);
+		}
         les = GetLineEnds(blackLine);
         ConnectNearestLines(les, blackLine, 12, 20);
+		if (0)
+		{
+			cv::Mat picout = expImg.Clone();
+			for(size_t i = 0; i < blackLine.size(); i++)
+			{
+				const Line& pnts = blackLine[i];
+				for(size_t j = 0; j < pnts.size() - 1; j++)
+				{
+					cv::line(picout, cv::Point(pnts[j].x, pnts[j].y),
+						cv::Point(pnts[j + 1].x, pnts[j + 1].y), cv::Scalar(0, 0, 255));
+					//picout.at<cv::Vec3b>(pnts[j].x, pnts[j].y) = cv::Vec3b(0, 0, 255);
+				}
+			}
+			sprintf(buff, "test/pic%03d_step06_CNL.png", scount);
+			cv::imwrite(buff, picout);
+		}
         Lines showLines;
         Lines BLineWidth(blackLine.size());
         Lines normals = GetNormalsLen2(blackLine);
@@ -1011,7 +1057,8 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
                 Bwhith_Fblue2.at<cv::Vec3b>(pnts[j]) = cv::Vec3b(0, 0, 255);
             }
         }
-		cv::imshow("ccc", show_ccp2);
+		sprintf(buff, "test/pic%03d_step07_CE.png", scount);
+		cv::imwrite(buff, show_ccp2);
     }
     //if(m_CONSTRAINT_CURVES_PARAMETER_2 && m_BOUNDARY_CURVES)
     {
@@ -1082,15 +1129,15 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
 #ifdef USE_CGAL
         S8ReColor(cmmsIndexImg, img.clone(), noColorMask, ccms);
         Lines colorline = GetRegionLines(cmmsIndexImg);
-        {
-            Line t;
-            t.push_back(Vector2(0, 0));
-            t.push_back(Vector2(img.cols, 0));
-            t.push_back(Vector2(img.cols, img.rows));
-            t.push_back(Vector2(0, img.rows));
-            t.push_back(Vector2(0, 0));
-            blackLine2.push_back(t);
-        }
+		{
+			Line t;
+			t.push_back(Vector2(0, 0));
+			t.push_back(Vector2(img.cols, 0));
+			t.push_back(Vector2(img.cols, img.rows));
+			t.push_back(Vector2(0, img.rows));
+			t.push_back(Vector2(0, 0));
+			blackLine2.push_back(t);
+		}
         Index2Side i2s = GetLinesIndex2SideCV(blackLine2, cmmsIndexImg);
         colorline = HalfSmooth(colorline, 10);
         colorline = SmoothingLen3(colorline, 0, 3);
@@ -1101,6 +1148,20 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         cgal_contour1.m_i2s = i2s;
         cgal_contour1.SetSize(img.cols, img.rows);
         cgal_contour1.AddLines(blackLine2);
+		{
+			cv::Mat picout = img.clone();
+			for(size_t i = 0; i < blackLine2.size(); i++)
+			{
+				const Line& pnts = blackLine2[i];
+				for(size_t j = 0; j < pnts.size() - 1; j++)
+				{
+					cv::line(picout, cv::Point(pnts[j].x, pnts[j].y),
+						cv::Point(pnts[j + 1].x, pnts[j + 1].y), cv::Scalar(0, 0, 255));
+				}
+			}
+			sprintf(buff, "test/pic%03d_step09_BL.png", scount);
+			cv::imwrite(buff, picout);
+		}
         cgal_contour1.SetCriteria(0.01, 50);
         cgal_contour1.SetColor(ccms);
         int region = cgal_contour1.Compute();
@@ -1116,10 +1177,16 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         PicMesh pm2;
         pm2.SetSize(img.cols, img.rows);
         pm2.ReadFromSideline(&cgal_contour2);
+		pm2.SetRegionColor(img);
+		pm2.ComputeRegion();
+		pm2.ComputeNeighbor();
+		pm2.BuildBtree();
+		pm2.DrawTree();
         //pm2.BuildColorModels(img.clone());
         //pm2.MakeColor6(img);
 		//pm2.MakeColor3();
         fi.picmesh1 = pm2;
+		fi.picmesh2 = pm1;
         fi.curves2 = pm1.m_Lines;
         fi.curves3 = blackLine2;
 #endif // USE_CGAL

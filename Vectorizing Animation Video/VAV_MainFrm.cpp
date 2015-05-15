@@ -153,9 +153,11 @@ END_MESSAGE_MAP()
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
+#include "Nodeui.h"
 
 VAV_MainFrame::VAV_MainFrame()
 {
+	g_Nodeui.Init();
 	// TODO: 在此加入成員初始化程式碼
 	theApp.m_nAppLook = theApp.GetInt(_T("ApplicationLook"),
 									  ID_VIEW_APPLOOK_OFF_2007_BLACK);

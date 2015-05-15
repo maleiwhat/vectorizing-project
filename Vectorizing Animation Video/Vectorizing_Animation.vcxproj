@@ -184,6 +184,7 @@
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <OptimizeReferences>false</OptimizeReferences>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -202,6 +203,7 @@
     <ClInclude Include="algSpline.h" />
     <ClInclude Include="algSpline2d.h" />
     <ClInclude Include="BasicMesh.h" />
+    <ClInclude Include="btree.h" />
     <ClInclude Include="CgalPatch.h" />
     <ClInclude Include="ClassView.h" />
     <ClInclude Include="clipper.hpp" />
@@ -225,6 +227,7 @@
     <ClInclude Include="CvExtenstion2.h" />
     <ClInclude Include="cvshowEX.h" />
     <ClInclude Include="DiffusionFrame.h" />
+    <ClInclude Include="DrawNode.h" />
     <ClInclude Include="DX11\d3dApp.h" />
     <ClInclude Include="DX11\DXUTUI.h" />
     <ClInclude Include="DX11\Timer.h" />
@@ -244,6 +247,7 @@
     <ClInclude Include="DXUT\SDKmisc.h" />
     <ClInclude Include="Edge.h" />
     <ClInclude Include="FileView.h" />
+    <ClInclude Include="General.h" />
     <ClInclude Include="GenerateDiffusion.h" />
     <ClInclude Include="IFExtenstion.h" />
     <ClInclude Include="ImageSpline.h" />
@@ -270,6 +274,8 @@
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
     <ClInclude Include="MySLIC.h" />
+    <ClInclude Include="Nodeui.h" />
+    <ClInclude Include="NodeViewer.h" />
     <ClInclude Include="OutputWnd.h" />
     <ClInclude Include="Patch.h" />
     <ClInclude Include="PatchSpline.h" />
@@ -310,6 +316,7 @@
   <ItemGroup>
     <ClCompile Include="algSpline.cpp" />
     <ClCompile Include="algSpline2d.cpp" />
+    <ClCompile Include="btree.cpp" />
     <ClCompile Include="CgalPatch.cpp" />
     <ClCompile Include="ClassView.cpp" />
     <ClCompile Include="clipper.cpp" />
@@ -368,6 +375,7 @@
     <ClCompile Include="DXUT\SDKmisc.cpp" />
     <ClCompile Include="Edge.cpp" />
     <ClCompile Include="FileView.cpp" />
+    <ClCompile Include="General.cpp" />
     <ClCompile Include="GenerateDiffusion.cpp" />
     <ClCompile Include="IFExtenstion.cpp" />
     <ClCompile Include="ImageSpline.cpp" />
@@ -392,6 +400,8 @@
     <ClCompile Include="math\Vector3.cpp" />
     <ClCompile Include="math\Vector4.cpp" />
     <ClCompile Include="MySLIC.cpp" />
+    <ClCompile Include="Nodeui.cpp" />
+    <ClCompile Include="NodeViewer.cpp" />
     <ClCompile Include="OutputWnd.cpp" />
     <ClCompile Include="Patch.cpp" />
     <ClCompile Include="PatchSpline.cpp" />

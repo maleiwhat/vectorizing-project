@@ -4,8 +4,8 @@
 
 
 const int CHECK_1 = 1;
-HWND g_hwnd2;
-LONG_PTR g_ori_wproc2;
+static HWND g_hwnd2;
+static LONG_PTR g_ori_wproc2;
 cvshowEX g_cvshowEX;
 
 LRESULT CALLBACK WndProc2(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -38,7 +38,7 @@ LRESULT CALLBACK WndProc2(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return CallWindowProc((WNDPROC)g_ori_wproc2, hwnd, msg, wParam, lParam);;
 }
 
-LONG_PTR g_my_wproc2 = (LONG_PTR)WndProc2;
+static LONG_PTR g_my_wproc2 = (LONG_PTR)WndProc2;
 
 cvshowEX::cvshowEX(void)
 {

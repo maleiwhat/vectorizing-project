@@ -76,11 +76,11 @@ ints2d  Maxmums2(const ints2d& aLine, Lines& line);
 Line    CleanOrphanedLineWidths(const Line& aLine, int num);
 Lines   CleanOrphanedLineWidths(const Lines& aLine, int num);
 
-Line    FixedLineWidth(const Line& cvp, int nouse);
-Lines   FixedLineWidth(const Lines& cvp, int nouse);
+Line    FixedLineWidth(const Line& cvp, int range);
+Lines   FixedLineWidth(const Lines& cvp, int range);
 
 Line    SmoothingHas0Len5(const Line& cvp, double centroidRadio = 1.0,
-						  int repeat = 1);
+  						  int repeat = 1);
 Line    SmoothingHas0Len3(const Line& cvp, double centroidRadio = 1.0,
 						  int repeat = 1);
 Lines   SmoothingHas0Len5(const Lines& cvp, double centroidRadio = 1.0,

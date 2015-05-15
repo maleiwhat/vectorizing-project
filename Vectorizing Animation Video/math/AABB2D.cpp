@@ -2,6 +2,12 @@
 
 void AABB2D::AddPoint(const Vector2& p)
 {
+	if (m_Min == m_Max && m_Max == Vector2())
+	{
+		m_Min = p;
+		m_Max = p;
+		return;
+	}
 	if (p.x > m_Max.x)
 	{
 		m_Max.x = p.x;
@@ -21,7 +27,7 @@ void AABB2D::AddPoint(const Vector2& p)
 	}
 }
 
-void AABB2D::Larger(double val)
+void AABB2D::Larger(float val)
 {
 	m_Min.x -= val;
 	m_Min.y -= val;
@@ -29,7 +35,7 @@ void AABB2D::Larger(double val)
 	m_Max.y += val;
 }
 
-void AABB2D::SetBounding(double left, double right, double top, double down)
+void AABB2D::SetBounding(float left, float right, float top, float down)
 {
 	m_Min.x = left;
 	m_Min.y = top;
@@ -85,4 +91,9 @@ bool AABB2D::IsCollision(const AABB2D& rhs)
 	{
 		return true;
 	}
+}
+
+float AABB2D::Distance(const AABB2D& ab)
+{
+	return ab.m_Max.distance(m_Max) + ab.m_Min.distance(m_Min);
 }

@@ -52,6 +52,7 @@ struct Endpoint
 typedef std::vector<Endpoint> Endpoints;
 
 struct LineEnd;
+typedef std::vector<char> chars;
 typedef std::vector<int> ints;
 typedef std::deque<int> intds;
 typedef std::vector<unsigned int> uints;

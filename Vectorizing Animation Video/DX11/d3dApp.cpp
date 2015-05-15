@@ -2031,6 +2031,7 @@ cv::Mat D3DApp::DrawSceneToCvMat(D3DXCOLOR backcolor, bool drawDiffusion)
 {
     const int TexWidth = m_PicW * m_Scale;
     const int TexHeight = m_PicH * m_Scale;
+	printf("\nx %d y %d\n", TexWidth, TexHeight);
     if(TexWidth > 0)
     {
         ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
@@ -2092,7 +2093,6 @@ cv::Mat D3DApp::DrawSceneToCvMat(D3DXCOLOR backcolor, bool drawDiffusion)
                 intensity[0] = pimg[offset + 2] * 255.0f;
             }
         }
-        g_cvshowEX.AddShow("live", simg);
         m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
         m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
         InterSetRenderTransparencyDefault();
@@ -2111,10 +2111,22 @@ void D3DApp::InterSetRenderTransparencyOutput1()
     m_SelectPatch_Alpha->SetFloat(0);
     m_pAlpha->SetFloat(0);
     m_TriangleLine_Alpha->SetFloat(0);
-    m_Lines_Alpha->SetFloat(1);
-    m_Lines2w_CenterAlpha->SetFloat(1);
-    m_SkeletonLines_Alpha->SetFloat(0.1);
+    m_Lines_Alpha->SetFloat(0);
+    m_Lines2w_CenterAlpha->SetFloat(0);
+    m_SkeletonLines_Alpha->SetFloat(0);
     m_TransparencySV_Picture->SetFloat(1);
+}
+
+void D3DApp::InterSetRenderTransparencyOutput4()
+{
+	m_Triangle_Alpha->SetFloat(0.5);
+	m_SelectPatch_Alpha->SetFloat(0);
+	m_pAlpha->SetFloat(0);
+	m_TriangleLine_Alpha->SetFloat(0);
+	m_Lines_Alpha->SetFloat(0);
+	m_Lines2w_CenterAlpha->SetFloat(0);
+	m_SkeletonLines_Alpha->SetFloat(0);
+	m_TransparencySV_Picture->SetFloat(1);
 }
 
 void D3DApp::InterSetRenderTransparencyOutput2()
@@ -2122,8 +2134,8 @@ void D3DApp::InterSetRenderTransparencyOutput2()
     m_Triangle_Alpha->SetFloat(0);
     m_SelectPatch_Alpha->SetFloat(0);
     m_pAlpha->SetFloat(0);
-    m_TriangleLine_Alpha->SetFloat(0);
-    m_Lines_Alpha->SetFloat(0);
+    m_TriangleLine_Alpha->SetFloat(0.2);
+    m_Lines_Alpha->SetFloat(1);
     m_Lines2w_CenterAlpha->SetFloat(0);
     m_SkeletonLines_Alpha->SetFloat(1);
     m_TransparencySV_Picture->SetFloat(0);
@@ -2131,14 +2143,14 @@ void D3DApp::InterSetRenderTransparencyOutput2()
 
 void D3DApp::InterSetRenderTransparencyOutput3()
 {
-    m_Triangle_Alpha->SetFloat(0);
-    m_SelectPatch_Alpha->SetFloat(0);
-    m_pAlpha->SetFloat(0);
-    m_TriangleLine_Alpha->SetFloat(0);
-    m_Lines_Alpha->SetFloat(0);
-    m_Lines2w_CenterAlpha->SetFloat(1);
-    m_SkeletonLines_Alpha->SetFloat(0);
-    m_TransparencySV_Picture->SetFloat(0);
+	m_Triangle_Alpha->SetFloat(0);
+	m_SelectPatch_Alpha->SetFloat(0);
+	m_pAlpha->SetFloat(0);
+	m_TriangleLine_Alpha->SetFloat(0.2);
+	m_Lines_Alpha->SetFloat(1);
+	m_Lines2w_CenterAlpha->SetFloat(0);
+	m_SkeletonLines_Alpha->SetFloat(1);
+	m_TransparencySV_Picture->SetFloat(1);
 }
 
 void D3DApp::InterSetRenderTransparencyDefault()

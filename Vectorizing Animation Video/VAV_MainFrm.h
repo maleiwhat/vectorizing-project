@@ -46,6 +46,7 @@ public:
 	DiffusionFrames	m_DiffusionFrames;
 	BackGround	m_BackGround;
 	FrameInfos	m_FrameInfos;
+	float movex, movey;
 	// use for block
 	Lines		m_BlackLine2;
 	// slic

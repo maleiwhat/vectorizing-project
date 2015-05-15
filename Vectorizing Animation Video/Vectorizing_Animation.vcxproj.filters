@@ -363,6 +363,21 @@
     <ClInclude Include="RBFMesh.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="btree.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeViewer.h">
+      <Filter>原始程式檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Nodeui.h">
+      <Filter>原始程式檔</Filter>
+    </ClInclude>
+    <ClInclude Include="General.h">
+      <Filter>原始程式檔</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawNode.h">
+      <Filter>原始程式檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="algSpline.cpp">
@@ -651,6 +666,18 @@
       <Filter>ColorConstraint</Filter>
     </ClCompile>
     <ClCompile Include="RBFMesh.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="btree.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeViewer.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="Nodeui.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="General.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>

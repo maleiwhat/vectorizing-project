@@ -6,9 +6,10 @@
 
 #define SHARE_PTR(x) \
 	typedef boost::shared_ptr<x>    x##_sptr; \
-	typedef boost::ptr_vector<x>    x##_sptrs; \
+	typedef std::vector<boost::shared_ptr<x> >    x##_sptrs; \
 	typedef std::vector<x>      x##_vector; \
-	typedef std::vector<x*>     x##_rawptrs;
+	typedef std::vector<x*>     x##_rawptrs; \
+
 
 #define INTRUSIVE_PTR(x) \
 	typedef boost::shared_ptr<x>       x##_iptr; \

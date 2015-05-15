@@ -80,6 +80,7 @@ public:
     void InterSetRenderTransparencyOutput1();
     void InterSetRenderTransparencyOutput2();
     void InterSetRenderTransparencyOutput3();
+	void InterSetRenderTransparencyOutput4();
     void InterSetRenderTransparencyDefault();
 protected:
     void initDirect3D();

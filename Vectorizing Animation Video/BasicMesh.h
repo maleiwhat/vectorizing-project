@@ -19,6 +19,8 @@ struct BasicTraits : public OpenMesh::DefaultTraits
 		int cid;
 		// region id
 		int rid;
+		// region id
+		int rid2;
 		// hascolor
 		char mark;
 		// Color

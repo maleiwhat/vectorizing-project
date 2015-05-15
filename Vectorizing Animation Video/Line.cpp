@@ -4405,39 +4405,39 @@ Vector2 intersection(Vector2& a1, Vector2& a2, Vector2& b1, Vector2& b2)
     return a1 + a * (s.crossProduct(b)) / (a.crossProduct(b));
 }
 
-Line FixedLineWidth(const Line& cvp, int nouse)
+Line FixedLineWidth(const Line& cvp, int range)
 {
-    if(cvp.size() <= nouse * 2 + 1)
+    if(cvp.size() <= range * 2 + 1)
     {
         return cvp;
     }
     Line cps = cvp;
     Line newcps;
-    newcps.insert(newcps.end(), cps.begin(), cps.begin() + nouse);
+    newcps.insert(newcps.end(), cps.begin(), cps.begin() + range);
     Vector2 sum;
     int cc = 0;
-    for(int j = nouse; j < (int)cps.size() - nouse; j++)
+    for(int j = range; j < (int)cps.size() - range; j++)
     {
         cc++;
         sum += cps[j];
     }
     sum /= cc;
-    for(int j = nouse; j < (int)cps.size() - nouse; j++)
+    for(int j = range; j < (int)cps.size() - range; j++)
     {
         newcps.push_back(sum);
     }
-    newcps.insert(newcps.end(), cps.begin() + cps.size() - nouse, cps.end());
+    newcps.insert(newcps.end(), cps.begin() + cps.size() - range, cps.end());
     cps = newcps;
     return cps;
 }
 
-Lines FixedLineWidth(const Lines& cvp, int nouse)
+Lines FixedLineWidth(const Lines& cvp, int range)
 {
     Lines ans(cvp.size());
     for(int i = 0; i < cvp.size(); ++i)
     {
         const Line& aa = cvp.at(i);
-        ans[i] = FixedLineWidth(aa, nouse);
+        ans[i] = FixedLineWidth(aa, range);
     }
     return ans;
 }

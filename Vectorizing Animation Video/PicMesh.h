@@ -4,6 +4,19 @@
 #include "ColorConstraint.h"
 #include "TriangulationBase.h"
 #include "vavImage.h"
+#include "btree.h"
+#include "math\AABB2D.h"
+
+
+struct sortu
+{
+	int oid;
+	float size;
+	bool operator<(const sortu& l)
+	{
+		return size < l.size;
+	}
+};
 
 class TriangulationCgal_Sideline;
 class PicMesh : public BasicMesh
@@ -30,7 +43,7 @@ public:
 	void MappingMeshByMidPoint(PicMesh& pm, double x, double y);
 	// mark different region
 	void MarkDifferentRegion2(PicMesh& pm, double v, double x, double y);
-	// mark different region
+	// mark different regionfv 
 	void MarkDifferentRegion1(vavImage& img, double v, double x, double y);
 	// out1 is this mesh color, out2 is input mapping color
 	void GetMappingCT(PicMesh& pm, ColorTriangles& out1, ColorTriangles& out2, double x, double y);
@@ -90,6 +103,35 @@ public:
 	// blurfacec2
 	void blurFaceC2();
 	void blurFaceC2x();
+	// each region triangles amount to m_RegionAreas
+	void ComputeRegion();
+	// each region region's Neighbor
+	void ComputeNeighbor();
+
+	void BuildBtree();
+
+	void DrawTree();
+
+	int GetLeaveSize(int idx);
+
+	void SetRegionColor(cv::Mat& img);
+
+	void makeRank(std::vector<sortu> &tary, chars &used);
+
+	char bindnode(chars& used, int idx);
+	// draw color use tree
+	void MakeColorX1(Vector3s& colors);
+
+	void MakeColorX2(ints& mappings, float x, float y);
+
+	void MakeColorX9(int id);
+
+	void MakeTreeLeaveColor(int idx, Vector3 colors);
+	void MarkTreeLeave(int idx);
+
+	void DrawLeave(int idx, cv::Mat& img, int x, int y);
+
+	int GetRegionId(float x, float y);
 	// save w h
 	int m_w, m_h;
 	Lines m_Lines;
@@ -97,8 +139,16 @@ public:
 	HHandles2d	m_LinesHH;
 	FHandles2d	m_Regions;
 	ints		m_DifferentRegionIDs;
+	ints		m_RegionSize;
 	// for next region
 	ints		m_MapingRegionIDs;
+	ints2d		m_RegionNeighbor;
+	Vector3s	m_RegionColor;
+	AABB2Ds		m_RegionAABB;
+	btree		m_btree;
+	doubles		m_RegionAreas;
+	ints		m_RegionRank;
+	chars		m_used;
 	Index2Side	m_i2s;
 	ColorTriangles	m_Trangles;
 	ColorConstraints m_ColorConstraint;

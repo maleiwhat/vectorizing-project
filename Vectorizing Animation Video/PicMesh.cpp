@@ -3,6 +3,7 @@
 #include <auto_link_OpenMesh.hpp>
 #include "vavImage.h"
 #include "Line.h"
+#include <algorithm>
 
 PicMesh::PicMesh(void)
 {
@@ -332,24 +333,52 @@ void PicMesh::MappingMesh(PicMesh& pm, double x, double y)
         BasicMesh::FHandle lastF(minidx);
         if(minidx >= 0)
         {
-            data(*pfit).c2 = pm.data(lastF).c2;
+            //data(*pfit).c2 = pm.data(lastF).c2;
+            data(*pfit).rid2 = pm.data(lastF).rid;
         }
     }
-    ints count(pm.m_Regions.size());
+    m_MapingRegionIDs.resize(m_Regions.size());
     for(int i = 0; i < m_Regions.size(); ++i)
     {
         FHandles& region = m_Regions[i];
+        if(region.size() == 0)
+        {
+            continue;
+        }
         Vector3 sum;
         int step = region.size() / 20;
         if(step < 1)
         {
             step = 1;
         }
-		int count = 0;
+        Vector3s colors;
+        ints idxs;
+        ints cuts;
+        int count = 0;
         for(int j = 0; j < region.size(); j += step)
         {
+            bool hasrepeat = false;
+            int q = 0;
+            for(; q < idxs.size(); ++q)
+            {
+                if(data(region[j]).rid2 == idxs[q])
+                {
+                    hasrepeat = true;
+                    break;;
+                }
+            }
+            if(!hasrepeat)
+            {
+                idxs.push_back(data(region[j]).rid2);
+                colors.push_back(data(region[j]).c2);
+                cuts.push_back(1);
+            }
+            else
+            {
+                cuts[q]++;
+            }
             sum += data(region[j]).c2;
-			count++;
+            count++;
         }
         sum /= count;
         Vector3 dst;
@@ -363,9 +392,65 @@ void PicMesh::MappingMesh(PicMesh& pm, double x, double y)
                 dis = ndis;
             }
         }
+        int maxe = std::max_element(cuts.begin(), cuts.end()) - cuts.begin();
+        m_MapingRegionIDs[i] = idxs[maxe];
         for(int j = 0; j < region.size(); ++j)
         {
-            data(region[j]).c2 = sum;
+            //data(region[j]).c2 = colors[maxe];
+        }
+    }
+    return;
+    // 畫出合拼的region
+    for(BasicMesh::FIter pfit = faces_begin(); pfit != faces_end(); ++pfit)
+    {
+        if(data(*pfit).c2 == Vector3())
+        {
+            BasicMesh::Point now = MidPoint(*pfit);
+            now[0] += x;
+            now[1] += y;
+            BasicMesh::VHandle lastV(pm.n_vertices() / 2);
+            double tdis = (pm.point(lastV) - now).sqrnorm();
+            double mindis = tdis;
+            for(; tdis > 1;)
+            {
+                int minidx = -1;
+                for(VVIter vvit = pm.vv_iter(lastV); vvit.is_valid(); ++vvit)
+                {
+                    Point tp = pm.point(*vvit);;
+                    double dis = (tp - now).sqrnorm();
+                    if(dis < mindis)
+                    {
+                        mindis = dis;
+                        minidx = (*vvit).idx();
+                    }
+                }
+                if(minidx >= 0)
+                {
+                    tdis = mindis;
+                    lastV = BasicMesh::VHandle(minidx);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            int minidx = -1;
+            int ridx = -1;
+            mindis = 999999;
+            for(VFIter ffit = pm.vf_iter(lastV); ffit.is_valid(); ++ffit)
+            {
+                Point tp = pm.MidPoint(*ffit);
+                double dis = (tp - now).sqrnorm();
+                if(dis < mindis)
+                {
+                    mindis = dis;
+                    minidx = (*ffit).idx();
+                    ridx = pm.data(*ffit).rid;
+                }
+            }
+            BasicMesh::FHandle lastF(minidx);
+            //data(*pfit).c2 = pm.data(lastF).c2;
+            data(*pfit).c2 = Vector3(0, 0, 255);
         }
     }
 }
@@ -1635,7 +1720,6 @@ void PicMesh::MakeColor6(cv::Mat& img)
     BuildColorModels();
     MarkColoredFace();
     FillConstraintRegion();
-    FillConstraintRegion();
 //
 //     for(int i = 0; i < m_Regions.size(); ++i)
 //     {
@@ -2060,4 +2144,547 @@ void PicMesh::MakeColor9()
         m_Trangles.push_back(t);
     }
 }
+
+void PicMesh::ComputeRegion()
+{
+    m_RegionAreas.resize(m_Regions.size());
+    m_RegionRank.resize(m_Regions.size());
+    for(int i = 0; i < m_Regions.size(); ++i)
+    {
+        m_RegionAreas[i] = m_Regions[i].size();
+    }
+    for(int i = 0; i < m_Regions.size(); ++i)
+    {
+        for(int j = 0; j < m_Regions.size(); ++j)
+        {
+            if(m_RegionAreas[i] < m_RegionAreas[j])
+            {
+                m_RegionRank[i]++;
+            }
+        }
+    }
+    m_RegionAABB.clear();
+    m_RegionAABB.resize(m_Regions.size());
+    for(int i = 0; i < m_Regions.size(); ++i)
+    {
+        FHandles& region = m_Regions[i];
+        for(int j = 0; j < region.size(); ++j)
+        {
+            for(FVIter fvit = fv_iter(region[j]); fvit.is_valid(); ++fvit)
+            {
+                Point p = point(*fvit);
+                m_RegionAABB[i].AddPoint(Vector2(p[0], p[1]));
+            }
+        }
+    }
+}
+
+void PicMesh::ComputeNeighbor()
+{
+    m_RegionNeighbor.clear();
+    m_RegionNeighbor.resize(m_Regions.size());
+    for(int i = 0; i < m_Regions.size(); ++i)
+    {
+        std::set<int> intsetv;
+        for(int j = 0; j < m_Regions[i].size(); ++j)
+        {
+            for(FFIter ffit = ff_iter(m_Regions[i][j]); ffit.is_valid(); ++ffit)
+            {
+                if(data(*ffit).rid != i)
+                {
+                    intsetv.insert(data(*ffit).rid);
+                }
+            }
+        }
+        for(auto it = intsetv.begin(); it != intsetv.end(); ++it)
+        {
+            m_RegionNeighbor[i].push_back(*it);
+        }
+    }
+}
+
+char PicMesh::bindnode(chars& used, int idx)
+{
+    if(used[idx])
+    {
+        return 0;
+    }
+    bnode res;
+    int maxid = -1;
+    const int CONSTANT = 15;
+    double maxvalue = CONSTANT;
+    for(int i = 0; i < m_RegionNeighbor[idx].size(); ++i)
+    {
+        if(used[m_RegionNeighbor[idx][i]] == 0)
+        {
+            //float dis = m_RegionAABB[idx].Distance(m_RegionAABB[m_RegionNeighbor[idx][i]]);
+            float dis = m_RegionColor[idx].distance(m_RegionColor[m_RegionNeighbor[idx][i]]);
+            if(dis < maxvalue)
+            {
+                maxid = m_RegionNeighbor[idx][i];
+                maxvalue = dis;
+            }
+        }
+    }
+    if(maxid != -1)
+    {
+        // 新增兒子
+        res.childs.push_back(idx);
+        res.childs.push_back(maxid);
+        res.id = m_btree.m_nodes.size();
+        // 新增已使用
+        used.push_back(0);
+        // 新增鄰居
+        ints newNeighbor;
+        newNeighbor.insert(newNeighbor.end(), m_RegionNeighbor[idx].begin(), m_RegionNeighbor[idx].end());
+        newNeighbor.insert(newNeighbor.end(), m_RegionNeighbor[maxid].begin(), m_RegionNeighbor[maxid].end());
+        std::sort(newNeighbor.begin(), newNeighbor.end());
+        ints::iterator it;
+        it = std::unique(newNeighbor.begin(), newNeighbor.end());
+        newNeighbor.resize(std::distance(newNeighbor.begin(), it));
+        m_RegionNeighbor.push_back(newNeighbor);
+        for(int i = 0; i < newNeighbor.size(); ++i)
+        {
+            m_RegionNeighbor[newNeighbor[i]].push_back(res.id);
+        }
+        // 新增AABB
+        AABB2D aabb;
+        aabb.AddPoint(m_RegionAABB[idx].m_Min);
+        aabb.AddPoint(m_RegionAABB[idx].m_Max);
+        aabb.AddPoint(m_RegionAABB[maxid].m_Min);
+        aabb.AddPoint(m_RegionAABB[maxid].m_Max);
+        m_RegionAABB.push_back(aabb);
+        // 新增面積
+        m_RegionAreas.push_back(m_RegionAreas[idx] + m_RegionAreas[maxid]);
+        // 新增rank
+        m_RegionRank.push_back((m_RegionRank[idx] + m_RegionRank[maxid]) / 2);
+        // 新增顏色
+        m_RegionColor.push_back((m_RegionColor[idx] + m_RegionColor[maxid]) / 2);
+        m_btree.m_nodes.push_back(res);
+        MarkTreeLeave(idx);
+        MarkTreeLeave(maxid);
+    }
+    else if(m_RegionNeighbor[idx].size() > 0)
+    {
+        maxvalue = CONSTANT;
+        for(int i = 0; i < m_RegionNeighbor[idx].size(); ++i)
+        {
+            float dis = m_RegionColor[idx].distance(m_RegionColor[m_RegionNeighbor[idx][i]]);
+            if(dis > maxvalue)
+            {
+                maxid = m_RegionNeighbor[idx][i];
+                maxvalue = dis;
+            }
+        }
+        if(maxid != -1)
+        {
+            // 新增鄰居
+            ints& neighbor = m_RegionNeighbor[maxid];
+            neighbor.insert(neighbor.begin(),
+                            m_RegionNeighbor[idx].begin(),
+                            m_RegionNeighbor[idx].end());
+            std::sort(neighbor.begin(), neighbor.end());
+            ints::iterator it;
+            it = std::unique(neighbor.begin(), neighbor.end());
+            neighbor.resize(std::distance(neighbor.begin(), it));
+            // 新增兒子
+            m_btree.m_nodes[maxid].childs.push_back(idx);
+            // 新增面積
+            m_RegionAreas[maxid] += m_RegionAreas[idx];
+            // 新增已使用
+            int n = 0;
+            while(used[idx] < used[maxid] + 1 && n < 20)
+            {
+                n++;
+                MarkTreeLeave(idx);
+            }
+        }
+    }
+}
+
+void PicMesh::BuildBtree()
+{
+    chars& used = m_used;
+    used.clear();
+    used.resize(m_Regions.size(), 0);
+    m_btree.m_nodes.resize(m_Regions.size());
+    std::vector<sortu> tary;
+    for(int i = 0; i < m_Regions.size(); ++i)
+    {
+        m_btree.m_nodes[i].id = i;
+    }
+    makeRank(tary, used);
+    for(int i = 0; i < tary.size() / 4; ++i)
+    {
+        bindnode(used, tary[i].oid);
+    }
+    printf("used %d ", used.size());
+
+    makeRank(tary, used);
+    for(int i = 0; i < tary.size() / 3; ++i)
+    {
+        bindnode(used, tary[i].oid);
+    }
+    printf("used %d ", used.size());
+    makeRank(tary, used);
+    for(int i = 0; i < tary.size() / 2; ++i)
+    {
+        bindnode(used, tary[i].oid);
+    }
+    printf("used %d ", used.size());
+    makeRank(tary, used);
+    for(int i = 0; i < tary.size(); ++i)
+    {
+        bindnode(used, tary[i].oid);
+    }
+//     printf("used %d \n", used.size());
+//     makeRank(tary, used);
+//     for(int i = 0; i < tary.size(); ++i)
+//     {
+//         bindnode(used, tary[i].oid);
+//     }
+//     printf("used %d \n", used.size());
+//     makeRank(tary, used);
+//     for(int i = 0; i < tary.size(); ++i)
+//     {
+//         bindnode(used, tary[i].oid);
+//     }
+//     printf("used %d \n", used.size());
+//     makeRank(tary, used);
+}
+
+void PicMesh::MakeColorX1(Vector3s& colors)
+{
+    m_Trangles.clear();
+    ColorTriangle t;
+    for(int i = 0; i < m_used.size(); ++i)
+    {
+        printf("m_used[%d] %d\n", i, m_used[i]);
+        if(m_used[i] <= 0)
+        {
+            MakeTreeLeaveColor(i, colors[i % colors.size()]);
+        }
+    }
+}
+
+void PicMesh::MarkTreeLeave(int idx)
+{
+    std::set<int> isused;
+    ints ids;
+    ids.push_back(idx);
+    for(; ids.size() > 0;)
+    {
+        int id = ids.back();
+        ids.pop_back();
+        isused.insert(id);
+        ints& nodes = m_btree.m_nodes[id].childs;
+        for(int i = 0; i < nodes.size(); ++i)
+        {
+            bool has = false;
+            if(isused.find(nodes[i]) != isused.end())
+            {
+                has = true;
+            }
+            else if(std::find(ids.begin(), ids.end(), nodes[i]) != ids.end())
+            {
+                has = true;
+            }
+            if(!has)
+            {
+                ids.push_back(nodes[i]);
+            }
+        }
+    }
+    for(auto it = isused.begin(); it != isused.end(); ++it)
+    {
+        m_used[*it]++;
+    }
+}
+
+void PicMesh::makeRank(std::vector<sortu>& tary, chars& used)
+{
+    tary.resize(used.size());
+    for(int i = 0; i < used.size(); ++i)
+    {
+        tary[i].oid = i;
+        tary[i].size = m_RegionAreas[i];
+    }
+    std::sort(tary.begin(), tary.end());
+}
+
+void PicMesh::MakeTreeLeaveColor(int idx, Vector3 colors)
+{
+    ColorTriangle t;
+    std::set<int> isused;
+    ints ids;
+    ids.push_back(idx);
+    for(; ids.size() > 0;)
+    {
+        int id = ids.back();
+        ids.pop_back();
+        isused.insert(id);
+        ints& nodes = m_btree.m_nodes[id].childs;
+        for(int i = 0; i < nodes.size(); ++i)
+        {
+            bool has = false;
+            if(isused.find(nodes[i]) != isused.end())
+            {
+                has = true;
+            }
+            else if(std::find(ids.begin(), ids.end(), nodes[i]) != ids.end())
+            {
+                has = true;
+            }
+            if(!has)
+            {
+                ids.push_back(nodes[i]);
+            }
+        }
+    }
+    for(auto it = isused.begin(); it != isused.end(); ++it)
+    {
+        if(*it < m_Regions.size())
+        {
+            for(int j = 0; j < m_Regions[*it].size(); ++j)
+            {
+                int c = 0;
+                for(FVIter fvit = fv_iter(m_Regions[*it][j]); fvit.is_valid(); ++fvit)
+                {
+                    Point p = point(*fvit);
+                    t.pts[c][0] = p[0];
+                    t.pts[c][1] = p[1];
+                    t.color[c] = colors / (m_used[*it]);
+                    ++c;
+                }
+                m_Trangles.push_back(t);
+            }
+        }
+    }
+}
+
+void PicMesh::SetRegionColor(cv::Mat& img)
+{
+    vavImage vimg(img);
+    m_RegionColor.resize(m_Regions.size());
+    for(int i = 0; i < m_Regions.size(); ++i)
+    {
+        if(m_Regions[i].size() > 1)
+        {
+            Vector3 nc;
+            float scalar = 1.f / 30.f;
+            std::set<int> intsetv;
+            float step = (m_Regions[i].size() - 1) / 30.f;
+            for(float j = 0; j < m_Regions[i].size(); j += step)
+            {
+                Point p = MidPoint(m_Regions[i][(int)j]);
+                p[0] += 0.5;
+                p[1] += 0.5;
+                nc += scalar * vimg.GetBilinearColor(p[0], p[1]);
+            }
+            m_RegionColor[i] = nc;
+        }
+        else
+        {
+            if(m_Regions[i].size() != 0)
+            {
+                Point p = MidPoint(m_Regions[i][0]);
+                p[0] += 0.5;
+                p[1] += 0.5;
+                m_RegionColor[i] = vimg.GetBilinearColor(p[0], p[1]);
+            }
+        }
+    }
+}
+
+void PicMesh::DrawTree()
+{
+    m_RegionSize.resize(m_btree.m_nodes.size());
+    int sum = 0;
+    int id = 0;
+    for(int i = 0; i < m_RegionSize.size(); ++i)
+    {
+        m_RegionSize[i] = GetLeaveSize(i);
+        if(m_used[i] <= 0)
+        {
+            sum += m_RegionSize[i];
+        }
+    }
+    printf("tree sum: %d\n", sum);
+    cv::Mat tree;
+    tree.create(800, sum * 4, CV_8UC3);
+    tree = cv::Scalar(0);
+    int drawright = 0;
+    for(int i = 0; i < m_RegionSize.size(); ++i)
+    {
+        if(m_used[i] == 0)
+        {
+
+            DrawLeave(i, tree, drawright, 5);
+            drawright += m_RegionSize[i] * 3 + 5;
+        }
+    }
+    static int xx = 0;
+    xx++;
+    char tmppath[100];
+    sprintf(tmppath, "tree_%04d.png", xx);
+    cv::imwrite(tmppath, tree);
+}
+
+int PicMesh::GetLeaveSize(int idx)
+{
+    std::set<int> isused;
+    ints ids;
+    ids.push_back(idx);
+    for(; ids.size() > 0;)
+    {
+        int id = ids.back();
+        ids.pop_back();
+        isused.insert(id);
+        ints& nodes = m_btree.m_nodes[id].childs;
+        for(int i = 0; i < nodes.size(); ++i)
+        {
+            bool has = false;
+            if(isused.find(nodes[i]) != isused.end())
+            {
+                has = true;
+            }
+            else if(std::find(ids.begin(), ids.end(), nodes[i]) != ids.end())
+            {
+                has = true;
+            }
+            if(!has)
+            {
+                ids.push_back(nodes[i]);
+            }
+        }
+    }
+    return isused.size();
+}
+
+void PicMesh::DrawLeave(int idx, cv::Mat& img, int x, int y)
+{
+    int width = m_RegionSize[idx];
+    ints& nodes = m_btree.m_nodes[idx].childs;
+    if(nodes.size() == 0)
+    {
+        return;
+    }
+    int childsize = width * 1.5 / nodes.size();
+    if(childsize > 25)
+    {
+        childsize = 25;
+    }
+    if(childsize < 4)
+    {
+        childsize = 4;
+    }
+    for(int i = 0; i < nodes.size(); ++i)
+    {
+        cv::line(img, cv::Point(x, y), cv::Point(x + childsize * i, y + 20), cv::Scalar(255, 255, 255));;
+        if(m_btree.m_nodes[nodes[i]].childs.size() > 0)
+        {
+            DrawLeave(nodes[i], img, x + childsize * i, y + 20);
+        }
+    }
+}
+
+void PicMesh::MakeColorX9(int id)
+{
+    ColorTriangle t;
+    m_Trangles.clear();
+    for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        if(data(*fit).rid == id)
+        {
+            int c = 0;
+            for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
+            {
+                Point p = point(*fvit);
+                t.pts[c][0] = p[0];
+                t.pts[c][1] = p[1];
+                t.color[c] = data(*fit).c2;
+                ++c;
+            }
+            m_Trangles.push_back(t);
+        }
+    }
+}
+
+void PicMesh::MakeColorX2(ints& mappings, float x, float y)
+{
+    ColorTriangle t;
+    m_Trangles.clear();
+    chars marks(m_Regions.size());
+    for(int i = 0; i < mappings.size(); ++i)
+    {
+        marks[mappings[i]] = 1;
+    }
+    for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        if(marks[data(*fit).rid] != 1)
+        {
+            int c = 0;
+            for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
+            {
+                Point p = point(*fvit);
+                t.pts[c][0] = p[0] + x;
+                t.pts[c][1] = p[1] + y;
+                t.color[c] = data(*fit).c2;
+                ++c;
+            }
+            m_Trangles.push_back(t);
+        }
+    }
+}
+
+int PicMesh::GetRegionId(float x, float y)
+{
+    BasicMesh::VHandle lastV(n_vertices() / 2);
+    BasicMesh::Point now(x , y);
+    BasicMesh::FHandle dst(-1);
+    double tdis = (point(lastV) - now).sqrnorm();
+    double mindis = tdis;
+    for(; tdis > 1;)
+    {
+        int minidx = -1;
+        for(VVIter vvit = vv_iter(lastV); vvit.is_valid(); ++vvit)
+        {
+            Point tp = point(*vvit);;
+            double dis = (tp - now).sqrnorm();
+            if(dis < mindis)
+            {
+                mindis = dis;
+                minidx = (*vvit).idx();
+            }
+        }
+        if(minidx >= 0)
+        {
+            tdis = mindis;
+            lastV = BasicMesh::VHandle(minidx);
+        }
+        else
+        {
+            break;
+        }
+    }
+    for(VFIter vfit = vf_iter(lastV); vfit.is_valid(); ++vfit)
+    {
+        double dis = (MidPoint(*vfit) - now).sqrnorm();
+        if(dis < mindis)
+        {
+            mindis = dis;
+            dst = *vfit;
+        }
+    }
+
+    if(dst.idx() >= 0)
+    {
+        printf("mapping to key frame index %d \n", data(dst).rid2);
+        return data(dst).rid2;
+    }
+    return -1;
+}
+
+
+
 
