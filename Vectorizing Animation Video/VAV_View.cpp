@@ -435,19 +435,31 @@ void VAV_View::OnTimer(UINT_PTR nIDEvent)
             //fgframes[i].picmesh1.GetMappingCT(fgframes[i + 1].picmesh1, c1, c2, -moves[i+1][0], -moves[i+1][1]);
         }
         //printf("i %d playi %d\n", i, playidx);
-        ColorTriangles cts = dframes.m_FI.picmesh1.m_Trangles;
+		Lines bgline = fgframes.back().curves1;
+		
         {
             //ColorTriangles ctsx = fgframes[i].picmesh1.Interpolation(c1, c2, (float)playidx / LEN2);
-            
-            ColorTriangles ctsx = fgframes[fr].picmesh1.m_Trangles;
+            ColorTriangles ctsx;
+            cv::Vec2f& move = GetMainFrame()->m_Moves[i];
+            float movex = GetMainFrame()->movex;
+            float movey = GetMainFrame()->movey;
+//             fgframes.back().picmesh1.MakeColorX2(
+//                 fgframes[i].picmesh1.m_MapingRegionIDs, movex + move[0] + 2, movey + move[1]);
+            ctsx = fgframes.back().picmesh1.m_Trangles;
+			for (int x=0;x<ctsx.size();++x)
+			{
+				ctsx[x].pts[0].x += movex + move[0] + 2;
+				ctsx[x].pts[1].x += movex + move[0] + 2;
+				ctsx[x].pts[2].x += movex + move[0] + 2;
+			}
             m_D3DApp.AddColorTriangles(ctsx);
             m_D3DApp.AddTrianglesLine(ctsx);
-			cv::Vec2f& move = GetMainFrame()->m_Moves[fr];
-			fgframes.back().picmesh1.MakeColorX2(
-				fgframes[fr].picmesh1.m_MapingRegionIDs, move[0], move[1]);
-			ctsx = fgframes.back().picmesh1.m_Trangles;
+			bgline = GetLines(bgline, movex + move[0] + 2, 0);
+			ctsx = fgframes[i].picmesh1.m_Trangles;
 			m_D3DApp.AddColorTriangles(ctsx);
 			m_D3DApp.AddTrianglesLine(ctsx);
+			//m_D3DApp.AddLinesWidth(fgframes[i].curves1, fgframes[i].tmplinewidth, fgframes[i].ocolor1);
+			m_D3DApp.AddLinesWidth(bgline, fgframes.back().tmplinewidth, fgframes.back().ocolor1);
             m_D3DApp.BuildPoint();
             m_D3DApp.DrawScene();
         }

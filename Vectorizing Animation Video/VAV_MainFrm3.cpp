@@ -756,7 +756,7 @@ Mats MakeStaticBackGroundByMove(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgro
         {
             for(int j = 0; j < errimg.cols; ++j)
             {
-                if(errimg.at<float>(i, j) > 0.2)
+                if(errimg.at<float>(i, j) > 0.15)
                 {
                     errimg.at<float>(i, j) = 1;
                 }
@@ -768,6 +768,7 @@ Mats MakeStaticBackGroundByMove(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgro
         }
         cv::Mat forDilation;
         errimg.convertTo(forDilation, CV_8UC1, 255);
+		Dilation(forDilation);
         foreground = forDilation;
         background = meanimg;
         printf("minX %d maxX %d minY %d maxY %d \n", minX, maxX, minY, maxY);
@@ -776,7 +777,7 @@ Mats MakeStaticBackGroundByMove(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgro
     return Mats();
 }
 
-void MakeStaticBackGroundByAvg(Mats& m_Video, Vec2fs& m_Moves)
+void MakeStaticBackGroundByAvg(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& background)
 {
     if(m_Video.size() != m_Moves.size())
     {
@@ -873,9 +874,7 @@ void MakeStaticBackGroundByAvg(Mats& m_Video, Vec2fs& m_Moves)
         }
         cv::Mat showbg;
         bgimg.convertTo(showbg, CV_8UC3);
-        //normalize(showbg, showbg, 0, 255, cv::NORM_MINMAX);
-        cv::imshow("showbg", showbg);
-        cv::waitKey();
+		background = showbg;
         printf("minX %d maxX %d minY %d maxY %d \n", minX, maxX, minY, maxY);
     }
 }
@@ -1263,9 +1262,6 @@ void VAV_MainFrame::OnFileOpenVideo2()
             m_ReadVideo.Read(path);
             bgfilename = folder + name + "_MSBGBM_BG.png";
             fgfilename = folder + name + "_MSBGBM_FG.png";
-
-
-
             //          if(si_bg.hasImage())
             //          {
             //              bg = si_bg.ReadImage();
@@ -1294,8 +1290,8 @@ void VAV_MainFrame::OnFileOpenVideo2()
                 cvtColor(img, prevgray, CV_BGR2GRAY);
                 // Åª´X­Óframe
                 cv::Mat lastimg;
-				int forloop = 20;
-				std::cin >> forloop;
+				int forloop = 10;
+				//std::cin >> forloop;
                 for(int i = 1; i <= forloop; ++i)
                 {
                     char tmppath[100];
@@ -1349,6 +1345,7 @@ void VAV_MainFrame::OnFileOpenVideo2()
             }
         }
         MakeStaticBackGroundByMove(m_Video, moves, bg, fg);
+		//MakeStaticBackGroundByAvg(m_Video, moves, bg);
         SavepointImage si_bg(bgfilename);
         SavepointImage si_fg(fgfilename);
         si_bg.SaveImage(bg);
@@ -1362,50 +1359,22 @@ void VAV_MainFrame::OnFileOpenVideo2()
             colors.push_back(Vector3(rand() % 256, rand() % 256, rand() % 256));
         }
         //bgfi.picmesh1.MakeColor1();
-		bgfi.picmesh1.MakeColor6(bg);
         D3DApp& d3dApp = GetVavView()->GetD3DApp();
         d3dApp.SetPictureSize(bg.cols, bg.rows);
 
-        if(0)
-        {
-            d3dApp.SetScaleTemporary(2);
-            char buff[100];
-            d3dApp.ClearTriangles();
-            d3dApp.AddColorTriangles(bgfi.picmesh1.m_Trangles);
-            d3dApp.AddTrianglesLine(bgfi.picmesh2.m_Trangles);
-            d3dApp.AddLines(bgfi.curves2);
-            d3dApp.SetTexture(vavImage(bg).GetDx11Texture());
-            d3dApp.BuildPoint();
-            d3dApp.InterSetRenderTransparencyOutput1();
-            cv::Mat simg = d3dApp.DrawSceneToCvMat();
-            sprintf(buff, "test/pic%03d_step09_C1.png", 0);
-            cv::imwrite(buff, simg);
-            d3dApp.InterSetRenderTransparencyOutput4();
-            simg = d3dApp.DrawSceneToCvMat();
-            sprintf(buff, "test/pic%03d_step09_C2.png", 0);
-            cv::imwrite(buff, simg);
-            d3dApp.InterSetRenderTransparencyOutput2();
-            simg = d3dApp.DrawSceneToCvMat();
-            sprintf(buff, "test/pic%03d_step09_C3.png", 0);
-            cv::imwrite(buff, simg);
-            d3dApp.InterSetRenderTransparencyOutput3();
-            simg = d3dApp.DrawSceneToCvMat();
-            sprintf(buff, "test/pic%03d_step09_C4.png", 0);
-            cv::imwrite(buff, simg);
-            d3dApp.SetScaleRecovery();
-        }
-        movex = 0, movey = 0;
         d3dApp.SetPictureSize(m_Video[0].cols, m_Video[0].rows);
         g_Nodeui.m_viewer->m_maxFrame = m_FrameInfos.size() - 1;
-		
+
+		// make key frame color
+		bgfi.picmesh1.MakeColor6(bg);
         m_FrameInfos.push_back(bgfi);
         for(int i = 0; i < m_FrameInfos.size() - 2; ++i)
         {
-            d3dApp.SetScaleTemporary(2);
 //             movex += -m_Moves[i + 1][0];
 //             movey += -m_Moves[i + 1][1];
             g_Nodeui.m_viewer->AddNodeLine(bgfi.picmesh1.m_Regions.size());
-            m_FrameInfos[i].picmesh1.MappingMesh(bgfi.picmesh1, moves[i + 1][0] - minx, moves[i + 1][1] - miny);
+            m_FrameInfos[i].picmesh1.MappingMeshByColor(bgfi.picmesh1, moves[i + 1][0] - minx, moves[i + 1][1] - miny,
+				m_Video[i+1], bg);
             if(i > 0)
             {
                 g_Nodeui.m_viewer->AddLink(m_FrameInfos[i - 1].picmesh1.m_MapingRegionIDs,
@@ -1415,34 +1384,6 @@ void VAV_MainFrame::OnFileOpenVideo2()
 
             m_FrameInfos[i].picmesh1.MakeColor6(m_Video[i+1]);
             //m_FrameInfos[i].picmesh1.MakeColorX1(colors);
-            if(0)
-            {
-                static int scount = 0;
-                char buff[100];
-                d3dApp.ClearTriangles();
-                d3dApp.AddColorTriangles(m_FrameInfos[i].picmesh1.m_Trangles);
-                d3dApp.AddTrianglesLine(m_FrameInfos[i].picmesh2.m_Trangles);
-                d3dApp.AddLines(m_FrameInfos[i].curves2);
-                d3dApp.SetTexture(vavImage(m_Video[i + 1]).GetDx11Texture());
-                d3dApp.BuildPoint();
-                d3dApp.InterSetRenderTransparencyOutput1();
-                cv::Mat simg = d3dApp.DrawSceneToCvMat();
-                sprintf(buff, "test/pic%03d_step09_C1.png", ++scount);
-                cv::imwrite(buff, simg);
-                d3dApp.InterSetRenderTransparencyOutput4();
-                simg = d3dApp.DrawSceneToCvMat();
-                sprintf(buff, "test/pic%03d_step09_C2.png", scount);
-                cv::imwrite(buff, simg);
-                d3dApp.InterSetRenderTransparencyOutput2();
-                simg = d3dApp.DrawSceneToCvMat();
-                sprintf(buff, "test/pic%03d_step09_C3.png", scount);
-                cv::imwrite(buff, simg);
-                d3dApp.InterSetRenderTransparencyOutput3();
-                simg = d3dApp.DrawSceneToCvMat();
-                sprintf(buff, "test/pic%03d_step09_C4.png", scount);
-                cv::imwrite(buff, simg);
-            }
-            d3dApp.SetScaleRecovery();
         }
 
         int csize = m_FrameInfos[0].picmesh1.m_Regions.size();
@@ -1454,19 +1395,11 @@ void VAV_MainFrame::OnFileOpenVideo2()
             Colors2.push_back(Vector3(rand() % 256, rand() % 256, rand() % 256));
             idxs.push_back(i);
         }
-        movex = 0;
-        movey = 0;
-        for(int i = 0; i < m_FrameInfos.size() - 1; ++i)
-        {
-            ints tmp = idxs;
-            movex += -m_Moves[i][0];
-            movey += -m_Moves[i][1];
-            //m_FrameInfos[i].picmesh1.MakeColor72(Colors, tmp, movex, movey);
-            //m_FrameInfos[i].picmesh1.MakeColor7(Colors2, tmp);
-
-        }
+        movex = -m_Moves.back()[0];
+        movey = -m_Moves.back()[1];
+        
         GetVavView()->OnTimer(0);
-        GetVavView()->SetTimer(100, 1000, 0);
+        GetVavView()->SetTimer(30, 50, 0);
         Beep(750, 300);
         Beep(1750, 300);
         Beep(10750, 300);

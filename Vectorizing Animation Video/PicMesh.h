@@ -38,7 +38,7 @@ public:
 	// mapping next mesh
 	void MappingMesh(PicMesh& pm, double x, double y);
 	// mapping next mesh and if color distance so big dont mapping
-	void MappingMeshByColor(PicMesh& pm, double x, double y);
+	void MappingMeshByColor(PicMesh& pm, double x, double y, cv::Mat& img1, cv::Mat& img2);
 	// mapping next mesh by midpoint
 	void MappingMeshByMidPoint(PicMesh& pm, double x, double y);
 	// mark different region
@@ -50,7 +50,7 @@ public:
 	// interpolation c1 to c2
 	ColorTriangles Interpolation(ColorTriangles& c1, ColorTriangles& c2, double alpha);
 	// Connect one ring edge, return true if success
-	bool ConnectOneRingConstraint1(vavImage& img, VHandle vh, VHandle lastvh, Vector2& out, Point dir, double lmax);
+	bool ConnectOneRingConstraint1(VHandle vh, VHandle lastvh, Vector2& out, Point dir, double lmax);
 	// Connect one ring edge, return true if success
 	bool ConnectOneRingConstraint2(vavImage& img, VHandle vh, VHandle lastvh, Vector2& out, Point dir, double lmax);
 	// check vertex connection
@@ -134,6 +134,8 @@ public:
 	int GetRegionId(float x, float y);
 	// save w h
 	int m_w, m_h;
+
+
 	Lines m_Lines;
 	VHandles2d	m_LinesVH;
 	HHandles2d	m_LinesHH;
@@ -142,6 +144,7 @@ public:
 	ints		m_RegionSize;
 	// for next region
 	ints		m_MapingRegionIDs;
+	ints		m_MapingCount;
 	ints2d		m_RegionNeighbor;
 	Vector3s	m_RegionColor;
 	AABB2Ds		m_RegionAABB;

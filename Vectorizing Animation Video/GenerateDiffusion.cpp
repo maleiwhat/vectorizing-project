@@ -895,7 +895,7 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         cvtColor(ccp1, ccp1, CV_BGR2GRAY);
         ccp1.convertTo(ccp1, CV_32F, 1.0 / 255);
         ccp1_curve = new CmCurveEx(ccp1);
-        ccp1_curve->CalSecDer(MASK1_SIZE, secDer);
+        ccp1_curve->CalSecDer(MASK2_SIZE, 1.4f, 0.05f);
         ccp1_curve->Link();
         cv::Mat show_ccp1 = expImg.Clone();
         Bblack_Fred1 = expImg.Clone();
@@ -946,7 +946,7 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
 			cv::imwrite(buff, picout);
 		}
         les = GetLineEnds(blackLine);
-        ConnectNearestLines(les, blackLine, 12, 20);
+        ConnectNearestLines(les, blackLine, 6, 20);
 		if (0)
 		{
 			cv::Mat picout = expImg.Clone();
@@ -1014,7 +1014,7 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         }
         bLineWidth = BLineWidth;
         //m_BLineWidth = FixLineWidths(m_BLineWidth, 100);
-        ClearLineWidthByPercent(bLineWidth, 0.3);
+        ClearLineWidthByPercent(bLineWidth, 0.4);
         bLineWidth = FixLineWidths(bLineWidth, 20);
         bLineWidth = SmoothingHas0Len5(bLineWidth, 0, 5);
         bLineWidth = FixedLineWidth(bLineWidth, 5);
@@ -1099,8 +1099,16 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
     Color2SideConstraint finalcolor;
     ColorConstraints finallinecolor;
     LineWidthConstraints finallinewidth;
-    //if(m_BOUNDARY_CURVES &&   m_REGION_GROWING)
-    {
+	{
+		{
+			Line t;
+			t.push_back(Vector2(0, 0));
+			t.push_back(Vector2(img.cols, 0));
+			t.push_back(Vector2(img.cols, img.rows));
+			t.push_back(Vector2(0, img.rows));
+			t.push_back(Vector2(0, 0));
+			blackLine2.push_back(t);
+		}
         cv::Mat size2 = img.clone();
         //cv::resize(size2.clone(), size2, size2.size() * 2, 0, 0, cv::INTER_CUBIC);
         cv::Mat simg = size2.clone();
@@ -1118,26 +1126,18 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         cv::Mat noColorMask = simg.clone();
         cvtColor(noColorMask, noColorMask, CV_BGR2GRAY);
         cmmsIndexImg = simg.clone();
-//      cmmsIndexImg = TrapBallMaskAll(cmmsIndexImg, size2);
+// 		cmmsIndexImg = TrapBallMaskAll(cmmsIndexImg, size2);
 //         cmmsIndexImg = FixSpaceMask(cmmsIndexImg);
 //         cmmsIndexImg = MixTrapBallMask(cmmsIndexImg, size2, 20, 20);
-        cmmsIndexImg = FixSpaceLineX(cmmsIndexImg, img, 100000);
-        cmmsIndexImg = FixSpaceLineX(cmmsIndexImg, img, 100000);
+//         cmmsIndexImg = FixSpaceLineX(cmmsIndexImg, img, 100000);
+//         cmmsIndexImg = FixSpaceLineX(cmmsIndexImg, img, 100000);
         cv::Mat showregion = cmmsIndexImg.clone();
         FloodFillReColor(showregion);
-        g_cvshowEX.AddShow("Final mask", showregion);
-#ifdef USE_CGAL
+        cv::imshow("Final mask", showregion);
+		//cv::waitKey();
         S8ReColor(cmmsIndexImg, img.clone(), noColorMask, ccms);
         Lines colorline = GetRegionLines(cmmsIndexImg);
-		{
-			Line t;
-			t.push_back(Vector2(0, 0));
-			t.push_back(Vector2(img.cols, 0));
-			t.push_back(Vector2(img.cols, img.rows));
-			t.push_back(Vector2(0, img.rows));
-			t.push_back(Vector2(0, 0));
-			blackLine2.push_back(t);
-		}
+        
         Index2Side i2s = GetLinesIndex2SideCV(blackLine2, cmmsIndexImg);
         colorline = HalfSmooth(colorline, 10);
         colorline = SmoothingLen3(colorline, 0, 3);
@@ -1148,20 +1148,6 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         cgal_contour1.m_i2s = i2s;
         cgal_contour1.SetSize(img.cols, img.rows);
         cgal_contour1.AddLines(blackLine2);
-		{
-			cv::Mat picout = img.clone();
-			for(size_t i = 0; i < blackLine2.size(); i++)
-			{
-				const Line& pnts = blackLine2[i];
-				for(size_t j = 0; j < pnts.size() - 1; j++)
-				{
-					cv::line(picout, cv::Point(pnts[j].x, pnts[j].y),
-						cv::Point(pnts[j + 1].x, pnts[j + 1].y), cv::Scalar(0, 0, 255));
-				}
-			}
-			sprintf(buff, "test/pic%03d_step09_BL.png", scount);
-			cv::imwrite(buff, picout);
-		}
         cgal_contour1.SetCriteria(0.01, 50);
         cgal_contour1.SetColor(ccms);
         int region = cgal_contour1.Compute();
@@ -1172,64 +1158,16 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         pm1.MakeRegionLine(img, 10);
         cgal_contour2.m_i2s = i2s;
         cgal_contour2.AddLines(pm1.m_Lines);
-        cgal_contour2.SetCriteria(0, 5);
+        cgal_contour2.SetCriteria(0.15, 5);
         cgal_contour2.Compute();
         PicMesh pm2;
         pm2.SetSize(img.cols, img.rows);
         pm2.ReadFromSideline(&cgal_contour2);
 		pm2.SetRegionColor(img);
 		pm2.ComputeRegion();
-		pm2.ComputeNeighbor();
-		pm2.BuildBtree();
-		pm2.DrawTree();
-        //pm2.BuildColorModels(img.clone());
-        //pm2.MakeColor6(img);
-		//pm2.MakeColor3();
         fi.picmesh1 = pm2;
 		fi.picmesh2 = pm1;
         fi.curves2 = pm1.m_Lines;
-        fi.curves3 = blackLine2;
-#endif // USE_CGAL
-        /*
-        cv::Mat vecout = img.clone();
-        vecout = cv::Scalar(0);
-        // show patch img
-        cv::Mat colorline1 = MakeColorLineImage(img, blackLine2);
-        g_cvshowEX.AddShow("colorline1", colorline1);
-        //cv::waitKey();
-        colorline = LineSplitAtIntersection(blackLine2, 1);
-        S6ReColor(cmmsIndexImg, img.clone(), ccms);
-        if(cr != NULL)
-        {
-            cr->ccms = ccms;
-            cr->markimg = cmmsIndexImg.clone();
-        }
-        cv::Mat colormask = cmmsIndexImg.clone();
-        FloodFillReColor(colormask);
-        //      cv::waitKey(10);
-        Index2Side i2s = GetLinesIndex2SideSmart(colorline, cmmsIndexImg);
-        //         i2s.left = FixIndexs(i2s.left, 100, ccms.size());
-        //         i2s.right = FixIndexs(i2s.right, 100, ccms.size());
-        //          i2s.left = Maxmums2(i2s.left, colorline);
-        //          i2s.right = Maxmums2(i2s.right, colorline);
-        i2s.left = MedianLenN(i2s.left, 50);
-        i2s.right = MedianLenN(i2s.right, 50);
-        Color2Side color2s2 = LinesIndex2Color(colorline, i2s, ccms);
-        color2s2.left = SmoothingLen5(color2s2.left, 0.5, 3);
-        color2s2.right = SmoothingLen5(color2s2.right, 0.5, 3);
-        // build model
-        // convert Decorative Curves
-        MakePureDecorativeLine(blackLine, bLineWidth, lineColors);
-        finallinecolor = ConvertToConstraintC(blackLine, lineColors);
-        finallinewidth = ConvertToConstraintLW(blackLine, bLineWidth);
-        finalcolor = ConvertToConstraintC2(colorline, color2s2);
-        
-        fi.lineWidth = finallinewidth;
-        fi.tmplinewidth = bLineWidth;
-        fi.curves2 = colorline;
-        fi.color2 = finalcolor;
-        fi.ocolor2 = color2s2;
-        */
     }
     return fi;
 }
