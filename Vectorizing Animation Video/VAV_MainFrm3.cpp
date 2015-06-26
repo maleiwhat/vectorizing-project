@@ -768,7 +768,7 @@ Mats MakeStaticBackGroundByMove(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgro
         }
         cv::Mat forDilation;
         errimg.convertTo(forDilation, CV_8UC1, 255);
-		Dilation(forDilation);
+        Dilation(forDilation, 2, 3);
         foreground = forDilation;
         background = meanimg;
         printf("minX %d maxX %d minY %d maxY %d \n", minX, maxX, minY, maxY);
@@ -874,7 +874,7 @@ void MakeStaticBackGroundByAvg(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgrou
         }
         cv::Mat showbg;
         bgimg.convertTo(showbg, CV_8UC3);
-		background = showbg;
+        background = showbg;
         printf("minX %d maxX %d minY %d maxY %d \n", minX, maxX, minY, maxY);
     }
 }
@@ -1024,210 +1024,6 @@ void MakeStaticBackGround(Mats& m_Video, Vec2fs& m_Moves)
 
 void VAV_MainFrame::OnFileOpenVideo()
 {
-    CFileDialog dlg(TRUE);
-    dlg.m_ofn.lpstrFilter   = L"All Files (*.*)\0*.*\0\0";
-    dlg.m_ofn.lpstrTitle    = L"Load File";
-    CString filepath;
-    CString filename;
-    CString filefolder;
-    if(dlg.DoModal() == IDOK)
-    {
-        filepath = dlg.GetPathName(); // return full path and filename
-        filefolder = dlg.GetFolderPath();
-        filename = dlg.GetFileName();
-        if(filepath.GetLength() > 1)
-        {
-            std::string path = ConvStr::GetStr(filepath.GetString());
-            std::string folder = ConvStr::GetStr(filefolder.GetString());
-            std::string name = ConvStr::GetStr(filename.GetString());
-            name.resize(name.size() - 4);
-            folder += "\\tmp";
-            _mkdir(folder.c_str());
-            folder += "\\";
-            m_Video.clear();
-            m_Moves.clear();
-            m_ReadVideo.Read(path);
-            std::string bgfilename = folder + name + "_MSBGBM_BG.png";
-            std::string fgfilename = folder + name + "_MSBGBM_FG.png";
-            SavepointImage si_bg(bgfilename);
-            SavepointImage si_fg(fgfilename);
-            cv::Mat fg, bg;
-            Mats timgs;
-            //          if(si_bg.hasImage())
-            //          {
-            //              bg = si_bg.ReadImage();
-            //              fg = si_fg.ReadImage();
-            //              cvtColor(fg, fg, CV_BGR2GRAY);
-            //          }
-            //          else
-            {
-                cv::Mat img;
-                path.resize(path.size() - 4);
-                std::string video0str = folder + name + "_0000.png";
-                SavepointImage vimg0(video0str);
-                if(vimg0.hasImage())
-                {
-                    img = vimg0.ReadImage();
-                }
-                else
-                {
-                    img = m_ReadVideo.GetFrame();
-                    vimg0.SaveImage(img);
-                }
-                GetVavView()->SetPictureSize(img.cols, img.rows);
-                m_Video.push_back(img);
-                m_Moves.push_back(cv::Vec2f(0, 0));
-                cv::Mat prevgray, gray, flow, showflow;
-                cvtColor(img, prevgray, CV_BGR2GRAY);
-                // 讀幾個frame
-                for(int i = 1; i <= 100; ++i)
-                {
-                    char tmppath[100];
-                    sprintf(tmppath, "_%04d.png", i);
-                    SavepointImage vimgx(folder + name + tmppath);
-                    cv::Mat imgx;
-                    if(vimgx.hasImage())
-                    {
-                        imgx = vimgx.ReadImage();
-                    }
-                    else
-                    {
-                        imgx = m_ReadVideo.GetFrame();
-                        vimgx.SaveImage(imgx);
-                    }
-                    if(imgx.cols > 0)
-                    {
-                        m_Video.push_back(imgx);
-                        cvtColor(imgx, gray, CV_BGR2GRAY);
-                        cv::Vec2f move2 = getMoveVectorBySIFT(prevgray, gray);
-                        m_Moves.push_back(-move2);
-                        //printf("avg_vel:%f,%f\n", move[0], move[1]);
-                        printf("Frame %03d   ", i);
-                        printf("avg_vel2:%f,%f\n", move2[0], move2[1]);
-                        //prevgray = gray.clone();
-                    }
-                }
-                timgs = MakeStaticBackGroundByMove(m_Video, m_Moves, bg, fg);
-                //Dilation(fg, 2, 3);
-                if(si_bg.hasImage())
-                {
-                    bg = si_bg.ReadImage();
-                    fg = si_fg.ReadImage();
-                    cvtColor(fg, fg, CV_BGR2GRAY);
-                }
-                else
-                {
-                    si_bg.SaveImage(bg);
-                    si_fg.SaveImage(fg);
-                }
-                m_FrameInfos.clear();
-                cv::Vec3b black(0, 0, 0);
-                cv::Mat bigfg = fg.clone();
-                Dilation(bigfg, 2, 4);
-                for(int t = 0; t < timgs.size(); ++t)
-                {
-                    cv::Mat timg = timgs[t];
-                    char tmppath[100];
-                    sprintf(tmppath, "_FG_%04d.png", t);
-                    cv::imwrite(folder + name + tmppath, timg);
-                    for(int i = 0; i < bigfg.rows; ++i)
-                    {
-                        for(int j = 0; j < bigfg.cols; ++j)
-                        {
-                            if(bigfg.at<uchar>(i, j) == 0) // || timg.at<cv::Vec3b>(i, j) == black)
-                            {
-                                //timg.at<cv::Vec3b>(i, j) = bg.at<cv::Vec3b>(i, j);
-                                timg.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
-                            }
-                        }
-                    }
-                    sprintf(tmppath, "_FGx_%04d.png", t);
-                    cv::imwrite(folder + name + tmppath, timg);
-                }
-            }
-            cv::Mat l0bg;
-            std::string l0bgfilename = folder + name + "_L0S_BG.png";
-            SavepointImage si_l0bg(l0bgfilename);
-            if(si_l0bg.hasImage())
-            {
-                l0bg = si_l0bg.ReadImage();
-            }
-            else
-            {
-                l0bg = L0Smoothing(bg, 0.001);
-                si_l0bg.SaveImage(l0bg);
-            }
-            double minx = m_Moves.front()[0];
-            double miny = m_Moves.front()[1];
-            for(int i = 1; i < m_Moves.size(); ++i)
-            {
-                if(minx > m_Moves[i][0])
-                {
-                    minx = m_Moves[i][0];
-                }
-                if(miny > m_Moves[i][1])
-                {
-                    miny = m_Moves[i][1];
-                }
-            }
-            for(int i = 1; i < m_Moves.size(); ++i)
-            {
-                m_Moves[i][0] -= minx;
-                m_Moves[i][1] -= miny;
-            }
-            D3DApp& d3dApp = GetVavView()->GetD3DApp();
-            ColorRegion cr;
-            FrameInfo fi;
-            fi = ComputeFrame2(l0bg, &cr);
-            printf("cr.ccms.size(%d)\n", cr.ccms.size());
-            cv::Mat xfg = fg.clone();
-            Dilation(xfg, 2, 1);
-            RemoveBGs_FG_Part(fi, xfg);
-            {
-                cv::Mat tfg = fg.clone();
-                Dilation(tfg, 2, 5);
-                for(int t = 0; t < timgs.size(); ++t)
-                {
-                    printf("%d ", t);
-                    cv::Mat timg = timgs[t];
-                    FrameInfo fgfi = ComputeFrame2FG(timg, tfg, &cr);
-                    //FrameInfo fgfi = ComputeFrameFGIsoline(timg);
-                    m_FrameInfos.push_back(fgfi);
-                    {
-                        // show line for RemoveFGs_BG_Part
-                        cv::Mat simg = timg.clone();
-                        cv::resize(simg.clone(), simg, simg.size() * 2);
-                        simg = cv::Scalar(0);
-                        for(int i = 0; i < fgfi.curves1.size(); ++i)
-                        {
-                            Line& nowl = fgfi.curves1[i];
-                            for(int j = 0; j < nowl.size() - 1; ++j)
-                            {
-                                cv::Point p1(nowl[j].x * 2, nowl[j].y * 2);
-                                cv::Point p2(nowl[j + 1].x * 2, nowl[j + 1].y * 2);
-                                cv::line(simg, p1, p2, cv::Scalar(255, 255, 255));
-                            }
-                        }
-//                      static int sid1 = -1;
-//                      sid1++;
-//                      char path[100];
-//                      FloodFillReColor(simg);
-//                      sprintf(path, "cmms1_%d.png", sid1);
-//                      cv::imwrite(path, simg);
-                    }
-                }
-                //SaveFrameInfos("fg.gg", m_FrameInfos);
-                //m_FrameInfos = LoadFrameInfos("fg.gg");
-            }
-            BackGround bgdata;
-            bgdata.m_FI = fi;
-            bgdata.m_Moves = m_Moves;
-            SaveBGInfos("bgdata.gg", bgdata);
-            //bgdata = LoadBGInfos("bgdata.gg");
-            m_BackGround = bgdata;
-        }
-        GetVavView()->SetTimer(100, 80, 0);
-    }
 }
 
 
@@ -1290,8 +1086,8 @@ void VAV_MainFrame::OnFileOpenVideo2()
                 cvtColor(img, prevgray, CV_BGR2GRAY);
                 // 讀幾個frame
                 cv::Mat lastimg;
-				int forloop = 10;
-				//std::cin >> forloop;
+                int forloop = 100;
+                //std::cin >> forloop;
                 for(int i = 1; i <= forloop; ++i)
                 {
                     char tmppath[100];
@@ -1316,10 +1112,6 @@ void VAV_MainFrame::OnFileOpenVideo2()
                         //prevgray = gray.clone();
                         m_Moves.push_back(move2);
                         //printf("avg_vel:%f,%f\n", move[0], move[1]);
-                        printf("Frame %03d   ", i);
-                        printf("avg_vel2:%f,%f\n", move2[0], move2[1]);
-                        FrameInfo fi = ComputeFrame2(imgx);
-                        m_FrameInfos.push_back(fi);
                         lastimg = imgx;
                     }
                 }
@@ -1345,7 +1137,15 @@ void VAV_MainFrame::OnFileOpenVideo2()
             }
         }
         MakeStaticBackGroundByMove(m_Video, moves, bg, fg);
-		//MakeStaticBackGroundByAvg(m_Video, moves, bg);
+        cv::imshow("show bg", bg);
+		cv::waitKey();
+        for(int i = 0; i < m_Video.size(); ++i)
+        {
+			printf("Frame %03d   ", i);
+            FrameInfo fi = ComputeFrame2(m_Video[i]);
+            m_FrameInfos.push_back(fi);
+        }
+        //MakeStaticBackGroundByAvg(m_Video, moves, bg);
         SavepointImage si_bg(bgfilename);
         SavepointImage si_fg(fgfilename);
         si_bg.SaveImage(bg);
@@ -1361,29 +1161,20 @@ void VAV_MainFrame::OnFileOpenVideo2()
         //bgfi.picmesh1.MakeColor1();
         D3DApp& d3dApp = GetVavView()->GetD3DApp();
         d3dApp.SetPictureSize(bg.cols, bg.rows);
-
         d3dApp.SetPictureSize(m_Video[0].cols, m_Video[0].rows);
         g_Nodeui.m_viewer->m_maxFrame = m_FrameInfos.size() - 1;
 
-		// make key frame color
-		bgfi.picmesh1.MakeColor6(bg);
+        // make key frame color
+        bgfi.picmesh1.MakeColor6(bg);
         m_FrameInfos.push_back(bgfi);
+        g_cvshowEX.AddShow("fg", fg);
         for(int i = 0; i < m_FrameInfos.size() - 2; ++i)
         {
-//             movex += -m_Moves[i + 1][0];
-//             movey += -m_Moves[i + 1][1];
-            g_Nodeui.m_viewer->AddNodeLine(bgfi.picmesh1.m_Regions.size());
             m_FrameInfos[i].picmesh1.MappingMeshByColor(bgfi.picmesh1, moves[i + 1][0] - minx, moves[i + 1][1] - miny,
-				m_Video[i+1], bg);
-            if(i > 0)
-            {
-                g_Nodeui.m_viewer->AddLink(m_FrameInfos[i - 1].picmesh1.m_MapingRegionIDs,
-                                           m_FrameInfos[i].picmesh1.m_MapingRegionIDs);
-            }
-            //m_FrameInfos[i].picmesh1.MappingMeshMappingMeshByMidPointm_FrameInfos[i-1].picmesh1, -m_Moves[i+1][0], -m_Moves[i+1][1]);
-
-            m_FrameInfos[i].picmesh1.MakeColor6(m_Video[i+1]);
-            //m_FrameInfos[i].picmesh1.MakeColorX1(colors);
+                    m_Video[i + 1], bg, fg);
+            
+            m_FrameInfos[i].picmesh1.MakeColor6(m_Video[i]);
+            m_FrameInfos[i].picmesh1.MakeFGLine(moves[i][0] - minx, moves[i][1] - miny, fg);
         }
 
         int csize = m_FrameInfos[0].picmesh1.m_Regions.size();
@@ -1397,7 +1188,7 @@ void VAV_MainFrame::OnFileOpenVideo2()
         }
         movex = -m_Moves.back()[0];
         movey = -m_Moves.back()[1];
-        
+
         GetVavView()->OnTimer(0);
         GetVavView()->SetTimer(30, 50, 0);
         Beep(750, 300);
@@ -1409,96 +1200,5 @@ void VAV_MainFrame::OnFileOpenVideo2()
 
 void VAV_MainFrame::OnButton_Curvematching()
 {
-    CFileDialog dlg(TRUE);
-    dlg.m_ofn.lpstrFilter   = L"All Files (*.*)\0*.*\0\0";
-    dlg.m_ofn.lpstrTitle    = L"Load File";
-    CString filepath;
-    CString filename;
-    CString filefolder;
-    if(dlg.DoModal() == IDOK)
-    {
-        filepath = dlg.GetPathName(); // return full path and filename
-        filefolder = dlg.GetFolderPath();
-        filename = dlg.GetFileName();
-        if(filepath.GetLength() > 1)
-        {
-            std::string path = ConvStr::GetStr(filepath.GetString());
-            std::string folder = ConvStr::GetStr(filefolder.GetString());
-            std::string name = ConvStr::GetStr(filename.GetString());
-            name.resize(name.size() - 4);
-            folder += "\\tmp";
-            _mkdir(folder.c_str());
-            folder += "\\";
-            m_Video.clear();
-            m_Moves.clear();
-            m_ReadVideo.Read(path);
-            m_ReadVideo.GetFrame();
-            m_ReadVideo.GetFrame();
-            cv::Mat frame1 = m_ReadVideo.GetFrame();
-            cv::Mat frame2 = m_ReadVideo.GetFrame();
-            cv::Mat img1 = frame1.clone();
-            cv::Mat img2 = frame2.clone();
-            cv::Mat oimg1 = frame1.clone();
-            cv::Mat oimg2 = frame2.clone();
-            cv::Mat gimg1 = frame1.clone();
-            cv::Mat gimg2 = frame2.clone();
-            img1 = cv::Scalar(0);
-            img2 = cv::Scalar(0);
-            cvtColor(gimg1, gimg1, CV_BGR2GRAY);
-            cvtColor(gimg2, gimg2, CV_BGR2GRAY);
-            cv::Vec2f move2 = getMoveVectorBySIFT(gimg1, gimg2);
-            FrameInfo fi1 = ComputeFrame2(frame1);
-            FrameInfo fi2 = ComputeFrame2(frame2);
-            CurveMatching cm = ComputeMatching(fi1, fi2, move2);
-            for(int i = 0; i < cm.curve1.size(); ++i)
-            {
-                cv::Scalar color(rand() % 256, rand() % 256, rand() % 256);
-                int id1 = cm.curve1[i];
-                int id2 = cm.curve2[i];
-                Line& line1 = fi1.curves1[id1];
-                for(int j = 0; j < line1.size() - 1; ++j)
-                {
-                    cv::line(img1, cv::Point(line1[j].x, line1[j].y), cv::Point(line1[j + 1].x, line1[j + 1].y), color);
-                    cv::line(frame1, cv::Point(line1[j].x, line1[j].y), cv::Point(line1[j + 1].x, line1[j + 1].y), color);
-                }
-                Line& line2 = fi2.curves1[id2];
-                for(int j = 0; j < line2.size() - 1; ++j)
-                {
-                    cv::line(img2, cv::Point(line2[j].x, line2[j].y), cv::Point(line2[j + 1].x, line2[j + 1].y), color);
-                    cv::line(frame2, cv::Point(line2[j].x, line2[j].y), cv::Point(line2[j + 1].x, line2[j + 1].y), color);
-                }
-            }
-            for(int i = 0; i < fi1.curves1.size(); ++i)
-            {
-                cv::Scalar color(rand() % 256, rand() % 256, rand() % 256);
-                Line& line1 = fi1.curves1[i];
-                if(line1.size() > 2)
-                {
-                    for(int j = 0; j < line1.size() - 1; ++j)
-                    {
-                        cv::line(oimg1, cv::Point(line1[j].x, line1[j].y), cv::Point(line1[j + 1].x, line1[j + 1].y), color);
-                    }
-                }
-            }
-            for(int i = 0; i < fi2.curves1.size(); ++i)
-            {
-                cv::Scalar color(rand() % 256, rand() % 256, rand() % 256);
-                Line& line2 = fi2.curves1[i];
-                if(line2.size() > 2)
-                {
-                    for(int j = 0; j < line2.size() - 1; ++j)
-                    {
-                        cv::line(oimg2, cv::Point(line2[j].x, line2[j].y), cv::Point(line2[j + 1].x, line2[j + 1].y), color);
-                    }
-                }
-            }
-            cv::imshow("oimg1", oimg1);
-            cv::imshow("oimg2", oimg2);
-            cv::imshow("img1", img1);
-            cv::imshow("img2", img2);
-            cv::imshow("frame1", frame1);
-            cv::imshow("frame2", frame2);
-        }
-    }
 }
 

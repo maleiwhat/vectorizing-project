@@ -800,6 +800,11 @@ void D3DApp::ClearTriangles()
     ReleaseCOM(m_pCurveVertexBuffer);
     ReleaseCOM(m_pCurveVertex2Buffer);
     m_CurveVertexes.clear();
+
+	m_LayerTriangle.clear();
+	m_LayerLines.clear();
+	m_LayerTriangle.push_back(0);
+	m_LayerLines.push_back(0);
 }
 
 void D3DApp::BuildPoint()
@@ -1763,125 +1768,7 @@ void D3DApp::InterDraw(bool drawDiffusion)
     m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
     m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteON, 0);
     //Draw Diffusion
-    if(drawDiffusion && m_CurveVertexes.size() > 0)
-    {
-        m_DeviceContext->ClearRenderTargetView(m_TextureTV, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-        m_DeviceContext->ClearRenderTargetView(m_diffuseTextureTV[0], D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-        m_DeviceContext->ClearRenderTargetView(m_diffuseTextureTV[1], D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-        m_DeviceContext->ClearRenderTargetView(m_otherTextureTV, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-        m_DeviceContext->ClearRenderTargetView(m_diffdistDirTextureTV, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
-        m_DeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-        m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-        // diffusion curve part
-        HRESULT hr;
-        D3DX11_TECHNIQUE_DESC techDesc;
-        D3DX11_PASS_DESC PassDesc;
-        UINT stride, offset;
-        //store the old render targets and viewports
-        ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
-        ID3D11DepthStencilView* old_pDSV = DXUTGetD3D11DepthStencilView();
-        m_DeviceContext->OMGetRenderTargets(1, &old_pRTV, &old_pDSV);
-        // set the shader variables, they are valid through the whole rendering pipeline
-        HR(m_pPolySize->SetFloat(m_polySize));
-        // render the triangles to the highest input texture level (assuming they are already defined!)
-        m_DeviceContext->IASetInputLayout(m_pCurveVertexLayout);
-        stride = sizeof(CURVE_Vertex);
-        offset = 0;
-        m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertexBuffer, &stride, &offset);
-        m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-        //construct the curve triangles in the geometry shader and render them directly
-        ID3D11RenderTargetView* destTexTV[3];
-        destTexTV[0] = m_diffuseTextureTV[m_diffTex];
-        destTexTV[1] = m_diffdistDirTextureTV;
-        destTexTV[2] = m_otherTextureTV;
-        m_DeviceContext->OMSetRenderTargets(3, destTexTV, m_pDepthStencilView);
-        m_pDrawVectorsTechnique->GetDesc(&techDesc);
-        for(int p = techDesc.Passes - 1; p >= 0; --p)
-        {
-            if(p == 4)
-            {
-                //continue;
-            }
-            m_pDrawVectorsTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
-            m_DeviceContext->Draw(m_CurveVertexes.size(), 0);
-        }
-        // setup the pipeline for the following image-space algorithms
-        m_DeviceContext->IASetInputLayout(m_pCurveVertex2Layout);
-        stride = sizeof(VSO_Vertex);
-        offset = 0;
-        m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertex2Buffer, &stride, &offset);
-        m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        // diffuse the texture in both directions
-        HR(m_pInTex[1]->SetResource(m_diffdistDirTextureRV));
-        for(int i = 0; i < m_diffSteps; i++)
-        {
-            if(i > m_diffSteps * 0.5)
-            {
-                m_blurOn->SetFloat(1);
-            }
-            else
-            {
-                m_blurOn->SetFloat(0);
-            }
-            // SA strategy
-            HR(m_pPolySize->SetFloat(1.0 - (float)(i) / (float)m_diffSteps));
-            // SH strategy
-            // V( m_pPolySize->SetFloat( 1.0 ) );
-            // if (i>diffSteps-diffSteps/2)
-            // {
-            //         V( m_pPolySize->SetFloat( (float)(diffSteps-i)/(float)(diffSteps/2) ) );
-            // }
-            m_DeviceContext->OMSetRenderTargets(1, &m_diffuseTextureTV[1 - m_diffTex], NULL);
-            (m_pInTex[0]->SetResource(m_diffuseTextureRV[m_diffTex]));
-            m_diffTex = 1 - m_diffTex;
-            m_pDiffuseTechnique->GetDesc(&techDesc);
-            for(UINT p = 0; p < techDesc.Passes; ++p)
-            {
-                m_pDiffuseTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
-                m_DeviceContext->Draw(6, 0);
-            }
-        }
-        // anti alias the lines
-        m_DeviceContext->OMSetRenderTargets(1, &m_diffuseTextureTV[1 - m_diffTex], NULL);
-        HR(m_pInTex[0]->SetResource(m_diffuseTextureRV[m_diffTex]));
-        HR(m_pInTex[1]->SetResource(m_otherTextureRV));
-        m_diffTex = 1 - m_diffTex;
-        HR(m_pDiffTex->SetResource(m_diffdistDirTextureRV));
-        m_pLineAntiAliasTechnique->GetDesc(&techDesc);
-        for(UINT p = 0; p < techDesc.Passes; ++p)
-        {
-            m_pLineAntiAliasTechnique->GetPassByIndex(p)->Apply(0, m_DeviceContext);
-            m_DeviceContext->Draw(6, 0);
-        }
-        // render to view
-        m_DeviceContext->OMSetRenderTargets(1, &m_TextureTV, 0);
-        // Set the input layout
-        m_DeviceContext->IASetInputLayout(m_pCurveVertex2Layout);
-        // Set vertex buffer
-        stride = sizeof(VSO_Vertex);
-        offset = 0;
-        m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertex2Buffer, &stride, &offset);
-        m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        HR(m_pDiffTex->SetResource(m_diffuseTextureRV[m_diffTex]));
-        //HR(m_pDiffTex->SetResource(m_diffdistDirTextureRV));
-        m_pDisplayImage->GetDesc(&techDesc);
-        for(UINT p = 0; p < techDesc.Passes; ++p)
-        {
-            m_pDisplayImage->GetPassByIndex(p)->Apply(0, m_DeviceContext);
-            m_DeviceContext->Draw(6, 0);
-        }
-        //restore old render targets
-        m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV, old_pDSV);
-        offset = 0;
-        m_DeviceContext->IASetVertexBuffers(0, 1, &m_pCurveVertex2Buffer, &stride, &offset);
-        m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        HR(m_pDiffTex->SetResource(m_TextureRV));
-        for(UINT p = 0; p < techDesc.Passes; ++p)
-        {
-            m_pDisplayImage->GetPassByIndex(p)->Apply(0, m_DeviceContext);
-            m_DeviceContext->Draw(6, 0);
-        }
-    }
+    
     m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
 	m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
     //Draw Picture
@@ -1895,30 +1782,7 @@ void D3DApp::InterDraw(bool drawDiffusion)
         m_DeviceContext->IASetVertexBuffers(0, 1, &m_Pics_Buffer, &stride2, &offset);
         m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
         m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
-    }
-    //Draw Triangles
-    if(m_TriangleVertices.size() > 0)
-    {
-        UINT offset = 0;
-        UINT stride2 = sizeof(TriangleVertex);
-        m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-        m_DeviceContext->IASetInputLayout(m_Triangle_PLayout);
-        m_DeviceContext->IASetVertexBuffers(0, 1, &m_Triangle_Buffer, &stride2,
-                                            &offset);
-        m_Triangle_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-        m_DeviceContext->Draw((UINT)m_TriangleVertices.size(), 0);
-    }
-    if(m_TriangleLineVertices.size() > 0)
-    {
-        UINT offset = 0;
-        UINT stride2 = sizeof(TriangleVertex);
-        m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-        m_DeviceContext->IASetInputLayout(m_TriangleLine_PLayout);
-        m_DeviceContext->IASetVertexBuffers(0, 1, &m_TriangleLine_Buffer, &stride2,
-                                            &offset);
-        m_TriangleLine_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-        m_DeviceContext->Draw((UINT)m_TriangleLineVertices.size(), 0);
-    }
+    }    
     if(m_PatchVertices.size() > 0)
     {
         UINT offset = 0;
@@ -1950,16 +1814,60 @@ void D3DApp::InterDraw(bool drawDiffusion)
         m_Lines_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
         m_DeviceContext->Draw((UINT)m_LinesVertices.size(), 0);
     }
-    if(m_Lines2wVertices.size() > 0)
-    {
-        UINT offset = 0;
-        UINT stride2 = sizeof(LineVertex2w);
-        m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-        m_DeviceContext->IASetInputLayout(m_Lines2w_PLayout);
-        m_DeviceContext->IASetVertexBuffers(0, 1, &m_Lines2w_Buffer, &stride2, &offset);
-        m_Lines2w_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-        m_DeviceContext->Draw((UINT)m_Lines2wVertices.size(), 0);
-    }
+	int lastTriangle = 0;
+	int lastLine = 0;
+	for (int i=0;i < m_LayerTriangle.size();++i)
+	{
+		if (i == m_LayerTriangle.size()-1)
+		{
+			if(m_TriangleVertices.size() > 0)
+			{
+				UINT offset = 0;
+				UINT stride2 = sizeof(TriangleVertex);
+				m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+				m_DeviceContext->IASetInputLayout(m_Triangle_PLayout);
+				m_DeviceContext->IASetVertexBuffers(0, 1, &m_Triangle_Buffer, &stride2,
+					&offset);
+				m_Triangle_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+				m_DeviceContext->Draw((UINT)(m_TriangleVertices.size()-m_LayerTriangle[i]), m_LayerTriangle[i]);
+			}
+			if(m_Lines2wVertices.size() > 0)
+			{
+				UINT offset = 0;
+				UINT stride2 = sizeof(LineVertex2w);
+				m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+				m_DeviceContext->IASetInputLayout(m_Lines2w_PLayout);
+				m_DeviceContext->IASetVertexBuffers(0, 1, &m_Lines2w_Buffer, &stride2, &offset);
+				m_Lines2w_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+				m_DeviceContext->Draw((UINT)(m_Lines2wVertices.size()-m_LayerLines[i]), m_LayerLines[i]);
+			}
+		}
+		else
+		{
+			if(m_TriangleVertices.size() > 0)
+			{
+				UINT offset = 0;
+				UINT stride2 = sizeof(TriangleVertex);
+				m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+				m_DeviceContext->IASetInputLayout(m_Triangle_PLayout);
+				m_DeviceContext->IASetVertexBuffers(0, 1, &m_Triangle_Buffer, &stride2,
+					&offset);
+				m_Triangle_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+				m_DeviceContext->Draw((UINT)m_LayerTriangle[i+1]-m_LayerTriangle[i], m_LayerTriangle[i]);
+			}
+			if(m_Lines2wVertices.size() > 0)
+			{
+				UINT offset = 0;
+				UINT stride2 = sizeof(LineVertex2w);
+				m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+				m_DeviceContext->IASetInputLayout(m_Lines2w_PLayout);
+				m_DeviceContext->IASetVertexBuffers(0, 1, &m_Lines2w_Buffer, &stride2, &offset);
+				m_Lines2w_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+				m_DeviceContext->Draw((UINT)m_LayerLines[i+1]-m_LayerLines[i], m_LayerLines[i]);
+			}
+		}
+	}
+	
     if(m_SkeletonLinesVertices.size() > 0)
     {
         UINT offset = 0;
@@ -1972,6 +1880,17 @@ void D3DApp::InterDraw(bool drawDiffusion)
         m_DeviceContext->Draw((UINT)m_SkeletonLinesVertices.size() +
                               m_SkeletonLinesVerticesCover.size(), 0);
     }
+	if(m_TriangleLineVertices.size() > 0)
+	{
+		UINT offset = 0;
+		UINT stride2 = sizeof(TriangleVertex);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		m_DeviceContext->IASetInputLayout(m_TriangleLine_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_TriangleLine_Buffer, &stride2,
+			&offset);
+		m_TriangleLine_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw((UINT)m_TriangleLineVertices.size(), 0);
+	}
 }
 
 void D3DApp::InterSetLookCenter(float x, float y)
@@ -2403,6 +2322,12 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
         curveline.back().nb = D3DXVECTOR2(10000.0f, 10000.0f);
         m_CurveVertexes.insert(m_CurveVertexes.end(), curveline.begin(), curveline.end());
     }
+}
+
+void D3DApp::AddLayer()
+{
+	m_LayerTriangle.push_back(m_TriangleVertices.size());
+	m_LayerLines.push_back(m_Lines2wVertices.size());
 }
 
 void D3DApp::ClearSkeletonLines()

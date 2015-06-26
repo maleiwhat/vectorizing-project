@@ -38,7 +38,7 @@ public:
 	// mapping next mesh
 	void MappingMesh(PicMesh& pm, double x, double y);
 	// mapping next mesh and if color distance so big dont mapping
-	void MappingMeshByColor(PicMesh& pm, double x, double y, cv::Mat& img1, cv::Mat& img2);
+	void MappingMeshByColor(PicMesh& pm, double x, double y, cv::Mat& img1, cv::Mat& bg, cv::Mat& fg);
 	// mapping next mesh by midpoint
 	void MappingMeshByMidPoint(PicMesh& pm, double x, double y);
 	// mark different region
@@ -65,6 +65,8 @@ public:
 	void MakeColor5(cv::Mat& img);
 	// modify MakeColor4
 	void MakeColor6(cv::Mat& img);
+
+	void MakeFGLine(float x, float y, cv::Mat fg);
 
 	// make same region same color
 	void MakeColor7(Vector3s& colors, ints& lastmap);
@@ -139,8 +141,11 @@ public:
 	Lines m_Lines;
 	VHandles2d	m_LinesVH;
 	HHandles2d	m_LinesHH;
+	ints2d		m_LinesHH_Rrid;
+	ints2d		m_LinesHH_Lrid;
 	FHandles2d	m_Regions;
 	ints		m_DifferentRegionIDs;
+	ints		m_FGids;
 	ints		m_RegionSize;
 	// for next region
 	ints		m_MapingRegionIDs;
@@ -155,5 +160,9 @@ public:
 	Index2Side	m_i2s;
 	ColorTriangles	m_Trangles;
 	ColorConstraints m_ColorConstraint;
+
+	Lines fglines;
+	Lines fglinesW;
+	Vector3s2d fglineColors;
 };
 

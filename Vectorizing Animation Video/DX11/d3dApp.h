@@ -60,6 +60,8 @@ public:
     void AddDiffusionLines(const Lines& lines, const Vector3s2d& colors);
     void AddDiffusionLines(const Lines& lines, const Color2Side& colors);
     
+	void AddLayer();
+
     void ClearPatchs();
     void ClearCovers();
     void ClearSkeletonLines();
@@ -97,6 +99,10 @@ protected:
     float m_Transparency_LineSkeleton;
     float m_Transparency_Picture;
     
+	ints	m_LayerTriangle;
+	ints	m_LayerLines;
+
+
     int     m_PicW;
     int     m_PicH;
     float   m_Scale;

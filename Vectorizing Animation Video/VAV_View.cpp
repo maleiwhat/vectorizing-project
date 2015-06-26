@@ -453,13 +453,17 @@ void VAV_View::OnTimer(UINT_PTR nIDEvent)
 				ctsx[x].pts[2].x += movex + move[0] + 2;
 			}
             m_D3DApp.AddColorTriangles(ctsx);
-            m_D3DApp.AddTrianglesLine(ctsx);
+            //m_D3DApp.AddTrianglesLine(ctsx);
 			bgline = GetLines(bgline, movex + move[0] + 2, 0);
+			m_D3DApp.AddLinesWidth(bgline, fgframes.back().tmplinewidth, fgframes.back().ocolor1);
 			ctsx = fgframes[i].picmesh1.m_Trangles;
+			m_D3DApp.AddLayer();
 			m_D3DApp.AddColorTriangles(ctsx);
 			m_D3DApp.AddTrianglesLine(ctsx);
-			//m_D3DApp.AddLinesWidth(fgframes[i].curves1, fgframes[i].tmplinewidth, fgframes[i].ocolor1);
-			m_D3DApp.AddLinesWidth(bgline, fgframes.back().tmplinewidth, fgframes.back().ocolor1);
+			m_D3DApp.AddLinesWidth(fgframes[i].picmesh1.fglines, 
+				fgframes[i].picmesh1.fglinesW, 
+				fgframes[i].picmesh1.fglineColors);
+			
             m_D3DApp.BuildPoint();
             m_D3DApp.DrawScene();
         }

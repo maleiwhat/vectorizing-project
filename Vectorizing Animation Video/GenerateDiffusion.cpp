@@ -1132,29 +1132,29 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
 //         cmmsIndexImg = FixSpaceLineX(cmmsIndexImg, img, 100000);
 //         cmmsIndexImg = FixSpaceLineX(cmmsIndexImg, img, 100000);
         cv::Mat showregion = cmmsIndexImg.clone();
-        FloodFillReColor(showregion);
-        cv::imshow("Final mask", showregion);
-		//cv::waitKey();
+        //FloodFillReColor(showregion);
         S8ReColor(cmmsIndexImg, img.clone(), noColorMask, ccms);
-        Lines colorline = GetRegionLines(cmmsIndexImg);
+        
         
         Index2Side i2s = GetLinesIndex2SideCV(blackLine2, cmmsIndexImg);
-        colorline = HalfSmooth(colorline, 10);
-        colorline = SmoothingLen3(colorline, 0, 3);
-        colorline = DouglasPeucker(colorline, 0.3);
-        IncreaseDensity(colorline);
-        colorline = SmoothingLen3(colorline, 0.3, 3);
+//		Lines colorline = GetRegionLines(cmmsIndexImg);
+// 		printf("i2s size %d\n", i2s.left.size());
+//         colorline = HalfSmooth(colorline, 10);
+//         colorline = SmoothingLen3(colorline, 0, 3);
+//         colorline = DouglasPeucker(colorline, 0.3);
+//         IncreaseDensity(colorline);
+//         colorline = SmoothingLen3(colorline, 0.3, 3);
         TriangulationCgal_Sideline cgal_contour1, cgal_contour2;
         cgal_contour1.m_i2s = i2s;
         cgal_contour1.SetSize(img.cols, img.rows);
         cgal_contour1.AddLines(blackLine2);
         cgal_contour1.SetCriteria(0.01, 50);
-        cgal_contour1.SetColor(ccms);
+        //cgal_contour1.SetColor(ccms);
         int region = cgal_contour1.Compute();
         PicMesh pm1;
         pm1.SetSize(img.cols, img.rows);
         pm1.ReadFromSideline(&cgal_contour1);
-        pm1.MakeColor1();
+        //pm1.MakeColor1();
         pm1.MakeRegionLine(img, 10);
         cgal_contour2.m_i2s = i2s;
         cgal_contour2.AddLines(pm1.m_Lines);
@@ -1166,8 +1166,6 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
 		pm2.SetRegionColor(img);
 		pm2.ComputeRegion();
         fi.picmesh1 = pm2;
-		fi.picmesh2 = pm1;
-        fi.curves2 = pm1.m_Lines;
     }
     return fi;
 }
