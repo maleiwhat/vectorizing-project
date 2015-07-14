@@ -801,10 +801,10 @@ void D3DApp::ClearTriangles()
     ReleaseCOM(m_pCurveVertex2Buffer);
     m_CurveVertexes.clear();
 
-	m_LayerTriangle.clear();
-	m_LayerLines.clear();
-	m_LayerTriangle.push_back(0);
-	m_LayerLines.push_back(0);
+    m_LayerTriangle.clear();
+    m_LayerLines.clear();
+    m_LayerTriangle.push_back(0);
+    m_LayerLines.push_back(0);
 }
 
 void D3DApp::BuildPoint()
@@ -838,7 +838,9 @@ void D3DApp::BuildPoint()
         pv.position.z = 0;
         pv.size.x = m_PicW;
         pv.size.y = m_PicH;
-        m_PicsVertices.push_back(pv);
+        //m_PicsVertices.push_back(pv);
+		pv.position.x = +m_PicW * 0.5 - m_PicW * m_Scale;
+		m_PicsVertices.push_back(pv);
     }
     if(!m_PicsVertices.empty())
     {
@@ -1768,21 +1770,10 @@ void D3DApp::InterDraw(bool drawDiffusion)
     m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
     m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteON, 0);
     //Draw Diffusion
-    
+
     m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
-	m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
-    //Draw Picture
-    if(m_PicsVertices.size() > 0)
-    {
-        m_Pics_PMap->SetResource(m_Pics_Texture);
-        UINT offset = 0;
-        UINT stride2 = sizeof(PictureVertex);
-        m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-        m_DeviceContext->IASetInputLayout(m_Pics_PLayout);
-        m_DeviceContext->IASetVertexBuffers(0, 1, &m_Pics_Buffer, &stride2, &offset);
-        m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-        m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
-    }    
+    m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
+    
     if(m_PatchVertices.size() > 0)
     {
         UINT offset = 0;
@@ -1814,60 +1805,60 @@ void D3DApp::InterDraw(bool drawDiffusion)
         m_Lines_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
         m_DeviceContext->Draw((UINT)m_LinesVertices.size(), 0);
     }
-	int lastTriangle = 0;
-	int lastLine = 0;
-	for (int i=0;i < m_LayerTriangle.size();++i)
-	{
-		if (i == m_LayerTriangle.size()-1)
-		{
-			if(m_TriangleVertices.size() > 0)
-			{
-				UINT offset = 0;
-				UINT stride2 = sizeof(TriangleVertex);
-				m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-				m_DeviceContext->IASetInputLayout(m_Triangle_PLayout);
-				m_DeviceContext->IASetVertexBuffers(0, 1, &m_Triangle_Buffer, &stride2,
-					&offset);
-				m_Triangle_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-				m_DeviceContext->Draw((UINT)(m_TriangleVertices.size()-m_LayerTriangle[i]), m_LayerTriangle[i]);
-			}
-			if(m_Lines2wVertices.size() > 0)
-			{
-				UINT offset = 0;
-				UINT stride2 = sizeof(LineVertex2w);
-				m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-				m_DeviceContext->IASetInputLayout(m_Lines2w_PLayout);
-				m_DeviceContext->IASetVertexBuffers(0, 1, &m_Lines2w_Buffer, &stride2, &offset);
-				m_Lines2w_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-				m_DeviceContext->Draw((UINT)(m_Lines2wVertices.size()-m_LayerLines[i]), m_LayerLines[i]);
-			}
-		}
-		else
-		{
-			if(m_TriangleVertices.size() > 0)
-			{
-				UINT offset = 0;
-				UINT stride2 = sizeof(TriangleVertex);
-				m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-				m_DeviceContext->IASetInputLayout(m_Triangle_PLayout);
-				m_DeviceContext->IASetVertexBuffers(0, 1, &m_Triangle_Buffer, &stride2,
-					&offset);
-				m_Triangle_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-				m_DeviceContext->Draw((UINT)m_LayerTriangle[i+1]-m_LayerTriangle[i], m_LayerTriangle[i]);
-			}
-			if(m_Lines2wVertices.size() > 0)
-			{
-				UINT offset = 0;
-				UINT stride2 = sizeof(LineVertex2w);
-				m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-				m_DeviceContext->IASetInputLayout(m_Lines2w_PLayout);
-				m_DeviceContext->IASetVertexBuffers(0, 1, &m_Lines2w_Buffer, &stride2, &offset);
-				m_Lines2w_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-				m_DeviceContext->Draw((UINT)m_LayerLines[i+1]-m_LayerLines[i], m_LayerLines[i]);
-			}
-		}
-	}
-	
+    int lastTriangle = 0;
+    int lastLine = 0;
+    for(int i = 0; i < m_LayerTriangle.size(); ++i)
+    {
+        if(i == m_LayerTriangle.size() - 1)
+        {
+            if(m_TriangleVertices.size() > 0)
+            {
+                UINT offset = 0;
+                UINT stride2 = sizeof(TriangleVertex);
+                m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+                m_DeviceContext->IASetInputLayout(m_Triangle_PLayout);
+                m_DeviceContext->IASetVertexBuffers(0, 1, &m_Triangle_Buffer, &stride2,
+                                                    &offset);
+                m_Triangle_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+                m_DeviceContext->Draw((UINT)(m_TriangleVertices.size() - m_LayerTriangle[i]), m_LayerTriangle[i]);
+            }
+            if(m_Lines2wVertices.size() > 0)
+            {
+                UINT offset = 0;
+                UINT stride2 = sizeof(LineVertex2w);
+                m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+                m_DeviceContext->IASetInputLayout(m_Lines2w_PLayout);
+                m_DeviceContext->IASetVertexBuffers(0, 1, &m_Lines2w_Buffer, &stride2, &offset);
+                m_Lines2w_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+                m_DeviceContext->Draw((UINT)(m_Lines2wVertices.size() - m_LayerLines[i]), m_LayerLines[i]);
+            }
+        }
+        else
+        {
+            if(m_TriangleVertices.size() > 0)
+            {
+                UINT offset = 0;
+                UINT stride2 = sizeof(TriangleVertex);
+                m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+                m_DeviceContext->IASetInputLayout(m_Triangle_PLayout);
+                m_DeviceContext->IASetVertexBuffers(0, 1, &m_Triangle_Buffer, &stride2,
+                                                    &offset);
+                m_Triangle_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+                m_DeviceContext->Draw((UINT)m_LayerTriangle[i + 1] - m_LayerTriangle[i], m_LayerTriangle[i]);
+            }
+            if(m_Lines2wVertices.size() > 0)
+            {
+                UINT offset = 0;
+                UINT stride2 = sizeof(LineVertex2w);
+                m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+                m_DeviceContext->IASetInputLayout(m_Lines2w_PLayout);
+                m_DeviceContext->IASetVertexBuffers(0, 1, &m_Lines2w_Buffer, &stride2, &offset);
+                m_Lines2w_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+                m_DeviceContext->Draw((UINT)m_LayerLines[i + 1] - m_LayerLines[i], m_LayerLines[i]);
+            }
+        }
+    }
+
     if(m_SkeletonLinesVertices.size() > 0)
     {
         UINT offset = 0;
@@ -1880,16 +1871,28 @@ void D3DApp::InterDraw(bool drawDiffusion)
         m_DeviceContext->Draw((UINT)m_SkeletonLinesVertices.size() +
                               m_SkeletonLinesVerticesCover.size(), 0);
     }
-	if(m_TriangleLineVertices.size() > 0)
+    if(m_TriangleLineVertices.size() > 0)
+    {
+        UINT offset = 0;
+        UINT stride2 = sizeof(TriangleVertex);
+        m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+        m_DeviceContext->IASetInputLayout(m_TriangleLine_PLayout);
+        m_DeviceContext->IASetVertexBuffers(0, 1, &m_TriangleLine_Buffer, &stride2,
+                                            &offset);
+        m_TriangleLine_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+        m_DeviceContext->Draw((UINT)m_TriangleLineVertices.size(), 0);
+    }
+	//Draw Picture
+	if(m_PicsVertices.size() > 0)
 	{
+		m_Pics_PMap->SetResource(m_Pics_Texture);
 		UINT offset = 0;
-		UINT stride2 = sizeof(TriangleVertex);
+		UINT stride2 = sizeof(PictureVertex);
 		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-		m_DeviceContext->IASetInputLayout(m_TriangleLine_PLayout);
-		m_DeviceContext->IASetVertexBuffers(0, 1, &m_TriangleLine_Buffer, &stride2,
-			&offset);
-		m_TriangleLine_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-		m_DeviceContext->Draw((UINT)m_TriangleLineVertices.size(), 0);
+		m_DeviceContext->IASetInputLayout(m_Pics_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Pics_Buffer, &stride2, &offset);
+		m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
 	}
 }
 
@@ -1950,7 +1953,7 @@ cv::Mat D3DApp::DrawSceneToCvMat(D3DXCOLOR backcolor, bool drawDiffusion)
 {
     const int TexWidth = m_PicW * m_Scale;
     const int TexHeight = m_PicH * m_Scale;
-	printf("\nx %d y %d\n", TexWidth, TexHeight);
+    printf("\nx %d y %d\n", TexWidth, TexHeight);
     if(TexWidth > 0)
     {
         ID3D11RenderTargetView* old_pRTV = DXUTGetD3D11RenderTargetView();
@@ -2038,14 +2041,14 @@ void D3DApp::InterSetRenderTransparencyOutput1()
 
 void D3DApp::InterSetRenderTransparencyOutput4()
 {
-	m_Triangle_Alpha->SetFloat(0.5);
-	m_SelectPatch_Alpha->SetFloat(0);
-	m_pAlpha->SetFloat(0);
-	m_TriangleLine_Alpha->SetFloat(0);
-	m_Lines_Alpha->SetFloat(0);
-	m_Lines2w_CenterAlpha->SetFloat(0);
-	m_SkeletonLines_Alpha->SetFloat(0);
-	m_TransparencySV_Picture->SetFloat(1);
+    m_Triangle_Alpha->SetFloat(0.5);
+    m_SelectPatch_Alpha->SetFloat(0);
+    m_pAlpha->SetFloat(0);
+    m_TriangleLine_Alpha->SetFloat(0);
+    m_Lines_Alpha->SetFloat(0);
+    m_Lines2w_CenterAlpha->SetFloat(0);
+    m_SkeletonLines_Alpha->SetFloat(0);
+    m_TransparencySV_Picture->SetFloat(1);
 }
 
 void D3DApp::InterSetRenderTransparencyOutput2()
@@ -2062,14 +2065,14 @@ void D3DApp::InterSetRenderTransparencyOutput2()
 
 void D3DApp::InterSetRenderTransparencyOutput3()
 {
-	m_Triangle_Alpha->SetFloat(0);
-	m_SelectPatch_Alpha->SetFloat(0);
-	m_pAlpha->SetFloat(0);
-	m_TriangleLine_Alpha->SetFloat(0.2);
-	m_Lines_Alpha->SetFloat(1);
-	m_Lines2w_CenterAlpha->SetFloat(0);
-	m_SkeletonLines_Alpha->SetFloat(1);
-	m_TransparencySV_Picture->SetFloat(1);
+    m_Triangle_Alpha->SetFloat(0);
+    m_SelectPatch_Alpha->SetFloat(0);
+    m_pAlpha->SetFloat(0);
+    m_TriangleLine_Alpha->SetFloat(0.2);
+    m_Lines_Alpha->SetFloat(1);
+    m_Lines2w_CenterAlpha->SetFloat(0);
+    m_SkeletonLines_Alpha->SetFloat(1);
+    m_TransparencySV_Picture->SetFloat(1);
 }
 
 void D3DApp::InterSetRenderTransparencyDefault()
@@ -2326,8 +2329,8 @@ void D3DApp::AddDiffusionLines(const Lines& lines, const Color2Side& colors)
 
 void D3DApp::AddLayer()
 {
-	m_LayerTriangle.push_back(m_TriangleVertices.size());
-	m_LayerLines.push_back(m_Lines2wVertices.size());
+    m_LayerTriangle.push_back(m_TriangleVertices.size());
+    m_LayerLines.push_back(m_Lines2wVertices.size());
 }
 
 void D3DApp::ClearSkeletonLines()

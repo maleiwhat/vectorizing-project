@@ -41,6 +41,7 @@ void RBFMesh::ReadFromSeedpoint(TriangulationCgal_SeedPoint* ts, Vector3s& color
         vh[1] = BasicMesh::VHandle(fc->vertex(1)->info().idx);
         vh[2] = BasicMesh::VHandle(fc->vertex(2)->info().idx);
         FaceHandle f = add_face(vh[0], vh[1], vh[2]);
+        data(f).rid = 1;
     }
 }
 
@@ -73,9 +74,9 @@ Vector3 RBFMesh::GetColorVector3(double x, double y)
     {
         return data(findvh).c;
     }
-	return data(findvh).c;
+    return data(findvh).c;
 //  printf("mindis %f\n", mindis);
-	//return Vector3(0, 0, 255);
+    //return Vector3(0, 0, 255);
     doubles diss;
     double sum = 0;
     for(VVIter vvit = vv_iter(findvh); vvit.is_valid(); ++vvit)
@@ -107,106 +108,138 @@ Vector3 RBFMesh::GetColorVector3(double x, double y)
 
 Vector3 RBFMesh::GetColorVector3(double x1, double y1, double x2, double y2)
 {
-	BasicMesh::Point now((x1+x2*2)*0.333, (y1+y2*2)*0.333, 0);
-	BasicMesh::VHandle findvh = *(vertices_begin());
-	double mindis = (point(findvh) - now).sqrnorm();
-	int minidx = 0;
-	int ii = 0;
+    BasicMesh::Point move(x2 - x1, y2 - y1, 0);
+    BasicMesh::Point now(x1, y1, 0);
+    now +=  move * 1.5;
+    BasicMesh::VHandle findvh = *(vertices_begin());
+    double mindis = (point(findvh) - now).sqrnorm();
+    int minidx = 0;
+    int ii = 0;
 
-	for(ii = 0; minidx >= 0; ++ii)
-	{
-		BasicMesh::Point lastp = point(findvh);
-		minidx = -1;
-		for(VVIter vvit = vv_iter(findvh); vvit.is_valid(); ++vvit, ii++)
-		{
-			Point tp = point(*vvit);
-			Vector2 p(tp[0], tp[1]);
-			double dis = (tp - now).sqrnorm();
-			if(dis < mindis)
-			{
-				mindis = dis;
-				minidx = ii;
-				findvh = *vvit;
-			}
-		}
-	}
-	return data(findvh).c;
+    for(ii = 0; minidx >= 0; ++ii)
+    {
+        BasicMesh::Point lastp = point(findvh);
+        minidx = -1;
+        for(VVIter vvit = vv_iter(findvh); vvit.is_valid(); ++vvit, ii++)
+        {
+            Point tp = point(*vvit);
+            Vector2 p(tp[0], tp[1]);
+            double dis = (tp - now).sqrnorm();
+            if(dis < mindis)
+            {
+                mindis = dis;
+                minidx = ii;
+                findvh = *vvit;
+            }
+        }
+    }
+    return data(findvh).c;
 }
 
 void RBFMesh::lightblurC2()
 {
-	for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
-	{
-		if(data(*vit).constraint == 0)
-		{
-			int count = 1;
-			Vector3 blur = data(*vit).c;
-			for(VVIter vv_itr = vv_iter(*vit) ; vv_itr.is_valid(); ++vv_itr)
-			{
-				if(data(*vv_itr).constraint == 0)
-				{
-					count++;
-					blur += data(*vv_itr).c;
-				}
-			}
-			blur /= count;
-			double light = GetLight(blur);
-			count = 1;
-			blur = data(*vit).c;
-			for(VVIter vv_itr = vv_iter(*vit) ; vv_itr.is_valid(); ++vv_itr)
-			{
-				if(data(*vv_itr).constraint == 0)
-				{
-					if(GetLight(data(*vv_itr).c) > light)
-					{
-						count += 5;
-						blur += data(*vv_itr).c * 5;
-					}
-					else
-					{
-						count++;
-						blur += data(*vv_itr).c;
-					}
-				}
-			}
-			blur /= count;
-			data(*vit).c3 = blur;
-		}
-	}
-	for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
-	{
-		if(data(*vit).constraint == 0)
-		{
-			data(*vit).c = data(*vit).c3;
-		}
-	}
+    for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        if(data(*vit).constraint == 0)
+        {
+            int count = 1;
+            Vector3 blur = data(*vit).c;
+            for(VVIter vv_itr = vv_iter(*vit) ; vv_itr.is_valid(); ++vv_itr)
+            {
+                if(data(*vv_itr).constraint == 0)
+                {
+                    count++;
+                    blur += data(*vv_itr).c;
+                }
+            }
+            blur /= count;
+            double light = GetLight(blur);
+            count = 1;
+            blur = data(*vit).c;
+            for(VVIter vv_itr = vv_iter(*vit) ; vv_itr.is_valid(); ++vv_itr)
+            {
+                if(data(*vv_itr).constraint == 0)
+                {
+                    if(GetLight(data(*vv_itr).c) > light)
+                    {
+                        count += 5;
+                        blur += data(*vv_itr).c * 5;
+                    }
+                    else
+                    {
+                        count++;
+                        blur += data(*vv_itr).c;
+                    }
+                }
+            }
+            blur /= count;
+            data(*vit).c3 = blur;
+        }
+    }
+    for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        if(data(*vit).constraint == 0)
+        {
+            data(*vit).c = data(*vit).c3;
+        }
+    }
 }
 
 void RBFMesh::blurC2()
 {
-	for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
-	{
-		if(data(*vit).constraint == 0)
-		{
-			int count = 1;
-			Vector3 blur = data(*vit).c2;
-			for(VVIter vv_itr = vv_iter(*vit) ; vv_itr.is_valid(); ++vv_itr)
-			{
-				if(data(*vv_itr).constraint == 0)
-				{
-					count++;
-					blur += data(*vv_itr).c2;
-				}
-			}
-			blur /= count;
-			data(*vit).c3 = blur;
-		}
-	}
-	for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
-	{
-		if(data(*vit).constraint == 0)
-		{
-			data(*vit).c2 = data(*vit).c3;
-		}
-	}
+    for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        if(data(*vit).constraint == 0)
+        {
+            int count = 1;
+            Vector3 blur = data(*vit).c2;
+            for(VVIter vv_itr = vv_iter(*vit) ; vv_itr.is_valid(); ++vv_itr)
+            {
+                if(data(*vv_itr).constraint == 0)
+                {
+                    count++;
+                    blur += data(*vv_itr).c2;
+                }
+            }
+            blur /= count;
+            data(*vit).c3 = blur;
+        }
+    }
+    for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        if(data(*vit).constraint == 0)
+        {
+            data(*vit).c2 = data(*vit).c3;
+        }
+    }
+}
+
+void RBFMesh::MakeColor1()
+{
+    m_Trangles.clear();
+    ColorTriangle t;
+    Vector3 color(rand() % 256, rand() % 256, rand() % 256);
+    for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
+    {
+        int c = 0;
+        if(data(*fit).rid > 0)
+        {
+            for(FVIter fvit = fv_iter(*fit); fvit.is_valid(); ++fvit)
+            {
+                Point p = point(*fvit);
+                t.pts[c][0] = p[0];
+                t.pts[c][1] = p[1];
+                t.color[c] = color;
+
+                ++c;
+            }
+            float d1 = t.pts[0].squaredDistance(t.pts[1]);
+            float d2 = t.pts[1].squaredDistance(t.pts[2]);
+            float d3 = t.pts[2].squaredDistance(t.pts[0]);
+            if(d1 + d2 + d3 < 76)
+            {
+                m_Trangles.push_back(t);
+            }
+        }
+    }
 }

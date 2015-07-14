@@ -76,6 +76,7 @@ public:
     virtual ~TriangulationCgal_Sideline() {}
     virtual void AddPoint(double x, double y);
     virtual int Compute();
+	int Compute2();
 	void	MakeColorByModel();
     virtual void Clear();
     void    MakeColorSequential();

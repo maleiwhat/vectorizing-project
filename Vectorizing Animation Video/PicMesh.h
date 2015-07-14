@@ -35,6 +35,7 @@ public:
 	// add region line by triangle information
 	// lmax is max distance of connection line
 	void MakeRegionLine(cv::Mat& img, double lmax);
+	void MakeSeedPointMap(cv::Mat& out1, cv::Mat& out2);
 	// mapping next mesh
 	void MappingMesh(PicMesh& pm, double x, double y);
 	// mapping next mesh and if color distance so big dont mapping
@@ -65,6 +66,8 @@ public:
 	void MakeColor5(cv::Mat& img);
 	// modify MakeColor4
 	void MakeColor6(cv::Mat& img);
+
+	void MakeColor6x(cv::Mat& img);
 
 	void MakeFGLine(float x, float y, cv::Mat fg);
 

@@ -85,7 +85,7 @@ void gs_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 	
 	out3.pos.z = 0;
 	out3.pos.w = 1;
-	out3.color.xyz = input[0].c1*0.5;
+	out3.color.xyz = input[0].c1;
 	out3.color.w = centerAlpha*1;
 	out3.pos.xy = input[0].p1;
 	triStream.Append( out3 );

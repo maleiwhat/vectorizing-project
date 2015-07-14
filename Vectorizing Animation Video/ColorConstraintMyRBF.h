@@ -24,7 +24,7 @@ public:
 	void blurC2();
     int Size();
     void BuildModel();
-private:
+public:
     void RemoveNoise();
     Vector3s m_Colors;
     Vector3s m_ColorsOri;

@@ -20,6 +20,13 @@ public:
 	bool Read(std::string path);
 	cv::Mat GetFrame();
 	void SkipFrame();
+	int FrameCount()
+	{
+		return m_frameCount;
+	}
+	bool Load(std::string path);
+
+	void Close();
 private:
 	cv::Mat _GetFrame(AVFrame *pFrame, int width, int height);
 	bool	m_HasRead;
@@ -33,6 +40,8 @@ private:
 	AVPacket        m_packet;
 	int             m_frameFinished;
 	int             m_numBytes;
+	int				m_frameCount;
+	int				m_current;
 	uint8_t         *m_buffer;
 };
 

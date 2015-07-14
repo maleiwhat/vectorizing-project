@@ -150,8 +150,7 @@ void SetDrawFrame(D3DApp& d3dApp, FrameInfo& fi)
 {
     d3dApp.ClearTriangles();
     d3dApp.ClearSkeletonLines();
-//     d3dApp.AddDiffusionLines(fi.curves2, fi.ocolor2);
-    d3dApp.AddLines(fi.curves1);
+    d3dApp.AddLines(fi.curves2);
     d3dApp.AddLinesWidth(fi.curves1, fi.tmplinewidth, fi.ocolor1);
     d3dApp.AddColorTriangles(fi.picmesh1.m_Trangles);
     d3dApp.AddTrianglesLine(fi.picmesh1.m_Trangles);
@@ -165,8 +164,10 @@ void VAV_MainFrame::OnButton_BuildVectorization()
     D3DApp& d3dApp = GetVavView()->GetD3DApp();
     FrameInfo fi = ComputeFrame2(m_vavImage);
     m_BackGround.m_FI = fi;
+	fi.picmesh1.MakeColor6(m_vavImage);
     SetDrawFrame(d3dApp, fi);
     GetVavView()->OnDraw(0);
+	Beep(300, 200);
 }
 
 

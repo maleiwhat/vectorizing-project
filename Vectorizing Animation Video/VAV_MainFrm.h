@@ -38,6 +38,7 @@ protected: // 僅從序列化建立
 public:
 	Vec2fs		m_Moves;
 	Mats		m_Video;
+	vavImages	m_VideoTexture;
 	vavImage    m_vavImage;
 	vavImage    m_cannyImage;
 	Lines		m_BlackLine;

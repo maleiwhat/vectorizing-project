@@ -15,11 +15,13 @@ ID3D11DeviceContext* vavImage::m_DeviceContext;
 
 vavImage::vavImage(void)
 {
+	m_texture = NULL;
 }
 
 vavImage::vavImage(const cv::Mat& im)
 {
 	m_Image = im.clone();
+	m_texture = NULL;
 }
 
 ID3D11ShaderResourceView* vavImage::GetDx11Texture()
@@ -124,8 +126,9 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 				intensity[0] = pimg[offset + 2] * 255.0f;
 			}
 		}
-		cv::imshow("simg", simg);
+		//cv::imshow("simg", simg);
 	}
+	m_texture = pShaderResView;
 	return pShaderResView;
 }
 vavImage::~vavImage(void)

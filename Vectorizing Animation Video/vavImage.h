@@ -88,10 +88,11 @@ public:
 		m_Image = mat.clone();
 		return *this;
 	}
-	
+	ID3D11ShaderResourceView* m_texture;
 private:
 	static ID3D11Device* m_Device;
 	static ID3D11DeviceContext* m_DeviceContext;
 	cv::Mat m_Image;
 };
 
+typedef std::vector<vavImage> vavImages;

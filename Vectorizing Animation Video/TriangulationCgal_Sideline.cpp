@@ -45,7 +45,32 @@ int TriangulationCgal_Sideline::Compute()
             CTriangulation::Vertex_handle vh = m_Triangulation.nearest_vertex(now);
         }
     }
-    
+
+    return 0;
+}
+
+int TriangulationCgal_Sideline::Compute2()
+{
+    m_Triangulation.clear();
+    Vertex_handles vhs;
+    // add 4 conner point
+
+    for(int y = 1; y < m_h - 1; y += 10)
+    {
+        for(int x = 1; x < m_w - 1; x += 10)
+        {
+            Point pp1(x, y);
+            Point pp2(x + 10, y + 10);
+            m_Triangulation.insert(pp1);
+            m_Triangulation.insert(pp2);
+        }
+    }
+    Insert_lines(m_Triangulation);
+    Mesher mesher(m_Triangulation);
+    mesher.set_criteria(m_Criteria);
+    mesher.mark_facets();
+    //mesher.refine_mesh();
+    mark_domains2(m_Triangulation);
     return 0;
 }
 
@@ -259,7 +284,7 @@ int TriangulationCgal_Sideline::mark_domains2(CTriangulation& cdt)
         }
     }
     m_RegionCount = cc;
-    printf("m_RegionCount %d\n", m_RegionCount);
+    printf("m_RegionCount %d ", m_RegionCount);
     return cc;
 }
 
@@ -321,25 +346,25 @@ void TriangulationCgal_Sideline::SetColor(ColorConstraints& colors)
 
 void TriangulationCgal_Sideline::MakeColorByModel()
 {
-	ColorTriangle t;
-	m_Triangles.clear();
-	Finite_faces_iterator fc;
-	fc = m_Triangulation.finite_faces_begin();
-	for(; fc != m_Triangulation.finite_faces_end(); ++fc)
-	{
-		if(fc->is_in_domain())
-		{
-			t.pts[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
-			t.pts[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
-			t.pts[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
-			int idx = fc->info().color_label;
-			if(idx >= 0 && idx < m_ColorConstraint.size())
-			{
-				t.color[0] = m_ColorConstraint[idx].GetColorVector3(t.pts[0].x, t.pts[0].y);
-				t.color[1] = m_ColorConstraint[idx].GetColorVector3(t.pts[1].x, t.pts[1].y);
-				t.color[2] = m_ColorConstraint[idx].GetColorVector3(t.pts[2].x, t.pts[2].y);
-			}
-			m_Triangles.push_back(t);
-		}
-	}
+    ColorTriangle t;
+    m_Triangles.clear();
+    Finite_faces_iterator fc;
+    fc = m_Triangulation.finite_faces_begin();
+    for(; fc != m_Triangulation.finite_faces_end(); ++fc)
+    {
+        if(fc->is_in_domain())
+        {
+            t.pts[0] = Vector2(fc->vertex(0)->point()[0], fc->vertex(0)->point()[1]);
+            t.pts[1] = Vector2(fc->vertex(1)->point()[0], fc->vertex(1)->point()[1]);
+            t.pts[2] = Vector2(fc->vertex(2)->point()[0], fc->vertex(2)->point()[1]);
+            int idx = fc->info().color_label;
+            if(idx >= 0 && idx < m_ColorConstraint.size())
+            {
+                t.color[0] = m_ColorConstraint[idx].GetColorVector3(t.pts[0].x, t.pts[0].y);
+                t.color[1] = m_ColorConstraint[idx].GetColorVector3(t.pts[1].x, t.pts[1].y);
+                t.color[2] = m_ColorConstraint[idx].GetColorVector3(t.pts[2].x, t.pts[2].y);
+            }
+            m_Triangles.push_back(t);
+        }
+    }
 }

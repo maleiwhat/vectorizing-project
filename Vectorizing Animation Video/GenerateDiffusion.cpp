@@ -789,7 +789,7 @@ FrameInfo ComputeFrame3(cv::Mat img, ColorRegion* cr)
         //IncreaseDensity(blackLine2, tmp_width);
         les = GetLineEnds(blackLine2);
         ConnectNearestLines(les, blackLine2, 10, 20);
-        //blackLine2 = LineSplitAtEndIntersection(blackLine2, 1);
+        blackLine2 = LineSplitAtEndIntersection(blackLine2, 1);
         les = GetLineEnds(blackLine2);
         LinkLineEnds(les, 3, 360);
         ConnectLineEnds5(les, blackLine2);
@@ -855,6 +855,8 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
 	sprintf(buff, "test/pic%03d_step01_WB.png", ++scount);
 	cv::imwrite(buff, expImg.GetCvMat());
     expImg = ImgSharpen(expImg);
+	//expImg.ToExpImage();
+	//expImg.ToExpImage();
 	sprintf(buff, "test/pic%03d_step02_IS.png", scount);
 	cv::imwrite(buff, expImg.GetCvMat());
 	cv::Mat size2 = img.clone();
@@ -864,26 +866,28 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
     const int MASK1_SIZE = 5;
     const int MASK2_SIZE = 5;
     const float secDer = 0.05f;
-    cv::Mat ccp1 = img.clone(), ccp2 = img.clone(), imgf;
-	ccp2.convertTo(imgf, CV_32FC3, 1.0 / 255);
-	for(int j = 0; j < ccp2.cols ; ++j)
-	{
-		for(int i = 0; i < ccp2.rows ; ++i)
-		{
-			cv::Vec3f& intensity = imgf.at<cv::Vec3f>(i, j);
-			intensity[0] = - pow((1 - intensity[0]), 3);
-			intensity[1] = - pow((1 - intensity[1]), 3);
-			intensity[2] = - pow((1 - intensity[2]), 3);
-		}
-	}
-	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
-	imgf.convertTo(ccp2, CV_8UC3, 255);
+    cv::Mat ccp1 = expImg.Clone(), ccp2 = img.clone(), imgf;
+	//ccp2 = WhiteBalance(ccp2);
+//	ccp2.convertTo(imgf, CV_32FC3, 1.0 / 255);
+// 	for(int j = 0; j < ccp2.cols ; ++j)
+// 	{
+// 		for(int i = 0; i < ccp2.rows ; ++i)
+// 		{
+// 			cv::Vec3f& intensity = imgf.at<cv::Vec3f>(i, j);
+// 			intensity[0] = - pow((1 - intensity[0]), 3);
+// 			intensity[1] = - pow((1 - intensity[1]), 3);
+// 			intensity[2] = - pow((1 - intensity[2]), 3);
+// 		}
+// 	}
+//	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
+//	imgf.convertTo(ccp2, CV_8UC3, 255);
     for(int i = 1; i < 7; i++)
     {
         bilateralFilter(ccp2.clone(), ccp2, i, i * 2, i * 0.5);
     }
-	sprintf(buff, "test/pic%03d_step03_BF.png", scount);
-	cv::imwrite(buff, ccp2);
+	ccp2 = ImgSharpen(ccp2);
+// 	sprintf(buff, "test/pic%03d_step03_BF.png", scount);
+// 	cv::imwrite(buff, ccp2);
     cv::Mat slicimg;
     CmCurveEx* ccp1_curve = NULL;
     CmCurveEx* ccp2_curve = NULL;
@@ -966,29 +970,42 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         Lines showLines;
         Lines BLineWidth(blackLine.size());
         Lines normals = GetNormalsLen2(blackLine);
-        const double blackRadio = 0.6;
+        const double blackRadio = 0.4;
         for(int idx1 = 0; idx1 < blackLine.size(); ++idx1)
         {
             const Line& nowLine = blackLine[idx1];
             const Line& nowNormals = normals[idx1];
             Line& lineWidths = BLineWidth[idx1];
             lineWidths.clear();
-            for(int idx2 = 0; idx2 < nowLine.size() - 1; ++idx2)
+			lineWidths.push_back(Vector2());
+            for(int idx2 = 1; idx2 < nowLine.size() - 1; ++idx2)
             {
                 const double LINE_WIDTH = 5;
                 Vector2 start(nowLine[idx2] - nowNormals[idx2] * LINE_WIDTH);
                 Vector2 end(nowLine[idx2] + nowNormals[idx2] * LINE_WIDTH);
+				Vector2 start3(nowLine[idx2] - nowNormals[idx2] * 3);
+				Vector2 end3(nowLine[idx2] + nowNormals[idx2] * 3);
                 Vector2 start2(nowLine[idx2 + 1] - nowNormals[idx2 + 1] * LINE_WIDTH);
                 Vector2 end2(nowLine[idx2 + 1] + nowNormals[idx2 + 1] * LINE_WIDTH);
                 double_vector line1 = expImg.GetLineLight(start.x, start.y, end.x, end.y,
                                       360);
                 double_vector line2 = expImg.GetLineLight(start2.x, start2.y, end2.x, end2.y,
                                       360);
+				Vector3	ColorOnLine = expImg.GetBilinearColor(nowLine[idx2].x, nowLine[idx2].y);
+				Vector3	ColorOnLineLeft = expImg.GetBilinearColor(start3.x, start3.y);
+				Vector3	ColorOnLineRight = expImg.GetBilinearColor(end3.x, end3.y);
+				float cld = ((ColorOnLineLeft[0] - ColorOnLine[0])
+					+ (ColorOnLineLeft[1] - ColorOnLine[1])
+					+ (ColorOnLineLeft[2] - ColorOnLine[2]))/3;
+				float crd = ((ColorOnLineRight[0] - ColorOnLine[0])
+					+ (ColorOnLineRight[1] - ColorOnLine[1])
+					+ (ColorOnLineRight[2] - ColorOnLine[2]))/3;
                 double_vector width1 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line1),
                                                     15, 50), LINE_WIDTH * 2);
                 double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
                                                     15, 50), LINE_WIDTH * 2);
-                if(width1.size() >= 2 && width2.size() >= 2 && abs(width2[0] - width2[1]) < 1.5)
+                if(cld > 20 && crd > 20 &&
+					width1.size() >= 2 && width2.size() >= 2/* && abs(width2[0] - width2[1]) < 1.5*/)
                 {
                     Line line1;
                     line1.push_back(nowLine[idx2] - nowNormals[idx2] * width1[0] * blackRadio);
@@ -1013,19 +1030,22 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
             lineWidths.push_back(Vector2());
         }
         bLineWidth = BLineWidth;
-        //m_BLineWidth = FixLineWidths(m_BLineWidth, 100);
-        ClearLineWidthByPercent(bLineWidth, 0.4);
-        bLineWidth = FixLineWidths(bLineWidth, 20);
-        bLineWidth = SmoothingHas0Len5(bLineWidth, 0, 5);
-        bLineWidth = FixedLineWidth(bLineWidth, 5);
+
+        //bLineWidth = FixLineWidths(bLineWidth, 4);
+		//ClearLineWidthByPercent(bLineWidth, 0.3);
+// 		bLineWidth = CleanOrphanedLineWidths(bLineWidth, 5);
+// 		bLineWidth = FixLineWidths(bLineWidth, 30);
+		
+
+		//bLineWidth = FixedLineWidth(bLineWidth, 5);
     }
     cv::Mat decorative_Curves_2;
     Vector3s2d lineColors;
     //if(m_CONSTRAINT_CURVES_PARAMETER_1 &&m_DECORATIVE_CURVES &&m_BLACK_LINE_VECTORIZATION)
     {
         lineColors = GetLinesColor(img, blackLine);
-        lineColors = SmoothingLen5(lineColors, 0, 10);
-        bLineWidth = SmoothingLen5(bLineWidth, 0, 10);
+        lineColors = SmoothingLen5(lineColors, 0, 5);
+        bLineWidth = SmoothingLen5(bLineWidth, 0, 3);
         blackLine = SmoothingLen5(blackLine, 0, 3);
         fi.curves1 = blackLine;
         fi.ocolor1 = lineColors;
@@ -1070,26 +1090,6 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         }
         blackLine2 = GetLines(tpnts2d, 0.5, 0.5);
         blackLine2 = SmoothingLen5(blackLine2, 0.3, 3);
-//         cv::Mat colorline0 = MakeColorLineImage(img, blackLine2);
-//         LineEnds les = GetLineEnds(blackLine2);
-//         LinkLineEnds180self(blackLine2, les, 5, 30);
-//         les = GetLineEnds(blackLine2);
-//         LinkLineEnds180(les, 5, 20);
-//         ConnectLineEnds3(les, blackLine2);
-//         les = GetLineEnds(blackLine2);
-//         LinkLineEnds180(les, 6, 30);
-//         ConnectLineEnds3(les, blackLine2);
-//         //IncreaseDensity(blackLine2, tmp_width);
-//         les = GetLineEnds(blackLine2);
-//         ConnectNearestLines(les, blackLine2, 10, 20);
-//         //blackLine2 = LineSplitAtEndIntersection(blackLine2, 1);
-//         les = GetLineEnds(blackLine2);
-//         LinkLineEnds(les, 3, 360);
-//         ConnectLineEnds5(les, blackLine2);
-//         les = GetLineEnds(blackLine2);
-//         LinkLineEnds(les, 3, 360);
-//         ConnectLineEnds5(les, blackLine2);
-//         blackLine2 = SmoothingLen3(blackLine2, 0, 1);
     }
     Lines isosurfaceLines;
     cv::Mat isoimg, reginimg, isolineimg;
@@ -1154,18 +1154,24 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         PicMesh pm1;
         pm1.SetSize(img.cols, img.rows);
         pm1.ReadFromSideline(&cgal_contour1);
-        //pm1.MakeColor1();
         pm1.MakeRegionLine(img, 10);
+		pm1.m_Lines = SmoothingLen5(pm1.m_Lines, 0.3, 3);
+		//pm1.MakeColor1();
+		//cv::Mat sp1, sp2;
+		//pm1.MakeSeedPointMap(sp1, sp2);
         cgal_contour2.m_i2s = i2s;
+		cgal_contour2.SetSize(img.cols, img.rows);
         cgal_contour2.AddLines(pm1.m_Lines);
-        cgal_contour2.SetCriteria(0.15, 5);
-        cgal_contour2.Compute();
+        cgal_contour2.SetCriteria(0.15, 20);
+        cgal_contour2.Compute2();
         PicMesh pm2;
         pm2.SetSize(img.cols, img.rows);
         pm2.ReadFromSideline(&cgal_contour2);
 		pm2.SetRegionColor(img);
 		pm2.ComputeRegion();
         fi.picmesh1 = pm2;
+		fi.picmesh2 = pm1;
+		fi.curves2 = blackLine2;
     }
     return fi;
 }

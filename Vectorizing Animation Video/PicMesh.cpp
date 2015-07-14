@@ -64,14 +64,14 @@ void PicMesh::ReadFromSideline(TriangulationCgal_Sideline* ts)
     // 把兩邊的顏色填上，標上end point
     m_LinesVH.resize(m_Lines.size());
     m_LinesHH.resize(m_Lines.size());
-	m_LinesHH_Rrid.resize(m_Lines.size());
-	m_LinesHH_Lrid.resize(m_Lines.size());
+    m_LinesHH_Rrid.resize(m_Lines.size());
+    m_LinesHH_Lrid.resize(m_Lines.size());
     for(int i = 0; i < m_Lines.size(); ++i)
     {
         VHandles& tvhs = m_LinesVH[i];
         HHandles& thhs = m_LinesHH[i];
-		ints& Rrids = m_LinesHH_Rrid[i];
-		ints& Lrids = m_LinesHH_Lrid[i];
+        ints& Rrids = m_LinesHH_Rrid[i];
+        ints& Lrids = m_LinesHH_Lrid[i];
         Line& line = m_Lines[i];
         BasicMesh::Point now(line[0].x, line[0].y, 0);
         for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
@@ -146,23 +146,23 @@ void PicMesh::ReadFromSideline(TriangulationCgal_Sideline* ts)
                         FHandle tfh = face_handle(thhs.back());
                         if(tfh.is_valid())
                         {
-							Rrids.push_back(data(tfh).rid);
+                            Rrids.push_back(data(tfh).rid);
                             data(tfh).cid = m_i2s.right[i][0];
                         }
-						else
-						{
-							Rrids.push_back(-1);
-						}
+                        else
+                        {
+                            Rrids.push_back(-1);
+                        }
                         FHandle ofh = opposite_face_handle(thhs.back());
                         if(ofh.is_valid())
                         {
                             Lrids.push_back(data(ofh).rid);
-							data(ofh).cid = m_i2s.left[i][0];
+                            data(ofh).cid = m_i2s.left[i][0];
                         }
-						else
-						{
-							Lrids.push_back(-1);
-						}
+                        else
+                        {
+                            Lrids.push_back(-1);
+                        }
                         tvhs.push_back(*vvit);
                         Point pp = point(*vvit);
                         pts.push_back(Vector2(pp[0], pp[1]));
@@ -566,7 +566,7 @@ void PicMesh::MappingMeshByColor(PicMesh& pm, double x, double y, cv::Mat& img1,
         if(m_RegionAreas[i] > 10)
         {
             double dis = 0;
-			int weight = 0;
+            int weight = 0;
             for(int j = 0; j < region.size(); ++j)
             {
                 BasicMesh::Point now = MidPoint(region[j]);
@@ -576,10 +576,10 @@ void PicMesh::MappingMeshByColor(PicMesh& pm, double x, double y, cv::Mat& img1,
                 Vector3 c2 = vimgbg.GetBilinearColor(now[0], now[1]);
                 double ndis = c1.distance(c2);
                 dis += ndis;
-				weight += fg.at<uchar>(now[1], now[0]) ;
+                weight += fg.at<uchar>(now[1], now[0]) ;
             }
             dis /= region.size();
-			weight /= region.size();
+            weight /= region.size();
             //printf("color distance %f\n", dis);
             if(dis > 20 && weight > 70)
             {
@@ -777,6 +777,25 @@ void PicMesh::MakeRegionLine(cv::Mat& img, double lmax)
             }
         }
     }
+}
+
+void PicMesh::MakeSeedPointMap(cv::Mat& out1, cv::Mat& out2)
+{
+    cv::Mat res1(m_h / 10 + 1, m_w / 10 + 1, CV_8UC1), res2(m_h / 10 + 1, m_w / 10 + 1, CV_8UC1);
+    res1 = cv::Scalar(0);
+    res2 = cv::Scalar(0);
+    for(VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        Point p = point(*vit);
+        int x = p[0] / 10;
+        int y = p[1] / 10;
+        res1.at<uchar>(y, x) = 255;
+        x = (p[0] + 5) / 10;
+        y = (p[1] + 5) / 10;
+        res2.at<uchar>(y, x) = 255;
+    }
+	out1 = res1;
+	out2 = res2;
 }
 
 bool PicMesh::ConnectOneRingConstraint1(VHandle vh, VHandle lastvh, Vector2& out, Point dir, double lmax)
@@ -1366,8 +1385,8 @@ void PicMesh::MakeColor4(cv::Mat& img)
 
 void PicMesh::MakeColor6(cv::Mat& img)
 {
-	m_DifferentRegionIDs.clear();
-	m_DifferentRegionIDs.resize(m_Regions.size(), 0);
+    m_DifferentRegionIDs.clear();
+    m_DifferentRegionIDs.resize(m_Regions.size(), 0);
     vavImage vimg(img);
     // mark boundary constraint
     for(VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
@@ -1401,13 +1420,16 @@ void PicMesh::MakeColor6(cv::Mat& img)
                 c2.x = 1;
             }
             data(*vit).c2 = c2;
-			m_DifferentRegionIDs[data(*vf_iter(*vit)).rid]++;
+            if(vf_iter(*vit).is_valid())
+            {
+                m_DifferentRegionIDs[data(*vf_iter(*vit)).rid]++;
+            }
         }
     }
     // blur c2
     lightblurC2();
     lightblurC2();
-    lightblurC2();
+    //lightblurC2();
 
     //  removeblackC2();
     //  removeblackC2();
@@ -1415,11 +1437,11 @@ void PicMesh::MakeColor6(cv::Mat& img)
     BuildColorModels();
     MarkColoredFace();
     FillConstraintRegion();
-	GetConstraintFaceColor(img);
-	blurFaceC2();
-	blurFaceC2();
-	blurFaceC2();
-	m_FGids.clear();
+    GetConstraintFaceColor(img);
+    blurFaceC2();
+    blurFaceC2();
+    //blurFaceC2();
+    m_FGids.clear();
     for(FIter fit = faces_begin(); fit != faces_end(); ++fit)
     {
         int rid = data(*fit).rid;
@@ -1438,7 +1460,14 @@ void PicMesh::MakeColor6(cv::Mat& img)
 
             if(data(*fit).mark > 0 && rid >= 0 && m_ColorConstraint.size() > rid)
             {
-                t.color[c] = m_ColorConstraint[rid].GetColorVector3(p[0], p[1], mid[0], mid[1]);
+                if(data(*fvit).constraint == 1)
+                {
+                    t.color[c] = m_ColorConstraint[rid].GetColorVector3(p[0], p[1], mid[0], mid[1]);
+                }
+                else
+                {
+                    t.color[c] = m_ColorConstraint[rid].GetColorVector3(p[0], p[1]);
+                }
             }
             else if(data(*fit).mark < 0)
             {
@@ -1449,109 +1478,166 @@ void PicMesh::MakeColor6(cv::Mat& img)
         }
         if(data(*fit).mark != 0)
         {
-			m_FGids.push_back(rid);
+            m_FGids.push_back(rid);
             m_Trangles.push_back(t);
         }
     }
-	std::sort(m_FGids.begin(), m_FGids.end());
-	std::vector<int>::iterator it;
-	it = std::unique (m_FGids.begin(), m_FGids.end());
-	m_FGids.resize(std::distance(m_FGids.begin(),it) ); 
+    std::sort(m_FGids.begin(), m_FGids.end());
+    std::vector<int>::iterator it;
+    it = std::unique(m_FGids.begin(), m_FGids.end());
+    m_FGids.resize(std::distance(m_FGids.begin(), it));
 }
 
 
+void PicMesh::MakeColor6x(cv::Mat& img)
+{
+    m_DifferentRegionIDs.clear();
+    m_DifferentRegionIDs.resize(m_Regions.size(), 0);
+    vavImage vimg(img);
+    // mark boundary constraint
+    for(VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        Point p = point(*vit);
+        if(p[0] == 0 || p[1] == 0 || p[0] == m_w || p[1] == m_h)
+        {
+            data(*vit).constraint = 1;
+        }
+    }
+    // mark constraint point
+    for(int i = 0; i < m_LinesVH.size(); ++i)
+    {
+        for(int j = 0; j < m_LinesVH[i].size(); ++j)
+        {
+            data(m_LinesVH[i][j]).constraint = 1;
+        }
+    }
+    m_Trangles.clear();
+    ColorTriangle t;
+    // get color far constraint
+    for(BasicMesh::VIter vit = vertices_begin(); vit != vertices_end(); ++vit)
+    {
+        if(data(*vit).constraint == 0)
+        {
+            Point p = point(*vit);
+            Vector3 c2 = vimg.GetBilinearColor(p[0] - 0.5, p[1] - 0.5);
+            std::swap(c2[0], c2[2]);
+            if(c2 == Vector3())
+            {
+                c2.x = 1;
+            }
+            data(*vit).c2 = c2;
+            m_DifferentRegionIDs[data(*vf_iter(*vit)).rid]++;
+        }
+    }
+    // blur c2
+    lightblurC2();
+    lightblurC2();
+    lightblurC2();
+
+    //  removeblackC2();
+    //  removeblackC2();
+    //  removeblackC2();
+    BuildColorModels();
+    for(int i = 0; i < m_ColorConstraint.size(); ++i)
+    {
+        m_ColorConstraint[i].m_rbfmesh.MakeColor1();
+        m_Trangles.insert(m_Trangles.begin(), m_ColorConstraint[i].m_rbfmesh.m_Trangles.begin(),
+                          m_ColorConstraint[i].m_rbfmesh.m_Trangles.end());
+    }
+}
+
 void PicMesh::MakeFGLine(float x, float y, cv::Mat img)
 {
-	vavImage vImg(img);
-	ints& ids = m_FGids;
-	ints needDrawLines;
-	for (int i=0;i<m_LinesHH_Rrid.size();++i)
-	{
-		for (int k=0;k<m_LinesHH_Rrid[i].size();++k)
-		{
-			bool breakflag = false;
-			int RRid = m_LinesHH_Rrid[i][k];
-			int LLid = m_LinesHH_Lrid[i][k];
-			for (int j=0;j<ids.size();++j)
-			{
-				if (ids[j] == RRid || ids[j] == LLid)
-				{
-					needDrawLines.push_back(i);
-					breakflag = true;
-					break;
-				}
-			}
-			if (breakflag)
-			{
-				break;
-			}
-		}
-	}
-	Lines blackLine;
-	Lines linesW;
-	Vector3s2d lineColors;
-	for (int i=0;i<needDrawLines.size();++i)
-	{
-		blackLine.push_back(m_Lines[needDrawLines[i]]);
-	}
-	// find black line
-	ints isok;
-	for(int idx1 = 0; idx1 < blackLine.size(); ++idx1)
-	{
-		Line& nowLine = blackLine[idx1];
-		Line fixline;
-		int count = 0;
-		fixline.push_back(nowLine[0]);
-		for(int idx2 = 1; idx2 < nowLine.size() - 2; ++idx2)
-		{
-			if (img.at<uchar>(nowLine[idx2].y+y, nowLine[idx2].x+x) > 0)
-			{
-				fixline.push_back(nowLine[idx2]);
-				count++;
-			}
-		}
-		if (nowLine.back().distance(nowLine.front()) < 2)
-		{
-			fixline.push_back(nowLine[0]);
-		}
-		if (count > (nowLine.size()/2))
-		{
-			isok.push_back(1);
-		}
-		else
-		{
-			isok.push_back(0);
-		}
-		nowLine = fixline;
-	}
-	// find end
+    vavImage vImg(img);
+    ints& ids = m_FGids;
+    ints needDrawLines;
+    for(int i = 0; i < m_LinesHH_Rrid.size(); ++i)
+    {
+        for(int k = 0; k < m_LinesHH_Rrid[i].size(); ++k)
+        {
+            bool breakflag = false;
+            int RRid = m_LinesHH_Rrid[i][k];
+            int LLid = m_LinesHH_Lrid[i][k];
+            for(int j = 0; j < ids.size(); ++j)
+            {
+                if(ids[j] == RRid || ids[j] == LLid)
+                {
+                    needDrawLines.push_back(i);
+                    breakflag = true;
+                    break;
+                }
+            }
+            if(breakflag)
+            {
+                break;
+            }
+        }
+    }
+    Lines blackLine;
+    Lines linesW;
+    Vector3s2d lineColors;
+    for(int i = 0; i < needDrawLines.size(); ++i)
+    {
+        blackLine.push_back(m_Lines[needDrawLines[i]]);
+    }
+    // find black line
+    ints isok;
+    for(int idx1 = 0; idx1 < blackLine.size(); ++idx1)
+    {
+        Line& nowLine = blackLine[idx1];
+        Line fixline;
+        int count = 0;
+        fixline.push_back(nowLine[0]);
+        for(int idx2 = 1; idx2 < nowLine.size() - 2; ++idx2)
+        {
+            if(img.at<uchar>(nowLine[idx2].y + y, nowLine[idx2].x + x) > 0)
+            {
+                fixline.push_back(nowLine[idx2]);
+                count++;
+            }
+        }
+        if(nowLine.back().distance(nowLine.front()) < 2)
+        {
+            fixline.push_back(nowLine[0]);
+        }
+        if(count > (nowLine.size() / 2))
+        {
+            isok.push_back(1);
+        }
+        else
+        {
+            isok.push_back(0);
+        }
+        nowLine = fixline;
+    }
+    // find end
 
-	linesW.resize(blackLine.size());
-	lineColors.resize(blackLine.size());
-	for (int i=0;i<blackLine.size();++i)
-	{
-		linesW[i].resize(blackLine[i].size());
-		lineColors[i].resize(blackLine[i].size());
-		if (isok[i] > 0)
-		{
-			for (int j=0;j<linesW[i].size();++j)
-			{
-				linesW[i][j].x = 1;
-				linesW[i][j].y = 1;
-			}
-		}
-		else
-		{
-			for (int j=0;j<linesW[i].size();++j)
-			{
-				linesW[i][j].x = 0;
-				linesW[i][j].y = 0;
-			}
-		}
-	}
-	fglines = blackLine;
-	fglinesW = linesW;
-	fglineColors = lineColors;
+    linesW.resize(blackLine.size());
+    lineColors.resize(blackLine.size());
+    for(int i = 0; i < blackLine.size(); ++i)
+    {
+        linesW[i].resize(blackLine[i].size());
+        lineColors[i].resize(blackLine[i].size());
+        if(isok[i] > 0)
+        {
+            for(int j = 0; j < linesW[i].size(); ++j)
+            {
+                linesW[i][j].x = 1;
+                linesW[i][j].y = 1;
+            }
+        }
+        else
+        {
+            for(int j = 0; j < linesW[i].size(); ++j)
+            {
+                linesW[i][j].x = 0;
+                linesW[i][j].y = 0;
+            }
+        }
+    }
+    fglines = blackLine;
+    fglinesW = linesW;
+    fglineColors = lineColors;
 }
 
 void PicMesh::MakeColor5(cv::Mat& img)

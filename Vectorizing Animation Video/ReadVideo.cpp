@@ -11,6 +11,7 @@ extern "C"
 ReadVideo::ReadVideo(void)
 {
 	m_HasRead = false;
+	m_frameCount = 0;
 }
 
 
@@ -26,21 +27,21 @@ ReadVideo::~ReadVideo(void)
 	}
 }
 
-bool ReadVideo::Read(std::string path)
+bool ReadVideo::Read(std::string ss)
 {
 	m_pFormatCtx = NULL;
 	av_register_all();
-	if (avformat_open_input(&m_pFormatCtx, path.c_str(), NULL, NULL) != 0)
+	if (avformat_open_input(&m_pFormatCtx, ss.c_str(), NULL, NULL) != 0)
 	{
-		return -1;
+		return false;
 	}
 	if (avformat_find_stream_info(m_pFormatCtx, NULL) < 0)
 	{
-		return -1;
+		return false;
 	}
-	av_dump_format(m_pFormatCtx, -1, path.c_str(), 0);
+	av_dump_format(m_pFormatCtx, -1, ss.c_str(), 0);
 	m_videoStream = -1;
-	for (int i = 0; i < m_pFormatCtx->nb_streams; i++)
+	for (int i = 0; i < (int)m_pFormatCtx->nb_streams; i++)
 	{
 		if (m_pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
 		{
@@ -50,33 +51,35 @@ bool ReadVideo::Read(std::string path)
 	}
 	if (m_videoStream == -1)
 	{
-		return -1;
+		return false;
 	}
 	m_pCodecCtx = m_pFormatCtx->streams[m_videoStream]->codec;
 	m_pCodec = avcodec_find_decoder(m_pCodecCtx->codec_id);
 	if (m_pCodec == NULL)
 	{
-		return -1;
+		return false;
 	}
 	if (avcodec_open2(m_pCodecCtx, m_pCodec, NULL) < 0)
 	{
-		return -1;
+		return false;
 	}
 	m_pFrame = avcodec_alloc_frame();
 	if (m_pFrame == NULL)
 	{
-		return -1;
+		return false;
 	}
 	m_pFrameRGB = avcodec_alloc_frame();
 	if (m_pFrameRGB == NULL)
 	{
-		return -1;
+		return false;
 	}
 	m_numBytes = avpicture_get_size(PIX_FMT_RGB24, m_pCodecCtx->width,
-									m_pCodecCtx->height);
+		m_pCodecCtx->height);
 	m_buffer = (uint8_t*)av_malloc(m_numBytes);
 	avpicture_fill((AVPicture*)m_pFrameRGB, m_buffer, PIX_FMT_RGB24,
-				   m_pCodecCtx->width, m_pCodecCtx->height);
+		m_pCodecCtx->width, m_pCodecCtx->height);
+	m_HasRead = true;
+	return true;
 }
 
 cv::Mat ReadVideo::GetFrame()
@@ -160,5 +163,50 @@ void ReadVideo::SkipFrame()
 			}
 		}
 		av_free_packet(&m_packet);
+	}
+}
+
+bool ReadVideo::Load(std::string path)
+{
+	if (Read(path))
+	{
+		m_frameCount = 0;
+		while (av_read_frame(m_pFormatCtx, &m_packet) >= 0)
+		{
+			if (m_packet.stream_index == m_videoStream)
+			{
+				avcodec_decode_video2(m_pCodecCtx, m_pFrame, &m_frameFinished, &m_packet);
+				if (m_frameFinished)
+				{
+					m_frameCount++;
+				}
+			}
+			av_free_packet(&m_packet);
+		}
+		avformat_close_input(&m_pFormatCtx);
+		if (avformat_open_input(&m_pFormatCtx, path.c_str(), NULL, NULL) != 0)
+		{
+			return false;
+		}
+		printf("\nFrameCount %d\n", m_frameCount);
+	}
+	else
+	{
+		return false;
+	}
+	Close();
+	m_current = 0;
+	Read(path);
+	return true;
+}
+
+void ReadVideo::Close()
+{
+	if (m_HasRead)
+	{
+		avformat_close_input(&m_pFormatCtx);
+		av_free(m_buffer);
+		av_free(m_pFrameRGB);
+		av_free(m_pFrame);
 	}
 }

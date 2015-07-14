@@ -1,5 +1,6 @@
 #pragma once
 #include "BasicMesh.h"
+#include "TriangulationBase.h"
 
 class TriangulationCgal_SeedPoint;
 class RBFMesh : public BasicMesh
@@ -13,5 +14,7 @@ public:
 	void lightblurC2();
 	void blurC2();
 
+	void MakeColor1();
+	ColorTriangles	m_Trangles;
 };
 

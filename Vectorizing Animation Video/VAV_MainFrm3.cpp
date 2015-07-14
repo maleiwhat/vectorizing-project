@@ -595,10 +595,22 @@ void ImgFillBlack(cv::Mat& a, cv::Mat& b)
                 {
                     cb = ca;
                 }
-                //              else if(ca != black && cb != black)
-                //              {
-                //                  cb = ca * 0.9 + cb * 0.1;
-                //              }
+                else if(ca != black && cb != black)
+                {
+                    float dis = abs(ca[0] - cb[0]) + abs(ca[1] - cb[1]) + abs(ca[2] - cb[2]);
+                    if(j > 10)
+                    {
+                        cv::Vec3b& cc = b.at<cv::Vec3b>(i, j - 10);
+                        if(black == cc)
+                        {
+                            cb = ca * 0.9 + cb * 0.1;
+                        }
+                    }
+                    else if(dis < 50)
+                    {
+                        cb = ca * 0.5 + cb * 0.5;
+                    }
+                }
             }
         }
     }
@@ -663,7 +675,12 @@ Mats MakeStaticBackGroundByMove(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgro
             printf("x %.2f y %.2f lw %.2f rw %.2f tw %.2f bw %.2f\n", x, y, lw, rw, tw, bw);
             for(int i = 0; i < img.rows; ++i)
             {
-                for(int j = 0; j < img.cols; ++j)
+                int sj = 6;
+                if(a == m_Video.size() - 1)
+                {
+                    sj = 0;
+                }
+                for(int j = sj; j < img.cols; ++j)
                 {
                     cv::Vec3b& tv00 = timg.at<cv::Vec3b>(fy + i, fx + j);
                     cv::Vec3b& tv10 = timg.at<cv::Vec3b>(fy + i + 1, fx + j);
@@ -709,13 +726,12 @@ Mats MakeStaticBackGroundByMove(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgro
         meanimg = timgs.front().clone();
         ints useids;
         ImgFillBlack(timgs.front(), meanimg);
-        ImgFillBlack(timgs.back(), meanimg);
         cv::imwrite("meanimg.png", meanimg);
         for(int k = 1; k < timgs.size() - 1; ++k)
         {
             double mindis = ColorDistance(meanimg, timgs[k + 1]);
             int idx = k + 1;
-            for(int j = k + 2; j <= k + 10 && j < timgs.size(); ++j)
+            for(int j = k + 2; j <= k + 9 && j < timgs.size(); ++j)
             {
                 double dis = ColorDistance(meanimg, timgs[k + 1]);
                 if(dis < mindis)
@@ -727,6 +743,9 @@ Mats MakeStaticBackGroundByMove(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgro
             k = idx;
             ImgFillBlack(timgs[idx], meanimg);
             useids.push_back(idx);
+            char tmppath[100];
+            sprintf(tmppath, "tmp/meanimg_%04d.png", k);
+            cv::imwrite(tmppath, meanimg);
         }
         cv::Mat errimg;
         errimg.create(finalH, finalW, CV_32FC1);
@@ -879,7 +898,7 @@ void MakeStaticBackGroundByAvg(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& backgrou
     }
 }
 
-void MakeStaticBackGround(Mats& m_Video, Vec2fs& m_Moves)
+void MakeStaticBackGroundMedian(Mats& m_Video, Vec2fs& m_Moves, cv::Mat& background)
 {
     if(m_Video.size() != m_Moves.size())
     {
@@ -1015,9 +1034,7 @@ void MakeStaticBackGround(Mats& m_Video, Vec2fs& m_Moves)
         cv::Mat showbg;
         bgimg.convertTo(showbg, CV_8UC3);
         //normalize(showbg, showbg, 0, 255, cv::NORM_MINMAX);
-        cv::imshow("showbg", showbg);
-        cv::imshow("meanimg", meanimg);
-        cv::waitKey();
+        background = meanimg;
         printf("minX %d maxX %d minY %d maxY %d \n", minX, maxX, minY, maxY);
     }
 }
@@ -1055,7 +1072,7 @@ void VAV_MainFrame::OnFileOpenVideo2()
             folder += "\\";
             m_Video.clear();
             m_Moves.clear();
-            m_ReadVideo.Read(path);
+            m_ReadVideo.Load(path);
             bgfilename = folder + name + "_MSBGBM_BG.png";
             fgfilename = folder + name + "_MSBGBM_FG.png";
             //          if(si_bg.hasImage())
@@ -1070,15 +1087,7 @@ void VAV_MainFrame::OnFileOpenVideo2()
                 path.resize(path.size() - 4);
                 std::string video0str = folder + name + "_0000.png";
                 SavepointImage vimg0(video0str);
-                if(vimg0.hasImage())
-                {
-                    img = vimg0.ReadImage();
-                }
-                else
-                {
-                    img = m_ReadVideo.GetFrame();
-                    vimg0.SaveImage(img);
-                }
+                img = m_ReadVideo.GetFrame();
                 GetVavView()->SetPictureSize(img.cols, img.rows);
                 m_Video.push_back(img);
                 m_Moves.push_back(cv::Vec2f(0, 0));
@@ -1086,7 +1095,9 @@ void VAV_MainFrame::OnFileOpenVideo2()
                 cvtColor(img, prevgray, CV_BGR2GRAY);
                 // Åª´X­Óframe
                 cv::Mat lastimg;
-                int forloop = 100;
+                int forloop = m_ReadVideo.FrameCount() - 1;
+				//forloop = 10;
+                printf("\nforloop %d\n", forloop);
                 //std::cin >> forloop;
                 for(int i = 1; i <= forloop; ++i)
                 {
@@ -1094,25 +1105,20 @@ void VAV_MainFrame::OnFileOpenVideo2()
                     sprintf(tmppath, "_%04d.png", i);
                     SavepointImage vimgx(folder + name + tmppath);
                     cv::Mat imgx;
-                    if(vimgx.hasImage())
-                    {
-                        imgx = vimgx.ReadImage();
-                    }
-                    else
-                    {
-                        imgx = m_ReadVideo.GetFrame();
-                        vimgx.SaveImage(imgx);
-                    }
+                    imgx = m_ReadVideo.GetFrame();
+                    //vimgx.SaveImage(imgx);
                     if(imgx.cols > 0 && i > 1)
                     {
                         m_Video.push_back(imgx);
                         timgs.push_back(imgx);
+#ifdef STATIC_VIDEO
                         cvtColor(imgx, gray, CV_BGR2GRAY);
                         cv::Vec2f move2 = getMoveVectorBySIFT(prevgray, gray);
                         //prevgray = gray.clone();
                         m_Moves.push_back(move2);
                         //printf("avg_vel:%f,%f\n", move[0], move[1]);
                         lastimg = imgx;
+#endif
                     }
                 }
             }
@@ -1136,23 +1142,33 @@ void VAV_MainFrame::OnFileOpenVideo2()
                 miny = moves[i][1];
             }
         }
-        MakeStaticBackGroundByMove(m_Video, moves, bg, fg);
-        cv::imshow("show bg", bg);
-		cv::waitKey();
+        printf("m_Video.size() %d\n", m_Video.size());
         for(int i = 0; i < m_Video.size(); ++i)
         {
-			printf("Frame %03d   ", i);
+            m_VideoTexture.push_back(vavImage(m_Video[i]));
+        }
+#ifdef STATIC_VIDEO
+        MakeStaticBackGroundByMove(m_Video, moves, bg, fg);
+        cv::imshow("show bg move blur", bg);
+        cv::waitKey();
+#endif
+        for(int i = 0; i < m_Video.size(); ++i)
+        {
+            printf("\nFrame %03d   ", i);
             FrameInfo fi = ComputeFrame2(m_Video[i]);
             m_FrameInfos.push_back(fi);
         }
-        //MakeStaticBackGroundByAvg(m_Video, moves, bg);
+#ifdef STATIC_VIDEO
         SavepointImage si_bg(bgfilename);
         SavepointImage si_fg(fgfilename);
         si_bg.SaveImage(bg);
         si_fg.SaveImage(fg);
         FrameInfo bgfi = ComputeFrame2(bg);
-//         m_FrameInfos[0].picmesh1.MappingMesh(m_FrameInfos[0].picmesh1, 0, 0);
-//         m_FrameInfos[0].picmesh1.MakeColor6(timgs[0]);
+		// make key frame color
+		bgfi.picmesh1.MakeColor6(bg);
+		m_FrameInfos.push_back(bgfi);
+		g_cvshowEX.AddShow("fg", fg);
+#endif
         Vector3s colors;
         for(int i = 0; i < 256; ++i)
         {
@@ -1163,18 +1179,17 @@ void VAV_MainFrame::OnFileOpenVideo2()
         d3dApp.SetPictureSize(bg.cols, bg.rows);
         d3dApp.SetPictureSize(m_Video[0].cols, m_Video[0].rows);
         g_Nodeui.m_viewer->m_maxFrame = m_FrameInfos.size() - 1;
-
-        // make key frame color
-        bgfi.picmesh1.MakeColor6(bg);
-        m_FrameInfos.push_back(bgfi);
-        g_cvshowEX.AddShow("fg", fg);
         for(int i = 0; i < m_FrameInfos.size() - 2; ++i)
         {
+#ifdef STATIC_VIDEO
             m_FrameInfos[i].picmesh1.MappingMeshByColor(bgfi.picmesh1, moves[i + 1][0] - minx, moves[i + 1][1] - miny,
                     m_Video[i + 1], bg, fg);
-            
+#endif
             m_FrameInfos[i].picmesh1.MakeColor6(m_Video[i]);
+#ifdef STATIC_VIDEO
             m_FrameInfos[i].picmesh1.MakeFGLine(moves[i][0] - minx, moves[i][1] - miny, fg);
+#endif
+            printf("make frame %d color\n", i);
         }
 
         int csize = m_FrameInfos[0].picmesh1.m_Regions.size();
@@ -1188,9 +1203,10 @@ void VAV_MainFrame::OnFileOpenVideo2()
         }
         movex = -m_Moves.back()[0];
         movey = -m_Moves.back()[1];
-
+		cv::imshow("compute ok", m_Video.back());
+		cv::waitKey();
         GetVavView()->OnTimer(0);
-        GetVavView()->SetTimer(30, 50, 0);
+        GetVavView()->SetTimer(30, 40, 0);
         Beep(750, 300);
         Beep(1750, 300);
         Beep(10750, 300);

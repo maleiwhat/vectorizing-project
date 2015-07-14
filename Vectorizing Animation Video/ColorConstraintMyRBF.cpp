@@ -179,7 +179,7 @@ void ColorConstraintMyRBF::BuildModel()
         }
         m_rbfmesh.clear();
         m_rbfmesh.ReadFromSeedpoint(&triangulation, m_Colors);
-// 		m_rbfmesh.lightblurC2();
+// 		m_rbfmesh.blurC2();
 // 		m_rbfmesh.lightblurC2();
 // 		m_rbfmesh.lightblurC2();
     }
