@@ -868,23 +868,23 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
     const float secDer = 0.05f;
     cv::Mat ccp1 = expImg.Clone(), ccp2 = img.clone(), imgf;
 	//ccp2 = WhiteBalance(ccp2);
-//	ccp2.convertTo(imgf, CV_32FC3, 1.0 / 255);
-// 	for(int j = 0; j < ccp2.cols ; ++j)
-// 	{
-// 		for(int i = 0; i < ccp2.rows ; ++i)
-// 		{
-// 			cv::Vec3f& intensity = imgf.at<cv::Vec3f>(i, j);
-// 			intensity[0] = - pow((1 - intensity[0]), 3);
-// 			intensity[1] = - pow((1 - intensity[1]), 3);
-// 			intensity[2] = - pow((1 - intensity[2]), 3);
-// 		}
-// 	}
-//	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
-//	imgf.convertTo(ccp2, CV_8UC3, 255);
+	ccp2.convertTo(imgf, CV_32FC3, 1.0 / 255);
+	for(int j = 0; j < ccp2.cols ; ++j)
+	{
+		for(int i = 0; i < ccp2.rows ; ++i)
+		{
+			cv::Vec3f& intensity = imgf.at<cv::Vec3f>(i, j);
+			intensity[0] = - pow((1 - intensity[0]), 3);
+			intensity[1] = - pow((1 - intensity[1]), 3);
+			intensity[2] = - pow((1 - intensity[2]), 3);
+		}
+	}
+	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
+	imgf.convertTo(ccp2, CV_8UC3, 255);
     for(int i = 1; i < 7; i++)
     {
         bilateralFilter(ccp2.clone(), ccp2, i, i * 2, i * 0.5);
-    }
+	}
 	ccp2 = ImgSharpen(ccp2);
 // 	sprintf(buff, "test/pic%03d_step03_BF.png", scount);
 // 	cv::imwrite(buff, ccp2);
@@ -1155,15 +1155,17 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         pm1.SetSize(img.cols, img.rows);
         pm1.ReadFromSideline(&cgal_contour1);
         pm1.MakeRegionLine(img, 10);
+		Line back = pm1.m_Lines.back();
 		pm1.m_Lines = SmoothingLen5(pm1.m_Lines, 0.3, 3);
+		pm1.m_Lines.back() = back;
 		//pm1.MakeColor1();
 		//cv::Mat sp1, sp2;
 		//pm1.MakeSeedPointMap(sp1, sp2);
         cgal_contour2.m_i2s = i2s;
 		cgal_contour2.SetSize(img.cols, img.rows);
         cgal_contour2.AddLines(pm1.m_Lines);
-        cgal_contour2.SetCriteria(0.15, 20);
-        cgal_contour2.Compute2();
+        cgal_contour2.SetCriteria(0.05, 10);
+        cgal_contour2.Compute();
         PicMesh pm2;
         pm2.SetSize(img.cols, img.rows);
         pm2.ReadFromSideline(&cgal_contour2);
@@ -1171,7 +1173,7 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
 		pm2.ComputeRegion();
         fi.picmesh1 = pm2;
 		fi.picmesh2 = pm1;
-		fi.curves2 = blackLine2;
+		fi.curves2 = pm2.m_Lines;
     }
     return fi;
 }

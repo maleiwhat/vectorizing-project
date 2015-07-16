@@ -54,15 +54,17 @@ int TriangulationCgal_Sideline::Compute2()
     m_Triangulation.clear();
     Vertex_handles vhs;
     // add 4 conner point
-
-    for(int y = 1; y < m_h - 1; y += 10)
+    for(int y = 5; y < m_h - 1; y += 5)
     {
-        for(int x = 1; x < m_w - 1; x += 10)
+		int sx = 5;
+		if (y % 2 == 0)
+		{
+			sx = 3;
+		}
+        for(int x = sx; x < m_w - 1; x += 5)
         {
             Point pp1(x, y);
-            Point pp2(x + 10, y + 10);
             m_Triangulation.insert(pp1);
-            m_Triangulation.insert(pp2);
         }
     }
     Insert_lines(m_Triangulation);

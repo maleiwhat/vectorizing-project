@@ -1096,7 +1096,7 @@ void VAV_MainFrame::OnFileOpenVideo2()
                 // Åª´X­Óframe
                 cv::Mat lastimg;
                 int forloop = m_ReadVideo.FrameCount() - 1;
-				//forloop = 10;
+				//forloop = 50;
                 printf("\nforloop %d\n", forloop);
                 //std::cin >> forloop;
                 for(int i = 1; i <= forloop; ++i)
@@ -1203,13 +1203,14 @@ void VAV_MainFrame::OnFileOpenVideo2()
         }
         movex = -m_Moves.back()[0];
         movey = -m_Moves.back()[1];
+		Beep(750, 300);
+		Beep(1750, 300);
+		Beep(10750, 300);
 		cv::imshow("compute ok", m_Video.back());
 		cv::waitKey();
         GetVavView()->OnTimer(0);
         GetVavView()->SetTimer(30, 40, 0);
-        Beep(750, 300);
-        Beep(1750, 300);
-        Beep(10750, 300);
+        
     }
 }
 
