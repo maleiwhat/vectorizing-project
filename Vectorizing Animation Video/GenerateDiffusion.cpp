@@ -849,26 +849,18 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
 {
     FrameInfo fi;
     Lines decorativeLine;
-    vavImage expImg = WhiteBalance(img.clone());
+    vavImage expImg = (img.clone());
 	char buff[100];
 	static int scount = 0;
-	sprintf(buff, "test/pic%03d_step01_WB.png", ++scount);
-	cv::imwrite(buff, expImg.GetCvMat());
-    expImg = ImgSharpen(expImg);
+    //expImg = ImgSharpen(expImg);
+	expImg.ToExpImage();
 	//expImg.ToExpImage();
-	//expImg.ToExpImage();
-	sprintf(buff, "test/pic%03d_step02_IS.png", scount);
-	cv::imwrite(buff, expImg.GetCvMat());
-	cv::Mat size2 = img.clone();
-	cv::resize(size2.clone(), size2, size2.size() * 2, 0, 0, cv::INTER_CUBIC);
-	sprintf(buff, "test/pic%03d_step02_S2.png", scount);
-	cv::imwrite(buff, size2);
     const int MASK1_SIZE = 5;
     const int MASK2_SIZE = 5;
     const float secDer = 0.05f;
-    cv::Mat ccp1 = expImg.Clone(), ccp2 = img.clone(), imgf;
+    cv::Mat ccp1 = img.clone(), ccp2 = img.clone(), imgf;
 	//ccp2 = WhiteBalance(ccp2);
-//	ccp2.convertTo(imgf, CV_32FC3, 1.0 / 255);
+// 	ccp2.convertTo(imgf, CV_32FC3, 1.0 / 255);
 // 	for(int j = 0; j < ccp2.cols ; ++j)
 // 	{
 // 		for(int i = 0; i < ccp2.rows ; ++i)
@@ -879,8 +871,8 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
 // 			intensity[2] = - pow((1 - intensity[2]), 3);
 // 		}
 // 	}
-//	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
-//	imgf.convertTo(ccp2, CV_8UC3, 255);
+// 	normalize(imgf, imgf, 0, 1, cv::NORM_MINMAX);
+// 	imgf.convertTo(ccp2, CV_8UC3, 255);
     for(int i = 1; i < 7; i++)
     {
         bilateralFilter(ccp2.clone(), ccp2, i, i * 2, i * 0.5);
@@ -899,7 +891,7 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         cvtColor(ccp1, ccp1, CV_BGR2GRAY);
         ccp1.convertTo(ccp1, CV_32F, 1.0 / 255);
         ccp1_curve = new CmCurveEx(ccp1);
-        ccp1_curve->CalSecDer(MASK2_SIZE, 1.4f, 0.05f);
+        ccp1_curve->CalSecDer(MASK2_SIZE, 0.9f, 0.05f);
         ccp1_curve->Link();
         cv::Mat show_ccp1 = expImg.Clone();
         Bblack_Fred1 = expImg.Clone();
@@ -934,46 +926,15 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         les = GetLineEnds(blackLine);
         LinkLineEnds180(les, 8, 60);
         ConnectLineEnds3(les, blackLine);
-		if (0)
-		{
-			cv::Mat picout = expImg.Clone();
-			for(size_t i = 0; i < blackLine.size(); i++)
-			{
-				const Line& pnts = blackLine[i];
-				for(size_t j = 0; j < pnts.size() - 1; j++)
-				{
-					cv::line(picout, cv::Point(pnts[j].x, pnts[j].y),
-						cv::Point(pnts[j + 1].x, pnts[j + 1].y), cv::Scalar(0, 0, 255));
-				}
-			}
-			sprintf(buff, "test/pic%03d_step05_L180.png", scount);
-			cv::imwrite(buff, picout);
-		}
         les = GetLineEnds(blackLine);
         ConnectNearestLines(les, blackLine, 6, 20);
-		if (0)
-		{
-			cv::Mat picout = expImg.Clone();
-			for(size_t i = 0; i < blackLine.size(); i++)
-			{
-				const Line& pnts = blackLine[i];
-				for(size_t j = 0; j < pnts.size() - 1; j++)
-				{
-					cv::line(picout, cv::Point(pnts[j].x, pnts[j].y),
-						cv::Point(pnts[j + 1].x, pnts[j + 1].y), cv::Scalar(0, 0, 255));
-					//picout.at<cv::Vec3b>(pnts[j].x, pnts[j].y) = cv::Vec3b(0, 0, 255);
-				}
-			}
-			sprintf(buff, "test/pic%03d_step06_CNL.png", scount);
-			cv::imwrite(buff, picout);
-		}
         Lines showLines;
         Lines BLineWidth(blackLine.size());
         Lines normals = GetNormalsLen2(blackLine);
-        const double blackRadio = 0.4;
+        const double blackRadio = 0.5;
         for(int idx1 = 0; idx1 < blackLine.size(); ++idx1)
         {
-            const Line& nowLine = blackLine[idx1];
+            Line& nowLine = blackLine[idx1];
             const Line& nowNormals = normals[idx1];
             Line& lineWidths = BLineWidth[idx1];
             lineWidths.clear();
@@ -1004,7 +965,7 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
                                                     15, 50), LINE_WIDTH * 2);
                 double_vector width2 = GetLineWidth(ConvertToSquareWave(ConvertToAngle(line2),
                                                     15, 50), LINE_WIDTH * 2);
-                if(cld > 20 && crd > 20 &&
+                if(cld > 10 && crd > 10 &&
 					width1.size() >= 2 && width2.size() >= 2/* && abs(width2[0] - width2[1]) < 1.5*/)
                 {
                     Line line1;
@@ -1028,13 +989,21 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
                 }
             }
             lineWidths.push_back(Vector2());
+			//lineWidths.push_back(lineWidths.back());
+			if (nowLine.front().squaredDistance(nowLine.back()) < 2)
+			{
+				lineWidths[0] = lineWidths[1];
+				lineWidths.back() = lineWidths[1];
+				nowLine.push_back(nowLine.front());
+				lineWidths.push_back(lineWidths.front());
+			}
         }
         bLineWidth = BLineWidth;
 
-        //bLineWidth = FixLineWidths(bLineWidth, 4);
+        bLineWidth = FixLineWidths(bLineWidth, 4);
 		//ClearLineWidthByPercent(bLineWidth, 0.3);
 // 		bLineWidth = CleanOrphanedLineWidths(bLineWidth, 5);
-// 		bLineWidth = FixLineWidths(bLineWidth, 30);
+ 		bLineWidth = FixLineWidths(bLineWidth, 30);
 		
 
 		//bLineWidth = FixedLineWidth(bLineWidth, 5);
@@ -1045,7 +1014,7 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
     {
         lineColors = GetLinesColor(img, blackLine);
         lineColors = SmoothingLen5(lineColors, 0, 5);
-        bLineWidth = SmoothingLen5(bLineWidth, 0, 3);
+        bLineWidth = SmoothingLen5(bLineWidth, 0, 5);
         blackLine = SmoothingLen5(blackLine, 0, 3);
         fi.curves1 = blackLine;
         fi.ocolor1 = lineColors;
@@ -1060,7 +1029,7 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         ccp2.convertTo(ccp2, CV_32FC1, 1.0 / 255);
         ccp2_curve = new CmCurveEx(ccp2);
         //ccp2_curve->CalSecDer2(MASK2_SIZE, 0.5, secDer);
-        ccp2_curve->CalSecDer(MASK2_SIZE, 1.4f, 0.05f);
+        ccp2_curve->CalSecDer(MASK2_SIZE, 0.6f, 0.05f);
         ccp2_curve->Link();
         cv::Mat show_ccp2 = img.clone();
         Bwhith_Fblue2 = img.clone();
@@ -1077,8 +1046,6 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
                 Bwhith_Fblue2.at<cv::Vec3b>(pnts[j]) = cv::Vec3b(0, 0, 255);
             }
         }
-		sprintf(buff, "test/pic%03d_step07_CE.png", scount);
-		cv::imwrite(buff, show_ccp2);
     }
     //if(m_CONSTRAINT_CURVES_PARAMETER_2 && m_BOUNDARY_CURVES)
     {
@@ -1089,7 +1056,7 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
             tpnts2d.push_back(edges2[i].pnts);
         }
         blackLine2 = GetLines(tpnts2d, 0.5, 0.5);
-        blackLine2 = SmoothingLen5(blackLine2, 0.3, 3);
+        blackLine2 = SmoothingLen5(blackLine2, 0, 5);
     }
     Lines isosurfaceLines;
     cv::Mat isoimg, reginimg, isolineimg;
@@ -1154,16 +1121,18 @@ FrameInfo ComputeFrame2(cv::Mat img, ColorRegion* cr)
         PicMesh pm1;
         pm1.SetSize(img.cols, img.rows);
         pm1.ReadFromSideline(&cgal_contour1);
-        pm1.MakeRegionLine(img, 10);
-		pm1.m_Lines = SmoothingLen5(pm1.m_Lines, 0.3, 3);
+        pm1.MakeRegionLine(img, 15);
+// 		Line back = pm1.m_Lines.back();
+// 		pm1.m_Lines = SmoothingLen5(pm1.m_Lines, 0.3, 3);
+// 		pm1.m_Lines.back() = back;
 		//pm1.MakeColor1();
 		//cv::Mat sp1, sp2;
 		//pm1.MakeSeedPointMap(sp1, sp2);
         cgal_contour2.m_i2s = i2s;
 		cgal_contour2.SetSize(img.cols, img.rows);
         cgal_contour2.AddLines(pm1.m_Lines);
-        cgal_contour2.SetCriteria(0.15, 20);
-        cgal_contour2.Compute2();
+        cgal_contour2.SetCriteria(0.1, 20);
+        cgal_contour2.Compute();
         PicMesh pm2;
         pm2.SetSize(img.cols, img.rows);
         pm2.ReadFromSideline(&cgal_contour2);
@@ -1212,7 +1181,7 @@ FrameInfo ComputeFrame2FG(cv::Mat img, cv::Mat fg, ColorRegion* cr)
                 Bblack_Fred1.at<cv::Vec3b>(pnts[j]) = cv::Vec3b(0, 0, 255);
             }
         }
-        g_cvshowEX.AddShow("show_ccp1", show_ccp1);
+        //g_cvshowEX.AddShow("show_ccp1", show_ccp1);
     }
     //if(m_CONSTRAINT_CURVES_PARAMETER_1 && m_DECORATIVE_CURVES)
     {
@@ -1303,7 +1272,7 @@ FrameInfo ComputeFrame2FG(cv::Mat img, cv::Mat fg, ColorRegion* cr)
         cvtColor(ccp2, ccp2, CV_BGR2GRAY);
         ccp2.convertTo(ccp2, CV_32F, 1.0 / 255);
         ccp2_curve = new CmCurveEx(ccp2);
-        ccp2_curve->CalSecDer2(MASK2_SIZE, 0.5, secDer, 0.0001);
+        ccp2_curve->CalSecDer2(MASK2_SIZE, 0.3, secDer, 0.0001);
         ccp2_curve->Link();
         cv::Mat show_ccp2 = expImg.Clone();
         Bwhith_Fblue2 = expImg.Clone();
@@ -1853,7 +1822,7 @@ FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr /*= NULL*/)
     {
         // ­× decorative curve
         cv::Vec3b red(0, 0, 255), white(255, 255, 255), black(0, 0, 0);
-        g_cvshowEX.AddShow("edgesImg", edgesImg);
+        //g_cvshowEX.AddShow("edgesImg", edgesImg);
         for(int i = 1; i < show_ccp.rows - 1; i++)
         {
             for(int j = 1; j < show_ccp.cols - 1 ; j++)
@@ -1866,7 +1835,7 @@ FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr /*= NULL*/)
                 }
             }
         }
-        g_cvshowEX.AddShow("dcurve0", show_ccp);
+        //g_cvshowEX.AddShow("dcurve0", show_ccp);
         {
             cv::Mat limg = show_ccp.clone();
             const std::vector<CEdge>& edges = dcurve->GetEdges();
@@ -1909,20 +1878,20 @@ FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr /*= NULL*/)
                     }
                 }
             }
-            g_cvshowEX.AddShow("limg2", limg);
+            //g_cvshowEX.AddShow("limg2", limg);
         }
     }
-    g_cvshowEX.AddShow("edgesImg0", edgesImg);
+    //g_cvshowEX.AddShow("edgesImg0", edgesImg);
     edgesImg = TrapBallMaskAll(edgesImg, oriImg);
     cv::Mat showregion = edgesImg.clone();
     FloodFillReColor(showregion);
-    g_cvshowEX.AddShow("TrapBallMaskAll", showregion);
+    //g_cvshowEX.AddShow("TrapBallMaskAll", showregion);
     edgesImg = FixSpaceMask(edgesImg);
-    g_cvshowEX.AddShow("FixSpaceMask", edgesImg);
+    //g_cvshowEX.AddShow("FixSpaceMask", edgesImg);
     edgesImg = MixTrapBallMask(edgesImg, oriImg, 20, 20);
     showregion = edgesImg.clone();
     FloodFillReColor(showregion);
-    g_cvshowEX.AddShow("MixTrapBallMask", showregion);
+    //g_cvshowEX.AddShow("MixTrapBallMask", showregion);
     cv::Mat show_trap;
     edgesImg = FixSpaceLine1(edgesImg, oriImg, 100);
     edgesImg = FixSpaceLine2(edgesImg, oriImg, 100);
@@ -1932,19 +1901,19 @@ FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr /*= NULL*/)
     edgesImg = FixSpaceLine2(edgesImg, oriImg, 200);
     show_trap = edgesImg.clone();
     FloodFillReColor(show_trap);
-    g_cvshowEX.AddShow("FixSpaceLine 200", show_trap);
+    //g_cvshowEX.AddShow("FixSpaceLine 200", show_trap);
     edgesImg = FixSpaceLine2(edgesImg, oriImg, 1000);
     edgesImg = FixSpaceLine1(edgesImg, oriImg, 1500);
     show_trap = edgesImg.clone();
     FloodFillReColor(show_trap);
-    g_cvshowEX.AddShow("FixSpaceLine 1000", show_trap);
+    //g_cvshowEX.AddShow("FixSpaceLine 1000", show_trap);
     edgesImg = FixSpaceLine1(edgesImg, oriImg, 10000);
     edgesImg = FixSpaceLine2(edgesImg, oriImg, 100000);
     edgesImg = FixSpaceLine1(edgesImg, oriImg, 100000);
     edgesImg = FixSpaceLine2(edgesImg, oriImg, 1000000);
     show_trap = edgesImg.clone();
     FloodFillReColor(show_trap);
-    g_cvshowEX.AddShow("FixSpaceLine 10000", show_trap);
+    //g_cvshowEX.AddShow("FixSpaceLine 10000", show_trap);
     {
         // draw decorative line
         const std::vector<CEdge>& edges = dcurve->GetEdges();
@@ -1986,7 +1955,7 @@ FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr /*= NULL*/)
     }
     show_trap = edgesImg.clone();
     FloodFillReColor(show_trap);
-    g_cvshowEX.AddShow("add decorative line", show_trap);
+    //g_cvshowEX.AddShow("add decorative line", show_trap);
     //edgesImg=MixTrapBallMask(edgesImg, img, 20, 20);
     ColorConstraints ccms0;
     S6ReColor(edgesImg, img.clone(), ccms0);
@@ -2003,7 +1972,7 @@ FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr /*= NULL*/)
             }
         }
     }
-    g_cvshowEX.AddShow("parimg", parimg);
+    //g_cvshowEX.AddShow("parimg", parimg);
     Lines colorline = GetRegionLines(edgesImg);
     Index2Side i2sx = GetLinesIndex2SideCV(colorline, edgesImg);
     colorline = HalfSmooth(colorline, 10);
@@ -2016,7 +1985,7 @@ FrameInfo ComputeFrame09(cv::Mat img, ColorRegion* cr /*= NULL*/)
     cv::Mat size2 = img.clone();
     cv::Mat colormask = edgesImg.clone();
     FloodFillReColor(colormask);
-    g_cvshowEX.AddShow("edgesImg", colormask);
+    //g_cvshowEX.AddShow("edgesImg", colormask);
     cv::imwrite("cmmsIndexImg.png", colormask);
     Index2Side i2s = GetLinesIndex2SideSmart(colorline, edgesImg);
     i2s.left = FixIndexs(i2s.left, 100, ccms0.size());

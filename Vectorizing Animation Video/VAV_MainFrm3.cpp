@@ -38,6 +38,7 @@ void VAV_MainFrame::OnFileOpenPicture()
         filename = dlg.GetPathName(); // return full path and filename
         if(filename.GetLength() > 1)
         {
+            printf("pic: %s\n", ConvStr::GetStr(filename.GetString()).c_str());
             D3DApp& d3dApp = GetVavView()->GetD3DApp();
             CMFCRibbonEdit* re;
             CMFCRibbonBaseElement* tmp_ui = 0;
@@ -1075,13 +1076,6 @@ void VAV_MainFrame::OnFileOpenVideo2()
             m_ReadVideo.Load(path);
             bgfilename = folder + name + "_MSBGBM_BG.png";
             fgfilename = folder + name + "_MSBGBM_FG.png";
-            //          if(si_bg.hasImage())
-            //          {
-            //              bg = si_bg.ReadImage();
-            //              fg = si_fg.ReadImage();
-            //              cvtColor(fg, fg, CV_BGR2GRAY);
-            //          }
-            //          else
             {
                 cv::Mat img;
                 path.resize(path.size() - 4);
@@ -1096,31 +1090,63 @@ void VAV_MainFrame::OnFileOpenVideo2()
                 // Åª´X­Óframe
                 cv::Mat lastimg;
                 int forloop = m_ReadVideo.FrameCount() - 1;
-				//forloop = 10;
+                //forloop = 10;
                 printf("\nforloop %d\n", forloop);
                 //std::cin >> forloop;
+                D3DApp& d3dApp = GetVavView()->GetD3DApp();
+				d3dApp.SetScaleTemporary(1);
+				d3dApp.InterSetRenderTransparencyOutput1();
                 for(int i = 1; i <= forloop; ++i)
                 {
                     char tmppath[100];
                     sprintf(tmppath, "_%04d.png", i);
                     SavepointImage vimgx(folder + name + tmppath);
                     cv::Mat imgx;
-                    imgx = m_ReadVideo.GetFrame();
-                    //vimgx.SaveImage(imgx);
-                    if(imgx.cols > 0 && i > 1)
+                    
+//                     if(i % 25 != 0)
+//                     {
+// 						m_ReadVideo.SkipFrame();
+//                         continue;
+//                     }
+					printf("frame %d  ", i);
+					imgx = m_ReadVideo.GetFrame();
+					vimgx.SaveImage(imgx);
+                    if(imgx.cols > 0)
                     {
+//                         try
+//                         {
+//                             FrameInfo fi = ComputeFrame2(imgx);
+// 							fi.picmesh1.MakeColor6(imgx);
+// 							vavImage vimg(imgx);
+//                             d3dApp.ClearTriangles();
+//                             d3dApp.ClearSkeletonLines();
+//                             d3dApp.AddLinesWidth(fi.curves1, fi.tmplinewidth, fi.ocolor1);
+//                             d3dApp.AddColorTriangles(fi.picmesh1.m_Trangles);
+// 							d3dApp.SetTexture(vimg.GetDx11Texture());
+//                             d3dApp.BuildPoint();
+//                             cv::Mat cimg = d3dApp.DrawSceneToCvMat();
+// 							sprintf(tmppath, "_%04d_.png", i);
+// 							cv::imwrite(folder + name + tmppath, cimg);
+// 							cv::imshow("now", cimg);
+// 							cv::waitKey(100);
+// 							cv::destroyWindow("now");
+//                         }
+//                         catch(...)
+//                         {
+//                         }
                         m_Video.push_back(imgx);
                         timgs.push_back(imgx);
 #ifdef STATIC_VIDEO
                         cvtColor(imgx, gray, CV_BGR2GRAY);
                         cv::Vec2f move2 = getMoveVectorBySIFT(prevgray, gray);
-                        //prevgray = gray.clone();
+                        prevgray = gray.clone();
                         m_Moves.push_back(move2);
-                        //printf("avg_vel:%f,%f\n", move[0], move[1]);
+                        printf("%3d avg_vel:%f,%f\n", i, move2[0], move2[1]);
                         lastimg = imgx;
 #endif
                     }
                 }
+                d3dApp.SetScaleRecovery();
             }
         }
         Vec2fs      moves;
@@ -1142,21 +1168,24 @@ void VAV_MainFrame::OnFileOpenVideo2()
                 miny = moves[i][1];
             }
         }
-        printf("m_Video.size() %d\n", m_Video.size());
-        for(int i = 0; i < m_Video.size(); ++i)
-        {
-            m_VideoTexture.push_back(vavImage(m_Video[i]));
-        }
 #ifdef STATIC_VIDEO
         MakeStaticBackGroundByMove(m_Video, moves, bg, fg);
         cv::imshow("show bg move blur", bg);
         cv::waitKey();
 #endif
+        ints idxs;
         for(int i = 0; i < m_Video.size(); ++i)
         {
             printf("\nFrame %03d   ", i);
-            FrameInfo fi = ComputeFrame2(m_Video[i]);
-            m_FrameInfos.push_back(fi);
+            try
+            {
+                FrameInfo fi = ComputeFrame2(m_Video[i]);
+                m_FrameInfos.push_back(fi);
+                idxs.push_back(i);
+            }
+            catch(...)
+            {
+            }
         }
 #ifdef STATIC_VIDEO
         SavepointImage si_bg(bgfilename);
@@ -1164,52 +1193,59 @@ void VAV_MainFrame::OnFileOpenVideo2()
         si_bg.SaveImage(bg);
         si_fg.SaveImage(fg);
         FrameInfo bgfi = ComputeFrame2(bg);
-		// make key frame color
-		bgfi.picmesh1.MakeColor6(bg);
-		m_FrameInfos.push_back(bgfi);
-		g_cvshowEX.AddShow("fg", fg);
+        // make key frame color
+        bgfi.picmesh1.MakeColor6(bg);
+        m_FrameInfos.push_back(bgfi);
+        g_cvshowEX.AddShow("fg", fg);
 #endif
-        Vector3s colors;
-        for(int i = 0; i < 256; ++i)
-        {
-            colors.push_back(Vector3(rand() % 256, rand() % 256, rand() % 256));
-        }
         //bgfi.picmesh1.MakeColor1();
         D3DApp& d3dApp = GetVavView()->GetD3DApp();
         d3dApp.SetPictureSize(bg.cols, bg.rows);
         d3dApp.SetPictureSize(m_Video[0].cols, m_Video[0].rows);
-        g_Nodeui.m_viewer->m_maxFrame = m_FrameInfos.size() - 1;
-        for(int i = 0; i < m_FrameInfos.size() - 2; ++i)
+        Mats videos;
+        for(int i = 0; i < idxs.size(); ++i)
+        {
+            videos.push_back(m_Video[idxs[i]]);
+        }
+        m_Video = videos;
+        printf("m_Video.size() %d\n", m_Video.size());
+        for(int i = 0; i < m_Video.size(); ++i)
+        {
+            m_VideoTexture.push_back(vavImage(m_Video[i]));
+        }
+// #ifdef STATIC_VIDEO
+//         g_Nodeui.m_viewer->m_maxFrame = idxs.size() - 1;
+// #else
+//         g_Nodeui.m_viewer->m_maxFrame = idxs.size() - 1;
+//#endif
+#ifdef STATIC_VIDEO
+        for(int i = 0; i < m_Video.size() - 1; ++i)
+#else
+        //m_FrameInfos[0].picmesh1.MakeColor1();
+        for(int i = 0; i < m_FrameInfos.size(); ++i)
+#endif
         {
 #ifdef STATIC_VIDEO
             m_FrameInfos[i].picmesh1.MappingMeshByColor(bgfi.picmesh1, moves[i + 1][0] - minx, moves[i + 1][1] - miny,
                     m_Video[i + 1], bg, fg);
-#endif
-            m_FrameInfos[i].picmesh1.MakeColor6(m_Video[i]);
-#ifdef STATIC_VIDEO
             m_FrameInfos[i].picmesh1.MakeFGLine(moves[i][0] - minx, moves[i][1] - miny, fg);
 #endif
+//             m_FrameInfos[i].picmesh1.MappingMesh(m_FrameInfos[i - 1].picmesh1, moves[i][0],
+//                                                  moves[i][1], m_Video[i], m_Video[i - 1]);
+            m_FrameInfos[i].picmesh1.MakeColor6(m_Video[i]);
+            //m_FrameInfos[i].picmesh1.MakeColor9();
             printf("make frame %d color\n", i);
-        }
-
-        int csize = m_FrameInfos[0].picmesh1.m_Regions.size();
-        ColorConstraints Colors = m_FrameInfos[0].picmesh1.m_ColorConstraint;
-        Vector3s Colors2;
-        ints idxs;
-        for(int i = 0; i < csize; ++i)
-        {
-            Colors2.push_back(Vector3(rand() % 256, rand() % 256, rand() % 256));
-            idxs.push_back(i);
         }
         movex = -m_Moves.back()[0];
         movey = -m_Moves.back()[1];
-		cv::imshow("compute ok", m_Video.back());
-		cv::waitKey();
-        GetVavView()->OnTimer(0);
-        GetVavView()->SetTimer(30, 40, 0);
         Beep(750, 300);
         Beep(1750, 300);
         Beep(10750, 300);
+        cv::imshow("compute ok", m_Video.back());
+        cv::waitKey();
+        GetVavView()->OnTimer(0);
+        GetVavView()->SetTimer(30, 40, 0);
+
     }
 }
 

@@ -12,6 +12,16 @@ void TriangulationCgal_SeedPoint::AddPointIdx(double x, double y, int id)
 	vh->info().mapid = id;
 }
 
+void TriangulationCgal_SeedPoint::AddPoints(Vector2s& ary)
+{
+	std::vector<Point> data;
+	for (int i=0;i<ary.size();++i)
+	{
+		data.push_back(Point(ary[i].x, ary[i].y));
+	}
+	m_Triangulation.insert(data.begin(), data.end());
+}
+
 void TriangulationCgal_SeedPoint::AddPoint(double x, double y)
 {
 	m_Triangulation.insert(Point(x, y));

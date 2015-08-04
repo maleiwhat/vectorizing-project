@@ -16,16 +16,24 @@ ID3D11DeviceContext* vavImage::m_DeviceContext;
 vavImage::vavImage(void)
 {
 	m_texture = NULL;
+	m_pTextureRead = NULL;
+	m_pTextureDraw = NULL;
 }
 
 vavImage::vavImage(const cv::Mat& im)
 {
 	m_Image = im.clone();
 	m_texture = NULL;
+	m_pTextureRead = NULL;
+	m_pTextureDraw = NULL;
 }
 
 ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 {
+	if (m_texture)
+	{
+		return m_texture;
+	}
 	if (m_Image.rows == 0 || m_Image.cols == 0)
 	{
 		return NULL;
@@ -67,9 +75,9 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 	sSubData.SysMemPitch = (UINT)(m_Image.rows * 4 * 4);
 	sSubData.SysMemSlicePitch = (UINT)(m_Image.rows * m_Image.cols * 4 * 4);
 	sSubData.pSysMem = characterImages;
-	ID3D11Texture2D* pTextureDraw;
+	
 	HRESULT d3dResult = m_Device->CreateTexture2D(&texDesc, &sSubData,
-						&pTextureDraw);
+						&m_pTextureDraw);
 	ID3D11ShaderResourceView* pShaderResView;
 	int x = 0;
 	delete[] characterImages;
@@ -78,7 +86,7 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 		DXTRACE_MSG(L"vavImage: Failed to create texture2D!");
 		return 0;
 	}
-	d3dResult = m_Device->CreateShaderResourceView(pTextureDraw, &srDesc,
+	d3dResult = m_Device->CreateShaderResourceView(m_pTextureDraw, &srDesc,
 				&pShaderResView);
 	if (FAILED(d3dResult))
 	{
@@ -88,7 +96,7 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 	if (0)
 	{
 		// take draw texture
-		ID3D11Texture2D* pTextureRead;
+		
 		D3D11_TEXTURE2D_DESC texDescCV;
 		ZeroMemory(&texDescCV, sizeof(texDescCV));
 		texDescCV.Width     = m_Image.rows;
@@ -102,13 +110,13 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 		texDescCV.Usage = D3D11_USAGE_STAGING;
 		texDescCV.BindFlags = 0;
 		texDescCV.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-		HR(m_Device->CreateTexture2D(&texDescCV, 0, &pTextureRead));
-		m_DeviceContext->CopyResource(pTextureRead, pTextureDraw);
+		HR(m_Device->CreateTexture2D(&texDescCV, 0, &m_pTextureRead));
+		m_DeviceContext->CopyResource(m_pTextureRead, m_pTextureDraw);
 		D3D11_MAPPED_SUBRESOURCE MappedResource;
 		float* pimg;
 		//HR(m_DeviceContext->Map(pTextureRead, 0, D3D11_MAP_READ, 0, &MappedResource));
 		unsigned int subresource = D3D11CalcSubresource(0, 0, 0);
-		HR(m_DeviceContext->Map(pTextureRead, subresource, D3D11_MAP_READ, 0,
+		HR(m_DeviceContext->Map(m_pTextureRead, subresource, D3D11_MAP_READ, 0,
 								&MappedResource));
 		pimg = (float*)MappedResource.pData;
 		cv::Mat simg = m_Image.clone();
@@ -133,9 +141,16 @@ ID3D11ShaderResourceView* vavImage::GetDx11Texture()
 }
 vavImage::~vavImage(void)
 {
+	if (m_texture)
+	{
+		m_texture->Release();
+		m_pTextureRead->Release();
+		m_pTextureDraw->Release();
+	}
 }
 bool vavImage::ReadImage(std::string path)
 {
+	m_texture = NULL;
 	m_Image = cv::imread(path.c_str());
 	if (m_Image.cols > 0 && m_Image.rows > 0)
 	{

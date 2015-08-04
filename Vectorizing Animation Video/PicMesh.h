@@ -37,7 +37,7 @@ public:
 	void MakeRegionLine(cv::Mat& img, double lmax);
 	void MakeSeedPointMap(cv::Mat& out1, cv::Mat& out2);
 	// mapping next mesh
-	void MappingMesh(PicMesh& pm, double x, double y);
+	void MappingMesh(PicMesh& pm, double x, double y, cv::Mat& img1, cv::Mat& img2);
 	// mapping next mesh and if color distance so big dont mapping
 	void MappingMeshByColor(PicMesh& pm, double x, double y, cv::Mat& img1, cv::Mat& bg, cv::Mat& fg);
 	// mapping next mesh by midpoint

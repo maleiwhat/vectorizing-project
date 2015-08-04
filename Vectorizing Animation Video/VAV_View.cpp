@@ -220,12 +220,12 @@ BOOL VAV_View::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
     if(zDelta > 0)
     {
-        m_Scale += 0.5;
+        m_Scale += 0.2;
         printf("m_Scale %f\n", m_Scale);
     }
     else if(zDelta < 0)
     {
-        m_Scale -= 0.25;
+        m_Scale -= 0.1;
         printf("m_Scale %f\n", m_Scale);
     }
     m_D3DApp.SetScale(m_Scale);
@@ -270,28 +270,27 @@ void VAV_View::OnLButtonDown(UINT nFlags, CPoint point)
     double realX = (m_MouseMove.x - m_LookCenter.x) / m_Scale - m_LookCenter.x * 0.5;
     double realY = (m_PicH * m_Scale - m_D3DApp.GetHeight() + m_MouseMove.y
                     - m_LookCenter.y) / m_Scale - m_LookCenter.y * 0.5;
-    if(realX > 0 && realY > 0 && realX < m_indexImg.cols && realY < m_indexImg.rows)
-    {
-        cv::Vec3b p = m_indexImg.at<cv::Vec3b>(realY * 2, realX * 2);
-        int idx = p[0] + p[1] * 256 + p[2] * 256 * 256;
-        printf("%d |", idx);
-    }
-    int x1 = g_Nodeui.m_viewer->m_Focus1;
-    int x2 = g_Nodeui.m_viewer->m_Focus2;
-    int fr = g_Nodeui.m_viewer->m_HScrollF_x;
-    FrameInfos& fgframes = GetMainFrame()->m_FrameInfos;
-    if(fgframes.size() > 0)
-    {
-        int region = fgframes[fr].picmesh1.GetRegionId(realX, realY);
-        if(region >= 0)
-        {
-            g_Nodeui.m_viewer->m_Focus1 = fr;
-            g_Nodeui.m_viewer->m_Focus2 = region;
-            g_Nodeui.m_viewer->NeedRender();
-        }
-    }
-
-    printf("\n");
+//     if(realX > 0 && realY > 0 && realX < m_indexImg.cols && realY < m_indexImg.rows)
+//     {
+//         cv::Vec3b p = m_indexImg.at<cv::Vec3b>(realY * 2, realX * 2);
+//         int idx = p[0] + p[1] * 256 + p[2] * 256 * 256;
+//         printf("%d |", idx);
+//     }
+//     int x1 = g_Nodeui.m_viewer->m_Focus1;
+//     int x2 = g_Nodeui.m_viewer->m_Focus2;
+//     int fr = g_Nodeui.m_viewer->m_HScrollF_x;
+//     FrameInfos& fgframes = GetMainFrame()->m_FrameInfos;
+//     if(fgframes.size() > 0)
+//     {
+//         int region = fgframes[fr].picmesh1.GetRegionId(realX, realY);
+//         if(region >= 0)
+//         {
+//             g_Nodeui.m_viewer->m_Focus1 = fr;
+//             g_Nodeui.m_viewer->m_Focus2 = region;
+//             g_Nodeui.m_viewer->NeedRender();
+//         }
+//     }
+//    printf("\n");
 }
 vavImage* VAV_View::GetImage()
 {
@@ -391,22 +390,22 @@ unsigned __stdcall VAV_View::MyThreadFunc(LPVOID lpParam)
 
 void VAV_View::OnTimer(UINT_PTR nIDEvent)
 {
-    int x1 = g_Nodeui.m_viewer->m_Focus1;
-    int x2 = g_Nodeui.m_viewer->m_Focus2;
-    int fr = g_Nodeui.m_viewer->m_HScrollF_x;
-    if(0 && x1 != -1)
-    {
-        m_D3DApp.ClearTriangles();
-        FrameInfos& fgframes = GetMainFrame()->m_FrameInfos;
-        ints& tmps = fgframes[x1 - 1].picmesh1.m_MapingRegionIDs;
-        int idx = std::find(tmps.begin(), tmps.end(), x2) - tmps.begin();
-        fgframes[x1 - 1].picmesh1.MakeColorX9(idx);
-        ColorTriangles ctsx = fgframes[x1 - 1].picmesh1.m_Trangles;
-        m_D3DApp.AddColorTriangles(ctsx);
-        m_D3DApp.AddTrianglesLine(ctsx);
-        m_D3DApp.BuildPoint();
-        m_D3DApp.DrawScene();
-    }
+//     int x1 = g_Nodeui.m_viewer->m_Focus1;
+//     int x2 = g_Nodeui.m_viewer->m_Focus2;
+//     int fr = g_Nodeui.m_viewer->m_HScrollF_x;
+//     if(0 && x1 != -1)
+//     {
+//         m_D3DApp.ClearTriangles();
+//         FrameInfos& fgframes = GetMainFrame()->m_FrameInfos;
+//         ints& tmps = fgframes[x1 - 1].picmesh1.m_MapingRegionIDs;
+//         int idx = std::find(tmps.begin(), tmps.end(), x2) - tmps.begin();
+//         fgframes[x1 - 1].picmesh1.MakeColorX9(idx);
+//         ColorTriangles ctsx = fgframes[x1 - 1].picmesh1.m_Trangles;
+//         m_D3DApp.AddColorTriangles(ctsx);
+//         m_D3DApp.AddTrianglesLine(ctsx);
+//         m_D3DApp.BuildPoint();
+//         m_D3DApp.DrawScene();
+//     }
     if(1)
     {
         Vec2fs& moves = GetMainFrame()->m_Moves;

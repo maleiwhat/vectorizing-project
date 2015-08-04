@@ -82,11 +82,13 @@ Nodeui::~Nodeui(void)
 
 void Nodeui::Render()
 {
+	return;
     m_viewer->Render();
 }
 
 void Nodeui::Init()
 {
+	return;
     m_num_check = 0;
     w = 600;
     h = 600;

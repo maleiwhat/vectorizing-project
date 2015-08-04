@@ -164,7 +164,8 @@ void VAV_MainFrame::OnButton_BuildVectorization()
     D3DApp& d3dApp = GetVavView()->GetD3DApp();
     FrameInfo fi = ComputeFrame2(m_vavImage);
     m_BackGround.m_FI = fi;
-	fi.picmesh1.MakeColor6(m_vavImage);
+	//fi.picmesh1.MakeColor6(m_vavImage);
+	fi.picmesh1.MakeColor1();
     SetDrawFrame(d3dApp, fi);
     GetVavView()->OnDraw(0);
 	Beep(300, 200);

@@ -85,6 +85,7 @@ public:
 	}
 	vavImage& operator = (const cv::Mat& mat)
 	{
+		m_texture = NULL;
 		m_Image = mat.clone();
 		return *this;
 	}
@@ -92,6 +93,8 @@ public:
 private:
 	static ID3D11Device* m_Device;
 	static ID3D11DeviceContext* m_DeviceContext;
+	ID3D11Texture2D* m_pTextureRead;
+	ID3D11Texture2D* m_pTextureDraw;
 	cv::Mat m_Image;
 };
 

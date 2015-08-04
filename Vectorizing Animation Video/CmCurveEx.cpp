@@ -212,11 +212,12 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float lineimg_threshold,
         float* pDer1 = m_pDer1f.ptr<float>(y);
         for(int x = 0; x < m_w; x++)
         {
-            float v1 = pDer1[x] > 0 ? pDer1[x] + (pDer2[x]-0.5) : 0;
+            float xv1 = (1.3 - abs(pDer2[x])) > 1 ? 1 : (2 - pow(abs(pDer2[x]), 0.3));
+            float v1 = pDer1[x] > 0 ? pDer1[x] * xv1 : 0;
             float v2 = pDer2[x] > 0 ? pDer2[x] * (1 - abs(pDer1[x])) : 0;
             v2 = v2 > 0 ? v2 : 0;
             pDer1[x] = v1;
-            pDer2[x] = v2;
+            pDer2[x] = v1 * 0.5 + v2 * 0.5;
             sum2 += pDer2[x];
             //pDer2[x] = pDer2[x] > 0 ? float(pDer2[x] > 0.0f ? pDer2[x] : 0.0f) : 0;
         }
@@ -278,31 +279,31 @@ const cv::Mat& CmCurveEx::CalSecDer2(int kSize, float lineimg_threshold,
 const cv::Mat& CmCurveEx::CalSecDer(int kSize, float linkEndBound,
                                     float linkStartBound)
 {
-	cv::Mat dxx, dxy, dyy;
-	Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
-	Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
-	Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
-	cv::Mat m_pDer1f = m_pDer2f.clone();
-	double eigval[2], eigvec[2][2];
-	for (int y = 0; y < m_h; y++)
-	{
-		float* xx = dxx.ptr<float>(y);
-		float* xy = dxy.ptr<float>(y);
-		float* yy = dyy.ptr<float>(y);
-		float* pOrnt = m_pOrnt1f.ptr<float>(y);
-		float* pDer2 = m_pDer2f.ptr<float>(y);
-		float* pDer1 = m_pDer1f.ptr<float>(y);
-		for (int x = 0; x < m_w; x++)
-		{
-			compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
-			pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
-			pOrnt[x] = pOrnt[x] < 0 ? pOrnt[x] + PI2 : pOrnt[x];
+    cv::Mat dxx, dxy, dyy;
+    Sobel(m_img1f, dxx, CV_32F, 2, 0, kSize);
+    Sobel(m_img1f, dxy, CV_32F, 1, 1, kSize);
+    Sobel(m_img1f, dyy, CV_32F, 0, 2, kSize);
+    cv::Mat m_pDer1f = m_pDer2f.clone();
+    double eigval[2], eigvec[2][2];
+    for(int y = 0; y < m_h; y++)
+    {
+        float* xx = dxx.ptr<float>(y);
+        float* xy = dxy.ptr<float>(y);
+        float* yy = dyy.ptr<float>(y);
+        float* pOrnt = m_pOrnt1f.ptr<float>(y);
+        float* pDer2 = m_pDer2f.ptr<float>(y);
+        float* pDer1 = m_pDer1f.ptr<float>(y);
+        for(int x = 0; x < m_w; x++)
+        {
+            compute_eigenvals(yy[x], xy[x], xx[x], eigval, eigvec);
+            pOrnt[x] = (float)atan2(-eigvec[0][1], eigvec[0][0]); //計算法線方向
+            pOrnt[x] = pOrnt[x] < 0 ? pOrnt[x] + PI2 : pOrnt[x];
 
-			pDer2[x] = eigval[0];//計算二階導數
-		}
-	}
-	NoneMaximalSuppress(linkEndBound, linkStartBound);
-	return m_pDer2f;
+            pDer2[x] = eigval[0];//計算二階導數
+        }
+    }
+    NoneMaximalSuppress(linkEndBound, linkStartBound);
+    return m_pDer2f;
 }
 
 const cv::Mat& CmCurveEx::CalFirDer(int kSize, float linkEndBound,

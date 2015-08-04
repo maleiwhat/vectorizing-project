@@ -44,6 +44,7 @@ public:
 
 	virtual ~TriangulationCgal_SeedPoint() {}
 	void AddPointIdx(double x, double y, int id);
+	void AddPoints(Vector2s& ary);
 	virtual void AddPoint(double x, double y);
 	virtual void Compute();
 	virtual void Clear();

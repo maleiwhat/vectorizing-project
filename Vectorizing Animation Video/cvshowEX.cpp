@@ -52,6 +52,7 @@ cvshowEX::~cvshowEX(void)
 
 void cvshowEX::AddShow(std::string name, cv::Mat mat)
 {
+	return;
 	strings::iterator it = std::find(m_names.begin(), m_names.end(), name);
 	if (it == m_names.end())
 	{
@@ -95,6 +96,7 @@ void cvshowEX::RemoveShow(std::string name)
 
 void cvshowEX::Render()
 {
+	return;
 	int needdraw = 0;
 	for (int i = 0; i < m_ischecks.size(); ++i)
 	{
@@ -193,6 +195,7 @@ void cvshowEX::Render()
 
 void cvshowEX::Init()
 {
+	return;
 	m_num_check = 0;
 	w = 1600;
 	h = 1000;

@@ -775,7 +775,6 @@ void D3DApp::SetTexture(ID3D11ShaderResourceView* tex)
     {
         return;
     }
-    ReleaseCOM(m_Pics_Texture);
     m_Pics_PMap->SetResource(tex);
     m_Pics_Texture = tex;
     OnResize(m_ClientWidth, m_ClientHeight);
@@ -838,8 +837,9 @@ void D3DApp::BuildPoint()
         pv.position.z = 0;
         pv.size.x = m_PicW;
         pv.size.y = m_PicH;
-        //m_PicsVertices.push_back(pv);
-		pv.position.x = +m_PicW * 0.5 - m_PicW * m_Scale;
+        m_PicsVertices.push_back(pv);
+		//pv.position.x = m_PicW * 0.5 - m_PicW * m_Scale;
+		pv.position.y = m_PicH * 0.5 + m_PicH * m_Scale;
 		m_PicsVertices.push_back(pv);
     }
     if(!m_PicsVertices.empty())
@@ -1774,6 +1774,19 @@ void D3DApp::InterDraw(bool drawDiffusion)
     m_DeviceContext->OMSetDepthStencilState(m_pDepthStencil_ZWriteOFF, 0);
     m_DeviceContext->OMSetBlendState(m_pBlendState_BLEND, BlendFactor, 0xffffffff);
     
+	//Draw Picture
+	if(m_PicsVertices.size() > 0)
+	{
+		m_Pics_PMap->SetResource(m_Pics_Texture);
+		UINT offset = 0;
+		UINT stride2 = sizeof(PictureVertex);
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		m_DeviceContext->IASetInputLayout(m_Pics_PLayout);
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Pics_Buffer, &stride2, &offset);
+		m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
+		m_DeviceContext->Draw(1, 0);
+	}
+
     if(m_PatchVertices.size() > 0)
     {
         UINT offset = 0;
@@ -1892,7 +1905,7 @@ void D3DApp::InterDraw(bool drawDiffusion)
 		m_DeviceContext->IASetInputLayout(m_Pics_PLayout);
 		m_DeviceContext->IASetVertexBuffers(0, 1, &m_Pics_Buffer, &stride2, &offset);
 		m_Pics_PTech->GetPassByIndex(0)->Apply(0, m_DeviceContext);
-		m_DeviceContext->Draw((UINT)m_PicsVertices.size(), 0);
+		m_DeviceContext->Draw(1, 1);
 	}
 }
 
@@ -2017,7 +2030,7 @@ cv::Mat D3DApp::DrawSceneToCvMat(D3DXCOLOR backcolor, bool drawDiffusion)
         }
         m_DeviceContext->OMSetRenderTargets(1,  &old_pRTV,  old_pDSV);
         m_DeviceContext->RSSetViewports(NumViewports, &pViewports[0]);
-        InterSetRenderTransparencyDefault();
+        //InterSetRenderTransparencyDefault();
         ReleaseCOM(pTextureRead);
         return simg;
     }
@@ -2034,7 +2047,7 @@ void D3DApp::InterSetRenderTransparencyOutput1()
     m_pAlpha->SetFloat(0);
     m_TriangleLine_Alpha->SetFloat(0);
     m_Lines_Alpha->SetFloat(0);
-    m_Lines2w_CenterAlpha->SetFloat(0);
+    m_Lines2w_CenterAlpha->SetFloat(1);
     m_SkeletonLines_Alpha->SetFloat(0);
     m_TransparencySV_Picture->SetFloat(1);
 }

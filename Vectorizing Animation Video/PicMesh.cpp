@@ -263,8 +263,10 @@ void PicMesh::MakeColor2()
     }
 }
 
-void PicMesh::MappingMesh(PicMesh& pm, double x, double y)
+void PicMesh::MappingMesh(PicMesh& pm, double x, double y, cv::Mat& img1, cv::Mat& img2)
 {
+	vavImage vimg1(img1);
+	vavImage vimg2(img2);
     BasicMesh::VHandle lastV(pm.n_vertices() / 2);
     for(BasicMesh::VIter pvit = vertices_begin(); pvit != vertices_end(); ++pvit)
     {
@@ -347,7 +349,7 @@ void PicMesh::MappingMesh(PicMesh& pm, double x, double y)
         BasicMesh::FHandle lastF(minidx);
         if(minidx >= 0)
         {
-            //data(*pfit).c2 = pm.data(lastF).c2;
+            data(*pfit).c2 = pm.data(lastF).c2;
             data(*pfit).rid2 = pm.data(lastF).rid;
             data(*pfit).cid = minidx;
         }
@@ -408,15 +410,15 @@ void PicMesh::MappingMesh(PicMesh& pm, double x, double y)
             }
             dis /= region.size();
             //printf("color distance %f\n", dis);
-            if(dis > 10)
+            //if(dis > 10)
             {
                 m_MapingRegionIDs[i] = idxs[maxe];
             }
         }
-//         for(int j = 0; j < region.size(); ++j)
-//         {
-//             data(region[j]).c2 = colors[maxe];
-//         }
+        for(int j = 0; j < region.size(); ++j)
+        {
+            data(region[j]).c2 = colors[maxe];
+        }
     }
     m_MapingCount.resize(pm.m_Regions.size(), 0);
     for(int i = 0; i < m_MapingRegionIDs.size(); ++i)
@@ -856,7 +858,7 @@ bool PicMesh::ConnectOneRingConstraint1(VHandle vh, VHandle lastvh, Vector2& out
             }
         }
     }
-    // 直走 距離小於3
+    // 直走 距離小於6
     if(alls.size() > 0)
     {
         Point p = dir;
@@ -882,7 +884,7 @@ bool PicMesh::ConnectOneRingConstraint1(VHandle vh, VHandle lastvh, Vector2& out
         }
         Point op = point(alls[idx]);
         double dis = (op - point(vh)).length();
-        if(dis < 3 && minlen < 0.3)
+        if(dis < 6 && minlen < 0.3)
         {
             isok = true;
         }

@@ -49,15 +49,15 @@ Vector3 ColorConstraintMyRBF::GetColorVector3(double x, double y)
 
 Vector3 ColorConstraintMyRBF::GetColorVector3(double x1, double y1, double x2, double y2)
 {
-	if(m_NeedComputeModel)
-	{
-		BuildModel();
-	}
-	if(m_Colors.size() < 10)
-	{
-		return m_Median;
-	}
-	return m_rbfmesh.GetColorVector3(x1, y1, x2, y2);
+    if(m_NeedComputeModel)
+    {
+        BuildModel();
+    }
+    if(m_Colors.size() < 10)
+    {
+        return m_Median;
+    }
+    return m_rbfmesh.GetColorVector3(x1, y1, x2, y2);
 }
 
 Vector3 ColorConstraintMyRBF::GetColorVector3Reverse(double x, double y)
@@ -108,10 +108,10 @@ ColorConstraintMyRBF::ColorConstraintMyRBF(): m_NeedComputeModel(true),
 void ColorConstraintMyRBF::BuildModel()
 {
     m_NeedComputeModel = false;
-	if (m_Colors.empty())
-	{
-		return;
-	}
+    if(m_Colors.empty())
+    {
+        return;
+    }
     if(m_Colors.size() < 10)
     {
         Vector3 sum;
@@ -138,7 +138,7 @@ void ColorConstraintMyRBF::BuildModel()
 //         cv::Mat cluster; //會跑出結果，紀錄每個row 最後是分配到哪一個cluster
 //         int attempts = 3; //應該是執行次數
 //         cv::Mat centers; //記錄那個cluster的值
-// 
+//
 //         //使用k means分群
 //         cv::kmeans(model, K, cluster, cv::TermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 10, 1),
 //                    attempts, cv::KMEANS_PP_CENTERS, centers);
@@ -169,7 +169,11 @@ void ColorConstraintMyRBF::BuildModel()
 //             }
 //         }
         TriangulationCgal_SeedPoint triangulation;
-        for(int i = 0; i < m_Colors.size(); ++i)
+        if(m_Colors.size() > 100000)
+        {
+            printf("m_Colors.size() %d\n", m_Colors.size());
+        }
+        for(int i = 0; i < m_Pos.size(); ++i)
         {
             //if(canadd[cluster.at<int>(i, 0)])
             {
@@ -179,9 +183,9 @@ void ColorConstraintMyRBF::BuildModel()
         }
         m_rbfmesh.clear();
         m_rbfmesh.ReadFromSeedpoint(&triangulation, m_Colors);
-// 		m_rbfmesh.blurC2();
-// 		m_rbfmesh.lightblurC2();
-// 		m_rbfmesh.lightblurC2();
+//      m_rbfmesh.blurC2();
+//      m_rbfmesh.lightblurC2();
+//      m_rbfmesh.lightblurC2();
     }
 }
 
@@ -201,5 +205,5 @@ ColorConstraintMyRBF::~ColorConstraintMyRBF()
 
 void ColorConstraintMyRBF::blurC2()
 {
-	m_rbfmesh.blurC2();
+    m_rbfmesh.blurC2();
 }
